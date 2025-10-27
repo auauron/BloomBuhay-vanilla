@@ -28,9 +28,12 @@ export default {
   devServer: {
     port: 5173,
     historyApiFallback: true,
-    proxy: {
-      "/api": "http://localhost:3000"
-    }
+    proxy: [
+      {
+        context: ["/api"],
+        target: "http://localhost:3000"
+      }
+    ]
   },
   mode: "development"
 };
