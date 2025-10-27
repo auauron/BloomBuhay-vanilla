@@ -1,5 +1,5 @@
 import React from "react";
-import Landing from "./Landing";
+import Landing from "./pages/landing";
 
 export default function App() {
   return (
