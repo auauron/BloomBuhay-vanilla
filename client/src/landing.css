@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply text-center min-h-screen flex flex-col justify-center items-center;
+  background: linear-gradient(to bottom, #F875AA 50%, #F5ABA1 81%, #F4C69D 91%, #F3E198 100%);
+}
+
+button {
+  @apply bg-white text-[#F875AA] rounded-full font-semibold cursor-pointer px-8 py-3;
+}
+
+button:hover {
+  background: #ffe6ee;
+}

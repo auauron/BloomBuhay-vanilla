@@ -1,0 +1,18 @@
+/* src/index.css */
+
+/* Google font import for dev; for production prefer adding to index.html */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* optional: make the new font available as a Tailwind utility */
+:root {
+  --font-poppins: 'Poppins', sans-serif;
+}
+
+/* small helper to map our custom font for fallback cases */
+.font-poppins {
+  font-family: var(--font-poppins);
+}
