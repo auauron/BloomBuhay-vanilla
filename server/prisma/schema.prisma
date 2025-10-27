@@ -12,21 +12,21 @@ model User {
     fullName       String
     email          String           @unique
     password       String
-    createdAt      DateTime
-    updatedAt      DateTime
+    createdAt      DateTime         @default(now())
+    updatedAt      DateTime         @updatedAt
     MotherProfiles MotherProfiles[]
 }
 
 model MotherProfiles {
-    id             Int      @id @default(autoincrement())
-    mother         User     @relation(fields: [motherId], references: [id])
-    motherId       Int
-    stage          String
-    babyName       String?
-    babyGender     String?
-    lmpDate        DateTime
-    weeksPregnant  Int
-    weeksPostpartu Int
-    babyAgeMonths  Int
-    createdAt      DateTime
+    id              Int      @id @default(autoincrement())
+    mother          User     @relation(fields: [motherId], references: [id])
+    motherId        Int
+    stage           String
+    babyName        String?
+    babyGender      String?
+    lmpDate         DateTime
+    weeksPregnant   Int
+    weeksPostpartum Int
+    babyAgeMonths   Int
+    createdAt       DateTime
 }

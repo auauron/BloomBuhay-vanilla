@@ -6,8 +6,6 @@ import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
 import "dotenv/config";
 
-let database: User[] = [];
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 const db = new PrismaClient();
@@ -42,7 +40,7 @@ app
   })
   .post("/login", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { fullName, password } = req.body;
 
     const dbUser = await db.user.findUnique({
       where: { username },
