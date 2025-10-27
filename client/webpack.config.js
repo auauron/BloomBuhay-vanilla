@@ -25,12 +25,17 @@ export default {
       template: "./public/index.html"
     })
   ],
-  devServer: {
-    port: 5173,
-    historyApiFallback: true,
-    proxy: {
-      "/api": "http://localhost:3000"
+devServer: {
+  port: 5173,
+  historyApiFallback: true,
+  proxy: [
+    {
+      context: ['/api'],
+      target: 'http://localhost:3000',
+      changeOrigin: true,
+      secure: false
     }
-  },
-  mode: "development"
+  ]
+},
+mode: "development"
 };
