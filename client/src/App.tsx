@@ -5,7 +5,7 @@ import MainSetup from "./pages/MainSetup";
 
 export default function App() {
   return (
-    <Setup />
+    <MainSetup />
   );
 }
 
