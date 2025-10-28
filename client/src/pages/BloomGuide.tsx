@@ -1,7 +1,7 @@
 import React from "react";
 import "../index.css";
 
-export default function Article() {
+export default function BloomGuide() {
   // === DATA SECTION ===
   const maternalTips = [
     {
@@ -30,7 +30,7 @@ export default function Article() {
   ];
 
   // === REUSABLE CARD COMPONENT ===
-  const ArticleCard = ({ title, image }) => (
+  const ArticleCard = ({ title, image }: { title: string; image: string }) => (
     <div className="bg-white rounded-xl shadow-md overflow-hidden border border-pink-200 hover:shadow-lg transition-shadow">
       <img src={image} alt={title} className="w-full h-44 object-cover" />
       <div className="p-3 text-sm text-gray-700 text-center">{title}</div>
