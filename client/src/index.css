@@ -1,12 +1,10 @@
-/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Google font import for dev; for production prefer adding to index.html */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&family=Poppins:wght@400;600;700;800&display=swap');
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 /* optional: make the new font available as a Tailwind utility */
 :root {
@@ -18,6 +16,7 @@
   font-family: var(--font-poppins);
 }
 
+
 * {
   margin: 0;
   padding: 0;
@@ -25,10 +24,28 @@
 }
 
 body {
+  /* @apply bg-white; */
   background-color: #fff;
   font-family: 'Poppins', sans-serif;
 }
 
+.pregnancy-card {
+  background-color: #9c325d;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 1rem 0;
+}
+
+header {
+  background-color: #ff6f91;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 .landing-container {
   height: 100vh;
   width: 100%;
@@ -107,3 +124,4 @@ body {
     #F3E198 100%
   );
 }
+ 
