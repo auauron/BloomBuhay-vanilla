@@ -1,7 +1,17 @@
 import React from "react";
 import "../index.css";
+import { useNavigate } from "react-router-dom";
 
 export default function Landing() {
+  const navigate = useNavigate();
+  const handleSignUp = () => {
+    navigate("/signup");
+  };
+  const handleLogIn = () => {
+    navigate("/login");
+  }
+
+
   return (
     <div className="landing-container flex items-center justify-center gap-4">
       <div className="content">
@@ -15,8 +25,8 @@ export default function Landing() {
         <div className="buttons-section">
           <p className="start-text">Start Blooming</p>
           <div className="buttons-container">
-            <button className="signup-btn">Sign Up</button>
-            <button className="login-btn">Log In</button>
+            <button className="signup-btn" onClick={handleSignUp}>Sign Up</button>
+            <button className="login-btn" onClick={handleLogIn}>Log In</button>
           </div>
         </div>
       </div>
