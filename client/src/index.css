@@ -107,3 +107,30 @@ body {
     #F3E198 100%
   );
 }
+
+/* ===== custom helpers for ArticlePage exact look ===== */
+
+.font-poppins { font-family: 'Poppins', sans-serif; }
+
+/* Slightly darker text for section titles */
+h2 { color: #4d3b3b; }
+
+/* Make the rounded device border appear like the mock */
+.bloom-panel {
+  border-radius: 18px;
+}
+
+/* tweak input placeholder color in the gradient pill */
+input::placeholder {
+  color: rgba(183, 76, 120, 0.7);
+}
+
+/* small image smoothing to match screenshot feel */
+img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
+
+/* optional: limit very large fonts on small screens */
+@media (max-width: 640px) {
+  .title {
+    font-size: 44px;
+  }
+}
