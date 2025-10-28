@@ -216,28 +216,37 @@ openssl rand -base64 32
 
 ---
 
-## Testing with cURL
+## Testing with insomia/postman/thunderclient
+
+make sure to npm run dev first to run the server
+first, copy the local host with port
 
 ### Signup
-```bash
-curl -X POST http://localhost:3000/api/auth/signup \
-  -H "Content-Type: application/json" \
-  -d '{
-    "fullName": "John Doe",
-    "email": "john@example.com",
-    "password": "SecurePass123",
-    "confirmPassword": "SecurePass123"
-  }'
+```
+go to insomia or any other api tester and create new http request,
+have it in POST and paste the localhost with port,
+click body and have it in json and input this
+
+{
+  "fullName": "John Doe",
+  "email": "john@example.com",
+  "password": "SecurePass123",
+  "confirmPassword": "SecurePass123"
+}
+
+run it and will show success true if you havent already signup and success false if you already did
 ```
 
 ### Login
-```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
+```
+make a new http request, in POST, paste the localhost with prt
+click the body request and input this 
+'{
     "email": "john@example.com",
     "password": "SecurePass123"
   }'
+
+run the it and it will show success
 ```
 
 ### Get Profile (Replace TOKEN with actual JWT)
