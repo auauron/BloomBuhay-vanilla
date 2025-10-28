@@ -7,17 +7,13 @@ import userRoutes from "./routes/userRoutes";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(
-  cors({
-    exposedHeaders: ["Authorization"],
-  })
-);
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app
+  .use(cors({exposedHeaders: ["Authorization"],}))
+  .use(express.urlencoded({ extended: true }))
+  .use(express.json());
 
 // api routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes).use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.json({

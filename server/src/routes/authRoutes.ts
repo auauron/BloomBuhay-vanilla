@@ -4,7 +4,7 @@ import { signup, login } from "../controllers/authController";
 const router = Router();
 // registers new user
 router.post("/signup", signup);
-// login
+// login user   
 router.post("/login", login);
 
 export default router;
