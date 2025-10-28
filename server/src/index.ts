@@ -13,7 +13,8 @@ app
   .use(express.json());
 
 // api routes
-app.use("/api/auth", authRoutes).use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes)
+   .use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.json({
@@ -22,7 +23,8 @@ app.get("/", (req, res) => {
     version: "1.0.0",
     status: "running",
   });
-});
+})
+
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
