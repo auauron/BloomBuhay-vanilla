@@ -69,14 +69,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             ))}
           </nav>
 
-          {/* Premium Banner */}
-          <button className="mt-8 p-4 bg-gradient-to-r from-[#F875AA] to-[#F4C69D] rounded-lg text-white absolute bottom-20 mb-10 mr-8 hover:from-[#F9649C] hover:to-[#F3B287] transition-colors w-[calc(100%-2rem)]">
-            <div className="flex items-center space-x-2 mb-2">
-              <Crown size={20} />
-              <span className="font-bold">Get BB Premium!</span>
-            </div>
-            <p className="text-sm text-white/90">Unlock exclusive features and content</p>
-          </button>
+        {/* Premium Banner */}
+        <button className="mt-8 p-4 bg-gradient-to-r from-[#F875AA] to-[#F4C69D] rounded-lg text-white absolute bottom-20 mb-10 left-4 right-4 hover:from-[#F9649C] hover:to-[#F3B287] transition-colors">
+          <div className="flex items-center space-x-2 mb-2">
+            <Crown size={20} />
+            <span className="font-bold">Get BB Premium!</span>
+          </div>
+          <p className="text-sm text-white/90">Unlock exclusive features and content</p>
+        </button>
 
           {/* Bottom Section */}
           <div className="mt-8 pt-6 border-t border-gray-200 absolute bottom-0 mb-8 ml-[-8px] mr-8">
