@@ -28,7 +28,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         {/* Header */}
         <div className="bg-[#F875AA] text-white p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold"><span className="text-[#474747]">Bloom stage: </span> Pregnant</h2>
+            <h2 className="text-2xl font-bold text-white"><span className="text-[#474747]">Bloom stage: </span> Pregnant</h2>
             <button onClick={onClose} className="text-white hover:bg-white/10 rounded-lg transition-colors w-10 h-10 flex items-center justify-center">
               <ArrowRightToLine size={24} />
             </button>

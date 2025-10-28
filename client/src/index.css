@@ -152,17 +152,6 @@ input::placeholder {
 /* small image smoothing to match screenshot feel */
 img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
 
-/* optional: limit very large fonts on small screens */
-@media (max-width: 640px) {
-  .title {
-    font-size: 44px;
-  }
-.buttons-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 1px;
-}
 
 .start-text {
   font-family: 'Rubik', sans-serif;
