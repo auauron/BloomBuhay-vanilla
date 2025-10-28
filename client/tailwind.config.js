@@ -6,6 +6,12 @@ export default {
   ],
   theme: {
     extend: {
+      colors: {
+        bloomWhite: '#FFF6F6',
+        bloomPink: '#F875AA',
+        bloomYellow: '#F3E198',
+        bloomBlack: '#474747'
+      },
       fontFamily: {
         rubik: ['Rubik', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
