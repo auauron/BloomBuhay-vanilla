@@ -1,12 +1,12 @@
-/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Google font import for dev; for production prefer adding to index.html */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&family=Poppins:wght@400;600;700;800&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
 
 /* optional: make the new font available as a Tailwind utility */
 :root {
@@ -66,6 +66,7 @@ body {
   font-weight: 800;
   color: white;
   margin: 0;
+  margin-bottom: 10px;
 }
 
 .title span {
@@ -106,4 +107,60 @@ body {
     #F4C69D 91%,
     #F3E198 100%
   );
+}
+
+.buttons-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1px;
+}
+
+.start-text {
+  font-family: 'Rubik', sans-serif;
+  font-size: 18px;
+  color: #fffafc;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.buttons-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.signup-btn {
+  background: white;
+  color: #f77ec4;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 9999px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 500;
+}
+
+.signup-btn:hover {
+  background: #ffe3f0;
+  transform: translateY(-2px);
+}
+
+.login-btn {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+  padding: 0.8rem 2rem;
+  border-radius: 9999px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 500;
+}
+
+.login-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
 }

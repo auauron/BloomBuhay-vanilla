@@ -11,7 +11,14 @@ export default function Landing() {
           Bloom <span>Buhay</span>
         </h1>
         <p className="subtitle text-lg font-rubik">For a life that gives life.</p>
-        <button className="start-btn">Start Blooming →</button>
+
+        <div className="buttons-section">
+          <p className="start-text">Start Blooming</p>
+          <div className="buttons-container">
+            <button className="signup-btn">Sign Up</button>
+            <button className="login-btn">Log In</button>
+          </div>
+        </div>
       </div>
     </div>
   );
