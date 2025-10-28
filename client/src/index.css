@@ -123,6 +123,7 @@ body {
 
 .question {
   font-size: 16px;
+  font-family: 'Rubik', sans-serif;
 }
 
 .dropdown-container {
@@ -172,6 +173,17 @@ body {
   border-radius: 10px;
   width: 200px;
   height: 40px;
+  background-color: #f875aa;
+  font-family: "Rubik", sans-serif;
+  color: #fff6f6;
+  font-size: 16px;
+  border: none;
+  display: block;
+  transition: all 0.5s ease;
+  z-index: 1;
+}
+
+.next-button::before {
   background: linear-gradient(
     to right,
     #f875aa 50%,
@@ -179,14 +191,27 @@ body {
     #f4c69d 91%,
     #f3e198 100%
   );
-  font-family: 'Rubik', sans-serif;
-  color: #fff6f6;
-  font-size: 16px;
-  border: none;
-  box-shadow: 5px 5px 5px rgb(0, 0, 0, 0.2);
-  display: block;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: -1; 
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
-.main-container{
+.next-button:hover::before {
+  opacity: 1;
+}
+
+.next-button:hover {
+  transform: scale(1.05);
+}
+
+
+.main-container {
   margin-top: -80px;
 }
