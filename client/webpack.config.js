@@ -6,41 +6,47 @@ export default {
   output: {
     path: path.resolve("dist"),
     filename: "bundle.js",
-    clean: true
+    clean: true,
   },
   module: {
     rules: [
+      // TS/TSX loader
       {
         test: /\.[jt]sx?$/,
         exclude: /node_modules/,
-        use: "babel-loader"
+        use: "babel-loader",
       },
-
+      // CSS loader (Tailwind)
       {
         test: /\.css$/i,
+        exclude: /\.module\.css$/,
         use: ["style-loader", "css-loader", "postcss-loader"],
       },
-    ]
+      // Optional: CSS modules for components
+      {
+        test: /\.module\.css$/i,
+        use: [
+          "style-loader",
+          {
+            loader: "css-loader",
+            options: { modules: false },
+          },
+          "postcss-loader",
+        ],
+      },
+    ],
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".jsx"]
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./public/index.html"
-    })
+      template: "./public/index.html",
+    }),
   ],
-devServer: {
-  port: 5173,
-  historyApiFallback: true,
-  proxy: [
-    {
-      context: ['/api'],
-      target: 'http://localhost:3000',
-      changeOrigin: true,
-      secure: false
-    }
-  ]
-},
-mode: "development"
+  devServer: {
+    port: 5173,
+    historyApiFallback: true,
+  },
+  mode: "development",
 };
