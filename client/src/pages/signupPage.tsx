@@ -41,6 +41,11 @@ export default function SignupPage() {
     }
   };
 
+  const handleLoginRedirect = () => {
+    navigate('/login');
+  };
+
+
   return (
     <div className="min-h-screen bg-bloomWhite flex items-center justify-center">
       <div className="max-w-3xl w-full">
@@ -67,11 +72,6 @@ export default function SignupPage() {
               {generalError}
             </div>
           )}
-          <p className="text-center text-sm text-gray-600">
-            <Link to="/login" className="text-bloomPink font-semibold hover:underline">
-              Log In
-            </Link>
-          </p>
           <form onSubmit={handleSubmit} className="space-y-4">
             <InputField
               label="Full Name"
@@ -116,6 +116,20 @@ export default function SignupPage() {
             >
               {loading ? 'Signing Up...' : 'Sign Up'}
             </button>
+
+            {/* Already have an account section */}
+            <div className="text-center mt-6">
+              <p className="text-sm text-gray-500 mb-3">
+                Already have an account?
+              </p>
+              <button
+                type="button"
+                onClick={handleLoginRedirect}
+                className="inline-flex items-center justify-center rounded-3xl border-2 border-bloomPink bg-white text-bloomPink px-8 py-1 font-semibold shadow-md transition-all hover:shadow-lg hover:bg-bloomPink hover:text-white min-w-[200px]"
+              >
+                Log In
+              </button>
+            </div>
           </form>
         </div>
       </div>
