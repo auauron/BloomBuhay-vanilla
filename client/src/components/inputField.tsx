@@ -29,7 +29,7 @@ export default function InputField({
         placeholder={placeholder}
         className={`w-full px-4 py-3 rounded-lg border ${
           error ? 'border-red-400 bg-red-50' : 'border-gray-300'
-        } focus:outline-none focus:ring-2 focus:ring-pink-300`}
+        } focus:outline-none focus:ring-2 focus:ring-pink-300 placeholder-gray-400`}
       />
       {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
