@@ -1,7 +1,7 @@
 // src/components/Sidebar.tsx
-import React, { use } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRightToLine, Home, BookOpen, Calendar, Heart, Baby, Book, User, Crown } from 'lucide-react';
+import { ArrowRightToLine, Home, BookOpen, Calendar, Heart, Baby, Book, User, Crown, LogOut } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 
 interface SidebarProps {
@@ -10,15 +10,30 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
-
   const navigate = useNavigate();
-  const handleNavigation = (path: string) => {
-    onClose(); // Close sidebar when navigating
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-        
+  const handleNavigation = (path: string) => {
+    onClose();
     setTimeout(() => {
       navigate(path);
-    }, 500); 
+    }, 500);
+  };
+
+  const handleLogout = () => {
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutModal(false);
+    onClose();
+    setTimeout(() => {
+      navigate('/');
+    }, 500);
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutModal(false);
   };
 
   const menuItems = [
@@ -62,7 +77,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* User Profile */}
           <Link 
             to="/profile" 
-            onClick={handleNavigation.bind(null, "/profile")}
+            onClick={() => handleNavigation("/profile")}
             className="w-full flex items-center space-x-3 p-1 hover:bg-white/10 rounded-lg transition-colors text-left"
           >
             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -91,7 +106,68 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           </nav>
 
           {/* Premium Banner */}
-          <Link 
+          <button
+            onClick={() => handleNavigation("/premium")}
+            className="mt-8 p-4 bg-gradient-to-r from-[#F875AA] to-[#F4C69D] rounded-lg text-white absolute bottom-[20px] mb-32 left-4 right-4 hover:from-[#F9649C] hover:to-[#F3B287] transition-colors block"
+          >
+            <div className="flex items-center space-x-2 mb-2">
+              <Crown size={20} />
+              <span className="font-bold">Get BB Premium!</span>
+            </div>
+            <p className="text-sm text-white/90 text-left ml-1">Bloom Even Better.</p>
+          </button>
+
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="flex items-center space-x-3 p-2 absolute bottom-20 mb-2 left-4 right-4 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors duration-300 "
+          >
+            <LogOut size={20} color="#7a7a7a" />
+            <span className="font-sm text-gray-500">Log Out</span>
+          </button>
+
+          {/* Bottom Section */}
+        <div className="mt-8 pt-6 border-t border-gray-200 absolute bottom-0 mb-4 ml-[-8px] mr-8">
+            <p className="text-center text-gray-500 text-xs">
+              © 2025 BloomBuhay by Mixed Berries Productions. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-auto shadow-xl">
+            <h3 className="text-xl font-bold text-gray-800 mb-2">Are you sure?</h3>
+            <p className="text-gray-600 mb-6">
+              You're about to log out of your account. Are you sure you want to leave?
+            </p>
+            <div className="flex space-x-3">
+              <button
+                onClick={cancelLogout}
+                className="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="flex-1 py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
+              >
+                Log Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+          
+          
+          
+          {/* <Link 
+         
             to="/premium"
             onClick={() => handleNavigation("/premium")}
             className="mt-8 p-2 bg-gradient-to-r from-[#F875AA] to-[#F4C69D] rounded-lg text-white absolute bottom-20 mb-2 left-4 right-4 hover:from-[#F9649C] hover:to-[#F3B287] transition-colors block"
@@ -101,16 +177,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               <span className="font-bold">Get BB Premium!</span>
             </div>
             <p className="text-sm text-white/90 text-left ml-1">Bloom Even Better.</p>
-          </Link>
+        //   </Link>
 
-          {/* Bottom Section */}
-          <div className="mt-8 pt-6 border-t border-gray-200 absolute bottom-0 mb-4 ml-[-8px] mr-8">
-            <p className="text-center text-gray-500 text-xs">
-              © 2025 BloomBuhay by Mixed Berries Productions. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
+        //   {/* Bottom Section */}
+        {/* //   <div className="mt-8 pt-6 border-t border-gray-200 absolute bottom-0 mb-4 ml-[-8px] mr-8">
+        //     <p className="text-center text-gray-500 text-xs">
+        //       © 2025 BloomBuhay by Mixed Berries Productions. All rights reserved.
+        //     </p>
+        //   </div>
+        // </div> */} 

@@ -24,7 +24,7 @@ export default function Dashboard() {
 
       {/* Greeting */}
       <div className="flex flex-col items-center text-center mt-8 px-4">
-        <h2 className="text-4xl font-bold text-[#F875AA]">Hello, Mama Maria!</h2>
+        <h2 className="text-4xl font-bold text-bloomPink">Hello, Mama Maria!</h2>
         <p className="text-[#474747] font-rubik mt-2 mb-[-5px] font-light text-lg">
           “One day at a time, one heartbeat at a time — you are growing a miracle.”
         </p>
@@ -33,7 +33,7 @@ export default function Dashboard() {
     {/* Dashboard Layout */}
         <div className="grid grid-cols-1 md:grid-cols-[550px_1fr] gap-6 p-8 max-w-6xl mx-auto w-full">
         {/* Pregnancy Info */}
-        <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-white p-8 rounded-[20px] shadow-lg relative">
+        <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-8 rounded-[20px] shadow-lg relative">
             <h3 className="text-2xl font-bold mb-2" >You are now</h3>
             <h1 className="text-4xl font-extrabold leading-tight text-[#474747]">
             6 weeks, 5 days
