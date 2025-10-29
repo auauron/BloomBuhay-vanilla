@@ -5,11 +5,13 @@ import BloomGuide from "./pages/BloomGuide";
 import Dashboard from "./pages/Dashboard";
 import SignUp from "./pages/SignUp";
 import LoginPage from "./pages/LoginPage";
+import UserProfile from "./pages/UserProfile";
 
 export default function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/userprofile" element={<UserProfile />} />
         <Route path="/" element={<LandingPage />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<LoginPage />} />

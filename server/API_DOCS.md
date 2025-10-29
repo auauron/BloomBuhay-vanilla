@@ -153,10 +153,58 @@ Authorization: Bearer <your_jwt_token>
     "id": 1,
     "fullName": "John Doe",
     "email": "john@example.com",
+    "profilePic": "https://example.com/avatar.jpg",
     "createdAt": "2024-01-01T00:00:00.000Z",
     "updatedAt": "2024-01-01T00:00:00.000Z"
   }
 }
+### 4. Update Current User Profile
+
+**PUT** `/api/users/me`
+
+Update the authenticated user's profile. Any field is optional; only provided fields are updated. Password update requires `confirmPassword` and follows the same strength rules.
+
+**Headers:**
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+**Request Body (any subset):**
+```json
+{
+  "fullName": "Jane Doe",
+  "email": "jane@example.com",
+  "profilePic": "https://example.com/avatar.jpg",
+  "password": "NewSecurePass123",
+  "confirmPassword": "NewSecurePass123"
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "user": {
+    "id": 1,
+    "fullName": "Jane Doe",
+    "email": "jane@example.com",
+    "profilePic": "https://example.com/avatar.jpg",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+**Validation Errors (400):**
+```json
+{
+  "success": false,
+  "error": "Validation failed",
+  "errors": [
+    { "field": "email", "message": "Invalid email format" }
+  ]
+}
+```
 ```
 
 **Error Response (401 - No Token):**
