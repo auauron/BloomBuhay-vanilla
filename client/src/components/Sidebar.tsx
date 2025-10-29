@@ -40,7 +40,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { icon: Home, label: 'Home', path: '/dashboard' },
     { icon: BookOpen, label: 'BloomGuide', path: '/bloomguide' },
     { icon: Calendar, label: 'Planner', path: '/planner' },
-    { icon: Heart, label: 'Biometrics', path: '/biometrics' },
+    { icon: Heart, label: 'Health Tracker', path: '/healthtracker' },
     { icon: Baby, label: 'BB\'s Tools', path: '/tools' },
     { icon: Book, label: 'Journal', path: '/journal' }
   ];
@@ -163,26 +163,4 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     </>
   );
 }
-          
-          
-          
-          {/* <Link 
-         
-            to="/premium"
-            onClick={() => handleNavigation("/premium")}
-            className="mt-8 p-2 bg-gradient-to-r from-[#F875AA] to-[#F4C69D] rounded-lg text-white absolute bottom-20 mb-2 left-4 right-4 hover:from-[#F9649C] hover:to-[#F3B287] transition-colors block"
-          >
-            <div className="flex items-center space-x-2 mb-2">
-              <Crown size={20} />
-              <span className="font-bold">Get BB Premium!</span>
-            </div>
-            <p className="text-sm text-white/90 text-left ml-1">Bloom Even Better.</p>
-        //   </Link>
-
-        //   {/* Bottom Section */}
-        {/* //   <div className="mt-8 pt-6 border-t border-gray-200 absolute bottom-0 mb-4 ml-[-8px] mr-8">
-        //     <p className="text-center text-gray-500 text-xs">
-        //       © 2025 BloomBuhay by Mixed Berries Productions. All rights reserved.
-        //     </p>
-        //   </div>
-        // </div> */} 
+       
