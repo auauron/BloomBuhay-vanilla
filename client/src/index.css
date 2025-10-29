@@ -1,4 +1,4 @@
-/* src/index.css */
+/* src/index.css
 
 /* Google font import for dev; for production prefer adding to index.html */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
@@ -199,4 +199,87 @@ img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
 .login-btn:hover {
   background: rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
+/*Landing page*/
+
+
+.dropdown-container {
+  margin-top: 20px;
+  display: block;
+}
+
+.dropdown {
+  margin-top: 8px;
+  font-size: 16px;
+  width: 300px;
+  height: 3rem;
+  padding: 12px;
+  border-radius: 10px;
+  font-family: "Rubik", sans-serif;
+  border-color: #474747;
+  position: relative;
+}
+
+.dropdown-menu {
+  width: 300px;
+  box-shadow: 5px 5px 5px rgb(0, 0, 0, 0.2);
+  border-radius: 10px;
+  background-color: white;
+  padding: 10px;
+  position: absolute;
+  top: 100%;
+  z-index: 1000;
+  margin-top: -60px;
+}
+
+.choices {
+  padding-bottom: 4px;
+  cursor: pointer;
+}
+
+.next-button {
+  margin: 20px auto;
+  border-radius: 10px;
+  width: 200px;
+  height: 40px;
+  background-color: #f875aa;
+  font-family: "Rubik", sans-serif;
+  color: #fff6f6;
+  font-size: 16px;
+  border: none;
+  display: block;
+  transition: all 0.5s ease;
+  z-index: 1;
+}
+
+.next-button::before {
+  background: linear-gradient(
+    to right,
+    #f875aa 50%,
+    #f5aba1 81%,
+    #f4c69d 91%,
+    #f3e198 100%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  z-index: -1; 
+  border-radius: 10px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.next-button:hover::before {
+  opacity: 1;
+}
+
+.next-button:hover {
+  transform: scale(1.05);
+}
+
+
+.main-container {
+  margin-top: -80px;
 }
