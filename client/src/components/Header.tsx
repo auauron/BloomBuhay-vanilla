@@ -14,7 +14,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <Menu size={28} />
         </button>
         <h1 className="text-4xl font-extrabold mr-[-8px]">BloomBuhay</h1>
-        <img src="/assets/logo_white.webp" alt="Logo" className="w-16" />
+        <img src="/assets/logo_white.png" alt="Logo" className="w-16 ml-1" />
       </div>
     </nav>
   );
