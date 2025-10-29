@@ -78,26 +78,40 @@ export default function BloomGuide() {
         
         {category && (
           <div className="absolute top-3 left-3">
-            <span className="bg-gradient-to-r from-pink-500 to-yellow-400 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg">
-              {category}
-            </span>
+            <span 
+  className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg"
+  style={{textShadow: '1px 1px 1px black'}}
+>
+  {category}
+</span>
           </div>
         )}
       </div>
       
       <div className="p-6 flex flex-col flex-grow">
-        <h3 className="text-xl font-bold text-gray-800 leading-tight mb-4 line-clamp-2 group-hover:text-pink-600 transition-colors flex-grow">
+        <h3 className="text-xl font-bold text-gray-800 leading-tight mb-4 line-clamp-2 group-hover:text-bloomPink transition-colors flex-grow">
           {title}
         </h3>
         
         <div className="flex justify-end mt-auto pt-4">
-          <button className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-full hover:shadow-lg transform group-hover:scale-105 transition-all duration-300 flex items-center gap-2">
-            <span className="text-sm font-medium">Read more</span>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
+  <button className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white rounded-full hover:shadow-lg transform group-hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-lg">
+    <span 
+      className="text-sm font-medium text-white px-4 py-2"
+      style={{textShadow: '0.5px 0.5px 1px black'}}
+    >
+      Read more
+    </span>
+    <svg 
+      className="w-4 h-4 mr-3" 
+      fill="none" 
+      stroke="currentColor" 
+      viewBox="0 0 24 24"
+      style={{filter: 'drop-shadow(0.5px 0.5px 1.5px gray)'}}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+</div>
       </div>
     </div>
   );
@@ -132,8 +146,8 @@ export default function BloomGuide() {
 
           {/* Gradient placeholder overlay */}
           {!query && !focused && (
-            <span className="absolute left-12 top-1/2 -translate-y-1/2 bg-gradient-to-r from-bloomPink to-bloomYellow bg-clip-text text-transparent pointer-events-none select-none">
-              Search articles...
+            <span className="absolute left-12 top-1/2 -translate-y-1/2 text-bloomPink pointer-events-none select-none">
+                Search articles...
             </span>
           )}
         </div>
@@ -151,9 +165,9 @@ export default function BloomGuide() {
       <div className="fixed top-20 right-10 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse-slow" />
 
       {/* BLOOMGUIDE BAR */}
-      <div className="text-[#F875AA] text-xl mt-5 px-6 py-2 flex items-center gap-2">
-        <span className="font-semibold">BloomGuide</span>
-        <span>- know more, care better.</span>
+      <div className="text-[#F875AA] text-center mt-5 px-6 py-2">
+      <div className="font-semibold text-3xl">BloomGuide</div>
+      <div className="text-lg">know more, care better.</div>
       </div>
 
       {/* SEARCH BAR */}
@@ -164,7 +178,7 @@ export default function BloomGuide() {
       {/* MATERNAL TIPS SECTION */}
       <section className="px-8 mb-8 mt-8">
         <div className="flex items-center gap-4 mb-6">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-bloomPink to-bloomYellow bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold text-bloomPink">
             Maternal Tips
           </h2>
         </div>
@@ -178,7 +192,7 @@ export default function BloomGuide() {
       {/* MOTHER CARE SECTION */}
       <section className="px-8 pb-10 mt-8">
         <div className="flex items-center gap-4 mb-6">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-bloomPink to-bloomYellow bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold text-bloomPink">
             Mother Care
           </h2>
         </div>
@@ -192,7 +206,7 @@ export default function BloomGuide() {
       {/* BABY CARE SECTION */}
       <section className="px-8 pb-10 mb-8">
         <div className="flex items-center gap-4 mb-6">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-bloomPink to-bloomYellow bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold text-bloomPink">
             Baby Care
           </h2>
         </div>
