@@ -167,7 +167,7 @@ export default function BloomGuide() {
       {/* BLOOMGUIDE BAR */}
       <div className="text-[#F875AA] text-center mt-5 px-6 py-2">
       <div className="font-semibold text-3xl">BloomGuide</div>
-      <div className="text-lg">know more, care better.</div>
+      <div className="text-lg font-rubik text-[#474747]">know more, care better.</div>
       </div>
 
       {/* SEARCH BAR */}
