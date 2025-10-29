@@ -63,7 +63,7 @@ export default function Childbirth() {
               </h2>
             </label>
 
-            <div className="relative mb-4">
+            <div className="relative">
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex justify-between p-4 mt-4 ml-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left w-96"
@@ -105,7 +105,7 @@ export default function Childbirth() {
             {/* Next button */}
             <div className="flex justify-center w-full mt-4">
               <button
-                className={`w-64 rounded-lg font-semibold p-4 transition-colors grid place-items-center${
+                className={`next-button w-64 rounded-lg font-semibold transition-colors grid place-items-center${
                   selectedGender
                     ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600"
                     : "cursor-not-allowed bg-gray-300 text-gray-500"

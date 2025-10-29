@@ -153,7 +153,7 @@ export default function Pregnancy() {
                 {/* Next button */}
             <div className="flex justify-center w-full mt-4">
               <button
-                className={`w-64 rounded-lg font-semibold p-4 transition-colors grid place-items-center ${
+                className={`next-button w-64 rounded-lg font-semibold transition-colors grid place-items-center ${
                   selectedGender
                     ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600"
                     : "cursor-not-allowed bg-gray-300 text-gray-500"
