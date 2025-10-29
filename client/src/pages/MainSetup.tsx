@@ -3,6 +3,7 @@ import "../index.css";
 import { CircleArrowLeftIcon, ChevronDownIcon } from "lucide-react";
 import Pregnancy from "../components/Pregnancy";
 import Postpartum from "../components/Postpartum";
+import Childbirth from "../components/Childbirth";
 
 export default function MainSetup() {
   return (
@@ -33,7 +34,7 @@ export default function MainSetup() {
             <h1 className="text-2xl font-bold font-rubik text-bloomBlack mb-1">
               You're blooming beautifully, mama!
             </h1>
-            <p className="text-[#474747]">
+            <p className="text-[#474747] font-rubik">
               Let's begin your pregnancy journey together.
             </p>
             <Postpartum />

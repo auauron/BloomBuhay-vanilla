@@ -1,16 +1,11 @@
 import React, { useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
 
-export default function Postpartum() {
+export default function Childbirth() {
   const [value, setValue] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
-
-  const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedOption(e.target.value);
-  };
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -33,23 +28,9 @@ export default function Postpartum() {
         style={{ maxWidth: "700px", maxHeight: "450px" }}
         className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] overflow-y-auto shadow-lg p-8 pb-4 mb-6"
       >
-        <div className="text-left ">
-          <h2 className="text-bloomBlack font-semibold">
-            How many weeks has it been since you gave birth?
-          </h2>
-          <label>
-            <input
-              type="number"
-              value={value}
-              onChange={handleChange}
-              placeholder="Enter the number of weeks"
-              className="ml-4 w-60 m-4 border rounded-lg p-3"
-            ></input>
-          </label>
-        </div>
+
 
         {/* baby's details */}
-        <hr className="border-gray-200 my-4" />
         <div className="baby-details flex flex-col items-start">
           <label className="block">
             <h2 className="font-semibold text-bloomBlack text-left">
@@ -109,46 +90,16 @@ export default function Postpartum() {
                 ))}
               </div>
             )}
-
-            {/* radio btn track recovery and milestones */}
-            <div className="radio-btn items-start flex flex-col block">
-              <h2 className="font-semibold text-bloomBlack text-left mt-4">
-                Would you like to track your recovery and baby's milestones?
-              </h2>
-              <label className="text-bloomBlack font-rubik ml-2 p-3 mt-2">
-                <input
-                  type="radio"
-                  name="radioGroup"
-                  value="option1"
-                  onChange={handleOptionChange}
-                  checked={selectedOption === "option1"}
-                  className="w-3 h-3  mr-2 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full checked:bg-bloomPink checked:border-bloomPink appearance-none focus:outline-none border-2"
-                ></input>
-                Yes
-              </label>
-              <label className="text-bloomBlack font-rubik ml-2 p-3">
-                <input
-                  type="radio"
-                  name="radioGroup"
-                  value="option2"
-                  checked={selectedOption === "option2"}
-                  onChange={handleOptionChange}
-                  className="w-3 h-3 mr-2 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full checked:bg-bloomPink checked:border-bloomPink appearance-none focus:outline-none border-2"
-                ></input>
-                No
-              </label>
-            </div>
-
-            {/* Next button */}
-            <button
-              className={`next-button w-full rounded-lg font-semibold transition-colors ${
-                selectedGender ? "cursor-pointer" : "cursor-not-allowed"
-              }`}
-              disabled={!selectedGender}
-            >
-              Next
-            </button>
           </div>
+          {/* Next button */}
+          <button
+            className={`next-button w-full rounded-lg font-semibold transition-colors ${
+              selectedGender ? "cursor-pointer" : "cursor-not-allowed"
+            }`}
+            disabled={!selectedGender}
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
