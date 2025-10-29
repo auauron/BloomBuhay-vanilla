@@ -9,10 +9,11 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/bloomguide" element={<BloomGuide />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/dashboard" element={<div className="p-8">Dashboard - Coming Soon! 🌸</div>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
