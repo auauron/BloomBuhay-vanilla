@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import "../index.css";
 import { CircleArrowLeftIcon, ChevronDownIcon } from "lucide-react";
 
-export default function Setup() {
+interface SetupProps {
+  onStageSelect: (stage: string) => void;
+}
+
+export default function Setup({ onStageSelect }: SetupProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedStage, setSelectedStage] = useState("");
 
@@ -13,10 +17,15 @@ export default function Setup() {
     setIsOpen(false);
   };
 
-  return (
-    <div className=" bg-bloomWhite min-h-screen flex flex-col">
-      {/* Header */}
+  const handleNext = () => {
+    if (selectedStage) {
+      onStageSelect(selectedStage);
+    }
+  };
 
+  return (
+    <div className="bg-bloomWhite min-h-screen flex flex-col">
+      {/* Header */}
       <header className="fixed top-0 left-0 flex flex-row items-center w-full py-4 px-6">
         <div className="flex items-center space-x-4">
           <CircleArrowLeftIcon
@@ -25,7 +34,6 @@ export default function Setup() {
           />
           <h1 className="text-3xl font-bold text-bloomPink">BloomBuhay</h1>
         </div>
-
         <img
           src="/assets/logo_pink.png"
           alt="Logo"
@@ -35,8 +43,8 @@ export default function Setup() {
       </header>
 
       {/* Main content */}
-      <div className="main-container flex-1 flex items-center justify-center px-6">
-        <div style={{maxWidth: '800px'}}className="p-8 w-full">
+      <div className="main-container flex-1 flex items-center justify-center px-6 mt-16">
+        <div style={{maxWidth: '800px'}} className="p-8 w-full">
           <div className="text-center mb-2">
             <h1 className="text-2xl font-bold font-rubik text-bloomBlack mb-1">
               Let's get you started!
@@ -47,7 +55,7 @@ export default function Setup() {
           </div>
 
           <div className="flex justify-center">
-            <div style={{ maxWidth: '700px'}}className="dropdown-container bg-white w-full m-auto rounded-2xl shadow-lg p-6 mb-8">
+            <div style={{ maxWidth: '700px'}} className="dropdown-container bg-white w-full m-auto rounded-2xl shadow-lg p-6 mb-8">
               <h2 className="text-bloomBlack mb-4">
                 Which stage of motherhood best describes you right now?
               </h2>
@@ -59,7 +67,7 @@ export default function Setup() {
                 >
                   <span
                     className={
-                      selectedStage ? "text-[#474747]" : "text-[#9a9a9a]"
+                      selectedStage ? "text-bloomBlack" : "text-[#9a9a9a]"
                     }
                   >
                     {selectedStage || "Select a stage"}
@@ -80,11 +88,9 @@ export default function Setup() {
                         key={stage}
                         onClick={() => handleStageSelect(stage)}
                         className={`choices p-4 cursor-pointer hover:bg-[#FFF6F6] transition-colors ${
-                          index !== motherhoodStages.length - 1 ? "" : ""
-                        } ${
                           selectedStage === stage
-                            ? "bg-[#FFF6F6] text-[#F875AA]"
-                            : "text-[#474747]"
+                            ? "bg-bloomWhite text-bloomPink"
+                            : "text-bloomBlack"
                         }`}
                       >
                         {stage}
@@ -95,8 +101,11 @@ export default function Setup() {
 
                 {/* Next button */}
                 <button
-                  className={`next-button w-full rounded-lg font-semibold transition-colors ${
-                    selectedStage ? "cursor-pointer" : "cursor-not-allowed"
+                  onClick={handleNext}
+                  className={`next-button w-full rounded-lg font-semibold transition-colors text-center justify-center flex mt-6 ${
+                    selectedStage 
+                      ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600" 
+                      : "cursor-not-allowed bg-gray-300 text-gray-500"
                   }`}
                   disabled={!selectedStage}
                 >

@@ -11,7 +11,7 @@ export default function Pregnancy() {
 
   const babyGenders = ["Girl", "Boy", "Unknown"];
 
-  const handleGenderSelect = (gender:string) => {
+  const handleGenderSelect = (gender: string) => {
     setSelectedGender(gender);
     setIsOpen(false);
   };
@@ -151,14 +151,18 @@ export default function Pregnancy() {
                 )}
 
                 {/* Next button */}
-                <button
-                  className={`next-button w-full rounded-lg font-semibold transition-colors ${
-                    selectedGender ? "cursor-pointer" : "cursor-not-allowed"
-                  }`}
-                  disabled={!selectedGender}
-                >
-                  Next
-                </button>
+            <div className="flex justify-center w-full mt-4">
+              <button
+                className={`w-64 rounded-lg font-semibold p-4 transition-colors grid place-items-center ${
+                  selectedGender
+                    ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600"
+                    : "cursor-not-allowed bg-gray-300 text-gray-500"
+                }`}
+                disabled={!selectedGender}
+              >
+                Next
+              </button>
+            </div>
               </div>
             </div>
           </div>
