@@ -4,7 +4,8 @@ import LandingPage from "./pages/Landing";
 import BloomGuide from "./pages/BloomGuide";
 import Dashboard from "./pages/Dashboard";
 import SignUp from "./pages/SignUp";
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./pages/loginPage";
+import Planner from "./pages/Planner";
 
 export default function App() {
   return (
@@ -15,6 +16,8 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/bloomguide" element={<BloomGuide />} />
+        <Route path="/planner" element={<Planner />} />
       </Routes>
     </Router>
   );
