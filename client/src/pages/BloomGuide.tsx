@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import "../index.css";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
-import { Search } from "lucide-react";
+import { Search, Filter } from "lucide-react";
+import { Article, ArticleSection } from "../types/guide";
 
 export default function BloomGuide() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState("all"); // "all", "maternal", "mother", "baby"
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -16,54 +18,122 @@ export default function BloomGuide() {
   };
 
   // === DATA SECTION ===
-  const maternalTips = [
+  const maternalTips: Article[] = [
     {
       title: "The Baby: Development at 5 Weeks",
       image: "/assets/article1.webp",
-      category: "Pregnancy"
+      category: "Pregnancy",
+      section: "maternal"
     },
     {
       title: "Nutrition Tips for Early Pregnancy",
       image: "/assets/article1.webp",
-      category: "Nutrition"
+      category: "Nutrition",
+      section: "maternal"
     },
     {
       title: "Signs Your Body is Adjusting to Pregnancy",
       image: "/assets/article1.webp",
-      category: "Health"
+      category: "Health",
+      section: "maternal"
+    },
+    {
+      title: "Exercise During First Trimester",
+      image: "/assets/article1.webp",
+      category: "Fitness",
+      section: "maternal"
+    },
+    {
+      title: "Managing Morning Sickness",
+      image: "/assets/article1.webp",
+      category: "Health",
+      section: "maternal"
     },
   ];
 
-  const motherCare = [
+  const motherCare: Article[] = [
     {
       title: "Postpartum Self-Care Routine",
       image: "/assets/article1.webp",
-      category: "Self-Care"
+      category: "Self-Care",
+      section: "mother"
     },
     {
       title: "Caring for Yourself While Caring for Baby",
       image: "/assets/article1.webp",
-      category: "Wellness"
+      category: "Wellness",
+      section: "mother"
+    },
+    {
+      title: "Mental Health After Birth",
+      image: "/assets/article1.webp",
+      category: "Mental Health",
+      section: "mother"
+    },
+    {
+      title: "Returning to Exercise Postpartum",
+      image: "/assets/article1.webp",
+      category: "Fitness",
+      section: "mother"
     },
   ];
 
-  const babyCare = [
+  const babyCare: Article[] = [
     {
       title: "Newborn Care Essentials",
       image: "/assets/article1.webp",
-      category: "Baby Care"
+      category: "Baby Care",
+      section: "baby"
     },
     {
       title: "Understanding Baby's Sleep Patterns",
       image: "/assets/article1.webp",
-      category: "Sleep"
+      category: "Sleep",
+      section: "baby"
     },
     {
       title: "Feeding Guide for Newborns",
       image: "/assets/article1.webp",
-      category: "Feeding"
+      category: "Feeding",
+      section: "baby"
+    },
+    {
+      title: "Baby Development Milestones",
+      image: "/assets/article1.webp",
+      category: "Development",
+      section: "baby"
+    },
+    {
+      title: "Common Newborn Health Concerns",
+      image: "/assets/article1.webp",
+      category: "Health",
+      section: "baby"
     },
   ];
+
+  const topMaternalTips = maternalTips.slice(0, 3);
+  const topMotherCare = motherCare.slice(0, 3);
+  const topBabyCare = babyCare.slice(0, 3);
+
+  // Filter articles based on active filter
+  const getFilteredArticles = (): ArticleSection => {
+    switch (activeFilter) {
+      case "maternal":
+        return { maternal: maternalTips };
+      case "mother":
+        return { mother: motherCare };
+      case "baby":
+        return { baby: babyCare };
+      default: // "all"
+        return {
+          maternal: topMaternalTips,
+          mother: topMotherCare,
+          baby: topBabyCare
+        };
+    }
+  };
+
+  const filteredSections = getFilteredArticles();
 
   // === REUSABLE CARD COMPONENT ===
   const ArticleCard = ({ title, image, category }: { title: string; image: string; category?: string }) => (
@@ -79,11 +149,11 @@ export default function BloomGuide() {
         {category && (
           <div className="absolute top-3 left-3">
             <span 
-  className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg"
-  style={{textShadow: '1px 1px 1px black'}}
->
-  {category}
-</span>
+              className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg"
+              style={{textShadow: '1px 1px 1px black'}}
+            >
+              {category}
+            </span>
           </div>
         )}
       </div>
@@ -94,27 +164,62 @@ export default function BloomGuide() {
         </h3>
         
         <div className="flex justify-end mt-auto pt-4">
-  <button className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white rounded-full hover:shadow-lg transform group-hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-lg">
-    <span 
-      className="text-sm font-medium text-white px-4 py-2"
-      style={{textShadow: '0.5px 0.5px 1px black'}}
-    >
-      Read more
-    </span>
-    <svg 
-      className="w-4 h-4 mr-3" 
-      fill="none" 
-      stroke="currentColor" 
-      viewBox="0 0 24 24"
-      style={{filter: 'drop-shadow(0.5px 0.5px 1.5px gray)'}}
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-    </svg>
-  </button>
-</div>
+          <button className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white rounded-full hover:shadow-lg transform group-hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-lg">
+            <span 
+              className="text-sm font-medium text-white px-4 py-2"
+              style={{textShadow: '0.5px 0.5px 1px black'}}
+            >
+              Read more
+            </span>
+            <svg 
+              className="w-4 h-4 mr-3" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+              style={{filter: 'drop-shadow(0.5px 0.5px 1.5px gray)'}}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
+
+  // === FILTER BUTTONS COMPONENT ===
+  const FilterButtons = () => {
+    const filters = [
+      { key: "all", label: "All Articles", count: maternalTips.length + motherCare.length + babyCare.length },
+      { key: "maternal", label: "Maternal Tips", count: maternalTips.length },
+      { key: "mother", label: "Mother Care", count: motherCare.length },
+      { key: "baby", label: "Baby Care", count: babyCare.length },
+    ];
+
+    return (
+      <div className="flex flex-wrap gap-3 px-6 pb-4">
+        {filters.map((filter) => (
+          <button
+            key={filter.key}
+            onClick={() => setActiveFilter(filter.key)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300 ${
+              activeFilter === filter.key
+                ? "bg-bloomPink text-white border-transparent shadow-lg"
+                : "bg-white text-gray-600 border-bloomPink/30 hover:border-bloomPink hover:shadow-md"
+            }`}
+          >
+            <span className="font-medium">{filter.label}</span>
+            <span className={`text-xs px-2 py-1 rounded-full ${
+              activeFilter === filter.key 
+                ? "bg-white/20 text-white" 
+                : "bg-bloomPink/10 text-bloomPink"
+            }`}>
+              {filter.count}
+            </span>
+          </button>
+        ))}
+      </div>
+    );
+  };
 
   // === STYLED SEARCH BAR COMPONENT ===
   const GradientSearchBar = () => {
@@ -147,12 +252,22 @@ export default function BloomGuide() {
           {/* Gradient placeholder overlay */}
           {!query && !focused && (
             <span className="absolute left-12 top-1/2 -translate-y-1/2 text-bloomPink pointer-events-none select-none">
-                Search articles...
+              Search articles...
             </span>
           )}
         </div>
       </div>
     );
+  };
+
+  // === SECTION TITLE HELPER ===
+  const getSectionTitle = (section: string) => {
+    const titles = {
+      maternal: "Maternal Tips",
+      mother: "Mother Care", 
+      baby: "Baby Care"
+    };
+    return titles[section as keyof typeof titles] || section;
   };
 
   // === MAIN PAGE ===
@@ -166,8 +281,8 @@ export default function BloomGuide() {
 
       {/* BLOOMGUIDE BAR */}
       <div className="text-[#F875AA] text-center mt-5 px-6 py-2">
-      <div className="font-semibold text-3xl">BloomGuide</div>
-      <div className="text-lg font-rubik text-[#474747]">know more, care better.</div>
+        <div className="font-semibold text-3xl">BloomGuide</div>
+        <div className="text-lg font-rubik text-[#474747]">know more, care better.</div>
       </div>
 
       {/* SEARCH BAR */}
@@ -175,47 +290,40 @@ export default function BloomGuide() {
         <GradientSearchBar />
       </div>
 
-      {/* MATERNAL TIPS SECTION */}
-      <section className="px-8 mb-8 mt-8">
-        <div className="flex items-center gap-4 mb-6">
-          <h2 className="text-3xl font-bold text-bloomPink">
-            Maternal Tips
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {maternalTips.map((a, i) => (
-            <ArticleCard key={i} title={a.title} image={a.image} category={a.category} />
-          ))}
-        </div>
-      </section>
+      {/* FILTER BUTTONS */}
+      <FilterButtons />
 
-      {/* MOTHER CARE SECTION */}
-      <section className="px-8 pb-10 mt-8">
-        <div className="flex items-center gap-4 mb-6">
-          <h2 className="text-3xl font-bold text-bloomPink">
-            Mother Care
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {motherCare.map((a, i) => (
-            <ArticleCard key={i} title={a.title} image={a.image} category={a.category} />
-          ))}
-        </div>
-      </section>
+      {/* ARTICLES SECTIONS */}
+      <div className="flex-1 pb-20">
+        {Object.entries(filteredSections).map(([section, articles]) => (
+          <section key={section} className="px-8 mb-8 mt-8">
+            <div className="flex items-center gap-4 mb-6">
+              <h2 className="text-3xl font-bold text-bloomPink">
+                {getSectionTitle(section)}
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {articles.map((article, i) => (
+                <ArticleCard 
+                  key={i} 
+                  title={article.title} 
+                  image={article.image} 
+                  category={article.category} 
+                />
+              ))}
+            </div>
+          </section>
+        ))}
 
-      {/* BABY CARE SECTION */}
-      <section className="px-8 pb-10 mb-8">
-        <div className="flex items-center gap-4 mb-6">
-          <h2 className="text-3xl font-bold text-bloomPink">
-            Baby Care
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {babyCare.map((a, i) => (
-            <ArticleCard key={i} title={a.title} image={a.image} category={a.category} />
-          ))}
-        </div>
-      </section>
+        {/* Show message if no articles found for a specific filter */}
+        {Object.values(filteredSections).every(articles => articles.length === 0) && (
+          <div className="text-center py-12 px-8">
+            <div className="text-gray-400 text-6xl mb-4">📚</div>
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">No articles found</h3>
+            <p className="text-gray-500">Try selecting a different filter or search term.</p>
+          </div>
+        )}
+      </div>
 
       {/* Floating Help Button */}
       <div className="fixed bottom-8 right-8">
