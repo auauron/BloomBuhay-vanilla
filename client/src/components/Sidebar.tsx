@@ -25,16 +25,19 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         }`}
         >
 
-        {/* Header */}
-        <div className="bg-[#F875AA] text-white p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-white"><span className="text-[#474747]">Bloom stage: </span> Pregnant</h2>
-            <button onClick={onClose} className="text-white hover:bg-white/10 rounded-lg transition-colors w-10 h-10 flex items-center justify-center">
-              <ArrowRightToLine size={24} />
-            </button>
+          {/* Header */}
+      <div className="bg-[#F875AA] text-white p-3">
+        <div className="flex justify-between items-start mb-3">
+          <div className="ml-3 mt-2">
+            <h2 className="text-xl font-bold text-[#474747]">Bloom stage:</h2>
+            <h2 className="text-xl font-bold text-white">Pregnant</h2>
           </div>
-
-        <div className="w-full h-px bg-white/30 mb-4"></div>
+          <button onClick={onClose} className="text-white hover:bg-white/10 rounded-lg transition-colors w-10 h-10 flex items-center justify-center">
+            <ArrowRightToLine size={24} />
+          </button>
+        </div>
+        <div className="w-full h-px bg-white/30 mb-2"></div>
+     
 
           {/* User Profile */}
           <button className="w-full flex items-center space-x-3 p-1 hover:bg-white/10 rounded-lg transition-colors text-left">
@@ -70,17 +73,17 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           </nav>
 
         {/* Premium Banner */}
-        <button className="mt-8 p-4 bg-gradient-to-r from-[#F875AA] to-[#F4C69D] rounded-lg text-white absolute bottom-20 mb-10 left-4 right-4 hover:from-[#F9649C] hover:to-[#F3B287] transition-colors">
+        <button className="mt-8 p-2 bg-gradient-to-r from-[#F875AA] to-[#F4C69D] rounded-lg text-white absolute bottom-20 mb-2 left-4 right-4 hover:from-[#F9649C] hover:to-[#F3B287] transition-colors">
           <div className="flex items-center space-x-2 mb-2">
             <Crown size={20} />
             <span className="font-bold">Get BB Premium!</span>
           </div>
-          <p className="text-sm text-white/90">Unlock exclusive features and content</p>
+          <p className="text-sm text-white/90 text-left ml-1">Bloom Even Better.</p>
         </button>
 
           {/* Bottom Section */}
-          <div className="mt-8 pt-6 border-t border-gray-200 absolute bottom-0 mb-8 ml-[-8px] mr-8">
-            <p className="text-center text-gray-500 text-sm">
+          <div className="mt-8 pt-6 border-t border-gray-200 absolute bottom-0 mb-4 ml-[-8px] mr-8">
+            <p className="text-center text-gray-500 text-xs">
                 © 2025 BloomBuhay by Mixed Berries Productions. All rights reserved.
             </p>
           </div>
