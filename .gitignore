@@ -40,3 +40,8 @@ server/prisma/migrations/*.sql
 # Optional
 .cache/
 *.tsbuildinfo
+
+# Test environment
+server/.env.test
+# Test coverage
+coverage/
