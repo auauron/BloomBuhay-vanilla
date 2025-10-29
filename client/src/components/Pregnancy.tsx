@@ -11,24 +11,24 @@ export default function Pregnancy() {
 
   const babyGenders = ["Girl", "Boy", "Unknown"];
 
-  const handleGenderSelect = (gender) => {
+  const handleGenderSelect = (gender:string) => {
     setSelectedGender(gender);
     setIsOpen(false);
   };
 
-  const handleTextChange = (e) => {
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
-  const handleDateChange = (e) => {
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDate(e.target.value);
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
   };
 
-  const handleOptionChange = (e) => {
+  const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(e.target.value);
   };
 

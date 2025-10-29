@@ -8,7 +8,7 @@ export default function Setup() {
 
   const motherhoodStages = ["Pregnant", "Postpartum", "Early Childcare"];
 
-  const handleStageSelect = (stage) => {
+  const handleStageSelect = (stage: string) => {
     setSelectedStage(stage);
     setIsOpen(false);
   };

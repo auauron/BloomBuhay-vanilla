@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../index.css";
 import { CircleArrowLeftIcon, ChevronDownIcon } from "lucide-react";
 import Pregnancy from "../components/Pregnancy";
+import Postpartum from "../components/Postpartum";
 
 export default function MainSetup() {
   return (
@@ -35,7 +36,7 @@ export default function MainSetup() {
             <p className="text-[#474747]">
               Let's begin your pregnancy journey together.
             </p>
-            <Pregnancy />
+            <Postpartum />
           </div>
         </div>
       </div>
