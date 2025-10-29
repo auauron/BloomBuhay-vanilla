@@ -1,7 +1,8 @@
 // src/components/Sidebar.tsx
-import React from "react";
+import React, { use } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRightToLine, Home, BookOpen, Calendar, Heart, Baby, Book, User, Crown } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -9,13 +10,20 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
-  const handleNavigation = () => {
+
+  const navigate = useNavigate();
+  const handleNavigation = (path: string) => {
     onClose(); // Close sidebar when navigating
+
+        
+    setTimeout(() => {
+      navigate(path);
+    }, 500); 
   };
 
   const menuItems = [
     { icon: Home, label: 'Home', path: '/dashboard' },
-    { icon: BookOpen, label: 'BloomGuide', path: '/bloom-guide' },
+    { icon: BookOpen, label: 'BloomGuide', path: '/bloomguide' },
     { icon: Calendar, label: 'Planner', path: '/planner' },
     { icon: Heart, label: 'Biometrics', path: '/biometrics' },
     { icon: Baby, label: 'BB\'s Tools', path: '/tools' },
@@ -54,7 +62,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* User Profile */}
           <Link 
             to="/profile" 
-            onClick={handleNavigation}
+            onClick={handleNavigation.bind(null, "/profile")}
             className="w-full flex items-center space-x-3 p-1 hover:bg-white/10 rounded-lg transition-colors text-left"
           >
             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -71,22 +79,21 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="p-6">
           <nav className="space-y-2">
             {menuItems.map((item, index) => (
-              <Link
+              <button
                 key={index}
-                to={item.path}
-                onClick={handleNavigation}
-                className="w-full flex items-center space-x-3 p-3 text-gray-700 hover:bg-pink-50 rounded-lg transition-colors"
+                onClick={() => handleNavigation(item.path)}
+                className="w-full flex items-center space-x-3 p-3 text-gray-700 hover:bg-pink-50 rounded-lg transition-colors duration-300"
               >
                 <item.icon size={20} />
                 <span className="font-medium">{item.label}</span>
-              </Link>
+              </button>
             ))}
           </nav>
 
           {/* Premium Banner */}
           <Link 
             to="/premium"
-            onClick={handleNavigation}
+            onClick={() => handleNavigation("/premium")}
             className="mt-8 p-2 bg-gradient-to-r from-[#F875AA] to-[#F4C69D] rounded-lg text-white absolute bottom-20 mb-2 left-4 right-4 hover:from-[#F9649C] hover:to-[#F3B287] transition-colors block"
           >
             <div className="flex items-center space-x-2 mb-2">
