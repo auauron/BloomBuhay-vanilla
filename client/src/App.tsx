@@ -4,7 +4,7 @@ import LandingPage from "./pages/Landing";
 import BloomGuide from "./pages/BloomGuide";
 import Dashboard from "./pages/Dashboard";
 import SignUp from "./pages/SignUp";
-import LoginPage from "./pages/loginPage";
+import LoginPage from "./pages/LoginPage";
 
 export default function App() {
   return (
