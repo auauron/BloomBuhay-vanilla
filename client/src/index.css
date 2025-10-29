@@ -201,3 +201,23 @@ img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
   background: rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
 }
+
+/* Add to index.css */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.3; }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Enhanced shadows */
+.shadow-3xl {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
