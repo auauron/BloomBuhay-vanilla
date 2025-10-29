@@ -26,8 +26,8 @@ export default function MainSetup() {
       </header>
       
       {/*main content */}
-      <div className="main-container flex-1 flex items-center justify-center px-6">
-        <div style={{ maxWidth: "800px" }} className="p-8 w-full">
+      <div className="flex-1 flex items-center justify-center px-6 mt-16">
+        <div className="p-8 w-full max-w-2xl">
           <div className="text-center mb-2">
             <h1 className="text-2xl font-bold font-rubik text-bloomBlack mb-1">
               You're blooming beautifully, mama!

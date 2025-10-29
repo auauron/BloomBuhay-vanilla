@@ -35,8 +35,8 @@ export default function Pregnancy() {
   return (
     <div style={{ maxWidth: "800px" }} className="flex justify-center">
       <div
-        style={{ maxWidth: "700px" }}
-        className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] overflow-y-auto shadow-lg p-6 mb-8"
+        style={{ maxWidth: "700px", maxHeight: "450px" }}
+        className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] overflow-y-auto shadow-lg p-8 pb-4 mb-6"
       >
         <div className="text-left ">
           <h2 className="text-bloomBlack font-semibold">
@@ -101,7 +101,7 @@ export default function Pregnancy() {
                   value={inputValue}
                   onChange={handleTextChange}
                   placeholder="Enter your baby's name"
-                  className="border rounded-lg p-3  ml-4 mt-3"
+                  className="border border-gray-300 rounded-lg p-3  ml-4 mt-3"
                 ></input>
               </label>
               <label>
@@ -112,7 +112,7 @@ export default function Pregnancy() {
               <div className="relative mb-4">
                 <button
                   onClick={() => setIsOpen(!isOpen)}
-                  className="dropdown w-full flex items-center justify-between p-4 border-gray-100 border rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left"
+                  className="flex items-center justify-between p-4 mt-4  ml-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left"
                 >
                   <span
                     className={
