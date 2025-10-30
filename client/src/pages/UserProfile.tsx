@@ -210,7 +210,7 @@ export default function UserProfile() {
                     <img src={userData.profilePic} alt="Profile" className="h-full w-full object-cover" />
                   ) : (
                     <span className="text-pink-600 font-bold text-xl">
-                      {userData.fullName?.charAt(0) + userData.fullName?.charAt(userData.fullName?.length - 1).toUpperCase() || 'U'}
+                      {userData.fullName?.charAt(0).toUpperCase() + userData.fullName?.charAt(userData.fullName?.length - 1) || 'U'}
                     </span>
                   )}
                 </div>
@@ -262,7 +262,7 @@ export default function UserProfile() {
                     <img src={profilePic} alt="Preview" className="h-full w-full object-cover" />
                   ) : (
                     <span className="text-pink-600 font-bold text-xl">
-                      {fullName?.charAt(0) + fullName?.charAt(fullName?.length - 1).toUpperCase() || 'U'}
+                      {fullName?.charAt(0).toUpperCase() + fullName?.charAt(fullName?.length - 1) || 'U'}
                     </span>
                   )}
                 </div>
