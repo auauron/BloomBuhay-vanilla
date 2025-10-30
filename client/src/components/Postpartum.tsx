@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
-import NextButton from "../components/ui/NextButton";
 
 interface PostpartumProps {
   onComplete?: () => void;
@@ -164,10 +163,22 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
             </label>
           </div>
 
-          <NextButton
-            selectedGender={selectedGender} // Use the state variable from this component
-            onComplete={onComplete} // Use the prop passed from parent
-          />
+          {/* Next button */}
+          <div className="flex justify-center w-full mt-4">
+            <button
+              onClick={handleNext}
+              className={`w-64 rounded-lg font-semibold transition-colors grid place-items-center ${
+                selectedGender
+                  ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600"
+                  : "cursor-not-allowed bg-gray-300 text-gray-500 opacity-70"
+              }`}
+              style={{ width: "200px", height: "40px" }}
+              disabled={!selectedGender}
+              type="button"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>
