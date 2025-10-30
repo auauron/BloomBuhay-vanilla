@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
 
-export default function Postpartum() {
+interface PostpartumProps {
+  onComplete?: () => void;
+}
+
+export default function Postpartum({ onComplete }: PostpartumProps) {
   const [value, setValue] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -27,6 +31,15 @@ export default function Postpartum() {
     setValue(e.target.value);
   };
 
+  const handleNext = () => {
+    // basic validation — require a selected gender (keeps current behavior)
+    if (!selectedGender) return;
+
+    // do any save/validation here (API call, localStorage...)
+    // on success:
+    onComplete?.();
+  };
+
   return (
     <div style={{ maxWidth: "800px" }} className="flex justify-center">
       <div
@@ -44,7 +57,7 @@ export default function Postpartum() {
               onChange={handleChange}
               placeholder="Enter the number of weeks"
               className="ml-4 w-60 m-4 border rounded-lg p-3"
-            ></input>
+            />
           </label>
         </div>
 
@@ -52,9 +65,7 @@ export default function Postpartum() {
         <hr className="border-gray-200 my-4" />
         <div className="baby-details flex flex-col items-start">
           <label className="block">
-            <h2 className="font-semibold text-bloomBlack text-left">
-              Baby's Name
-            </h2>
+            <h2 className="font-semibold text-bloomBlack text-left">Baby's Name</h2>
             <input
               type="text"
               name="babyName"
@@ -62,47 +73,41 @@ export default function Postpartum() {
               onChange={handleTextChange}
               placeholder="Enter your baby's name"
               className="border border-gray-300 rounded-lg p-3 mt-3 ml-4 w-64"
-            ></input>
+            />
           </label>
           <label className="block">
-            <h2 className="mt-4 font-semibold text-bloomBlack text-left">
-              Baby's Gender
-            </h2>
+            <h2 className="mt-4 font-semibold text-bloomBlack text-left">Baby's Gender</h2>
           </label>
           <div className="relative mb-4">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="flex items-center justify-between p-4 mt-4  ml-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left"
+              type="button"
             >
-              <span
-                className={
-                  selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"
-                }
-              >
+              <span className={selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"}>
                 {selectedGender || "What's your baby's gender?"}
               </span>
               <ChevronDownIcon
                 size={20}
-                className={`text-[#9a9a9a] transition-transform ${
-                  isOpen ? "rotate-180" : ""
-                }`}
+                className={`text-[#9a9a9a] transition-transform ${isOpen ? "rotate-180" : ""}`}
               />
             </button>
 
             {/* Dropdown menu */}
             {isOpen && (
               <div className="dropdown-menu absolute top-full text-left left-0 right-0 mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-10">
-                {babyGenders.map((gender, index) => (
+                {babyGenders.map((gender) => (
                   <div
                     key={gender}
                     onClick={() => handleGenderSelect(gender)}
-                    className={`choices p-4 cursor-pointer hover:bg-bloomWhite transition-colors items-start text-left ${
-                      index !== babyGenders.length - 1 ? "" : ""
-                    } ${
-                      selectedGender === gender
-                        ? "bg-bloomWhite text-bloomPink"
-                        : "text-bloomBlack"
+                    className={`choices p-4 cursor-pointer hover:bg-bloomWhite transition-colors ${
+                      selectedGender === gender ? "bg-bloomWhite text-bloomPink" : "text-bloomBlack"
                     }`}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") handleGenderSelect(gender);
+                    }}
                   >
                     {gender}
                   </div>
@@ -111,7 +116,7 @@ export default function Postpartum() {
             )}
 
             {/* radio btn track recovery and milestones */}
-            <div className="radio-btn items-start flex flex-col block">
+            <div className="radio-btn items-start flex flex-col">
               <h2 className="font-semibold text-bloomBlack text-left mt-4">
                 Would you like to track your recovery and baby's milestones?
               </h2>
@@ -123,7 +128,7 @@ export default function Postpartum() {
                   onChange={handleOptionChange}
                   checked={selectedOption === "option1"}
                   className="w-3 h-3  mr-2 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full checked:bg-bloomPink checked:border-bloomPink appearance-none focus:outline-none border-2"
-                ></input>
+                />
                 Yes
               </label>
               <label className="text-bloomBlack font-rubik ml-2 p-3">
@@ -134,7 +139,7 @@ export default function Postpartum() {
                   checked={selectedOption === "option2"}
                   onChange={handleOptionChange}
                   className="w-3 h-3 mr-2 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full checked:bg-bloomPink checked:border-bloomPink appearance-none focus:outline-none border-2"
-                ></input>
+                />
                 No
               </label>
             </div>
@@ -142,12 +147,12 @@ export default function Postpartum() {
             {/* Next button */}
             <div className="flex justify-center w-full mt-4">
               <button
-                className={`next-button w-64 rounded-lg font-semibold transition-colors grid place-items-center${
-                  selectedGender
-                    ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600"
-                    : "cursor-not-allowed bg-gray-300 text-gray-500"
+                onClick={handleNext}
+                className={`next-button w-64 rounded-lg font-semibold transition-colors grid place-items-center ${
+                  selectedGender ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600" : "cursor-not-allowed bg-gray-300 text-gray-500"
                 }`}
                 disabled={!selectedGender}
+                type="button"
               >
                 Next
               </button>

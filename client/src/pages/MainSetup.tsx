@@ -1,39 +1,67 @@
-import React, { useState } from "react";
+// src/pages/MainSetup.tsx
+import React, { useState, useEffect } from "react";
 import "../index.css";
 import { CircleArrowLeftIcon } from "lucide-react";
 import Pregnancy from "../components/Pregnancy";
 import Postpartum from "../components/Postpartum";
 import Childbirth from "../components/Childbirth";
 import Setup from "./Setup";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 export default function MainSetup() {
   const [selectedStage, setSelectedStage] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<"setup" | "details">("setup");
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  // Sync state from URL params so route and UI stay consistent
+  useEffect(() => {
+    const page = searchParams.get("page");
+    const stage = searchParams.get("stage");
+
+    if (page === "details") {
+      setCurrentPage("details");
+      setSelectedStage(stage);
+    } else {
+      setCurrentPage("setup");
+      setSelectedStage(null);
+    }
+  }, [searchParams]);
+
   const handleStageSelect = (stage: string) => {
+    // update local state and push params to URL
     setSelectedStage(stage);
     setCurrentPage("details");
+    setSearchParams({ page: "details", stage });
+  };
+
+  const handleComplete = (stage?: string) => {
+    // clear setup params then go to dashboard with the stage in state
+    setSearchParams({});
+    navigate("/dashboard", { state: { stage: stage ?? selectedStage } });
   };
 
   const handleBack = () => {
     setCurrentPage("setup");
     setSelectedStage(null);
+    setSearchParams({ page: "setup" });
   };
 
   const renderStageComponent = () => {
     switch (selectedStage) {
       case "Pregnant":
-        return <Pregnancy />;
+        // pass onComplete so Pregnancy can call it after successful submit
+        return <Pregnancy onComplete={() => handleComplete("Pregnant")} />;
       case "Postpartum":
-        return <Postpartum />;
+        return <Postpartum onComplete={() => handleComplete("Postpartum")} />;
       case "Early Childcare":
-        return <Childbirth />;
+        return <Childbirth onComplete={() => handleComplete("Early Childcare")} />;
       default:
         return null;
     }
   };
 
-// change subtitle based on stage
   const getSubtitle = () => {
     switch (selectedStage) {
       case "Pregnant":
@@ -61,7 +89,7 @@ export default function MainSetup() {
             className="cursor-pointer text-bloomWhite fill-bloomPink"
             onClick={handleBack}
           />
-          <h1 className="text-3xl font-bold text-bloomPink">BloomBuhay</h1>
+          <h1 className="text-3xl font-bold text-bloomWhite">BloomBuhay</h1>
         </div>
         <img
           src="/assets/logo_pink.png"
@@ -70,7 +98,7 @@ export default function MainSetup() {
           className="object-contain"
         />
       </header>
-      
+
       {/* Main content */}
       <div className="flex-1 flex items-center justify-center px-6 mt-16">
         <div className="p-8 w-full max-w-2xl">
@@ -78,9 +106,7 @@ export default function MainSetup() {
             <h1 className="text-2xl font-bold font-rubik text-bloomBlack mb-1">
               You're blooming beautifully, mama!
             </h1>
-            <p className="text-[#474747] font-rubik">
-              {getSubtitle()}
-            </p>
+            <p className="text-[#474747] font-rubik">{getSubtitle()}</p>
             {renderStageComponent()}
           </div>
         </div>

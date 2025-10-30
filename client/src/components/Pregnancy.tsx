@@ -1,7 +1,12 @@
+// src/components/Pregnancy.tsx
 import React, { useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
 
-export default function Pregnancy() {
+interface PregnancyProps {
+  onComplete?: () => void;
+}
+
+export default function Pregnancy({ onComplete }: PregnancyProps) {
   const [selectedOption, setSelectedOption] = useState("");
   const [value, setValue] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
@@ -32,6 +37,14 @@ export default function Pregnancy() {
     setSelectedOption(e.target.value);
   };
 
+  const handleNext = () => {
+    // basic validation: require selectedGender (matches existing disabled logic)
+    if (!selectedGender) return;
+
+    // save or validate data here if needed
+    onComplete?.();
+  };
+
   return (
     <div style={{ maxWidth: "800px" }} className="flex justify-center">
       <div
@@ -39,12 +52,9 @@ export default function Pregnancy() {
         className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] overflow-y-auto shadow-lg p-8 pb-4 mb-6"
       >
         <div className="text-left ">
-          <h2 className="text-bloomBlack font-semibold">
-            How many weeks pregnant are you?
-          </h2>
+          <h2 className="text-bloomBlack font-semibold">How many weeks pregnant are you?</h2>
 
           {/* Radio button */}
-
           <div className="radio-btn">
             <label>
               <input
@@ -54,14 +64,14 @@ export default function Pregnancy() {
                 checked={selectedOption === "option1"}
                 onChange={handleOptionChange}
                 className="w-3 h-3 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full checked:bg-bloomPink checked:border-bloomPink appearance-none focus:outline-none border-2"
-              ></input>
+              />
               <input
                 type="number"
                 value={value}
                 onChange={handleChange}
                 placeholder="Enter the number of weeks"
                 className="ml-2 w-60 m-4 border rounded-lg p-3"
-              ></input>
+              />
             </label>
             <br />
             <label className="flex items-start gap-3">
@@ -72,7 +82,7 @@ export default function Pregnancy() {
                 checked={selectedOption === "option2"}
                 onChange={handleOptionChange}
                 className="w-3 h-3 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full checked:bg-bloomPink checked:border-bloomPink appearance-none focus:outline-none border-2 mt-1"
-              ></input>
+              />
               <div className="flex-1">
                 <h2 className="text-bloomBlack font-semibold">I don't know.</h2>
                 <p className="text-bloomBlack ">
@@ -86,7 +96,7 @@ export default function Pregnancy() {
                   value={selectedDate}
                   onChange={handleDateChange}
                   className="text-gray-400 w-30 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-bloomPink"
-                ></input>
+                />
               </div>
             </label>
 
@@ -102,47 +112,41 @@ export default function Pregnancy() {
                   onChange={handleTextChange}
                   placeholder="Enter your baby's name"
                   className="border border-gray-300 rounded-lg p-3  ml-4 mt-3"
-                ></input>
+                />
               </label>
               <label>
-                <h2 className="mt-4 font-semibold text-bloomBlack">
-                  Baby's Gender
-                </h2>
+                <h2 className="mt-4 font-semibold text-bloomBlack">Baby's Gender</h2>
               </label>
               <div className="relative mb-4">
                 <button
                   onClick={() => setIsOpen(!isOpen)}
                   className="flex items-center justify-between p-4 mt-4  ml-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left"
+                  type="button"
                 >
-                  <span
-                    className={
-                      selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"
-                    }
-                  >
+                  <span className={selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"}>
                     {selectedGender || "What's your baby's gender?"}
                   </span>
                   <ChevronDownIcon
                     size={20}
-                    className={`text-[#9a9a9a] transition-transform ${
-                      isOpen ? "rotate-180" : ""
-                    }`}
+                    className={`text-[#9a9a9a] transition-transform ${isOpen ? "rotate-180" : ""}`}
                   />
                 </button>
 
                 {/* Dropdown menu */}
                 {isOpen && (
                   <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-10">
-                    {babyGenders.map((gender, index) => (
+                    {babyGenders.map((gender) => (
                       <div
                         key={gender}
                         onClick={() => handleGenderSelect(gender)}
                         className={`choices p-4 cursor-pointer hover:bg-bloomWhite transition-colors ${
-                          index !== babyGenders.length - 1 ? "" : ""
-                        } ${
-                          selectedGender === gender
-                            ? "bg-bloomWhite text-bloomPink"
-                            : "text-bloomBlack"
+                          selectedGender === gender ? "bg-bloomWhite text-bloomPink" : "text-bloomBlack"
                         }`}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") handleGenderSelect(gender);
+                        }}
                       >
                         {gender}
                       </div>
@@ -151,18 +155,18 @@ export default function Pregnancy() {
                 )}
 
                 {/* Next button */}
-            <div className="flex justify-center w-full mt-4">
-              <button
-                className={`next-button w-64 rounded-lg font-semibold transition-colors grid place-items-center ${
-                  selectedGender
-                    ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600"
-                    : "cursor-not-allowed bg-gray-300 text-gray-500"
-                }`}
-                disabled={!selectedGender}
-              >
-                Next
-              </button>
-            </div>
+                <div className="flex justify-center w-full mt-4">
+                  <button
+                    onClick={handleNext}
+                    className={`next-button w-64 rounded-lg font-semibold transition-colors grid place-items-center ${
+                      selectedGender ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600" : "cursor-not-allowed bg-gray-300 text-gray-500"
+                    }`}
+                    disabled={!selectedGender}
+                    type="button"
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
             </div>
           </div>
