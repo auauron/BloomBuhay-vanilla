@@ -82,21 +82,22 @@ export default function MainSetup() {
   return (
     <div className="bg-bloomWhite min-h-screen flex flex-col">
       {/* Header */}
-      <header className="fixed top-0 left-0 flex flex-row items-center w-full py-4 px-6">
+      <header className="fixed top-0 left-0 flex flex-row items-center shadow-none bg-bloomWhite w-full py-4 px-6">
         <div className="flex items-center space-x-4">
           <CircleArrowLeftIcon
             size={32}
             className="cursor-pointer text-bloomWhite fill-bloomPink"
             onClick={handleBack}
           />
-          <h1 className="text-3xl font-bold text-bloomWhite">BloomBuhay</h1>
-        </div>
-        <img
+          <h1 className="text-3xl font-bold text-bloomPink">BloomBuhay</h1>
+                  <img
           src="/assets/logo_pink.png"
           alt="Logo"
           style={{ width: "34px", height: "34px" }}
           className="object-contain"
         />
+        </div>
+
       </header>
 
       {/* Main content */}
