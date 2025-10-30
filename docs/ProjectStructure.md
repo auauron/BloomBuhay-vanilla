@@ -57,7 +57,7 @@ The React application that renders the UI and calls the backend API.
     - **`auth.ts`**: Auth-related types (e.g., token payloads, session shape).
   - **`hooks/`**: Custom React hooks (empty now; add common stateful logic here).
   - **`utils/`**: Small, generic helper functions (empty now; add as needed).
-
+cd
 ### Build and tooling
 
 - **`tailwind.config.js`**: Tailwind CSS configuration (theme, variants, plugins).

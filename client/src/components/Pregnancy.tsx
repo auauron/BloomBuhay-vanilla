@@ -66,123 +66,75 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
           </label>
         </div>
 
-        <hr className="border-gray-200 my-4" />
+            {/*Baby's details */}
+            <hr className="border-gray-200 my-4" />
+            <div className="baby-details">
+              <label>
+                <h2 className="font-semibold text-bloomBlack">Baby's Name</h2>
+                <input
+                  type="text"
+                  name="babyName"
+                  value={inputValue}
+                  onChange={handleTextChange}
+                  placeholder="Enter your baby's name"
+                  className="border border-gray-300 rounded-lg p-3  ml-4 mt-3"
+                />
+              </label>
+              <label>
+                <h2 className="mt-4 font-semibold text-bloomBlack">Baby's Gender</h2>
+              </label>
+              <div className="relative mb-4">
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="flex items-center justify-between p-4 mt-4  ml-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left"
+                  type="button"
+                >
+                  <span className={selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"}>
+                    {selectedGender || "What's your baby's gender?"}
+                  </span>
+                  <ChevronDownIcon
+                    size={20}
+                    className={`text-[#9a9a9a] transition-transform ${isOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
 
-        <div className="baby-details flex flex-col items-start">
-          <label className="block">
-            <h2 className="font-semibold text-bloomBlack text-left">
-              Baby's Name
-            </h2>
-            <input
-              type="text"
-              name="babyName"
-              value={inputValue}
-              onChange={handleTextChange}
-              placeholder="Enter your baby's name"
-              className="border border-gray-300 rounded-lg p-3 mt-3 ml-4 w-64 cursor-text"
-            />
-          </label>
-
-          <label className="block">
-            <h2 className="mt-4 font-semibold text-bloomBlack text-left">
-              Baby's Gender
-            </h2>
-          </label>
-
-          {/* Dropdown */}
-          <div className="relative mb-4 z-10">
-            <button
-              type="button"
-              onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center justify-between p-4 mt-4 ml-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left"
-            >
-              <span
-                className={
-                  selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"
-                }
-              >
-                {selectedGender || "What's your baby's gender?"}
-              </span>
-              <ChevronDownIcon
-                size={20}
-                className={`text-[#9a9a9a] transition-transform ${
-                  isOpen ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-
-            {isOpen && (
-              <div
-                className="absolute left-4 top-full mt-1 w-64 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-50"
-                onMouseDown={(e) => e.preventDefault()} 
-              >
-                {babyGenders.map((gender) => (
-                  <div
-                    key={gender}
-                    onClick={() => handleGenderSelect(gender)}
-                    className={`p-4 cursor-pointer hover:bg-bloomWhite transition-colors ${
-                      selectedGender === gender
-                        ? "bg-bloomWhite text-bloomPink"
-                        : "text-bloomBlack"
-                    }`}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ")
-                        handleGenderSelect(gender);
-                    }}
-                  >
-                    {gender}
+                {/* Dropdown menu */}
+                {isOpen && (
+                  <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-10">
+                    {babyGenders.map((gender) => (
+                      <div
+                        key={gender}
+                        onClick={() => handleGenderSelect(gender)}
+                        className={`choices p-4 cursor-pointer hover:bg-bloomWhite transition-colors ${
+                          selectedGender === gender ? "bg-bloomWhite text-bloomPink" : "text-bloomBlack"
+                        }`}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") handleGenderSelect(gender);
+                        }}
+                      >
+                        {gender}
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
+
+                {/* Next button */}
+                <div className="flex justify-center w-full mt-4">
+                  <button
+                    onClick={handleNext}
+                    className={`next-button w-64 rounded-lg font-semibold transition-colors grid place-items-center ${
+                      selectedGender ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600" : "cursor-not-allowed bg-gray-300 text-gray-500"
+                    }`}
+                    disabled={!selectedGender}
+                    type="button"
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
-            )}
-          </div>
-
-          {/* Radio Buttons */}
-          <div className="radio-btn items-start flex flex-col">
-            <h2 className="font-semibold text-bloomBlack text-left mt-4">
-              Would you like to track your recovery and baby's milestones?
-            </h2>
-            <label className="text-bloomBlack font-rubik ml-2 p-3 mt-2 cursor-pointer">
-              <input
-                type="radio"
-                name="radioGroup"
-                value="option1"
-                onChange={handleOptionChange}
-                checked={selectedOption === "option1"}
-                className="w-3 h-3 mr-2 rounded-full border-2 checked:bg-bloomPink checked:border-bloomPink cursor-pointer"
-              />
-              Yes
-            </label>
-            <label className="text-bloomBlack font-rubik ml-2 p-3 cursor-pointer">
-              <input
-                type="radio"
-                name="radioGroup"
-                value="option2"
-                checked={selectedOption === "option2"}
-                onChange={handleOptionChange}
-                className="w-3 h-3 mr-2 rounded-full border-2 checked:bg-bloomPink checked:border-bloomPink cursor-pointer"
-              />
-              No
-            </label>
-          </div>
-
-          {/* Next Button */}
-          <div className="flex justify-center w-full mt-4">
-            <button
-              onClick={handleNext}
-              className={`rounded-lg font-semibold transition-colors grid place-items-center ${
-                selectedGender
-                  ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600"
-                  : "cursor-not-allowed bg-gray-300 text-gray-500 opacity-70"
-              }`}
-              style={{ width: "200px", height: "40px" }}
-              disabled={!selectedGender}
-              type="button"
-            >
-              Next
-            </button>
+            </div>
           </div>
         </div>
       </div>
