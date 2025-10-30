@@ -1,13 +1,33 @@
 import React from 'react';
-
-interface ArticleModalProps {
-  article: any;
-  isOpen: boolean;
-  onClose: () => void;
-}
+import { ArticleModalProps } from '../types/guide';
 
 export default function ArticleModal({ article, isOpen, onClose }: ArticleModalProps) {
   if (!isOpen || !article) return null;
+
+  // Function to check if text contains a URL and make it clickable
+  const renderSourceWithLink = (sourceText: string) => {
+    // Simple URL detection pattern
+    const urlPattern = /(https?:\/\/[^\s]+)/g;
+    const parts = sourceText.split(urlPattern);
+    
+    return parts.map((part, index) => {
+      if (urlPattern.test(part)) {
+        return (
+          <a 
+            key={index}
+            href={part} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-bloomPink hover:text-bloomPink/80 underline transition-colors"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
@@ -47,7 +67,9 @@ export default function ArticleModal({ article, isOpen, onClose }: ArticleModalP
           ))}
 
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600">{article.content.source}</p>
+            <p className="text-sm text-gray-600">
+              {renderSourceWithLink(article.content.source)}
+            </p>
           </div>
         </div>
       </div>

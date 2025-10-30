@@ -8,3 +8,9 @@ export interface Article {
 export interface ArticleSection {
   [key: string]: Article[];
 }
+
+export interface ArticleModalProps {
+  article: any;
+  isOpen: boolean;
+  onClose: () => void;
+}
