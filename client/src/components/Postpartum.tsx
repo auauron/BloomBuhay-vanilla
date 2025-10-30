@@ -100,8 +100,7 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
                   <div
                     key={gender}
                     onClick={() => handleGenderSelect(gender)}
-                    className={`choices p-4 cursor-pointer hover:bg-bloomWhite transition-colors ${
-                      selectedGender === gender ? "bg-bloomWhite text-bloomPink" : "text-bloomBlack"
+                    className={`choices p-4 cursor-pointer hover:bg-bloomWhite transition-colors
                     }`}
                     role="button"
                     tabIndex={0}
@@ -148,8 +147,7 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
             <div className="flex justify-center w-full mt-4">
               <button
                 onClick={handleNext}
-                className={`next-button w-64 rounded-lg font-semibold transition-colors grid place-items-center ${
-                  selectedGender ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600" : "cursor-not-allowed bg-gray-300 text-gray-500"
+                className={`next-button w-64 rounded-lg font-semibold transition-colors grid place-items-center cursor-pointer
                 }`}
                 disabled={!selectedGender}
                 type="button"
