@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
 import "../index.css";
-import Header from "../components/Header";
+import Header from "../components/ui/Header";
 import Sidebar from "../components/Sidebar";
 import InputField from "../components/inputField";
 import { Edit, LogOut } from "lucide-react";
