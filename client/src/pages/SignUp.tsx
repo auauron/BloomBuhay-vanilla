@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { authService } from "../services/authService";
 import { ValidationError } from "../types/auth";
 import InputField from "../components/inputField";
+import AuthToggle from "../components/AuthToggle";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -40,9 +41,9 @@ export default function SignupPage() {
   const handleSignupRedirect = () => {
     navigate("/signup");
   };
-  const handleLoginRedirect = () => {
-    navigate("/login");
-  };
+  // const handleLoginRedirect = () => {
+  //   navigate("/login");
+  // };
 
   return (
     <div className="min-h-screen bg-bloomWhite flex items-center justify-center">
@@ -56,10 +57,10 @@ export default function SignupPage() {
               <span className="block -mt-4">Buhay</span>
             </h1>
           </div>
-          <h2 className="font-rubik text-xl font-bold text-gray-800 -ml-2">
+          <h2 className="font-rubik text-xl font-bold text-bloomBlack -ml-2">
             Let's get you started!
           </h2>
-          <p className="font-rubik text-gray-600 text-xs -mb-2">
+          <p className="font-rubik text-bloomBlack text-xs -mb-2">
             Sign up to start your journey of growth.
           </p>
         </div>
@@ -68,21 +69,7 @@ export default function SignupPage() {
         <div className="bg-white rounded-2xl w-500 shadow-lg p-8 -pb- pl-16 pr-16">
           
           <form onSubmit={handleSubmit} className="space-y-2 mt-2">
-            <div className="flex w-full mx-auto rounded-full bg-pink-100 p-1">
-            <button
-              onClick={handleLoginRedirect}
-              className="flex-1 py-2 rounded-full text-sm font-medium text-pink-500 hover:bg-pink-50 transition"
-            >
-              Log In
-            </button>
-            <button
-              onClick={handleLoginRedirect}
-              className="flex-1 py-2 rounded-full text-sm font-medium text-white bg-bloomPink shadow-md hover:bg-bloomPink transition"
-              disabled
-            >
-              Sign Up
-            </button>
-          </div>
+            <AuthToggle/>
             <InputField
               label="Full Name"
               type="text"
@@ -128,11 +115,11 @@ export default function SignupPage() {
             </button>
 
             {/* Already have an account section */}
-            <div className="text-center mt-6">
+            {/* <div className="text-center mt-6">
               <button type="button" onClick={handleLoginRedirect} className="text-sm text-gray-500 mb-3">
                 Already have an account?
               </button>
-            </div>
+            </div> */}
           </form>
         </div>
       </div>
