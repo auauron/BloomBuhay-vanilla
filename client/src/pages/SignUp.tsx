@@ -32,7 +32,7 @@ export default function SignupPage() {
     setLoading(false);
 
     if (result.success) {
-      navigate("/login"); // Redirect after successful signup
+      navigate("/mainsetup"); // Redirect after successful signup
     } else {
       if (result.errors) setErrors(result.errors);
     }

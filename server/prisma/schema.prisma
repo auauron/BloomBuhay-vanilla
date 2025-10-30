@@ -26,6 +26,7 @@ model User {
     password       String
     createdAt      DateTime         @default(now())
     updatedAt      DateTime         @updatedAt
+    profilePic     String?
     MotherProfiles MotherProfiles[]
     PlannerTask    PlannerTask[]
     HealthLog      HealthLog[]

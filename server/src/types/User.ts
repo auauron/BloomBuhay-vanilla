@@ -5,6 +5,7 @@ export interface User {
     password: string;
     createdAt: Date;
     updatedAt: Date;
+    profilePic?: string;    
 }
 
 export interface UserSignupRequest {
@@ -23,6 +24,7 @@ export interface UserResponse {
     id: number;
     fullName: string;
     email: string;
+    profilePic?: string;
     createdAt: Date;
     updatedAt: Date;
 }

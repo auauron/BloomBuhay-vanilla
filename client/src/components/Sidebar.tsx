@@ -76,8 +76,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
      
           {/* User Profile */}
           <Link 
-            to="/profile" 
-            onClick={() => handleNavigation("/profile")}
+            to="/userprofile" 
+            onClick={() => handleNavigation("/userprofile")}
             className="w-full flex items-center space-x-3 p-1 hover:bg-white/10 rounded-lg transition-colors text-left"
           >
             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">

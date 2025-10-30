@@ -9,8 +9,8 @@ const PORT = process.env.PORT || 3000;
 
 app
   .use(cors({exposedHeaders: ["Authorization"],}))
-  .use(express.urlencoded({ extended: true }))
-  .use(express.json());
+  .use(express.urlencoded({ extended: true, limit: '10mb' }))
+  .use(express.json({ limit: '10mb' }));
 
 // api routes
 app.use("/api/auth", authRoutes)

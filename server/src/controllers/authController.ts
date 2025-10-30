@@ -18,6 +18,7 @@ const toUserResponse = (user: any): UserResponse => {
     id: user.id,
     fullName: user.fullName,
     email: user.email,
+    profilePic: user.profilePic,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };
