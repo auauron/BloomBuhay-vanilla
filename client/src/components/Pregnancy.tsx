@@ -120,7 +120,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
               <div className="relative mb-4">
                 <button
                   onClick={() => setIsOpen(!isOpen)}
-                  className="flex items-center justify-between p-4 mt-4  ml-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left"
+                  className="flex items-center justify-between p-4 mt-4  ml-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors text-left"
                   type="button"
                 >
                   <span className={selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"}>
@@ -139,7 +139,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                       <div
                         key={gender}
                         onClick={() => handleGenderSelect(gender)}
-                        className={`choices p-4 cursor-pointer hover:bg-bloomWhite transition-colors ${
+                        className={`choices p-4 hover:bg-bloomWhite transition-colors ${
                           selectedGender === gender ? "bg-bloomWhite text-bloomPink" : "text-bloomBlack"
                         }`}
                         role="button"
@@ -158,8 +158,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                 <div className="flex justify-center w-full mt-4">
                   <button
                     onClick={handleNext}
-                    className={`next-button w-64 rounded-lg font-semibold transition-colors grid place-items-center ${
-                      selectedGender ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600" : "cursor-not-allowed bg-gray-300 text-gray-500"
+                    className={`next-button w-64 rounded-lg font-semibold transition-colors grid place-items-center cursor-auto bg-bloomPink text-white hover:bg-pink-600
                     }`}
                     disabled={!selectedGender}
                     type="button"
