@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "../index.css";
-import { CircleArrowLeftIcon, ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import SetupHeader from "../components/SetupHeader";
 
 interface SetupProps {
   onStageSelect: (stage: string) => void;
@@ -32,22 +33,7 @@ export default function Setup({ onStageSelect }: SetupProps) {
   return (
     <div className="bg-bloomWhite min-h-screen flex flex-col">
       {/* Header */}
-      <header className="fixed top-0 left-0 flex flex-row bg-bloomWhite shadow-none items-center w-full py-4 px-6">
-        <div className="flex items-center space-x-4">
-          <CircleArrowLeftIcon
-            size={32}
-            className="cursor-pointer text-bloomWhite fill-bloomPink"
-            onClick={() => navigate(-1)}
-          />
-          <h1 className="text-3xl font-bold text-bloomPink">BloomBuhay</h1>
-          <img
-            src="/assets/logo_pink.png"
-            alt="Logo"
-            style={{ width: "34px", height: "34px" }}
-            className="object-contain"
-          />
-        </div>
-      </header>
+      <SetupHeader onBackClick={() => navigate(-1)} />
 
       {/* Main content */}
       <div className="main-container flex-1 flex items-center justify-center px-6 mt-16">

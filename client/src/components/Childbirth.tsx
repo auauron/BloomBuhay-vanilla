@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import NextButton from "../components/ui/NextButton";
+import InputField from "./inputField";
+import SetupHeader from "./SetupHeader";
 
 interface ChildbirthProps {
   onComplete?: () => void;
@@ -127,17 +129,37 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
                           handleGenderSelect(gender);
                       }}
                     >
-                      {gender}
+                      {babyGenders.map((gender) => (
+                        <div
+                          key={gender}
+                          onClick={() => handleGenderSelect(gender)}
+                          className={`p-4 cursor-pointer hover:bg-bloomWhite transition-colors text-left`}
+                          role="option"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") handleGenderSelect(gender);
+                          }}
+                        >
+                          {gender}
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              )}
-            </div>
 
-            <NextButton
-              selectedGender={selectedGender} // Use the state variable from this component
-              onComplete={onComplete} // Use the prop passed from parent
-            />
+                {/* Next button */}
+                <div className="flex justify-center w-full mt-4">
+                  <button
+                    onClick={handleNext}
+                    className={`next-button w-64 rounded-lg font-semibold transition-colors grid place-items-center cursor-pointer `}
+                    disabled={!selectedGender}
+                    type="button"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
