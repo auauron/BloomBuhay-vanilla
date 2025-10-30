@@ -56,7 +56,9 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
             <div className="baby-details flex flex-col">
               <div className="flex flex-col items-start">
                 <label className="block">
-                  <h2 className="font-semibold text-bloomBlack text-left">Baby's Name</h2>
+                  <h2 className="font-semibold text-bloomBlack text-left">
+                    Baby's Name
+                  </h2>
                   <div className="mt-3 ml-4 w-64">
                     <InputField
                       label=""
@@ -69,7 +71,9 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
                 </label>
 
                 <label className="block">
-                  <h2 className="font-semibold text-bloomBlack text-left mt-4">Baby's Age</h2>
+                  <h2 className="font-semibold text-bloomBlack text-left mt-4">
+                    Baby's Age
+                  </h2>
                   <div className="ml-4 w-[320px] m-4">
                     <InputField
                       label=""
@@ -82,7 +86,9 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
                 </label>
 
                 <label className="block">
-                  <h2 className="mt-3 font-semibold text-bloomBlack ml-1 text-left">Baby's Gender</h2>
+                  <h2 className="mt-3 font-semibold text-bloomBlack ml-1 text-left">
+                    Baby's Gender
+                  </h2>
                 </label>
 
                 <div className="relative w-[350px] ml-4 ">
@@ -93,12 +99,18 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
                     aria-haspopup="listbox"
                     aria-expanded={isOpen}
                   >
-                    <span className={selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"}>
+                    <span
+                      className={
+                        selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"
+                      }
+                    >
                       {selectedGender || "What's your baby's gender?"}
                     </span>
                     <ChevronDownIcon
                       size={20}
-                      className={`text-[#9a9a9a] transition-transform ${isOpen ? "rotate-180" : ""}`}
+                      className={`text-[#9a9a9a] transition-transform ${
+                        isOpen ? "rotate-180" : ""
+                      }`}
                     />
                   </button>
                   {/* Dropdown menu */}
@@ -115,7 +127,8 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
                           role="option"
                           tabIndex={0}
                           onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") handleGenderSelect(gender);
+                            if (e.key === "Enter" || e.key === " ")
+                              handleGenderSelect(gender);
                           }}
                         >
                           {gender}
@@ -126,7 +139,11 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
                 </div>
 
                 {/* Next button */}
-                <NextButton onComplete={onComplete} selectedGender={selectedGender} route="/dashboard" />
+                <NextButton
+                  onComplete={onComplete}
+                  selectedGender={selectedGender}
+                  route="/dashboard"
+                />
               </div>
             </div>
           </div>
@@ -135,4 +152,3 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
     </div>
   );
 }
-  

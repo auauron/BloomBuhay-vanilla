@@ -61,7 +61,7 @@ export default function LoginPage() {
         {/* forms */}
         <div className="bg-white rounded-2xl w-500 shadow-lg p-6 pl-16 pr-16">
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-            <AuthToggle/>
+            <AuthToggle />
 
             <InputField
               label="Email Address"

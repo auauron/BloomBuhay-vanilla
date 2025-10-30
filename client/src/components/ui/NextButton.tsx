@@ -7,7 +7,11 @@ interface NextButtonProps {
   route?: string; // optional target route
 }
 
-export default function NextButton({ onComplete, selectedGender, route }: NextButtonProps) {
+export default function NextButton({
+  onComplete,
+  selectedGender,
+  route,
+}: NextButtonProps) {
   const navigate = useNavigate();
 
   const handleNext = () => {

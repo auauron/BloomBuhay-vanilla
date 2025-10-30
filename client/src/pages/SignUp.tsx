@@ -49,7 +49,6 @@ export default function SignupPage() {
     <div className="min-h-screen bg-bloomWhite flex items-center justify-center">
       <div className="max-w-3xl w-full">
         <div className="text-center mb-6">
-          
           <div className="flex items-center justify-center -mb-6 -ml-2 mr-20">
             <img src="../assets/logo_pink.png" alt="Logo" className="h-40" />
             <h1 className="font-poppins text-7xl font-bold text-bloomPink -ml-6">
@@ -67,9 +66,8 @@ export default function SignupPage() {
 
         {/* Form Container */}
         <div className="bg-white rounded-2xl w-500 shadow-lg p-8 -pb- pl-16 pr-16">
-          
           <form onSubmit={handleSubmit} className="space-y-2 mt-2">
-            <AuthToggle/>
+            <AuthToggle />
             <InputField
               label="Full Name"
               type="text"

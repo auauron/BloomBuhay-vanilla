@@ -33,7 +33,8 @@ export default function Dashboard() {
             </h1>
             <p className="text-2xl font-semibold mb-6">pregnant.</p>
             <p className="text-white/90 text-xl absolute bottom-8 font-rubik font-light">
-              Your baby is as big as a <span className="font-bold">tomato!</span>
+              Your baby is as big as a{" "}
+              <span className="font-bold">tomato!</span>
             </p>
           </>
         );
@@ -44,7 +45,9 @@ export default function Dashboard() {
             <h1 className="text-3xl font-extrabold leading-tight text-[#474747]">
               Welcome to your recovery journey
             </h1>
-            <p className="text-lg font-semibold mb-6">Tips and self-care for the first weeks</p>
+            <p className="text-lg font-semibold mb-6">
+              Tips and self-care for the first weeks
+            </p>
             <p className="text-white/90 text-xl absolute bottom-8 font-rubik font-light">
               Rest when you can — you’re doing great, mama.
             </p>
@@ -57,7 +60,9 @@ export default function Dashboard() {
             <h1 className="text-3xl font-extrabold leading-tight text-[#474747]">
               Track your baby's growth
             </h1>
-            <p className="text-lg font-semibold mb-6">Feeding, sleep, and developmental milestones</p>
+            <p className="text-lg font-semibold mb-6">
+              Feeding, sleep, and developmental milestones
+            </p>
             <p className="text-white/90 text-xl absolute bottom-8 font-rubik font-light">
               Small wins every day — celebrate every milestone.
             </p>
@@ -70,7 +75,9 @@ export default function Dashboard() {
             <h1 className="text-3xl font-extrabold leading-tight text-[#474747]">
               Let’s get you set up
             </h1>
-            <p className="text-lg font-semibold mb-6">Complete your setup to get personalized tips</p>
+            <p className="text-lg font-semibold mb-6">
+              Complete your setup to get personalized tips
+            </p>
             <p className="text-white/90 text-xl absolute bottom-8 font-rubik font-light">
               Choose your stage to start getting tailored content.
             </p>
@@ -88,10 +95,15 @@ export default function Dashboard() {
       <div className="flex flex-col items-center text-center mt-8 px-4">
         <h2 className="text-4xl font-bold text-bloomPink">
           Hello, Mama Maria!
-          {stage && <span className="text-lg font-medium text-[#474747] ml-3">— {stage}</span>}
+          {stage && (
+            <span className="text-lg font-medium text-[#474747] ml-3">
+              — {stage}
+            </span>
+          )}
         </h2>
         <p className="text-[#474747] font-rubik mt-2 mb-[-5px] font-light text-lg">
-          “One day at a time, one heartbeat at a time — you are growing a miracle.”
+          “One day at a time, one heartbeat at a time — you are growing a
+          miracle.”
         </p>
       </div>
 
@@ -111,9 +123,12 @@ export default function Dashboard() {
             <div className="w-full bg-white/60 rounded-full h-5 mt-3 overflow-hidden">
               <div className="bg-[#DE085F] h-full w-1/3 rounded-full"></div>
             </div>
-            <p className="mt-2 text-lg text-center text-[#DE085F] font-bold">17% complete</p>
+            <p className="mt-2 text-lg text-center text-[#DE085F] font-bold">
+              17% complete
+            </p>
             <p className="mt-2 text-lg text-[#474747] font-rubik font-light">
-              <span className="font-bold">Remaining:</span> 83% (33 weeks, 2 days)
+              <span className="font-bold">Remaining:</span> 83% (33 weeks, 2
+              days)
             </p>
             <p className="mt-2 text-lg text-[#474747] font-rubik font-light">
               <span className="font-bold">Due Date:</span> January 15, 2024
@@ -141,7 +156,8 @@ export default function Dashboard() {
             <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-6 rounded-[20px] shadow-md">
               <h3 className="text-2xl mb-3 text-white font-bold">Tips</h3>
               <p className="text-sm text-[#474747] font-rubik">
-                Drink plenty of water 💧 and take short naps when you feel tired.
+                Drink plenty of water 💧 and take short naps when you feel
+                tired.
               </p>
             </div>
           </div>

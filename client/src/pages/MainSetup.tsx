@@ -56,7 +56,9 @@ export default function MainSetup() {
       case "Postpartum":
         return <Postpartum onComplete={() => handleComplete("Postpartum")} />;
       case "Early Childcare":
-        return <Childbirth onComplete={() => handleComplete("Early Childcare")} />;
+        return (
+          <Childbirth onComplete={() => handleComplete("Early Childcare")} />
+        );
       default:
         return null;
     }
@@ -90,14 +92,13 @@ export default function MainSetup() {
             onClick={handleBack}
           />
           <h1 className="text-3xl font-bold text-bloomPink">BloomBuhay</h1>
-                  <img
-          src="/assets/logo_pink.png"
-          alt="Logo"
-          style={{ width: "34px", height: "34px" }}
-          className="object-contain"
-        />
+          <img
+            src="/assets/logo_pink.png"
+            alt="Logo"
+            style={{ width: "34px", height: "34px" }}
+            className="object-contain"
+          />
         </div>
-
       </header>
 
       {/* Main content */}

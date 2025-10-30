@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import LandingPage from "./pages/Landing";
 import BloomGuide from "./pages/BloomGuide";
 import Dashboard from "./pages/Dashboard";
@@ -17,7 +22,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/mainsetup" element={<MainSetup />} />
-        <Route path="/setup" element={<MainSetup />}/>
+        <Route path="/setup" element={<MainSetup />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

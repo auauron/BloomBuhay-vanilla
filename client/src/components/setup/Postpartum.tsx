@@ -47,7 +47,10 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
     <div className="bg-bloomWhite min-h-screen flex flex-col">
       <SetupHeader />
       <div className="flex-1">
-        <div style={{ maxWidth: "800px" }} className="flex justify-center px-6 mt-2">
+        <div
+          style={{ maxWidth: "800px" }}
+          className="flex justify-center px-6 mt-2"
+        >
           <div
             style={{ maxWidth: "700px", maxHeight: "450px" }}
             className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] overflow-y-auto shadow-lg p-8 pb-4 mb-6"
@@ -71,7 +74,9 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
             <hr className="border-gray-200 my-4" />
             <div className="baby-details flex flex-col items-start">
               <label className="block">
-                <h2 className="font-semibold text-bloomBlack text-left">Baby's Name</h2>
+                <h2 className="font-semibold text-bloomBlack text-left">
+                  Baby's Name
+                </h2>
                 <div className="mt-3 ml-4 w-64">
                   <InputField
                     label=""
@@ -83,7 +88,9 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
                 </div>
               </label>
               <label className="block">
-                <h2 className="mt-4 font-semibold text-bloomBlack text-left">Baby's Gender</h2>
+                <h2 className="mt-4 font-semibold text-bloomBlack text-left">
+                  Baby's Gender
+                </h2>
               </label>
               <div className="relative mb-4 w-64">
                 <button
@@ -91,12 +98,18 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
                   className="flex items-center justify-between p-4 mt-4 border-gray-300 border rounded-lg bg-white hover;border-[#F875AA] transition-colors cursor-pointer text-left w-full"
                   type="button"
                 >
-                  <span className={selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"}>
+                  <span
+                    className={
+                      selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"
+                    }
+                  >
                     {selectedGender || "What's your baby's gender?"}
                   </span>
                   <ChevronDownIcon
                     size={20}
-                    className={`text-[#9a9a9a] transition-transform ${isOpen ? "rotate-180" : ""}`}
+                    className={`text-[#9a9a9a] transition-transform ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
                   />
                 </button>
                 {/* Dropdown menu */}
@@ -110,7 +123,8 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
                         role="button"
                         tabIndex={0}
                         onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") handleGenderSelect(gender);
+                          if (e.key === "Enter" || e.key === " ")
+                            handleGenderSelect(gender);
                         }}
                       >
                         {gender}
@@ -149,7 +163,11 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
                 </div>
 
                 {/* Next button */}
-                <NextButton onComplete={onComplete} selectedGender={selectedGender} route="/dashboard" />
+                <NextButton
+                  onComplete={onComplete}
+                  selectedGender={selectedGender}
+                  route="/dashboard"
+                />
               </div>
             </div>
           </div>
