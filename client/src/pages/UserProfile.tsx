@@ -1,12 +1,12 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
 import "../index.css";
-import Header from '../components/Header';
+import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import InputField from "../components/inputField";
-import { Edit, LogOut } from 'lucide-react';
-import { userService } from '../services/userService';
-import { authService } from '../services/authService';
+import { Edit, LogOut } from "lucide-react";
+import { userService } from "../services/userService";
+import { authService } from "../services/authService";
 
 export default function UserProfile() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -14,8 +14,10 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
+
   // User profile data
   const [userData, setUserData] = useState<{
     fullName: string;
@@ -44,9 +46,9 @@ export default function UserProfile() {
     const fetchProfile = async () => {
       setLoading(true);
       setError(null);
-      
+
       const result = await userService.getProfile();
-      
+
       if (result.success && result.user) {
         setUserData({
           fullName: result.user.fullName,
@@ -71,7 +73,7 @@ export default function UserProfile() {
           setProfilePic(storedUser.profilePic || "");
         }
       }
-      
+
       setLoading(false);
     };
 
@@ -207,28 +209,43 @@ export default function UserProfile() {
               <div className="flex items-center gap-4">
                 <div className="h-16 w-16 rounded-full bg-pink-100 overflow-hidden flex items-center justify-center">
                   {userData.profilePic ? (
-                    <img src={userData.profilePic} alt="Profile" className="h-full w-full object-cover" />
+                    <img
+                      src={userData.profilePic}
+                      alt="Profile"
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
                     <span className="text-pink-600 font-bold text-xl">
-                      {userData.fullName?.charAt(0).toUpperCase() + userData.fullName?.charAt(userData.fullName?.length - 1) || 'U'}
+                      {userData.fullName?.charAt(0).toUpperCase() +
+                        userData.fullName?.charAt(
+                          userData.fullName?.length - 1
+                        ) || "U"}
                     </span>
                   )}
                 </div>
                 <div>
-                  <p className="text-gray-800 text-xl font-semibold">{userData.fullName}</p>
+                  <p className="text-gray-800 text-xl font-semibold">
+                    {userData.fullName}
+                  </p>
                   <p className="text-gray-500 text-sm">{userData.email}</p>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Name</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Name
+                </label>
                 <p className="text-gray-800 text-lg">{userData.fullName}</p>
               </div>
               <div className="border-t border-gray-200 pt-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Email
+                </label>
                 <p className="text-gray-800 text-lg">{userData.email}</p>
               </div>
               <div className="border-t border-gray-200 pt-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Password</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Password
+                </label>
                 <p className="text-gray-600 text-lg">••••••••</p>
               </div>
             </div>
@@ -243,13 +260,15 @@ export default function UserProfile() {
             <span className="text-sm">Log out</span>
           </button>
         </div>
-        </div>
+      </div>
 
       {/* Edit Profile Modal */}
       {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 max-w-lg w-full mx-auto shadow-xl max-h-[90vh] overflow-y-auto">
-            <h3 className="text-2xl font-bold text-gray-800 mb-4">Edit Profile</h3>
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">
+              Edit Profile
+            </h3>
             {error && (
               <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
                 {error}
@@ -257,12 +276,20 @@ export default function UserProfile() {
             )}
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-4">
-                <div onClick={handleAvatarClick} className="h-16 w-16 rounded-full bg-pink-100 overflow-hidden flex items-center justify-center cursor-pointer hover:opacity-90 transition">
+                <div
+                  onClick={handleAvatarClick}
+                  className="h-16 w-16 rounded-full bg-pink-100 overflow-hidden flex items-center justify-center cursor-pointer hover:opacity-90 transition"
+                >
                   {profilePic ? (
-                    <img src={profilePic} alt="Preview" className="h-full w-full object-cover" />
+                    <img
+                      src={profilePic}
+                      alt="Preview"
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
                     <span className="text-pink-600 font-bold text-xl">
-                      {fullName?.charAt(0).toUpperCase() + fullName?.charAt(fullName?.length - 1) || 'U'}
+                      {fullName?.charAt(0).toUpperCase() +
+                        fullName?.charAt(fullName?.length - 1) || "U"}
                     </span>
                   )}
                 </div>
@@ -275,48 +302,48 @@ export default function UserProfile() {
                 className="hidden"
                 onChange={handleFileChange}
               />
-              <InputField 
-                label="Name" 
-                type="text" 
-                value={fullName} 
-                onChange={setFullName} 
+              <InputField
+                label="Name"
+                type="text"
+                value={fullName}
+                onChange={setFullName}
                 placeholder="Enter your name"
                 error={validationErrors.fullName}
               />
-              <InputField 
-                label="Email" 
-                type="email" 
-                value={email} 
-                onChange={setEmail} 
+              <InputField
+                label="Email"
+                type="email"
+                value={email}
+                onChange={setEmail}
                 placeholder="Enter your email"
                 error={validationErrors.email}
               />
-              <InputField 
-                label="Change Password" 
-                type="password" 
-                value={password} 
-                onChange={setPassword} 
+              <InputField
+                label="Change Password"
+                type="password"
+                value={password}
+                onChange={setPassword}
                 placeholder="Enter your password (leave empty to keep current)"
                 error={validationErrors.password}
               />
-              <InputField 
-                label="Confirm Password" 
-                type="password" 
-                value={confirmPassword} 
-                onChange={setConfirmPassword} 
+              <InputField
+                label="Confirm Password"
+                type="password"
+                value={confirmPassword}
+                onChange={setConfirmPassword}
                 placeholder="Confirm your password"
                 error={validationErrors.confirmPassword}
               />
-              
+
               <div className="flex justify-center gap-8 mt-4">
-                <button 
+                <button
                   onClick={handleCancel}
                   disabled={saving}
                   className="bg-white text-bloomPink border border-bloomPink px-4 py-2 rounded-2xl hover:bg-bloomPink hover:text-white transition-all duration-300 shadow-md w-40 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   onClick={handleSave}
                   disabled={saving}
                   className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-2xl hover:from-[#F9649C] hover:to-[#F3D087] transition-all duration-300 shadow-md w-40 disabled:opacity-50 disabled:cursor-not-allowed"
