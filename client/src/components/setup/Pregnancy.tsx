@@ -1,9 +1,9 @@
 // src/components/Pregnancy.tsx
 import React, { useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
-import NextButton from "../components/ui/NextButton";
-import InputField from "./inputField";
-import SetupHeader from "./SetupHeader";
+import InputField from "../ui/inputField";
+import SetupHeader from "../ui/SetupHeader";
+import NextButton from "../ui/NextButton";
 
 interface PregnancyProps {
   onComplete?: () => void;
@@ -38,6 +38,14 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
 
   const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(e.target.value);
+  };
+
+  const handleNext = () => {
+    // basic validation: require selectedGender (matches existing disabled logic)
+    if (!selectedGender) return;
+
+    // save or validate data here if needed
+    onComplete?.();
   };
 
   return (
@@ -98,10 +106,64 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                   </div>
                 </label>
 
-                <NextButton
-                  selectedGender={selectedGender} 
-                  onComplete={onComplete} 
-                />
+                {/*Baby's details */}
+                <hr className="border-gray-200 my-4" />
+                <div className="baby-details">
+                  <label>
+                    <h2 className="font-semibold text-bloomBlack">Baby's Name</h2>
+                    <div className="ml-4 mt-3 w-60">
+                      <InputField
+                        label=""
+                        type="text"
+                        value={inputValue}
+                        onChange={setInputValue}
+                        placeholder="Enter your baby's name"
+                      />
+                    </div>
+                  </label>
+                  <label>
+                    <h2 className="mt-4 font-semibold text-bloomBlack">Baby's Gender</h2>
+                  </label>
+                  <div className="relative mb-4 w-[350px] ml-4">
+                    <button
+                      onClick={() => setIsOpen(!isOpen)}
+                      className="flex items-center justify-between p-4 mt-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors text-left w-full"
+                      type="button"
+                    >
+                      <span className={selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"}>
+                        {selectedGender || "What's your baby's gender?"}
+                      </span>
+                      <ChevronDownIcon
+                        size={20}
+                        className={`text-[#9a9a9a] transition-transform ${isOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
+                    {/* Dropdown menu */}
+                    {isOpen && (
+                      <div className="dropdown-menu absolute top-full left-0 mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-10 w-full">
+                        {babyGenders.map((gender) => (
+                          <div
+                            key={gender}
+                            onClick={() => handleGenderSelect(gender)}
+                            className={`choices p-4 hover:bg-bloomWhite transition-colors ${
+                              selectedGender === gender ? "bg-bloomWhite text-bloomPink" : "text-bloomBlack"
+                            }`}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") handleGenderSelect(gender);
+                            }}
+                          >
+                            {gender}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Next button */}
+                    <NextButton onComplete={onComplete} selectedGender={selectedGender} route="/dashboard" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from "react";
 import "../index.css";
 import { CircleArrowLeftIcon } from "lucide-react";
-import Pregnancy from "../components/Pregnancy";
-import Postpartum from "../components/Postpartum";
-import Childbirth from "../components/Childbirth";
+import Pregnancy from "../components/setup/Pregnancy";
+import Postpartum from "../components/setup/Postpartum";
+import Childbirth from "../components/setup/Childbirth";
 import Setup from "./Setup";
 import { useSearchParams, useNavigate } from "react-router-dom";
 

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { authService } from "../services/authService";
 import { ValidationError } from "../types/auth";
-import InputField from "../components/inputField";
+import InputField from "../components/ui/inputField";
 import AuthToggle from "../components/AuthToggle";
 
 export default function SignupPage() {

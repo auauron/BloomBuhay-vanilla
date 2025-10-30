@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "../index.css";
 import { ChevronDownIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import SetupHeader from "../components/SetupHeader";
+import SetupHeader from "../components/ui/SetupHeader";
 
 interface SetupProps {
   onStageSelect: (stage: string) => void;

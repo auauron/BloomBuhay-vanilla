@@ -1,17 +1,23 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 interface NextButtonProps {
   onComplete?: () => void;
-  selectedGender?: string; // Add this prop
+  selectedGender?: string;
+  route?: string; // optional target route
 }
 
-export default function NextButton({ onComplete, selectedGender }: NextButtonProps) {
-  const handleNext = () => {
-    // basic validation: require a selected gender
-    if (!selectedGender) return;
+export default function NextButton({ onComplete, selectedGender, route }: NextButtonProps) {
+  const navigate = useNavigate();
 
-    // inform parent (MainSetup) that setup is complete and navigate to dashboard
+  const handleNext = () => {
+    if (!selectedGender) return;
+    // inform parent first
     onComplete?.();
+    // If a route is set, go there
+    if (route) {
+      navigate(route);
+    }
   };
 
   return (

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
-import NextButton from "../components/ui/NextButton";
-import InputField from "./inputField";
-import SetupHeader from "./SetupHeader";
+import InputField from "../ui/inputField";
+import SetupHeader from "../ui/SetupHeader";
+import NextButton from "../ui/NextButton";
 
 interface PostpartumProps {
   onComplete?: () => void;
@@ -149,54 +149,10 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
                 </div>
 
                 {/* Next button */}
-                <div className="flex justify-center w-full mt-4">
-                  <button
-                    onClick={handleNext}
-                    className={`next-button w-64 rounded-lg font-semibold transition-colors grid place-items-center cursor-pointer
-                }`}
-                    disabled={!selectedGender}
-                    type="button"
-                  >
-                    Next
-                  </button>
-                </div>
+                <NextButton onComplete={onComplete} selectedGender={selectedGender} route="/dashboard" />
               </div>
             </div>
           </div>
-
-          {/* Radio buttons */}
-          <div className="radio-btn items-start flex flex-col">
-            <h2 className="font-semibold text-bloomBlack text-left mt-4">
-              Would you like to track your recovery and baby's milestones?
-            </h2>
-            <label className="text-bloomBlack font-rubik ml-2 p-3 mt-2 cursor-pointer">
-              <input
-                type="radio"
-                name="radioGroup"
-                value="option1"
-                onChange={handleOptionChange}
-                checked={selectedOption === "option1"}
-                className="w-3 h-3 mr-2 rounded-full border-2 checked:bg-bloomPink checked:border-bloomPink cursor-pointer"
-              />
-              Yes
-            </label>
-            <label className="text-bloomBlack font-rubik ml-2 p-3 cursor-pointer">
-              <input
-                type="radio"
-                name="radioGroup"
-                value="option2"
-                checked={selectedOption === "option2"}
-                onChange={handleOptionChange}
-                className="w-3 h-3 mr-2 rounded-full border-2 checked:bg-bloomPink checked:border-bloomPink cursor-pointer"
-              />
-              No
-            </label>
-          </div>
-
-          <NextButton
-            selectedGender={selectedGender} // Use the state variable from this component
-            onComplete={onComplete} // Use the prop passed from parent
-          />
         </div>
       </div>
     </div>

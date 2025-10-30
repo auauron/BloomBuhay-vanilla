@@ -2,7 +2,7 @@ import React from "react";
 import "../index.css";
 import { useState } from "react";
 import Header from '../components/Header';
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../components/ui/Sidebar";
 import { Search } from 'lucide-react';
 
 export default function BloomGuide() {
