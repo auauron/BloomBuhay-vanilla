@@ -1,6 +1,8 @@
 // src/components/Childbirth.tsx
 import React, { useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
+import InputField from "./inputField";
+import SetupHeader from "./SetupHeader";
 
 interface ChildbirthProps {
   onComplete?: () => void;
@@ -38,93 +40,102 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
   };
 
   return (
-    <div style={{ maxWidth: "800px" }} className="flex justify-center">
-      <div
-        style={{ maxWidth: "700px", maxHeight: "450px" }}
-        className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] overflow-y-auto shadow-lg p-8 pb-4 mb-6"
-      >
-        {/* baby's details */}
-        <div className="baby-details flex flex-col">
-          <div className="flex flex-col items-start">
-            <label className="block">
-              <h2 className="font-semibold text-bloomBlack text-left">Baby's Name</h2>
-              <input
-                type="text"
-                name="babyName"
-                value={inputValue}
-                onChange={handleTextChange}
-                placeholder="Enter your baby's name"
-                className="border border-gray-300 rounded-lg p-3 mt-3 ml-4 w-64"
-              />
-            </label>
+    <div className="bg-bloomWhite min-h-screen flex flex-col">
+      <SetupHeader />
+      <div className="flex-1 flex justify-center px-6 mt-2">
+        <div
+          style={{ maxWidth: "800px" }}
+          className="flex justify-center w-full"
+        >
+          <div
+            style={{ maxWidth: "700px", maxHeight: "450px" }}
+            className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] overflow-y-auto shadow-lg p-8 pb-4 mb-6"
+          >
+            {/* baby's details */}
+            <div className="baby-details flex flex-col">
+              <div className="flex flex-col items-start">
+                <label className="block">
+                  <h2 className="font-semibold text-bloomBlack text-left">Baby's Name</h2>
+                  <div className="mt-3 ml-4 w-64">
+                    <InputField
+                      label=""
+                      type="text"
+                      value={inputValue}
+                      onChange={setInputValue}
+                      placeholder="Enter your baby's name"
+                    />
+                  </div>
+                </label>
 
-            <label className="block">
-              <h2 className="font-semibold text-bloomBlack text-left mt-4">Baby's Age</h2>
-              <input
-                type="number"
-                value={value}
-                onChange={handleChange}
-                placeholder="Enter your baby's age in months"
-                className="ml-4 text-bloomBlack w-60 m-4 border rounded-lg p-3"
-              />
-            </label>
+                <label className="block">
+                  <h2 className="font-semibold text-bloomBlack text-left mt-4">Baby's Age</h2>
+                  <div className="ml-4 w-[320px] m-4">
+                    <InputField
+                      label=""
+                      type="number"
+                      value={value}
+                      onChange={setValue}
+                      placeholder="Enter your baby's age in months"
+                    />
+                  </div>
+                </label>
 
-            <label className="block">
-              <h2 className="mt-3 font-semibold text-bloomBlack text-left">Baby's Gender</h2>
-            </label>
+                <label className="block">
+                  <h2 className="mt-3 font-semibold text-bloomBlack ml-1 text-left">Baby's Gender</h2>
+                </label>
 
-            <div className="relative">
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="flex justify-between p-4 mt-4 ml-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left w-96"
-                type="button"
-                aria-haspopup="listbox"
-                aria-expanded={isOpen}
-              >
-                <span className={selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"}>
-                  {selectedGender || "What's your baby's gender?"}
-                </span>
-                <ChevronDownIcon
-                  size={20}
-                  className={`text-[#9a9a9a] transition-transform ${isOpen ? "rotate-180" : ""}`}
-                />
-              </button>
-
-              {/* Dropdown menu */}
-              {isOpen && (
-                <div
-                  role="listbox"
-                  className="dropdown-menu absolute top-full left-4 mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-10 w-64"
-                >
-                  {babyGenders.map((gender) => (
+                <div className="relative w-[350px] ml-4 ">
+                  <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="flex justify-between p-4 mt-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left w-full"
+                    type="button"
+                    aria-haspopup="listbox"
+                    aria-expanded={isOpen}
+                  >
+                    <span className={selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"}>
+                      {selectedGender || "What's your baby's gender?"}
+                    </span>
+                    <ChevronDownIcon
+                      size={20}
+                      className={`text-[#9a9a9a] transition-transform ${isOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                  {/* Dropdown menu */}
+                  {isOpen && (
                     <div
-                      key={gender}
-                      onClick={() => handleGenderSelect(gender)}
-                      className={`p-4 cursor-pointer hover:bg-bloomWhite transition-colors text-left 
-                      }`}
-                      role="option"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") handleGenderSelect(gender);
-                      }}
+                      role="listbox"
+                      className="dropdown-menu absolute top-full left-0 mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-10 w-full"
                     >
-                      {gender}
+                      {babyGenders.map((gender) => (
+                        <div
+                          key={gender}
+                          onClick={() => handleGenderSelect(gender)}
+                          className={`p-4 cursor-pointer hover:bg-bloomWhite transition-colors text-left`}
+                          role="option"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") handleGenderSelect(gender);
+                          }}
+                        >
+                          {gender}
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              )}
-            </div>
 
-            {/* Next button */}
-            <div className="flex justify-center w-full mt-4">
-              <button
-                onClick={handleNext}
-                className={`next-button w-64 rounded-lg font-semibold transition-colors grid place-items-center cursor-pointer `}
-                disabled={!selectedGender}
-                type="button"
-              >
-                Next
-              </button>
+                {/* Next button */}
+                <div className="flex justify-center w-full mt-4">
+                  <button
+                    onClick={handleNext}
+                    className={`next-button w-64 rounded-lg font-semibold transition-colors grid place-items-center cursor-pointer `}
+                    disabled={!selectedGender}
+                    type="button"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
