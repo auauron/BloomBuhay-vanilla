@@ -17,6 +17,8 @@ export default function SignupPage() {
     return errors.find((err) => err.field === fieldName)?.message;
   };
 
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -38,8 +40,8 @@ export default function SignupPage() {
     }
   };
 
-  const handleSignupRedirect = () => {
-    navigate("/signup");
+  const handleLoginRedirect = () => {
+    navigate("/login");
   };
   // const handleLoginRedirect = () => {
   //   navigate("/login");
@@ -103,22 +105,21 @@ export default function SignupPage() {
               placeholder="Re-enter your password"
               error={getFieldError("confirmPassword")}
             />
-
-            <button
+          </form>
+          <button
               type="submit"
               disabled={loading}
-              className="mx-auto mt-6 flex items-center justify-center rounded-3xl bg-gradient-to-r from-bloomPink to-bloomYellow px-8 py-4 text-white font-semibold shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 min-w-[500px]"
+              className="mx-auto mt-6 flex items-center justify-center rounded-3xl bg-gradient-to-r from-bloomPink to-bloomYellow px-8 py-4 text-white font-semibold shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 min-w-[500px] -mb-5"
             >
               {loading ? "Signing Up..." : "Sign Up"}
             </button>
 
             {/* Already have an account section */}
-            {/* <div className="text-center mt-6">
+            <div className="text-center mt-6">
               <button type="button" onClick={handleLoginRedirect} className="text-sm text-gray-500 mb-3">
                 Already have an account?
               </button>
-            </div> */}
-          </form>
+            </div>
         </div>
       </div>
     </div>
