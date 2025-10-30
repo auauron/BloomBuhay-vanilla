@@ -32,7 +32,7 @@ export default function Setup({ onStageSelect }: SetupProps) {
   return (
     <div className="bg-bloomWhite min-h-screen flex flex-col">
       {/* Header */}
-      <header className="fixed top-0 left-0 flex flex-row items-center w-full py-4 px-6">
+      <header className="fixed top-0 left-0 flex flex-row bg-bloomWhite shadow-none items-center w-full py-4 px-6">
         <div className="flex items-center space-x-4">
           <CircleArrowLeftIcon
             size={32}
@@ -40,13 +40,13 @@ export default function Setup({ onStageSelect }: SetupProps) {
             onClick={() => navigate(-1)}
           />
           <h1 className="text-3xl font-bold text-bloomPink">BloomBuhay</h1>
+          <img
+            src="/assets/logo_pink.png"
+            alt="Logo"
+            style={{ width: "34px", height: "34px" }}
+            className="object-contain"
+          />
         </div>
-        <img
-          src="/assets/logo_pink.png"
-          alt="Logo"
-          style={{ width: "34px", height: "34px" }}
-          className="object-contain"
-        />
       </header>
 
       {/* Main content */}
@@ -56,7 +56,9 @@ export default function Setup({ onStageSelect }: SetupProps) {
             <h1 className="text-2xl font-bold font-rubik text-bloomBlack mb-1">
               Let's get you started!
             </h1>
-            <p className="text-[#474747]">We'd like to get to know more about you.</p>
+            <p className="text-[#474747]">
+              We'd like to get to know more about you.
+            </p>
           </div>
 
           <div className="flex justify-center">
@@ -74,12 +76,18 @@ export default function Setup({ onStageSelect }: SetupProps) {
                   className="dropdown w-full flex items-center justify-between p-4 border border-gray-300 rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left"
                   type="button"
                 >
-                  <span className={selectedStage ? "text-bloomBlack" : "text-[#9a9a9a]"}>
+                  <span
+                    className={
+                      selectedStage ? "text-bloomBlack" : "text-[#9a9a9a]"
+                    }
+                  >
                     {selectedStage || "Select a stage"}
                   </span>
                   <ChevronDownIcon
                     size={20}
-                    className={`text-[#9a9a9a] transition-transform ${isOpen ? "rotate-180" : ""}`}
+                    className={`text-[#9a9a9a] transition-transform ${
+                      isOpen ? "rotate-180" : ""
+                    }`}
                   />
                 </button>
 
@@ -91,12 +99,15 @@ export default function Setup({ onStageSelect }: SetupProps) {
                         key={stage}
                         onClick={() => handleStageSelect(stage)}
                         className={`choices p-4 cursor-pointer hover:bg-[#FFF6F6] transition-colors ${
-                          selectedStage === stage ? "bg-bloomWhite text-bloomPink" : "text-bloomBlack"
+                          selectedStage === stage
+                            ? "bg-bloomWhite text-bloomPink"
+                            : "text-bloomBlack"
                         }`}
                         role="button"
                         tabIndex={0}
                         onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") handleStageSelect(stage);
+                          if (e.key === "Enter" || e.key === " ")
+                            handleStageSelect(stage);
                         }}
                       >
                         {stage}
@@ -109,7 +120,9 @@ export default function Setup({ onStageSelect }: SetupProps) {
                 <button
                   onClick={handleNext}
                   className={`next-button w-full rounded-lg font-semibold transition-colors text-center justify-center flex mt-6 ${
-                    selectedStage ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600" : "bg-gray-300 text-gray-500"
+                    selectedStage
+                      ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600"
+                      : "bg-gray-300 text-gray-500"
                   }`}
                   disabled={!selectedStage}
                   type="button"
