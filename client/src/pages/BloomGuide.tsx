@@ -4,10 +4,15 @@ import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import { Search, Filter } from "lucide-react";
 import { Article, ArticleSection } from "../types/guide";
+import articlesData from '../data/articles.json'; // NEW for article content
+import ArticleModal from '../components/ArticleModal'; // NEW for article modal
 
 export default function BloomGuide() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState("all"); // "all", "maternal", "mother", "baby"
+  // NEW for article modal 
+  const [selectedArticle, setSelectedArticle] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -136,55 +141,63 @@ export default function BloomGuide() {
   const filteredSections = getFilteredArticles();
 
   // === REUSABLE CARD COMPONENT ===
-  const ArticleCard = ({ title, image, category }: { title: string; image: string; category?: string }) => (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden border-0 hover:shadow-xl transition-all duration-300 hover:translate-y-[-4px] group flex flex-col h-full">
-      <div className="relative overflow-hidden">
-        <img 
-          src={image} 
-          alt={title} 
-          className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110" 
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        
-        {category && (
-          <div className="absolute top-3 left-3">
-            <span 
-              className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg"
-              style={{textShadow: '1px 1px 1px black'}}
-            >
-              {category}
-            </span>
-          </div>
-        )}
-      </div>
+  // === UPDATED ===
+const ArticleCard = ({ title, image, category }: { title: string; image: string; category?: string }) => (
+  <div 
+    className="bg-white rounded-2xl shadow-lg overflow-hidden border-0 hover:shadow-xl transition-all duration-300 hover:translate-y-[-4px] group flex flex-col h-full cursor-pointer"
+    onClick={() => {
+      const article = articlesData.articles.find(a => a.title === title);
+      setSelectedArticle(article);
+      setIsModalOpen(true);
+    }}
+  >
+    <div className="relative overflow-hidden">
+      <img 
+        src={image} 
+        alt={title} 
+        className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110" 
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       
-      <div className="p-6 flex flex-col flex-grow">
-        <h3 className="text-xl font-bold text-gray-800 leading-tight mb-4 line-clamp-2 group-hover:text-bloomPink transition-colors flex-grow">
-          {title}
-        </h3>
-        
-        <div className="flex justify-end mt-auto pt-4">
-          <button className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white rounded-full hover:shadow-lg transform group-hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-lg">
-            <span 
-              className="text-sm font-medium text-white px-4 py-2"
-              style={{textShadow: '0.5px 0.5px 1px black'}}
-            >
-              Read more
-            </span>
-            <svg 
-              className="w-4 h-4 mr-3" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-              style={{filter: 'drop-shadow(0.5px 0.5px 1.5px gray)'}}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+      {category && (
+        <div className="absolute top-3 left-3">
+          <span 
+            className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg"
+            style={{textShadow: '1px 1px 1px black'}}
+          >
+            {category}
+          </span>
         </div>
+      )}
+    </div>
+    
+    <div className="p-6 flex flex-col flex-grow">
+      <h3 className="text-xl font-bold text-gray-800 leading-tight mb-4 line-clamp-2 group-hover:text-bloomPink transition-colors flex-grow">
+        {title}
+      </h3>
+      
+      <div className="flex justify-end mt-auto pt-4">
+        <button className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white rounded-full hover:shadow-lg transform group-hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-lg">
+          <span 
+            className="text-sm font-medium text-white px-4 py-2"
+            style={{textShadow: '0.5px 0.5px 1px black'}}
+          >
+            Read more
+          </span>
+          <svg 
+            className="w-4 h-4 mr-3" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+            style={{filter: 'drop-shadow(0.5px 0.5px 1.5px gray)'}}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
     </div>
-  );
+  </div>
+);
 
   // === FILTER BUTTONS COMPONENT ===
   const FilterButtons = () => {
@@ -333,6 +346,13 @@ export default function BloomGuide() {
           </svg>
         </button>
       </div>
-    </div>
+      {/* ADDED MODAL HERE */}
+      <ArticleModal 
+        article={selectedArticle}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+      
+    </div> 
   );
 }
