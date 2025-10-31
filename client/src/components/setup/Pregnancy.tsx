@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import InputField from "../ui/inputField";
 import SetupHeader from "../ui/SetupHeader";
+import NextButton from "../ui/NextButton";
 
 // payload shape sent to parent
 export type PregnancyPayload = {
@@ -52,7 +53,10 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
     <div className="bg-bloomWhite min-h-screen flex flex-col">
       <SetupHeader />
       <div className="flex-1 flex justify-center px-6 mt-1">
-        <div style={{ maxWidth: "800px" }} className="flex justify-center w-full">
+        <div
+          style={{ maxWidth: "800px" }}
+          className="flex justify-center w-full"
+        >
           <div
             style={{ maxWidth: "700px", maxHeight: "450px" }}
             className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] overflow-y-auto shadow-lg p-8 pb-4 mb-6"
@@ -96,10 +100,12 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                     className="w-3 h-3 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full checked:bg-bloomPink checked:border-bloomPink appearance-none focus:outline-none border-2 mt-1"
                   />
                   <div className="flex-1">
-                    <h2 className="text-bloomBlack font-semibold">I don't know.</h2>
+                    <h2 className="text-bloomBlack font-semibold">
+                      I don't know.
+                    </h2>
                     <p className="text-bloomBlack ">
-                      Don't worry. We can estimate it for you! When was your last
-                      menstrual period?
+                      Don't worry. We can estimate it for you! When was your
+                      last menstrual period?
                     </p>
                     <div className="w-60 mt-2">
                       <InputField
@@ -117,7 +123,9 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                 <hr className="border-gray-200 my-4" />
                 <div className="baby-details">
                   <label>
-                    <h2 className="font-semibold text-bloomBlack">Baby's Name</h2>
+                    <h2 className="font-semibold text-bloomBlack">
+                      Baby's Name
+                    </h2>
                     <div className="ml-4 mt-3 w-60">
                       <InputField
                         label=""
@@ -130,7 +138,9 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                   </label>
 
                   <label>
-                    <h2 className="mt-4 font-semibold text-bloomBlack">Baby's Gender</h2>
+                    <h2 className="mt-4 font-semibold text-bloomBlack">
+                      Baby's Gender
+                    </h2>
                   </label>
 
                   <div className="relative mb-4 w-[350px] ml-4">
@@ -139,12 +149,18 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                       className="flex items-center justify-between p-4 mt-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors text-left w-full"
                       type="button"
                     >
-                      <span className={selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"}>
+                      <span
+                        className={
+                          selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"
+                        }
+                      >
                         {selectedGender || "What's your baby's gender?"}
                       </span>
                       <ChevronDownIcon
                         size={20}
-                        className={`text-[#9a9a9a] transition-transform ${isOpen ? "rotate-180" : ""}`}
+                        className={`text-[#9a9a9a] transition-transform ${
+                          isOpen ? "rotate-180" : ""
+                        }`}
                       />
                     </button>
 
@@ -156,12 +172,15 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                             key={gender}
                             onClick={() => handleGenderSelect(gender)}
                             className={`choices p-4 hover:bg-bloomWhite transition-colors ${
-                              selectedGender === gender ? "bg-bloomWhite text-bloomPink" : "text-bloomBlack"
+                              selectedGender === gender
+                                ? "bg-bloomWhite text-bloomPink"
+                                : "text-bloomBlack"
                             }`}
                             role="button"
                             tabIndex={0}
                             onKeyDown={(e) => {
-                              if (e.key === "Enter" || e.key === " ") handleGenderSelect(gender);
+                              if (e.key === "Enter" || e.key === " ")
+                                handleGenderSelect(gender);
                             }}
                           >
                             {gender}
@@ -171,12 +190,10 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                     )}
                   </div>
 
-                  {/* Next button (sends payload to parent) */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!selectedGender) return;
-
+                  {/* Next button container */}
+                  <NextButton
+                    selectedGender={selectedGender}
+                    onComplete={() => {
                       const payload: PregnancyPayload = {
                         weeksPregnant: value ? Number(value) : null,
                         lmpDate: selectedDate || null,
@@ -192,17 +209,13 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
 
                       onComplete?.(payload);
                     }}
-                    className="w-full mt-4 rounded-lg bg-bloomPink text-white py-3 font-semibold disabled:opacity-50"
-                    disabled={!selectedGender}
-                  >
-                    Next
-                  </button>
+                  />
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div> 
+      </div>
     </div>
   );
 }
