@@ -127,7 +127,7 @@ export default function MainSetup() {
     switch (selectedStage) {
       case "Pregnant":
         // pass onComplete so Pregnancy can call it after successful submit
-       return <Pregnancy onComplete={() => handleComplete("Pregnant")} />;
+       return <Pregnancy onComplete={(payload: any) => handleComplete("Pregnant", payload)} />;
       case "Postpartum":
         return <Postpartum onComplete={() => handleComplete("Postpartum")} />;
       case "Early Childcare":
