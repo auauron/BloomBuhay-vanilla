@@ -45,8 +45,15 @@ export default function AuthToggle() {
         return (
           <button
             key={tab.path}
+            type="button" // Explicitly set type="button" to prevent form submission
             ref={(el) => void tabsRef.current.set(tab.path, el)}
-            onClick={() => navigate(tab.path)}
+            onClick={(e) => {
+              e.preventDefault(); // Prevent any form submission
+              if (!isActive) {
+                // Only navigate if it's not the current tab
+                navigate(tab.path);
+              }
+            }}
             className={`
               z-10 flex-1 py-2 px-4 text-sm font-semibold 
               transition-colors duration-300 ease-in-out

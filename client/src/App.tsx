@@ -9,7 +9,7 @@ import LandingPage from "./pages/Landing";
 import BloomGuide from "./pages/BloomGuide";
 import Dashboard from "./pages/Dashboard";
 import SignUp from "./pages/SignUp";
-import LoginPage from "./pages/LogInPage";
+import LoginPage from "./pages/LoginPage";
 import UserProfile from "./pages/UserProfile";
 import MainSetup from "./pages/MainSetup";
 

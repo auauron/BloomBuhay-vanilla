@@ -63,7 +63,10 @@ export default function Dashboard() {
             const userJson = await userRes.json();
             // server might return { fullName } or { name } or { user: { fullName } }
             const name =
-              userJson.fullName ?? userJson.name ?? userJson.user?.fullName ?? userJson.user?.name;
+              userJson.fullName ??
+              userJson.name ??
+              userJson.user?.fullName ??
+              userJson.user?.name;
             if (mounted) setUserName(name ?? null);
           } else {
             // ignore non-ok user fetch (may be 401)
@@ -96,7 +99,11 @@ export default function Dashboard() {
             }
           } else if (!profRes.ok) {
             const text = await profRes.text().catch(() => null);
-            console.error("Failed to fetch mother profile:", profRes.status, text);
+            console.error(
+              "Failed to fetch mother profile:",
+              profRes.status,
+              text
+            );
           } else {
             const profile = await profRes.json();
             // profile.stage is enum 'pregnant'|'postpartum'|'childcare'
@@ -111,8 +118,13 @@ export default function Dashboard() {
               setWeeksPregnant(typeof wp === "number" ? wp : null);
               // also update optimistic cache
               try {
-                if (profile.stage) localStorage.setItem("lastStage", enumToUi(profile.stage) ?? "");
-                if (typeof wp === "number") localStorage.setItem("lastWeeksPregnant", String(wp));
+                if (profile.stage)
+                  localStorage.setItem(
+                    "lastStage",
+                    enumToUi(profile.stage) ?? ""
+                  );
+                if (typeof wp === "number")
+                  localStorage.setItem("lastWeeksPregnant", String(wp));
               } catch (e) {
                 // ignore localStorage errors
               }
@@ -136,19 +148,15 @@ export default function Dashboard() {
   // fallback to optimistic cache if DB hasn't provided anything
   const cachedStage = localStorage.getItem("lastStage");
   const cachedWeeks = Number(localStorage.getItem("lastWeeksPregnant") ?? NaN);
-  const effectiveWeeks = weeksPregnant ?? (Number.isInteger(cachedWeeks) ? cachedWeeks : null);
+  const effectiveWeeks =
+    weeksPregnant ?? (Number.isInteger(cachedWeeks) ? cachedWeeks : null);
 
   // Final stage selection order: route state -> query -> db -> cached -> null
-  const stage = stageFromState ?? stageFromQuery ?? stageFromDb ?? (cachedStage || null);
+  const stage =
+    stageFromState ?? stageFromQuery ?? stageFromDb ?? (cachedStage || null);
 
-  // optional: show a tiny loading indicator while determining stage
-  if (loadingStage) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p>Loading personalized dashboard…</p>
-      </div>
-    );
-  }
+  // Don't show loading screen, use skeleton UI within the dashboard layout
+  const isLoading = loadingStage;
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -170,7 +178,8 @@ export default function Dashboard() {
             </h1>
             <p className="text-2xl font-semibold mb-6">pregnant.</p>
             <p className="text-white/90 text-xl absolute bottom-8 font-rubik font-light">
-              Your baby is as big as a <span className="font-bold">tomato!</span>
+              Your baby is as big as a{" "}
+              <span className="font-bold">tomato!</span>
             </p>
           </>
         );
@@ -230,13 +239,16 @@ export default function Dashboard() {
       {/* Greeting */}
       <div className="flex flex-col items-center text-center mt-8 px-4">
         <h2 className="text-4xl font-bold text-bloomPink">
-          Hello, {userName ? `Mama ${userName}` : "Mama"}!
-          {stage && (
-            <span className="text-lg font-medium text-[#474747] ml-3">— {stage}</span>
+          Hello, {isLoading ? "Mama!" : userName ? `Mama ${userName}` : "Mama!"}
+          {stage && !isLoading && (
+            <span className="text-lg font-medium text-[#474747] ml-3">
+              — {stage}
+            </span>
           )}
         </h2>
         <p className="text-[#474747] font-rubik mt-2 mb-[-5px] font-light text-lg">
-          “One day at a time, one heartbeat at a time — you are growing a miracle.”
+          “One day at a time, one heartbeat at a time — you are growing a
+          miracle.”
         </p>
       </div>
 
@@ -254,11 +266,18 @@ export default function Dashboard() {
           <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-6 rounded-[20px] shadow-md font-semibold">
             <h3 className="text-2xl mb-2 text-white font-bold">Progress</h3>
             <div className="w-full bg-white/60 rounded-full h-5 mt-3 overflow-hidden">
-              <div className="bg-[#DE085F] h-full w-1/3 rounded-full"></div>
+              <div
+                className={`bg-[#DE085F] h-full ${
+                  isLoading ? "w-0" : "w-1/3"
+                } rounded-full`}
+              ></div>
             </div>
-            <p className="mt-2 text-lg text-center text-[#DE085F] font-bold">17% complete</p>
+            <p className="mt-2 text-lg text-center text-[#DE085F] font-bold">
+              17% complete
+            </p>
             <p className="mt-2 text-lg text-[#474747] font-rubik font-light">
-              <span className="font-bold">Remaining:</span> 83% (33 weeks, 2 days)
+              <span className="font-bold">Remaining:</span> 83% (33 weeks, 2
+              days)
             </p>
             <p className="mt-2 text-lg text-[#474747] font-rubik font-light">
               <span className="font-bold">Due Date:</span> January 15, 2024
@@ -286,7 +305,8 @@ export default function Dashboard() {
             <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-6 rounded-[20px] shadow-md">
               <h3 className="text-2xl mb-3 text-white font-bold">Tips</h3>
               <p className="text-sm text-[#474747] font-rubik">
-                Drink plenty of water 💧 and take short naps when you feel tired.
+                Drink plenty of water 💧 and take short naps when you feel
+                tired.
               </p>
             </div>
           </div>
