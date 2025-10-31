@@ -91,13 +91,11 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
                   </h2>
                 </label>
 
-                <div className="relative w-[350px] ml-4 ">
+                <div className="relative mb-4 ml-4 text-left">
                   <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="flex justify-between p-4 mt-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left w-full"
+                    className="flex items-center justify-between p-4 mt-4 border border-gray-300 rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left w-full"
                     type="button"
-                    aria-haspopup="listbox"
-                    aria-expanded={isOpen}
                   >
                     <span
                       className={
@@ -113,23 +111,19 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
                       }`}
                     />
                   </button>
+
                   {/* Dropdown menu */}
                   {isOpen && (
-                    <div
-                      role="listbox"
-                      className="dropdown-menu absolute top-full left-0 mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-10 w-full"
-                    >
+                    <div className="absolute left-0 top-full mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-20 w-full">
                       {babyGenders.map((gender) => (
                         <div
                           key={gender}
                           onClick={() => handleGenderSelect(gender)}
-                          className={`p-4 cursor-pointer hover:bg-bloomWhite transition-colors text-left`}
-                          role="option"
-                          tabIndex={0}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ")
-                              handleGenderSelect(gender);
-                          }}
+                          className={`p-4 hover:bg-bloomWhite transition-colors cursor-pointer ${
+                            selectedGender === gender
+                              ? "text-bloomPink"
+                              : "text-bloomBlack"
+                          }`}
                         >
                           {gender}
                         </div>
@@ -141,8 +135,8 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
                 {/* Next button */}
                 <NextButton
                   onComplete={onComplete}
-                  selectedGender={selectedGender}
                   route="/dashboard"
+                  isReady={Boolean(inputValue && value && selectedGender)}
                 />
               </div>
             </div>

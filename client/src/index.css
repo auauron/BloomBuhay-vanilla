@@ -232,12 +232,9 @@ img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
   margin-top: -60px;
 }
 
-.choices {
-  padding-bottom: 4px;
-  cursor: pointer;
-}
-
 .next-button {
+  position: relative;
+  overflow: hidden;
   margin: 20px auto;
   border-radius: 10px;
   width: 200px;
@@ -247,12 +244,21 @@ img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
   color: #fff6f6;
   font-size: 16px;
   border: none;
-  display: block;
-  transition: all 0.5s ease;
-  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  z-index: 0; 
 }
 
 .next-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: linear-gradient(
     to right,
     #f875aa 50%,
@@ -262,14 +268,13 @@ img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
   );
   opacity: 0;
   transition: opacity 0.5s ease;
-  z-index: -1; 
   border-radius: 10px;
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  z-index: 0;
+}
+
+.next-button span {
+  position: relative;
+  z-index: 1;
 }
 
 .next-button:hover::before {
@@ -280,7 +285,10 @@ img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
   transform: scale(1.05);
 }
 
+.next-button:disabled {
+  background-color: #e5e5e5; 
+  color: #a0a0a0;
+  cursor: not-allowed; 
+  transform: none;
 
-.main-container {
-  margin-top: -80px;
 }

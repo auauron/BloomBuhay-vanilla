@@ -92,10 +92,10 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
                   Baby's Gender
                 </h2>
               </label>
-              <div className="relative mb-4 w-64">
+              <div className="relative mb-4 ml-4 text-left">
                 <button
                   onClick={() => setIsOpen(!isOpen)}
-                  className="flex items-center justify-between p-4 mt-4 border-gray-300 border rounded-lg bg-white hover;border-[#F875AA] transition-colors cursor-pointer text-left w-full"
+                  className="flex items-center justify-between p-4 mt-4 border border-gray-300 rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left w-full"
                   type="button"
                 >
                   <span
@@ -112,63 +112,62 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
                     }`}
                   />
                 </button>
+
                 {/* Dropdown menu */}
                 {isOpen && (
-                  <div className="dropdown-menu absolute top-full left-0 mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-10 w-full">
+                  <div className="absolute left-0 top-full mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-20 w-full">
                     {babyGenders.map((gender) => (
                       <div
                         key={gender}
                         onClick={() => handleGenderSelect(gender)}
-                        className={`choices p-4 cursor-pointer hover:bg-bloomWhite transition-colors`}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ")
-                            handleGenderSelect(gender);
-                        }}
+                        className={`p-4 hover:bg-bloomWhite transition-colors cursor-pointer ${
+                          selectedGender === gender
+                            ? "text-bloomPink"
+                            : "text-bloomBlack"
+                        }`}
                       >
                         {gender}
                       </div>
                     ))}
                   </div>
                 )}
-
-                {/* radio btn track recovery and milestones */}
-                <div className="radio-btn items-start flex flex-col">
-                  <h2 className="font-semibold text-bloomBlack text-left mt-4">
-                    Would you like to track your recovery and baby's milestones?
-                  </h2>
-                  <label className="text-bloomBlack font-rubik ml-2 p-3 mt-2">
-                    <input
-                      type="radio"
-                      name="radioGroup"
-                      value="option1"
-                      onChange={handleOptionChange}
-                      checked={selectedOption === "option1"}
-                      className="w-3 h-3  mr-2 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full checked:bg-bloomPink checked;border-bloomPink appearance-none focus:outline-none border-2"
-                    />
-                    Yes
-                  </label>
-                  <label className="text-bloomBlack font-rubik ml-2 p-3">
-                    <input
-                      type="radio"
-                      name="radioGroup"
-                      value="option2"
-                      checked={selectedOption === "option2"}
-                      onChange={handleOptionChange}
-                      className="w-3 h-3 mr-2 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full checked:bg-bloomPink checked;border-bloomPink appearance-none focus:outline-none border-2"
-                    />
-                    No
-                  </label>
-                </div>
-
-                {/* Next button */}
-                <NextButton
-                  onComplete={onComplete}
-                  selectedGender={selectedGender}
-                  route="/dashboard"
-                />
               </div>
+
+              {/* radio btn track recovery and milestones */}
+              <div className="radio-btn items-start flex flex-col">
+                <h2 className="font-semibold text-bloomBlack text-left mt-4">
+                  Would you like to track your recovery and baby's milestones?
+                </h2>
+                <label className="text-bloomBlack font-rubik ml-2 p-3 mt-2">
+                  <input
+                    type="radio"
+                    name="radioGroup"
+                    value="option1"
+                    onChange={handleOptionChange}
+                    checked={selectedOption === "option1"}
+                    className="w-3 h-3  mr-2 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full checked:bg-bloomPink checked;border-bloomPink appearance-none focus:outline-none border-2"
+                  />
+                  Yes
+                </label>
+                <label className="text-bloomBlack font-rubik ml-2 p-3">
+                  <input
+                    type="radio"
+                    name="radioGroup"
+                    value="option2"
+                    checked={selectedOption === "option2"}
+                    onChange={handleOptionChange}
+                    className="w-3 h-3 mr-2 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full checked:bg-bloomPink checked;border-bloomPink appearance-none focus:outline-none border-2"
+                  />
+                  No
+                </label>
+              </div>
+
+              {/* Next button */}
+              <NextButton
+                onComplete={onComplete}
+                route="/dashboard"
+                isReady={Boolean(inputValue && value && selectedGender)}
+              />
             </div>
           </div>
         </div>
