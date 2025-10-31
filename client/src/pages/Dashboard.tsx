@@ -1,9 +1,12 @@
-import React from "react";
-import { useState, useEffect } from "react";
+// src/pages/Dashboard.tsx
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import "../index.css";
 import Header from "../components/ui/Header";
 import Sidebar from "../components/ui/Sidebar";
+import { authService } from "../services/authService";
+
+const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
 
 export default function Dashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -12,8 +15,12 @@ export default function Dashboard() {
   const stageFromState = (location.state as { stage?: string } | null)?.stage;
   const searchParams = new URLSearchParams(location.search);
   const stageFromQuery = searchParams.get("stage");
+
   const [stageFromDb, setStageFromDb] = useState<string | null>(null);
   const [loadingStage, setLoadingStage] = useState(true);
+
+  const [userName, setUserName] = useState<string | null>(null);
+  const [weeksPregnant, setWeeksPregnant] = useState<number | null>(null);
 
   // helper: map enum -> UI label
   const enumToUi = (val: string | null | undefined): string | null => {
@@ -30,37 +37,109 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    // fetch profile on mount
-    const fetchProfile = async () => {
+    let mounted = true;
+
+    const fetchAll = async () => {
+      setLoadingStage(true);
+
       try {
-        const userId = localStorage.getItem("userId"); // replace with auth user id when available
-        if (!userId) {
-          setLoadingStage(false);
+        const token = authService.getToken() ?? localStorage.getItem("token");
+        if (!token) {
+          // no token: can't fetch server-side data
+          if (mounted) setLoadingStage(false);
           return;
         }
 
-        const res = await fetch(`/api/mother-profiles?userId=${userId}`);
-        if (!res.ok) {
-          // 404 means no profile yet; handle gracefully
-          setLoadingStage(false);
-          return;
+        // Fetch user name
+        try {
+          const userRes = await fetch(`${API_BASE}/api/users/me`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (userRes.ok) {
+            const userJson = await userRes.json();
+            // server might return { fullName } or { name } or { user: { fullName } }
+            const name =
+              userJson.fullName ?? userJson.name ?? userJson.user?.fullName ?? userJson.user?.name;
+            if (mounted) setUserName(name ?? null);
+          } else {
+            // ignore non-ok user fetch (may be 401)
+            console.warn("Could not fetch user info:", userRes.status);
+          }
+        } catch (err) {
+          console.error("Failed to fetch user:", err);
         }
 
-        const profile = await res.json();
-        // profile.stage contains the enum value like "pregnant"
-        setStageFromDb(enumToUi(profile.stage));
-      } catch (err) {
-        console.error("Failed to load mother profile:", err);
+        // Fetch mother profile
+        try {
+          const profRes = await fetch(`${API_BASE}/api/mother-profiles/me`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (profRes.status === 401) {
+            console.warn("Unauthorized when fetching mother profile");
+            if (mounted) setLoadingStage(false);
+            return;
+          }
+
+          if (profRes.status === 404) {
+            // no profile yet
+            if (mounted) {
+              setStageFromDb(null);
+              setWeeksPregnant(null);
+            }
+          } else if (!profRes.ok) {
+            const text = await profRes.text().catch(() => null);
+            console.error("Failed to fetch mother profile:", profRes.status, text);
+          } else {
+            const profile = await profRes.json();
+            // profile.stage is enum 'pregnant'|'postpartum'|'childcare'
+            if (mounted) {
+              setStageFromDb(enumToUi(profile.stage));
+              // server field may be weeksPregnant or weeks_pregnant — try common names
+              const wp =
+                profile.weeksPregnant ??
+                profile.weeks_pregnant ??
+                profile.weeks_pregnancy ??
+                profile.weeks;
+              setWeeksPregnant(typeof wp === "number" ? wp : null);
+              // also update optimistic cache
+              try {
+                if (profile.stage) localStorage.setItem("lastStage", enumToUi(profile.stage) ?? "");
+                if (typeof wp === "number") localStorage.setItem("lastWeeksPregnant", String(wp));
+              } catch (e) {
+                // ignore localStorage errors
+              }
+            }
+          }
+        } catch (err) {
+          console.error("Failed to fetch mother profile:", err);
+        }
       } finally {
-        setLoadingStage(false);
+        if (mounted) setLoadingStage(false);
       }
     };
 
-    fetchProfile();
+    fetchAll();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  // Final stage selection order: state -> query -> db -> null
-  const stage = stageFromState ?? stageFromQuery ?? stageFromDb ?? null;
+  // fallback to optimistic cache if DB hasn't provided anything
+  const cachedStage = localStorage.getItem("lastStage");
+  const cachedWeeks = Number(localStorage.getItem("lastWeeksPregnant") ?? NaN);
+  const effectiveWeeks = weeksPregnant ?? (Number.isInteger(cachedWeeks) ? cachedWeeks : null);
+
+  // Final stage selection order: route state -> query -> db -> cached -> null
+  const stage = stageFromState ?? stageFromQuery ?? stageFromDb ?? (cachedStage || null);
 
   // optional: show a tiny loading indicator while determining stage
   if (loadingStage) {
@@ -86,12 +165,12 @@ export default function Dashboard() {
           <>
             <h3 className="text-2xl font-bold mb-2">You are now</h3>
             <h1 className="text-4xl font-extrabold leading-tight text-[#474747]">
-              6 weeks, 5 days
+              {/* show weeks and optionally days if you have them */}
+              {effectiveWeeks !== null ? `${effectiveWeeks} weeks` : "— weeks"}
             </h1>
             <p className="text-2xl font-semibold mb-6">pregnant.</p>
             <p className="text-white/90 text-xl absolute bottom-8 font-rubik font-light">
-              Your baby is as big as a{" "}
-              <span className="font-bold">tomato!</span>
+              Your baby is as big as a <span className="font-bold">tomato!</span>
             </p>
           </>
         );
@@ -151,16 +230,13 @@ export default function Dashboard() {
       {/* Greeting */}
       <div className="flex flex-col items-center text-center mt-8 px-4">
         <h2 className="text-4xl font-bold text-bloomPink">
-          Hello, Mama Maria!
+          Hello, {userName ? `Mama ${userName}` : "Mama"}!
           {stage && (
-            <span className="text-lg font-medium text-[#474747] ml-3">
-              — {stage}
-            </span>
+            <span className="text-lg font-medium text-[#474747] ml-3">— {stage}</span>
           )}
         </h2>
         <p className="text-[#474747] font-rubik mt-2 mb-[-5px] font-light text-lg">
-          “One day at a time, one heartbeat at a time — you are growing a
-          miracle.”
+          “One day at a time, one heartbeat at a time — you are growing a miracle.”
         </p>
       </div>
 
@@ -180,12 +256,9 @@ export default function Dashboard() {
             <div className="w-full bg-white/60 rounded-full h-5 mt-3 overflow-hidden">
               <div className="bg-[#DE085F] h-full w-1/3 rounded-full"></div>
             </div>
-            <p className="mt-2 text-lg text-center text-[#DE085F] font-bold">
-              17% complete
-            </p>
+            <p className="mt-2 text-lg text-center text-[#DE085F] font-bold">17% complete</p>
             <p className="mt-2 text-lg text-[#474747] font-rubik font-light">
-              <span className="font-bold">Remaining:</span> 83% (33 weeks, 2
-              days)
+              <span className="font-bold">Remaining:</span> 83% (33 weeks, 2 days)
             </p>
             <p className="mt-2 text-lg text-[#474747] font-rubik font-light">
               <span className="font-bold">Due Date:</span> January 15, 2024
@@ -213,8 +286,7 @@ export default function Dashboard() {
             <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-6 rounded-[20px] shadow-md">
               <h3 className="text-2xl mb-3 text-white font-bold">Tips</h3>
               <p className="text-sm text-[#474747] font-rubik">
-                Drink plenty of water 💧 and take short naps when you feel
-                tired.
+                Drink plenty of water 💧 and take short naps when you feel tired.
               </p>
             </div>
           </div>
