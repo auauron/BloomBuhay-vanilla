@@ -4,6 +4,7 @@ import { ChevronDownIcon } from "lucide-react";
 import InputField from "../ui/inputField";
 import SetupHeader from "../ui/SetupHeader";
 import NextButton from "../ui/NextButton";
+import { useRef, useEffect } from "react";
 
 interface PregnancyProps {
   onComplete?: () => void;
@@ -16,6 +17,22 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
   const [inputValue, setInputValue] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedGender, setSelectedGender] = useState("");
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const babyGenders = ["Girl", "Boy", "Unknown"];
 
@@ -60,12 +77,12 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
             style={{ maxWidth: "700px", maxHeight: "450px" }}
             className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] overflow-y-auto shadow-lg p-8 pb-4 mb-6"
           >
-            <div className="text-left ">
+            <div className="text-left">
               <h2 className="text-bloomBlack font-semibold">
                 How many weeks pregnant are you?
               </h2>
 
-              {/* Radio button */}
+              {/* Radio options */}
               <div className="radio-btn">
                 <label className="flex items-center gap-2">
                   <input
@@ -80,13 +97,16 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                     <InputField
                       label=""
                       type="number"
+                      min= "0"
                       value={value}
                       onChange={setValue}
                       placeholder="Enter the number of weeks"
                     />
                   </div>
                 </label>
+
                 <br />
+
                 <label className="flex items-start gap-3">
                   <input
                     type="radio"
@@ -100,7 +120,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                     <h2 className="text-bloomBlack font-semibold">
                       I don't know.
                     </h2>
-                    <p className="text-bloomBlack ">
+                    <p className="text-bloomBlack">
                       Don't worry. We can estimate it for you! When was your
                       last menstrual period?
                     </p>
@@ -116,7 +136,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                   </div>
                 </label>
 
-                {/*Baby's details */}
+                {/* Baby’s details */}
                 <hr className="border-gray-200 my-4" />
                 <div className="baby-details">
                   <label>
@@ -128,21 +148,25 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                         label=""
                         type="text"
                         value={inputValue}
-                        onChange={setInputValue}
+                        onChange={(val) => setInputValue(val.replace(/[^a-zA-Z\s]/g, ""))}
                         placeholder="Enter your baby's name"
                       />
                     </div>
                   </label>
+
                   <label>
                     <h2 className="mt-4 font-semibold text-bloomBlack">
                       Baby's Gender
                     </h2>
                   </label>
-                  <div className="relative mb-4 w-[350px] ml-4">
-                    <button
-                      onClick={() => setIsOpen(!isOpen)}
-                      className="flex items-center justify-between p-4 mt-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors text-left w-full"
-                      type="button"
+
+                  <div
+                    className="relative mb-6 w-[350px] ml-4"
+                    ref={dropdownRef}
+                  >
+                    <div
+                      className="flex items-center justify-between p-4 mt-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors text-left w-full cursor-pointer"
+                      onClick={() => setIsOpen((prev) => !prev)}
                     >
                       <span
                         className={
@@ -157,37 +181,32 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                           isOpen ? "rotate-180" : ""
                         }`}
                       />
-                    </button>
-                    {/* Dropdown menu */}
+                    </div>
+
                     {isOpen && (
-                      <div className="dropdown-menu absolute top-full left-0 mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-10 w-full">
+                      <div className="absolute top-full left-0 mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-10 w-full">
                         {babyGenders.map((gender) => (
                           <div
                             key={gender}
                             onClick={() => handleGenderSelect(gender)}
-                            className={`choices p-4 hover:bg-bloomWhite transition-colors ${
+                            className={`p-4 hover:bg-bloomWhite transition-colors ${
                               selectedGender === gender
                                 ? "bg-bloomWhite text-bloomPink"
                                 : "text-bloomBlack"
-                            }`}
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" || e.key === " ")
-                                handleGenderSelect(gender);
-                            }}
+                            } cursor-pointer`}
                           >
                             {gender}
                           </div>
                         ))}
                       </div>
                     )}
+                  </div>
 
-                    {/* Next button */}
+                  <div className="ml-4 mt-6">
                     <NextButton
                       onComplete={onComplete}
-                      selectedGender={selectedGender}
                       route="/dashboard"
+                      isReady={Boolean(inputValue && value && selectedGender)}
                     />
                   </div>
                 </div>

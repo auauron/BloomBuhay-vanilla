@@ -9,8 +9,8 @@
 @tailwind utilities;
 
 /* Google font import for dev; for production prefer adding to index.html */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&family=Poppins:wght@400;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700&family=Poppins:wght@400;600;700;800&display=swap");
 
 /* optional: make the new font available as a Tailwind utility */
 :root {
@@ -22,7 +22,6 @@
   font-family: var(--font-poppins);
 }
 
-
 * {
   margin: 0;
   padding: 0;
@@ -33,6 +32,7 @@ body {
   /* @apply bg-white; */
   background-color: #fff;
   font-family: "Poppins", sans-serif;
+  overflow: hidden;
 }
 
 .pregnancy-card {
@@ -133,10 +133,14 @@ header {
 
 /* ===== custom helpers for ArticlePage exact look ===== */
 
-.font-poppins { font-family: 'Poppins', sans-serif; }
+.font-poppins {
+  font-family: "Poppins", sans-serif;
+}
 
 /* Slightly darker text for section titles */
-h2 { color: #4d3b3b; }
+h2 {
+  color: #4d3b3b;
+}
 
 /* Make the rounded device border appear like the mock */
 .bloom-panel {
@@ -149,11 +153,13 @@ input::placeholder {
 }
 
 /* small image smoothing to match screenshot feel */
-img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
-
+img {
+  image-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+}
 
 .start-text {
-  font-family: 'Rubik', sans-serif;
+  font-family: "Rubik", sans-serif;
   font-size: 18px;
   color: #fffafc;
   margin-bottom: 1rem;
@@ -174,7 +180,7 @@ img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
   font-size: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: 'Rubik', sans-serif;
+  font-family: "Rubik", sans-serif;
   font-weight: 500;
 }
 
@@ -192,7 +198,7 @@ img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
   font-size: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: 'Rubik', sans-serif;
+  font-family: "Rubik", sans-serif;
   font-weight: 500;
 }
 
@@ -201,7 +207,6 @@ img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
   transform: translateY(-2px);
 }
 /*Landing page*/
-
 
 .dropdown-container {
   margin-top: 20px;
@@ -232,12 +237,9 @@ img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
   margin-top: -60px;
 }
 
-.choices {
-  padding-bottom: 4px;
-  cursor: pointer;
-}
-
 .next-button {
+  position: relative;
+  overflow: hidden;
   margin: 20px auto;
   border-radius: 10px;
   width: 200px;
@@ -247,12 +249,21 @@ img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
   color: #fff6f6;
   font-size: 16px;
   border: none;
-  display: block;
-  transition: all 0.5s ease;
-  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  z-index: 0;
 }
 
 .next-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: linear-gradient(
     to right,
     #f875aa 50%,
@@ -261,15 +272,22 @@ img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
     #f3e198 100%
   );
   opacity: 0;
-  transition: opacity 0.5s ease;
-  z-index: -1; 
   border-radius: 10px;
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+}
+
+.next-button span {
+  position: relative;
+  z-index: 1;
+}
+
+.next-button:not(:disabled):hover::before {
+  opacity: 1;
+}
+
+.next-button:not(:disabled):hover {
+  transform: scale(1.05);
 }
 
 .next-button:hover::before {
@@ -280,7 +298,22 @@ img { image-rendering: auto; -webkit-font-smoothing: antialiased; }
   transform: scale(1.05);
 }
 
-
-.main-container {
-  margin-top: -80px;
+.next-button:disabled {
+  background-color: #e5e5e5;
+  color: #a0a0a0;
+  cursor: not-allowed;
+  transform: none;
+  transition: none;
 }
+
+.next-button:disabled::before {
+  content: none;
+}
+
+.next-button:disabled:hover {
+  background-color: #e5e5e5 ;
+  color: #a0a0a0;
+  cursor: not-allowed;
+  transform: none;
+}
+
