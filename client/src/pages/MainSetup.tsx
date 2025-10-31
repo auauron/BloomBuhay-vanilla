@@ -4,7 +4,7 @@ import { CircleArrowLeftIcon } from "lucide-react";
 import Pregnancy from "../components/setup/Pregnancy";
 import Postpartum from "../components/setup/Postpartum";
 import Childbirth from "../components/setup/Childbirth";
-import Setup from "./Setup";
+import Setup from "./SetUp";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
 export default function MainSetup() {
