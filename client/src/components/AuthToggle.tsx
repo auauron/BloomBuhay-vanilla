@@ -49,7 +49,8 @@ export default function AuthToggle() {
             ref={(el) => void tabsRef.current.set(tab.path, el)}
             onClick={(e) => {
               e.preventDefault(); // Prevent any form submission
-              if (!isActive) { // Only navigate if it's not the current tab
+              if (!isActive) {
+                // Only navigate if it's not the current tab
                 navigate(tab.path);
               }
             }}

@@ -19,6 +19,7 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // Stop event bubbling
 
     // Prevent double submission
     if (loading) return;
@@ -27,6 +28,9 @@ export default function SignupPage() {
     setErrors([]);
 
     try {
+      // Disable any navigation during signup
+      window.onbeforeunload = () => true;
+
       const result = await authService.signup({
         fullName,
         email,
@@ -35,25 +39,33 @@ export default function SignupPage() {
       });
 
       if (result.success) {
-        // Add a small delay to ensure localStorage is settled
+        // Clear any pending navigations
+        window.onbeforeunload = null;
+
+        // Add a small delay to ensure any storage has settled
         await new Promise((resolve) => setTimeout(resolve, 100));
 
-        // Double-check auth state
-        if (authService.isAuthenticated() && authService.getUser()) {
-          // Use replace to prevent back navigation to signup
+        // Prefer using the result token for navigation instead of reading localStorage
+        if (result.token) {
+          // Navigate using react-router so app state stays consistent
           navigate("/mainsetup", { replace: true });
-          return; // Exit early to prevent setLoading(false)
-        } else {
-          setErrors([
-            { field: "email", message: "Authentication failed after signup" },
-          ]);
+          return; // Exit early
         }
+        // fallback: check authService
+        if (authService.isAuthenticated() && authService.getUser()) {
+          navigate("/mainsetup", { replace: true });
+          return;
+        }
+        setErrors([
+          { field: "email", message: "Authentication failed after signup" },
+        ]);
       } else {
         if (result.errors) setErrors(result.errors);
       }
     } catch (error) {
       setErrors([{ field: "email", message: "An unexpected error occurred" }]);
     } finally {
+      window.onbeforeunload = null; // Clear navigation block
       setLoading(false);
     }
   };
