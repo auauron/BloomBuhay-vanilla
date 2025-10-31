@@ -82,7 +82,7 @@ export default function MainSetup() {
   }
 
   return (
-    <div className="bg-bloomWhite min-h-screen flex flex-col">
+    <div className="bg-bloomWhite min-h-screen flex flex-col overflow-hidden">
       {/* Header */}
       <header className="fixed top-0 left-0 flex flex-row items-center shadow-none bg-bloomWhite w-full py-4 px-6">
         <div className="flex items-center space-x-4">

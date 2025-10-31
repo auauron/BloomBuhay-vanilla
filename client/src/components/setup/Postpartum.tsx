@@ -63,6 +63,7 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
                 <InputField
                   label=""
                   type="number"
+                  min="0"
                   value={value}
                   onChange={setValue}
                   placeholder="Enter the number of weeks"
@@ -82,7 +83,9 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
                     label=""
                     type="text"
                     value={inputValue}
-                    onChange={setInputValue}
+                    onChange={(val) =>
+                      setInputValue(val.replace(/[^a-zA-Z\s]/g, ""))
+                    }
                     placeholder="Enter your baby's name"
                   />
                 </div>

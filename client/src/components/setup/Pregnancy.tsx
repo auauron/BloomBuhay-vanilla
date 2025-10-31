@@ -97,6 +97,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                     <InputField
                       label=""
                       type="number"
+                      min= "0"
                       value={value}
                       onChange={setValue}
                       placeholder="Enter the number of weeks"
@@ -147,7 +148,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                         label=""
                         type="text"
                         value={inputValue}
-                        onChange={setInputValue}
+                        onChange={(val) => setInputValue(val.replace(/[^a-zA-Z\s]/g, ""))}
                         placeholder="Enter your baby's name"
                       />
                     </div>
@@ -205,7 +206,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                     <NextButton
                       onComplete={onComplete}
                       route="/dashboard"
-                      isReady={Boolean(inputValue && value && selectedGender)} // ✅ all filled
+                      isReady={Boolean(inputValue && value && selectedGender)}
                     />
                   </div>
                 </div>

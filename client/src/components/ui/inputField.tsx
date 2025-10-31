@@ -7,6 +7,7 @@ interface InputFieldProps {
   onChange: (value: string) => void;
   placeholder: string;
   error?: string;
+  min?: string | number;
 }
 
 export default function InputField({
@@ -16,6 +17,7 @@ export default function InputField({
   onChange,
   placeholder,
   error,
+  min,
 }: InputFieldProps) {
   return (
     <div>
@@ -25,6 +27,7 @@ export default function InputField({
       <input
         type={type}
         value={value}
+        min={min}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={`w-full px-4 py-3 rounded-lg border ${
