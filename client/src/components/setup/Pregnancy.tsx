@@ -204,7 +204,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
 
                   {/* Next button container */}
                   <NextButton
-                    selectedGender={selectedGender}
+                    isReady={!!selectedGender}
                     onComplete={() => {
                       const payload: PregnancyPayload = {
                         weeksPregnant: value ? Number(value) : null,
