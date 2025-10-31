@@ -36,10 +36,61 @@ export default function MainSetup() {
     setSearchParams({ page: "details", stage });
   };
 
-  const handleComplete = (stage?: string) => {
-    // clear setup params then go to dashboard with the stage in state
-    setSearchParams({});
-    navigate("/dashboard", { state: { stage: stage ?? selectedStage } });
+  const mapUiStageToEnum = (uiStage?: string | null) => {
+    switch (uiStage) {
+      case "Pregnant":
+        return "pregnant";
+      case "Postpartum":
+        return "postpartum";
+      case "Early Childcare":
+        return "childcare";
+      default:
+        return null;
+    }
+  };
+
+  const handleComplete = async (stage?: string) => {
+    const uiStage = stage ?? selectedStage;
+    const enumStage = mapUiStageToEnum(uiStage);
+
+    if (!enumStage) {
+      setSearchParams({});
+      navigate("/dashboard", { state: { stage: uiStage } });
+      return;
+    }
+
+    try {
+
+      const userId = localStorage.getItem("userId"); 
+
+      if (!userId) {
+        console.warn("No userId found in localStorage; profile will NOT be saved.");
+        setSearchParams({});
+        navigate("/dashboard", { state: { stage: uiStage } });
+        return;
+      }
+
+      const resp = await fetch("/api/mother-profiles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: Number(userId),
+          stage: enumStage,
+        }),
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => null);
+        console.error("Failed creating mother profile:", err);
+      } else {
+        console.log("Stage saved to DB");
+      }
+    } catch (error) {
+      console.error("Error saving stage:", error);
+    } finally {
+      setSearchParams({});
+      navigate("/dashboard", { state: { stage: uiStage } });
+    }
   };
 
   const handleBack = () => {
