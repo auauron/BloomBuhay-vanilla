@@ -253,13 +253,9 @@ export default function Dashboard() {
       </div>
 
       {/* Dashboard Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-[550px_1fr] gap-6 p-8 max-w-6xl mx-auto w-full animate-fadeIn">
+      <div className="grid grid-cols-1 md:grid-cols-[550px_1fr] gap-6 p-8 max-w-6xl mx-auto w-full">
         {/* Left Info Card (content varies by stage) */}
-        <div
-          className={`bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-8 rounded-[20px] shadow-lg relative ${
-            isLoading ? "animate-pulse" : ""
-          }`}
-        >
+        <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-8 rounded-[20px] shadow-lg relative">
           {renderMainCard()}
           <div className="absolute bottom-6 right-6 h-40 w-40 bg-white/80 rounded-full border-8 border-white"></div>
         </div>
@@ -267,17 +263,13 @@ export default function Dashboard() {
         {/* Right Column */}
         <div className="flex flex-col gap-6">
           {/* Progress */}
-          <div
-            className={`bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-6 rounded-[20px] shadow-md font-semibold ${
-              isLoading ? "animate-pulse" : ""
-            }`}
-          >
+          <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-6 rounded-[20px] shadow-md font-semibold">
             <h3 className="text-2xl mb-2 text-white font-bold">Progress</h3>
             <div className="w-full bg-white/60 rounded-full h-5 mt-3 overflow-hidden">
               <div
                 className={`bg-[#DE085F] h-full ${
                   isLoading ? "w-0" : "w-1/3"
-                } rounded-full transition-all duration-1000`}
+                } rounded-full`}
               ></div>
             </div>
             <p className="mt-2 text-lg text-center text-[#DE085F] font-bold">
