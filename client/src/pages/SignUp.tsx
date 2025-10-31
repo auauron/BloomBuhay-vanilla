@@ -17,26 +17,44 @@ export default function SignupPage() {
     return errors.find((err) => err.field === fieldName)?.message;
   };
 
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Prevent double submission
+    if (loading) return;
+
     setLoading(true);
     setErrors([]);
 
-    const result = await authService.signup({
-      fullName,
-      email,
-      password,
-      confirmPassword,
-    });
+    try {
+      const result = await authService.signup({
+        fullName,
+        email,
+        password,
+        confirmPassword,
+      });
 
-    setLoading(false);
+      if (result.success) {
+        // Add a small delay to ensure localStorage is settled
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
-    if (result.success) {
-      navigate("/mainsetup"); // Redirect after successful signup
-    } else {
-      if (result.errors) setErrors(result.errors);
+        // Double-check auth state
+        if (authService.isAuthenticated() && authService.getUser()) {
+          // Use replace to prevent back navigation to signup
+          navigate("/mainsetup", { replace: true });
+          return; // Exit early to prevent setLoading(false)
+        } else {
+          setErrors([
+            { field: "email", message: "Authentication failed after signup" },
+          ]);
+        }
+      } else {
+        if (result.errors) setErrors(result.errors);
+      }
+    } catch (error) {
+      setErrors([{ field: "email", message: "An unexpected error occurred" }]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -51,7 +69,7 @@ export default function SignupPage() {
     <div className="min-h-screen bg-bloomWhite flex items-center justify-center">
       <div className="max-w-3xl w-full">
         <div className="text-center mb-6">
-                    <div className="flex items-center justify-center -mb-6 -ml-2 mr-20">
+          <div className="flex items-center justify-center -mb-6 -ml-2 mr-20">
             <img src="../assets/logo_pink.png" alt="Logo" className="h-40" />
             <h1 className="font-poppins text-7xl font-bold text-bloomPink -ml-6">
               <span className="block leading-none">Bloom</span>
@@ -117,7 +135,11 @@ export default function SignupPage() {
 
           {/* Already have an account section */}
           <div className="text-center mt-6">
-            <button type="button" onClick={handleLoginRedirect} className="text-sm text-gray-500 mb-3">
+            <button
+              type="button"
+              onClick={handleLoginRedirect}
+              className="text-sm text-gray-500 mb-3"
+            >
               Already have an account?
             </button>
           </div>

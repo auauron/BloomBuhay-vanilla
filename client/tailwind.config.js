@@ -6,11 +6,20 @@ module.exports = {
   ],
   theme: {
     extend: {
-        colors: {
-              bloomWhite: '#FFF6F6',
-              bloomPink: '#F875AA',
-              bloomYellow: '#F3E198',
-              bloomBlack: '#474747'
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        }
+      },
+      animation: {
+        fadeIn: 'fadeIn 0.5s ease-in-out',
+      },
+      colors: {
+        bloomWhite: '#FFF6F6',
+        bloomPink: '#F875AA',
+        bloomYellow: '#F3E198',
+        bloomBlack: '#474747'
       },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],
