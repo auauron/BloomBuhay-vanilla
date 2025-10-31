@@ -1,4 +1,3 @@
-// server/index.ts
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
@@ -12,6 +11,9 @@ const PORT = process.env.PORT || 3000;
 app
   .use(
     cors({
+      origin: true,
+      credentials: true,
+      allowedHeaders:["Content-Type", "Authorization"],
       exposedHeaders: ["Authorization"],
     })
   )

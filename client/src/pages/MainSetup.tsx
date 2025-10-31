@@ -1,4 +1,3 @@
-// src/pages/MainSetup.tsx
 import React, { useState, useEffect } from "react";
 import "../index.css";
 import { CircleArrowLeftIcon } from "lucide-react";
@@ -36,58 +35,48 @@ export default function MainSetup() {
     setSearchParams({ page: "details", stage });
   };
 
-  const mapUiStageToEnum = (uiStage?: string | null) => {
-    switch (uiStage) {
-      case "Pregnant":
-        return "pregnant";
-      case "Postpartum":
-        return "postpartum";
-      case "Early Childcare":
-        return "childcare";
-      default:
-        return null;
-    }
-  };
-
   const handleComplete = async (stage?: string) => {
     const uiStage = stage ?? selectedStage;
-    const enumStage = mapUiStageToEnum(uiStage);
 
-    if (!enumStage) {
+    // if nothing selected, just navigate (shouldn't happen normally)
+    if (!uiStage) {
       setSearchParams({});
       navigate("/dashboard", { state: { stage: uiStage } });
       return;
     }
 
     try {
+      // prefer a stored token from login/signup
+      const token = localStorage.getItem("token");
 
-      const userId = localStorage.getItem("userId"); 
-
-      if (!userId) {
-        console.warn("No userId found in localStorage; profile will NOT be saved.");
+      if (!token) {
+        // quick/dev fallback: if there's no token, we can't save server-side
+        console.warn("No token found in localStorage; profile will NOT be saved.");
         setSearchParams({});
         navigate("/dashboard", { state: { stage: uiStage } });
         return;
       }
 
-      const resp = await fetch("/api/mother-profiles", {
+      const resp = await fetch("http://localhost:3000/api/mother-profiles", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: Number(userId),
-          stage: enumStage,
-        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ stage: uiStage }),
       });
 
       if (!resp.ok) {
         const err = await resp.json().catch(() => null);
         console.error("Failed creating mother profile:", err);
+        // optional: show a toast or block navigation if you prefer
       } else {
         console.log("Stage saved to DB");
       }
     } catch (error) {
       console.error("Error saving stage:", error);
     } finally {
+      // clear params and go to dashboard with the UI stage in state
       setSearchParams({});
       navigate("/dashboard", { state: { stage: uiStage } });
     }

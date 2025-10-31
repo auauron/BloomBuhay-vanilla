@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import "../index.css";
 import Header from "../components/ui/Header";
@@ -12,7 +12,64 @@ export default function Dashboard() {
   const stageFromState = (location.state as { stage?: string } | null)?.stage;
   const searchParams = new URLSearchParams(location.search);
   const stageFromQuery = searchParams.get("stage");
-  const stage = stageFromState ?? stageFromQuery ?? null;
+  const [stageFromDb, setStageFromDb] = useState<string | null>(null);
+  const [loadingStage, setLoadingStage] = useState(true);
+
+  // helper: map enum -> UI label
+  const enumToUi = (val: string | null | undefined): string | null => {
+    switch (val) {
+      case "pregnant":
+        return "Pregnant";
+      case "postpartum":
+        return "Postpartum";
+      case "childcare":
+        return "Early Childcare";
+      default:
+        return null;
+    }
+  };
+
+  useEffect(() => {
+    // fetch profile on mount
+    const fetchProfile = async () => {
+      try {
+        const userId = localStorage.getItem("userId"); // replace with auth user id when available
+        if (!userId) {
+          setLoadingStage(false);
+          return;
+        }
+
+        const res = await fetch(`/api/mother-profiles?userId=${userId}`);
+        if (!res.ok) {
+          // 404 means no profile yet; handle gracefully
+          setLoadingStage(false);
+          return;
+        }
+
+        const profile = await res.json();
+        // profile.stage contains the enum value like "pregnant"
+        setStageFromDb(enumToUi(profile.stage));
+      } catch (err) {
+        console.error("Failed to load mother profile:", err);
+      } finally {
+        setLoadingStage(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  // Final stage selection order: state -> query -> db -> null
+  const stage = stageFromState ?? stageFromQuery ?? stageFromDb ?? null;
+
+  // optional: show a tiny loading indicator while determining stage
+  if (loadingStage) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading personalized dashboard…</p>
+      </div>
+    );
+  }
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
