@@ -1,4 +1,3 @@
-// src/pages/MainSetup.tsx
 import React, { useState, useEffect } from "react";
 import "../index.css";
 import { CircleArrowLeftIcon } from "lucide-react";
@@ -36,10 +35,86 @@ export default function MainSetup() {
     setSearchParams({ page: "details", stage });
   };
 
-  const handleComplete = (stage?: string) => {
-    // clear setup params then go to dashboard with the stage in state
-    setSearchParams({});
-    navigate("/dashboard", { state: { stage: stage ?? selectedStage } });
+  const handleComplete = async (
+    stage?: string,
+    payload?: {
+      weeksPregnant?: number | null;
+      lmpDate?: string | null;
+      babyName?: string | null;
+      babyGender?: string | null;
+    }
+  ) => {
+    const uiStage = stage ?? selectedStage;
+
+    if (!uiStage) {
+      setSearchParams({});
+      navigate("/dashboard", { state: { stage: uiStage } });
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+
+      // Optimistic cache for immediate dashboard display
+      try {
+        localStorage.setItem("lastStage", uiStage);
+        if (payload?.weeksPregnant != null) {
+          localStorage.setItem("lastWeeksPregnant", String(payload.weeksPregnant));
+        } else if (payload?.lmpDate) {
+          // optional: compute weeks locally from lmpDate fallback (simple)
+          const lmp = new Date(payload.lmpDate);
+          if (!isNaN(lmp.getTime())) {
+            const diffDays = Math.floor((Date.now() - lmp.getTime()) / (1000 * 60 * 60 * 24));
+            if (diffDays >= 0) localStorage.setItem("lastWeeksPregnant", String(Math.floor(diffDays / 7)));
+          }
+        }
+      } catch (e) {
+        // ignore localStorage errors
+      }
+
+      if (!token) {
+        console.warn("No token found in localStorage; profile will NOT be saved server-side.");
+        setSearchParams({});
+        navigate("/dashboard", { state: { stage: uiStage } });
+        return;
+      }
+
+      const body: any = {
+        stage: uiStage,
+        weeksPregnant: payload?.weeksPregnant ?? null,
+        lmpDate: payload?.lmpDate ?? null,
+        babyName: payload?.babyName ?? null,
+        babyGender: payload?.babyGender ?? null,
+      };
+
+      const resp = await fetch("http://localhost:3000/api/mother-profiles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => null);
+        console.error("Failed creating mother profile:", err);
+      } else {
+        const created = await resp.json().catch(() => null);
+        console.log("Stage saved to DB", created);
+        // update local cache with authoritative server response if available
+        if (created?.weeksPregnant != null) {
+          try {
+            localStorage.setItem("lastWeeksPregnant", String(created.weeksPregnant));
+          } catch {}
+        }
+      }
+    } catch (error) {
+      console.error("Error saving stage:", error);
+    } finally {
+      setSearchParams({});
+      navigate("/dashboard", { state: { stage: uiStage } });
+    }
   };
 
   const handleBack = () => {
@@ -52,7 +127,7 @@ export default function MainSetup() {
     switch (selectedStage) {
       case "Pregnant":
         // pass onComplete so Pregnancy can call it after successful submit
-        return <Pregnancy onComplete={() => handleComplete("Pregnant")} />;
+       return <Pregnancy onComplete={(payload: any) => handleComplete("Pregnant", payload)} />;
       case "Postpartum":
         return <Postpartum onComplete={() => handleComplete("Postpartum")} />;
       case "Early Childcare":

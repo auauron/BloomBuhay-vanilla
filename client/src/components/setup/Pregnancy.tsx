@@ -6,8 +6,17 @@ import SetupHeader from "../ui/SetupHeader";
 import NextButton from "../ui/NextButton";
 import { useRef, useEffect } from "react";
 
+// payload shape sent to parent
+export type PregnancyPayload = {
+  weeksPregnant?: number | null;
+  lmpDate?: string | null;
+  babyName?: string | null;
+  babyGender?: "male" | "female" | "unknown" | null;
+};
+
 interface PregnancyProps {
-  onComplete?: () => void;
+  // parent can receive an optional payload
+  onComplete?: (payload?: PregnancyPayload) => void;
 }
 
 export default function Pregnancy({ onComplete }: PregnancyProps) {
@@ -55,14 +64,6 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
 
   const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(e.target.value);
-  };
-
-  const handleNext = () => {
-    // basic validation: require selectedGender (matches existing disabled logic)
-    if (!selectedGender) return;
-
-    // save or validate data here if needed
-    onComplete?.();
   };
 
   return (
@@ -136,7 +137,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                   </div>
                 </label>
 
-                {/* Baby’s details */}
+                {/* Baby's details */}
                 <hr className="border-gray-200 my-4" />
                 <div className="baby-details">
                   <label>
@@ -160,13 +161,11 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                     </h2>
                   </label>
 
-                  <div
-                    className="relative mb-6 w-[350px] ml-4"
-                    ref={dropdownRef}
-                  >
-                    <div
-                      className="flex items-center justify-between p-4 mt-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors text-left w-full cursor-pointer"
-                      onClick={() => setIsOpen((prev) => !prev)}
+                  <div className="relative mb-4 w-[350px] ml-4">
+                    <button
+                      onClick={() => setIsOpen(!isOpen)}
+                      className="flex items-center justify-between p-4 mt-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors text-left w-full"
+                      type="button"
                     >
                       <span
                         className={
@@ -181,8 +180,9 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                           isOpen ? "rotate-180" : ""
                         }`}
                       />
-                    </div>
+                    </button>
 
+                    {/* Dropdown menu */}
                     {isOpen && (
                       <div className="absolute top-full left-0 mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-10 w-full">
                         {babyGenders.map((gender) => (
@@ -202,13 +202,26 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                     )}
                   </div>
 
-                  <div className="ml-4 mt-6">
-                    <NextButton
-                      onComplete={onComplete}
-                      route="/dashboard"
-                      isReady={Boolean(inputValue && value && selectedGender)}
-                    />
-                  </div>
+                  {/* Next button container */}
+                  <NextButton
+                    selectedGender={selectedGender}
+                    onComplete={() => {
+                      const payload: PregnancyPayload = {
+                        weeksPregnant: value ? Number(value) : null,
+                        lmpDate: selectedDate || null,
+                        babyName: inputValue || null,
+                        babyGender: selectedGender
+                          ? selectedGender.toLowerCase() === "girl"
+                            ? "female"
+                            : selectedGender.toLowerCase() === "boy"
+                            ? "male"
+                            : "unknown"
+                          : null,
+                      };
+
+                      onComplete?.(payload);
+                    }}
+                  />
                 </div>
               </div>
             </div>
