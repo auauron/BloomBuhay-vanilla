@@ -41,17 +41,18 @@ model MotherProfiles {
     mother          User       @relation(fields: [motherId], references: [id], onDelete: Cascade)
     motherId        Int
     babyName        String?
-    lmpDate         DateTime
-    weeksPregnant   Int
-    weeksPostpartum Int
-    babyAgeMonths   Int
-    createdAt       DateTime
+    lmpDate         DateTime?        
+    weeksPregnant   Int?             
+    weeksPostpartum Int?             
+    babyAgeMonths   Int?             
+    createdAt       DateTime  @default(now()) 
     stage           Stage
-    babyGender      BabyGender
+    babyGender      BabyGender?
 
     @@index([motherId], name: "idx_mother_profiles_user_id")
     @@map("mother_profiles")
 }
+
 
 model PlannerTask {
     id          Int      @id @default(autoincrement())
