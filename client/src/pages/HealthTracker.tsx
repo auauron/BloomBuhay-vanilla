@@ -45,7 +45,7 @@ export default function HealthTracker() {
       <div className="flex justify-center mt-6">
         <button
           onClick={() => setShowAddMetric(true)}
-          className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-6 py-3 rounded-full font-semibold hover:from-[#F9649C] hover:to-[#F3B287] hover:scale-105 transform transition-all shadow-lg"
+          className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-6 py-3 rounded-full font-semibold hover:from-bloomPink hover:to-bloomYellow hover:scale-105 transform transition-all shadow-lg"
         >
           + Add Health Metric
         </button>

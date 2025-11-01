@@ -140,9 +140,10 @@ const SymptomsList: React.FC = () => {
     onClose: () => void; 
     children: React.ReactNode;
     actionButtons?: React.ReactNode;
+    className?: string
   }> = ({ title, onClose, children, actionButtons }) => (
     <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
-      <h3 className="text-xl font-bold text-gray-800 mb-4">{title}</h3>
+      <h3 className="text-xl font-bold text-bloomPink mb-4">{title}</h3>
       {children}
       {actionButtons}
       <button
@@ -156,15 +157,17 @@ const SymptomsList: React.FC = () => {
 
   // Form fields component
   const SymptomFormFields: React.FC = () => (
-    <div className="space-y-4">
+
+    <div className="space-y-auto">
       <input
         type="text"
-        placeholder="Symptom (e.g., Headache)"
+        placeholder="Symptom (e.g., Headache, Nausea, etc.)"
         value={formState.symptom}
         onChange={(e) => setFormState({ ...formState, symptom: e.target.value })}
         className="w-full p-3 rounded-lg border border-gray-300 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-bloomPink/50 focus:border-bloomPink placeholder-gray-500"
       />
 
+    <p className="text-bloomBlack font-rubik mb-2 mt-4">How intense is it?</p>
       <select
         value={formState.intensity}
         onChange={(e) =>
@@ -177,6 +180,7 @@ const SymptomsList: React.FC = () => {
         <option value="High">High</option>
       </select>
 
+    <p className="text-bloomBlack font-rubik mb-2 mt-4">When did it start?</p>
       <div className="grid grid-cols-2 gap-3">
         <div className="relative">
           <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
@@ -203,7 +207,7 @@ const SymptomsList: React.FC = () => {
   return (
     <div className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white p-6 rounded-2xl shadow-lg ">
       <h3 className="text-2xl font-bold mb-2">Recent Symptoms</h3>
-        <p className="text-bloomBlack font-rubik font-normal mb-4">How have you been feeling? Tracking symptoms to help you monitor health patterns.</p>
+        <p className="text-bloomBlack font-rubik font-normal mb-4">How have you been feeling? Tracking symptoms help you monitor health patterns better. 🌸💗</p>
 
       {/* Symptoms List */}
       <div className="space-y-3 mb-6 max-h-80 overflow-y-auto">
@@ -269,7 +273,7 @@ const SymptomsList: React.FC = () => {
       {/* Add Symptom Button */}
       <button
         onClick={openAddModal}
-        className="w-full bg-white/30 hover:bg-white/40 text-white font-semibold py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
+        className="w-full bg-white/30 hover:bg-white/40 text-white font-semibold py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 mt-2 shadow-sm hover:shadow-md"
       >
         <Plus size={20} />
         Log New Symptom
@@ -284,7 +288,7 @@ const SymptomsList: React.FC = () => {
             actionButtons={
               <button
                 onClick={addSymptom}
-                className="w-full bg-bloomPink hover:bg-bloomPink/90 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 mt-4"
+                className="w-full bg-gradient-to-r from-bloompink to-bloomYellow hover:from-bloomPink hover:to-bloomYellow hover:scale-105 rounded-xl transition-all shadow-lg duration-200 text-white font-semibold py-3 flex items-center justify-center gap-2 mt-6"
                 disabled={!formState.symptom.trim()}
               >
                 <Plus size={16} />
