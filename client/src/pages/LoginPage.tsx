@@ -50,7 +50,7 @@ export default function LoginPage() {
               <span className="block -mt-4">Buhay</span>
             </h1>
           </div>
-          <h2 className="font-rubik text-xl font-bold text-bloomBlack">
+          <h2 className="font-rubik text-xl mt-6 font-bold text-bloomBlack">
             Welcome back!
           </h2>
           <p className="font-rubik text-bloomBlack text-xs -mb-2">
