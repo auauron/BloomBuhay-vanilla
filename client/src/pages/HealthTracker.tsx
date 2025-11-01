@@ -25,16 +25,18 @@ export default function HealthTracker() {
   const removeMetric = (index: number) => setHealthMetrics(healthMetrics.filter((_, i) => i !== index));
 
   return (
-    <div className="min-h-screen bg-pink-50 flex flex-col font-poppins">
+    <div className="flex flex-col h-screen font-poppins bg-pink-50">
       <Header onMenuClick={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
+      <div className="flex-1 overflow-y-auto min-h-0">
+
       {/* Page Header */}
       <div className="flex flex-col items-center text-center mt-8 px-4">
-        <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-bloomPink to-bloomYellow">
+        <h2 className="text-4xl font-bold bg-clip-text text-bloomPink">
           Health Tracker
         </h2>
-        <p className="text-[#474747] font-light mt-2 text-lg">
+        <p className="text-bloomBlack font-rubik mt-2 mb-[-5px] font-light text-lg">
           Monitor your wellness throughout pregnancy
         </p>
       </div>
@@ -63,6 +65,7 @@ export default function HealthTracker() {
         <MoodTracker />
         <SymptomsList />
       </div>
+    </div>
     </div>
   );
 }

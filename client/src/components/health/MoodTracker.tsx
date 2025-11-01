@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "../../index.css";
 
 interface Mood {
   day: string;
@@ -26,7 +27,7 @@ const MoodTracker: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-white p-6 rounded-2xl shadow-lg">
+    <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-6 rounded-2xl shadow-lg">
       <h3 className="text-2xl font-bold mb-4">Mood Tracker</h3>
       <p className="text-white/80 mb-4">How are you feeling today?</p>
       <div className="grid grid-cols-5 gap-3 mb-6">

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "../../index.css";
 
 interface Metric {
   title: string;
@@ -30,7 +31,7 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
         change: "New",
         trend: "stable",
         icon: newMetric.icon,
-        color: "from-[#F875AA] to-[#F4C69D]",
+        color: "from-bloomPink to-bloomYellow",
       });
       setNewMetric({ title: "", value: "", unit: "", icon: "📝" });
       onClose();
@@ -47,7 +48,7 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
             placeholder="Metric Name"
             value={newMetric.title}
             onChange={(e) => setNewMetric({ ...newMetric, title: e.target.value })}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F875AA] focus:border-transparent"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bloomPink focus:border-transparent"
           />
           <div className="flex space-x-4">
             <input
@@ -55,14 +56,14 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
               placeholder="Value"
               value={newMetric.value}
               onChange={(e) => setNewMetric({ ...newMetric, value: e.target.value })}
-              className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F875AA] focus:border-transparent"
+              className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bloomPink focus:border-transparent"
             />
             <input
               type="text"
               placeholder="Unit"
               value={newMetric.unit}
               onChange={(e) => setNewMetric({ ...newMetric, unit: e.target.value })}
-              className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F875AA] focus:border-transparent"
+              className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bloomPink focus:border-transparent"
             />
           </div>
           <div className="flex space-x-2 overflow-x-auto py-2">
@@ -71,7 +72,7 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
                 key={index}
                 onClick={() => setNewMetric({ ...newMetric, icon })}
                 className={`text-2xl p-2 rounded-lg ${
-                  newMetric.icon === icon ? "bg-[#F875AA] text-white" : "bg-gray-100"
+                  newMetric.icon === icon ? "bg-bloomPink text-white" : "bg-gray-100"
                 }`}
               >
                 {icon}
@@ -88,7 +89,7 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
           </button>
           <button
             onClick={handleAdd}
-            className="flex-1 py-2 px-4 bg-[#F875AA] text-white rounded-lg hover:bg-[#F9649C] transition-colors font-medium"
+            className="flex-1 py-2 px-4 bg-bloomPink text-white rounded-lg hover:bg-[#F9649C] transition-colors font-medium"
           >
             Add Metric
           </button>
