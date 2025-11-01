@@ -1,8 +1,8 @@
 import React from "react";
 import { useState } from "react";
 import "../index.css";
-import Header from '../components/Header';
-import Sidebar from "../components/Sidebar";
+import Header from '../components/ui/Header';
+import Sidebar from "../components/ui/Sidebar";
 
 export default function HealthTracker() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
