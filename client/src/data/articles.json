@@ -41,7 +41,7 @@
             ]
           }
         ],
-        "source": "Based on information from What to Expect - Week 5 Pregnancy"
+        "source": "Source: https://www.whattoexpect.com/pregnancy/week-by-week/week-5.aspx"
       }
     },
     {
@@ -116,6 +116,190 @@
           }
         ],
         "source": "Source: https://www.sciencedirect.com/science/article/pii/S1751721422001476"
+      }
+    },
+    {
+      "id": "postpartum-self-care",
+      "title": "Postpartum Self-Care Routine",
+      "image": "/assets/article1.webp",
+      "category": "Self-Care",
+      "section": "mother",
+      "content": {
+        "headline": "Postpartum Self-Care: Nurturing Yourself After Birth",
+        "intro": "The postpartum period is a transformative time that requires special attention to your physical and emotional recovery. Taking care of yourself isn't selfish—it's essential for your wellbeing and your ability to care for your newborn. Remember, a healthy mom means a healthy baby!",
+        "sections": [
+          {
+            "title": "Physical Recovery Essentials",
+            "content": "Your body needs time and care to heal after childbirth. Be patient and listen to your body's signals:",
+            "points": [
+              "Rest whenever possible - sleep when your baby sleeps",
+              "Manage pain with prescribed medications and warm baths",
+              "Eat nutritious meals and stay hydrated",
+              "Care for your perineal area with proper hygiene",
+              "Watch for signs of infection and contact your provider if concerned"
+            ]
+          },
+          {
+            "title": "Emotional Wellbeing",
+            "content": "Hormonal changes and new responsibilities can affect your emotional health:",
+            "points": [
+              "Accept help from family and friends",
+              "Share your feelings with your partner or support person",
+              "Be patient with yourself - adjustment takes time",
+              "Watch for baby blues (common) vs postpartum depression (requires treatment)",
+              "Take breaks when needed - even 15 minutes alone can help"
+            ]
+          },
+          {
+            "title": "Daily Self-Care Practices",
+            "points": [
+              "Shower daily - it can boost your mood and energy",
+              "Wear comfortable clothes that make you feel good",
+              "Spend time outdoors when possible",
+              "Connect with other new parents for support",
+              "Keep water and healthy snacks nearby for easy access"
+            ]
+          }
+        ],
+        "source": "Source: https://www.stanfordchildrens.org/en/topic/default?id=the-new-mother-taking-care-of-yourself-after-birth-90-P02693"
+      }
+    },
+    {
+      "id": "caring-while-caring",
+      "title": "Caring for Yourself While Caring for Baby",
+      "image": "/assets/article1.webp",
+      "category": "Wellness",
+      "section": "mother",
+      "content": {
+        "headline": "Balancing Your Needs While Nurturing Your Baby",
+        "intro": "Caring for a newborn is demanding, but neglecting your own needs can lead to burnout. Finding balance between caring for your baby and yourself is crucial for sustainable parenting. You deserve care and attention too!",
+        "sections": [
+          {
+            "title": "Why Parent Self-Care Matters",
+            "content": "Taking care of yourself directly impacts your ability to care for your baby:",
+            "points": [
+              "Reduced stress helps you respond more patiently to your baby",
+              "Better physical health means more energy for parenting",
+              "Emotional regulation models healthy coping for your child",
+              "Prevents caregiver burnout and exhaustion",
+              "Maintains your identity beyond being a parent"
+            ]
+          },
+          {
+            "title": "Practical Self-Care Strategies",
+            "content": "Small, consistent practices can make a big difference in your wellbeing:",
+            "points": [
+              "Take micro-breaks - even 5 minutes of deep breathing helps",
+              "Ask for help with household tasks and baby care",
+              "Connect with friends who understand your experience",
+              "Practice saying 'no' to unnecessary commitments",
+              "Keep a list of quick self-care activities for busy days"
+            ]
+          },
+          {
+            "title": "Building a Support System",
+            "points": [
+              "Identify trusted people who can provide practical help",
+              "Join parent groups for shared experiences and advice",
+              "Communicate your needs clearly to your partner",
+              "Consider professional support if feeling overwhelmed",
+              "Remember it's okay to not be perfect - good enough is great!"
+            ]
+          }
+        ],
+        "source": "Source: https://www.zerotothree.org/resource/caring-for-yourself-while-you-care-for-your-children/"
+      }
+    },
+    {
+      "id": "mental-health-after-birth",
+      "title": "Mental Health After Birth",
+      "image": "/assets/article1.webp",
+      "category": "Mental Health",
+      "section": "mother",
+      "content": {
+        "headline": "Understanding Postpartum Mental Health",
+        "intro": "The period after childbirth brings significant emotional changes. While many new parents experience temporary 'baby blues,' some may develop more serious conditions like postpartum depression. Recognizing the signs and seeking help early is crucial for your recovery and your baby's wellbeing.",
+        "sections": [
+          {
+            "title": "Common Postpartum Conditions",
+            "content": "Understanding the differences between normal adjustment and concerning symptoms:",
+            "points": [
+              "Baby Blues: Mild mood swings, anxiety, sadness affecting 70-80% of new moms",
+              "Postpartum Depression: Persistent sadness, loss of interest, difficulty bonding",
+              "Postpartum Anxiety: Excessive worry, racing thoughts, physical anxiety symptoms",
+              "Postpartum OCD: Intrusive thoughts and compulsive behaviors",
+              "Postpartum Psychosis: Rare but serious condition requiring immediate care"
+            ]
+          },
+          {
+            "title": "Warning Signs to Watch For",
+            "content": "These symptoms may indicate you need professional support:",
+            "points": [
+              "Overwhelming sadness or crying spells",
+              "Severe mood swings or irritability",
+              "Difficulty bonding with your baby",
+              "Withdrawing from family and friends",
+              "Thoughts of harming yourself or your baby"
+            ]
+          },
+          {
+            "title": "Getting Help and Treatment",
+            "points": [
+              "Talk to your healthcare provider about your symptoms",
+              "Therapy and counseling can provide effective support",
+              "Medication may be recommended in some cases",
+              "Support groups connect you with others who understand",
+              "Emergency help is available if you have thoughts of self-harm"
+            ]
+          }
+        ],
+        "source": "Source: https://www.mayoclinic.org/diseases-conditions/postpartum-depression/symptoms-causes/syc-20376617"
+      }
+    },
+    {
+      "id": "exercise-postpartum",
+      "title": "Returning to Exercise Postpartum",
+      "image": "/assets/article1.webp",
+      "category": "Fitness",
+      "section": "mother",
+      "content": {
+        "headline": "🏃‍♀️ Safe Return to Exercise After Pregnancy",
+        "intro": "Returning to physical activity after childbirth requires patience and proper progression. While exercise can boost your energy and mood, it's important to start slowly and listen to your body's signals. Your recovery timeline is unique to you and your birth experience.",
+        "sections": [
+          {
+            "title": "When to Start Exercising",
+            "content": "Timing depends on your delivery and recovery:",
+            "points": [
+              "Vaginal delivery: Often cleared at 4-6 weeks postpartum",
+              "C-section: Typically 6-8 weeks with provider clearance",
+              "Listen to your body - pain or bleeding means slow down",
+              "Start with gentle activities like walking first",
+              "Always get your provider's approval before beginning"
+            ]
+          },
+          {
+            "title": "Safe Postpartum Exercises",
+            "content": "Begin with low-impact activities that support recovery:",
+            "points": [
+              "Walking - start with short distances and gradually increase",
+              "Pelvic floor exercises (Kegels) for core recovery",
+              "Gentle stretching to improve flexibility",
+              "Deep breathing for core and relaxation",
+              "Modified strength training focusing on proper form"
+            ]
+          },
+          {
+            "title": "Important Safety Considerations",
+            "points": [
+              "Stop if you experience pain or increased bleeding",
+              "Wear supportive clothing, especially for breastfeeding moms",
+              "Stay hydrated and eat enough to support milk production",
+              "Be aware of diastasis recti (abdominal separation)",
+              "Progress gradually - this is a marathon, not a sprint!"
+            ]
+          }
+        ],
+        "source": "Source: https://www.mayoclinic.org/healthy-lifestyle/labor-and-delivery/in-depth/exercise-after-pregnancy/art-20044596"
       }
     }
   ]
