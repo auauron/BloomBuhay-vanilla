@@ -396,97 +396,126 @@ export default function BloomGuide() {
 
   // === MAIN PAGE ===
   return (
-    <div className="min-h-screen bg-pink-50 flex flex-col font-poppins relative overflow-hidden">
-      <div className={`transition-all duration-300 ${isModalOpen ? 'blur-sm' : ''}`}>
-        <Header onMenuClick={toggleSidebar} />
-        <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+    <div 
+      className="bg-pink-50 flex flex-col font-poppins relative"
+      style={{
+        height: '100vh',
+        overflow: 'hidden'
+      }}
+    >
+      <Header onMenuClick={toggleSidebar} />
+      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
-        {/* Background decorative elements */}
-        <div className="fixed top-20 right-10 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse-slow" />
-
-        {/* BLOOMGUIDE BAR */}
-        <div className="text-[#F875AA] text-center mt-5 px-6 py-2">
-          <div className="font-semibold text-3xl">BloomGuide</div>
-          <div className="text-lg font-rubik text-[#474747]">know more, care better.</div>
-        </div>
-
-        {/* SEARCH BAR */}
-        <div className="w-full px-6 py-4">
-          <GradientSearchBar 
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            hasNoResults={hasNoResults}
-          />
-        </div>
-
-        {/* FILTER BUTTONS */}
-        <FilterButtons 
-          activeFilter={activeFilter}
-          setActiveFilter={setActiveFilter}
-          searchQuery={searchQuery}
-          maternalTips={maternalTips}
-          motherCare={motherCare}
-          babyCare={babyCare}
+      {/* Main scrollable content area with FORCED scrolling */}
+      <div 
+        className={`flex-1 w-full ${isModalOpen ? 'blur-sm' : ''}`}
+        style={{
+          height: 'calc(100vh - 80px)',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          WebkitOverflowScrolling: 'touch',
+          paddingTop: '20px'
+        }}
+      >
+        {/* Background decorative element */}
+        <div 
+          className="fixed top-20 right-10 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse pointer-events-none"
+          style={{
+            zIndex: 0
+          }}
         />
 
-        {/* ARTICLES SECTIONS */}
-        <div className="flex-1 pb-20">
-          {Object.entries(filteredSections).map(([section, articles]) => (
-            <section key={section} className="px-8 mb-8 mt-8">
-              <div className="flex items-center gap-4 mb-6">
-                <h2 className="text-3xl font-bold text-bloomPink">
-                  {getSectionTitle(section)}
-                </h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {articles.map((article, i) => (
-                  <ArticleCard 
-                    key={i} 
-                    title={article.title} 
-                    image={article.image} 
-                    category={article.category}
-                    onClick={() => handleArticleClick(article.title)}
-                  />
-                ))}
-              </div>
-            </section>
-          ))}
+        {/* Content Container */}
+        <div 
+          className="relative z-10"
+          style={{
+            minHeight: '1000px' // Force enough content for scrolling
+          }}
+        >
+          {/* BLOOMGUIDE BAR */}
+          <div className="text-[#F875AA] text-center mt-5 px-6 py-2">
+            <div className="font-semibold text-3xl">BloomGuide</div>
+            <div className="text-lg font-rubik text-[#474747]">know more, care better.</div>
+          </div>
 
-          {/* Show message if no articles found for a specific filter */}
-          {Object.keys(filteredSections).length === 0 && (
-            <div className="text-center py-12 px-8">
-              <div className="text-gray-400 text-6xl mb-4">
-                {searchQuery ? "🔍" : "📚"}
-              </div>
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">
-                {searchQuery ? `No articles found for "${searchQuery}"` : "No articles found"}
-              </h3>
-              <p className="text-gray-500">
-                {searchQuery 
-                  ? "Try a different search term or clear your search to see all articles."
-                  : "Try selecting a different filter or search term."
-                }
-              </p>
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="mt-4 bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-6 py-2 rounded-full hover:shadow-lg transition-all duration-300"
-                >
-                  Clear Search
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+          {/* SEARCH BAR */}
+          <div className="w-full px-6 py-4">
+            <GradientSearchBar 
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              hasNoResults={hasNoResults}
+            />
+          </div>
 
-        {/* Floating Help Button */}
-        <div className="fixed bottom-8 right-8">
-          <button className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 group">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </button>
+          {/* FILTER BUTTONS */}
+          <FilterButtons 
+            activeFilter={activeFilter}
+            setActiveFilter={setActiveFilter}
+            searchQuery={searchQuery}
+            maternalTips={maternalTips}
+            motherCare={motherCare}
+            babyCare={babyCare}
+          />
+
+          {/* ARTICLES SECTIONS */}
+          <div className="pb-32">
+            {Object.entries(filteredSections).map(([section, articles]) => (
+              <section key={section} className="px-8 mb-12 mt-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <h2 className="text-3xl font-bold text-bloomPink">
+                    {getSectionTitle(section)}
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {articles.map((article, i) => (
+                    <ArticleCard 
+                      key={i} 
+                      title={article.title} 
+                      image={article.image} 
+                      category={article.category}
+                      onClick={() => handleArticleClick(article.title)}
+                    />
+                  ))}
+                </div>
+              </section>
+            ))}
+
+            {/* Show message if no articles found for a specific filter */}
+            {Object.keys(filteredSections).length === 0 && (
+              <div className="text-center py-12 px-8">
+                <div className="text-gray-400 text-6xl mb-4">
+                  {searchQuery ? "🔍" : "📚"}
+                </div>
+                <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                  {searchQuery ? `No articles found for "${searchQuery}"` : "No articles found"}
+                </h3>
+                <p className="text-gray-500">
+                  {searchQuery 
+                    ? "Try a different search term or clear your search to see all articles."
+                    : "Try selecting a different filter or search term."
+                  }
+                </p>
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="mt-4 bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-6 py-2 rounded-full hover:shadow-lg transition-all duration-300"
+                  >
+                    Clear Search
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
+      </div>
+
+      {/* Floating Help Button */}
+      <div className="fixed bottom-8 right-8 z-50">
+        <button className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 group">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </button>
       </div>
       
       {/* ARTICLE MODAL */}
