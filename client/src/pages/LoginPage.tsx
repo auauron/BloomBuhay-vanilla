@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { authService } from "../services/authService";
 import { ValidationError } from "../types/auth";
-import InputField from "../components/inputField";
+import InputField from "../components/ui/inputField";
+import AuthToggle from "../components/AuthToggle";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -31,9 +32,9 @@ export default function LoginPage() {
     }
   };
 
-  const handleSignupRedirect = () => {
-    navigate("/signup");
-  };
+  // const handleSignupRedirect = () => {
+  //   navigate("/signup");
+  // };
   //placeholder route
   const handleforgotPassword = () => {
     navigate("/forgot-password");
@@ -49,10 +50,10 @@ export default function LoginPage() {
               <span className="block -mt-4">Buhay</span>
             </h1>
           </div>
-          <h2 className="font-rubik text-xl font-bold text-gray-800">
+          <h2 className="font-rubik text-xl mt-6 font-bold text-bloomBlack">
             Welcome back!
           </h2>
-          <p className="font-rubik text-gray-600 text-xs -mb-2">
+          <p className="font-rubik text-bloomBlack text-xs -mb-2">
             Continue your journey of motherhood.
           </p>
         </div>
@@ -60,20 +61,8 @@ export default function LoginPage() {
         {/* forms */}
         <div className="bg-white rounded-2xl w-500 shadow-lg p-6 pl-16 pr-16">
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-            <div className="flex w-full mx-auto rounded-full bg-pink-100 p-1">
-              <button
-                className="flex-1 py-2 rounded-full text-sm font-medium text-white bg-bloomPink shadow-md hover:bg-bloomPink transition"
-                disabled
-              >
-                Log In
-              </button>
-              <button
-                onClick={handleSignupRedirect}
-                className="flex-1 py-2 rounded-full text-sm font-medium text-pink-500 hover:bg-pink-50 transition"
-              >
-                Sign Up
-              </button>
-            </div>
+            <AuthToggle />
+
             <InputField
               label="Email Address"
               type="email"

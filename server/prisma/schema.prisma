@@ -26,27 +26,29 @@ model User {
     password       String
     createdAt      DateTime         @default(now())
     updatedAt      DateTime         @updatedAt
+    profilePic     String?
     MotherProfiles MotherProfiles[]
     PlannerTask    PlannerTask[]
     HealthLog      HealthLog[]
     ToolsLog       ToolsLog[]
     JournalEntry   JournalEntry[]
+    refreshTokens  RefreshToken[]
 
     @@map("user")
 }
 
 model MotherProfiles {
-    id              Int        @id @default(autoincrement())
-    mother          User       @relation(fields: [motherId], references: [id], onDelete: Cascade)
+    id              Int         @id @default(autoincrement())
+    mother          User        @relation(fields: [motherId], references: [id], onDelete: Cascade)
     motherId        Int
     babyName        String?
-    lmpDate         DateTime
-    weeksPregnant   Int
-    weeksPostpartum Int
-    babyAgeMonths   Int
-    createdAt       DateTime
+    lmpDate         DateTime?
+    weeksPregnant   Int?
+    weeksPostpartum Int?
+    babyAgeMonths   Int?
+    createdAt       DateTime    @default(now())
     stage           Stage
-    babyGender      BabyGender
+    babyGender      BabyGender?
 
     @@index([motherId], name: "idx_mother_profiles_user_id")
     @@map("mother_profiles")
@@ -123,4 +125,17 @@ model JournalEntry {
 
     @@index([motherId], name: "idx_journal_entries_mother_id")
     @@map("journal_entries")
+}
+
+model RefreshToken {
+    id        Int      @id @default(autoincrement())
+    token     String   @unique
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId    Int
+    expiresAt DateTime
+    revoked   Boolean  @default(false)
+    createdAt DateTime @default(now())
+
+    @@index([userId], name: "idx_refresh_tokens_user_id")
+    @@map("refresh_tokens")
 }

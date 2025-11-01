@@ -21,6 +21,7 @@ export interface UserResponse {
 export interface AuthResponse {
   success: boolean;
   token?: string;
+  refreshToken?: string;
   user?: UserResponse;
   error?: string;
   errors?: ValidationError[];

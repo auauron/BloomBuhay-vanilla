@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { authService } from "../services/authService";
 import { ValidationError } from "../types/auth";
-import InputField from "../components/inputField";
+import InputField from "../components/ui/inputField";
+import AuthToggle from "../components/AuthToggle";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -18,37 +19,68 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation(); // Stop event bubbling
+
+    // Prevent double submission
+    if (loading) return;
+
     setLoading(true);
     setErrors([]);
 
-    const result = await authService.signup({
-      fullName,
-      email,
-      password,
-      confirmPassword,
-    });
+    try {
+      // Disable any navigation during signup
+      window.onbeforeunload = () => true;
 
-    setLoading(false);
+      const result = await authService.signup({
+        fullName,
+        email,
+        password,
+        confirmPassword,
+      });
 
-    if (result.success) {
-      navigate("/login"); // Redirect after successful signup
-    } else {
-      if (result.errors) setErrors(result.errors);
+      if (result.success) {
+        // Clear any pending navigations
+        window.onbeforeunload = null;
+
+        // Add a small delay to ensure any storage has settled
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        // Prefer using the result token for navigation instead of reading localStorage
+        if (result.token) {
+          // Navigate using react-router so app state stays consistent
+          navigate("/mainsetup", { replace: true });
+          return; // Exit early
+        }
+        // fallback: check authService
+        if (authService.isAuthenticated() && authService.getUser()) {
+          navigate("/mainsetup", { replace: true });
+          return;
+        }
+        setErrors([
+          { field: "email", message: "Authentication failed after signup" },
+        ]);
+      } else {
+        if (result.errors) setErrors(result.errors);
+      }
+    } catch (error) {
+      setErrors([{ field: "email", message: "An unexpected error occurred" }]);
+    } finally {
+      window.onbeforeunload = null; // Clear navigation block
+      setLoading(false);
     }
   };
 
-  const handleSignupRedirect = () => {
-    navigate("/signup");
-  };
   const handleLoginRedirect = () => {
     navigate("/login");
   };
+  // const handleLoginRedirect = () => {
+  //   navigate("/login");
+  // };
 
   return (
     <div className="min-h-screen bg-bloomWhite flex items-center justify-center">
       <div className="max-w-3xl w-full">
         <div className="text-center mb-6">
-          
           <div className="flex items-center justify-center -mb-6 -ml-2 mr-20">
             <img src="../assets/logo_pink.png" alt="Logo" className="h-40" />
             <h1 className="font-poppins text-7xl font-bold text-bloomPink -ml-6">
@@ -56,33 +88,18 @@ export default function SignupPage() {
               <span className="block -mt-4">Buhay</span>
             </h1>
           </div>
-          <h2 className="font-rubik text-xl font-bold text-gray-800 -ml-2">
+          <h2 className="font-rubik text-xl mt-6 font-bold text-bloomBlack -ml-2">
             Let's get you started!
           </h2>
-          <p className="font-rubik text-gray-600 text-xs -mb-2">
+          <p className="font-rubik text-bloomBlack text-xs -mb-2">
             Sign up to start your journey of growth.
           </p>
         </div>
 
         {/* Form Container */}
         <div className="bg-white rounded-2xl w-500 shadow-lg p-8 -pb- pl-16 pr-16">
-          
-          <form onSubmit={handleSubmit} className="space-y-2 mt-2">
-            <div className="flex w-full mx-auto rounded-full bg-pink-100 p-1">
-            <button
-              onClick={handleLoginRedirect}
-              className="flex-1 py-2 rounded-full text-sm font-medium text-pink-500 hover:bg-pink-50 transition"
-            >
-              Log In
-            </button>
-            <button
-              onClick={handleLoginRedirect}
-              className="flex-1 py-2 rounded-full text-sm font-medium text-white bg-bloomPink shadow-md hover:bg-bloomPink transition"
-              disabled
-            >
-              Sign Up
-            </button>
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+            <AuthToggle />
             <InputField
               label="Full Name"
               type="text"
@@ -117,23 +134,28 @@ export default function SignupPage() {
               onChange={setConfirmPassword}
               placeholder="Re-enter your password"
               error={getFieldError("confirmPassword")}
+      
             />
 
             <button
               type="submit"
               disabled={loading}
-              className="mx-auto mt-6 flex items-center justify-center rounded-3xl bg-gradient-to-r from-bloomPink to-bloomYellow px-8 py-4 text-white font-semibold shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 min-w-[500px]"
+              className="mx-auto mt-6 flex items-center justify-center rounded-3xl bg-gradient-to-r from-bloomPink to-bloomYellow px-8 py-4 text-white font-semibold shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 min-w-[500px] -mb-5"
             >
               {loading ? "Signing Up..." : "Sign Up"}
             </button>
-
-            {/* Already have an account section */}
-            <div className="text-center mt-6">
-              <button type="button" onClick={handleLoginRedirect} className="text-sm text-gray-500 mb-3">
-                Already have an account?
-              </button>
-            </div>
           </form>
+
+          {/* Already have an account section */}
+          <div className="text-center mt-6 text-xs text-gray-400 ">
+            <button
+              type="button"
+              onClick={handleLoginRedirect}
+              className="hover:underline"
+            >
+              Already have an account?
+            </button>
+          </div>
         </div>
       </div>
     </div>

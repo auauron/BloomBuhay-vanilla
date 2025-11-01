@@ -1,22 +1,21 @@
 import React from "react";
 import "../index.css";
 import { useState } from "react";
-import Header from '../components/Header';
-import Sidebar from "../components/Sidebar";
-import { Search } from 'lucide-react';
+import Header from "../components/ui/Header";
+import Sidebar from "../components/ui/Sidebar";
+import { Search } from "lucide-react";
 
 export default function BloomGuide() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
-    const toggleSidebar = () => {
-      setIsSidebarOpen(!isSidebarOpen);
-    };
-  
-    const closeSidebar = () => {
-      setIsSidebarOpen(false);
-    };
-  
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
   // === DATA SECTION ===
   const maternalTips = [
     {
@@ -54,11 +53,10 @@ export default function BloomGuide() {
 
   // === MAIN PAGE ===
   return (
-      <div className="min-h-screen bg-pink-50 flex flex-col font-poppins">
-        <Header onMenuClick={toggleSidebar} />
-        <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+    <div className="min-h-screen bg-pink-50 flex flex-col font-poppins">
+      <Header onMenuClick={toggleSidebar} />
+      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
-  
       {/* BLOOMGUIDE BAR */}
       <div className="text-[#F875AA] text-4xl mt-5 px-6 py-2 flex items-center gap-2">
         <span className="font-semibold">BloomGuide</span>
@@ -73,7 +71,9 @@ export default function BloomGuide() {
             placeholder="Search articles..."
             className="w-full rounded-full pl-10 pr-4 py-2 border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-300 text-gray-700"
           />
-          <span className="absolute left-3 top-2.5 text-pink-500 text-lg"><Search /></span>
+          <span className="absolute left-3 top-2.5 text-pink-500 text-lg">
+            <Search />
+          </span>
         </div>
       </div>
 

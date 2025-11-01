@@ -1,35 +1,35 @@
-import React, { useState } from 'react';
-import { authService } from '../services/authService';
-import { ValidationError } from '../types/auth';
+import React, { useState } from "react";
+import { authService } from "../services/authService";
+import { ValidationError } from "../types/auth";
 
-type TabType = 'login' | 'signup';
+type TabType = "login" | "signup";
 
 export default function AuthForm() {
-  const [activeTab, setActiveTab] = useState<TabType>('signup');
-  
+  const [activeTab, setActiveTab] = useState<TabType>("signup");
+
   // Form fields
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   // UI state
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<ValidationError[]>([]);
-  const [generalError, setGeneralError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [generalError, setGeneralError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   // Helper to get error for a specific field
   const getFieldError = (fieldName: string): string | undefined => {
-    return errors.find(err => err.field === fieldName)?.message;
+    return errors.find((err) => err.field === fieldName)?.message;
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErrors([]);
-    setGeneralError('');
-    setSuccessMessage('');
+    setGeneralError("");
+    setSuccessMessage("");
 
     const result = await authService.signup({
       fullName,
@@ -41,7 +41,9 @@ export default function AuthForm() {
     setLoading(false);
 
     if (result.success) {
-      setSuccessMessage('Account created successfully! Welcome to BloomBuhay 🌸');
+      setSuccessMessage(
+        "Account created successfully! Welcome to BloomBuhay 🌸"
+      );
       // Redirect to dashboard or home page
       // window.location.href = '/dashboard';
     } else {
@@ -58,8 +60,8 @@ export default function AuthForm() {
     e.preventDefault();
     setLoading(true);
     setErrors([]);
-    setGeneralError('');
-    setSuccessMessage('');
+    setGeneralError("");
+    setSuccessMessage("");
 
     const result = await authService.login({
       email,
@@ -69,7 +71,7 @@ export default function AuthForm() {
     setLoading(false);
 
     if (result.success) {
-      setSuccessMessage('Login successful! Welcome back 🌸');
+      setSuccessMessage("Login successful! Welcome back 🌸");
       // Redirect to dashboard or home page
       // window.location.href = '/dashboard';
     } else {
@@ -90,7 +92,9 @@ export default function AuthForm() {
           <div className="flex items-center justify-center mb-4">
             <span className="text-6xl"></span>
             <h1 className="`text-5xl font-bold text-pink-500">
-              Bloom<br/>Buhay
+              Bloom
+              <br />
+              Buhay
             </h1>
           </div>
           <h2 className="text-xl font-semibold text-gray-800">
@@ -106,21 +110,21 @@ export default function AuthForm() {
           {/* Tabs */}
           <div className="flex gap-4 mb-6">
             <button
-              onClick={() => setActiveTab('login')}
+              onClick={() => setActiveTab("login")}
               className={`flex-1 py-2 px-4 rounded-full font-semibold transition-all ${
-                activeTab === 'login'
-                  ? 'bg-gradient-to-r from-pink-400 to-orange-300 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                activeTab === "login"
+                  ? "bg-gradient-to-r from-pink-400 to-orange-300 text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
               Log In
             </button>
             <button
-              onClick={() => setActiveTab('signup')}
+              onClick={() => setActiveTab("signup")}
               className={`flex-1 py-2 px-4 rounded-full font-semibold transition-all ${
-                activeTab === 'signup'
-                  ? 'bg-gradient-to-r from-pink-400 to-orange-300 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                activeTab === "signup"
+                  ? "bg-gradient-to-r from-pink-400 to-orange-300 text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
               Sign Up
@@ -140,7 +144,7 @@ export default function AuthForm() {
           )}
 
           {/* Sign Up Form */}
-          {activeTab === 'signup' && (
+          {activeTab === "signup" && (
             <form onSubmit={handleSignup} className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -152,14 +156,14 @@ export default function AuthForm() {
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Enter your name"
                   className={`w-full px-4 py-3 rounded-lg border ${
-                    getFieldError('fullName')
-                      ? 'border-red-400 bg-red-50'
-                      : 'border-gray-300'
+                    getFieldError("fullName")
+                      ? "border-red-400 bg-red-50"
+                      : "border-gray-300"
                   } focus:outline-none focus:ring-2 focus:ring-pink-300`}
                 />
-                {getFieldError('fullName') && (
+                {getFieldError("fullName") && (
                   <p className="mt-1 text-xs text-red-600">
-                    {getFieldError('fullName')}
+                    {getFieldError("fullName")}
                   </p>
                 )}
               </div>
@@ -174,14 +178,14 @@ export default function AuthForm() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   className={`w-full px-4 py-3 rounded-lg border ${
-                    getFieldError('email')
-                      ? 'border-red-400 bg-red-50'
-                      : 'border-gray-300'
+                    getFieldError("email")
+                      ? "border-red-400 bg-red-50"
+                      : "border-gray-300"
                   } focus:outline-none focus:ring-2 focus:ring-pink-300`}
                 />
-                {getFieldError('email') && (
+                {getFieldError("email") && (
                   <p className="mt-1 text-xs text-red-600">
-                    {getFieldError('email')}
+                    {getFieldError("email")}
                   </p>
                 )}
               </div>
@@ -196,14 +200,14 @@ export default function AuthForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   className={`w-full px-4 py-3 rounded-lg border ${
-                    getFieldError('password')
-                      ? 'border-red-400 bg-red-50'
-                      : 'border-gray-300'
+                    getFieldError("password")
+                      ? "border-red-400 bg-red-50"
+                      : "border-gray-300"
                   } focus:outline-none focus:ring-2 focus:ring-pink-300`}
                 />
-                {getFieldError('password') && (
+                {getFieldError("password") && (
                   <p className="mt-1 text-xs text-red-600">
-                    {getFieldError('password')}
+                    {getFieldError("password")}
                   </p>
                 )}
               </div>
@@ -218,14 +222,14 @@ export default function AuthForm() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Re-enter your password"
                   className={`w-full px-4 py-3 rounded-lg border ${
-                    getFieldError('confirmPassword')
-                      ? 'border-red-400 bg-red-50'
-                      : 'border-gray-300'
+                    getFieldError("confirmPassword")
+                      ? "border-red-400 bg-red-50"
+                      : "border-gray-300"
                   } focus:outline-none focus:ring-2 focus:ring-pink-300`}
                 />
-                {getFieldError('confirmPassword') && (
+                {getFieldError("confirmPassword") && (
                   <p className="mt-1 text-xs text-red-600">
-                    {getFieldError('confirmPassword')}
+                    {getFieldError("confirmPassword")}
                   </p>
                 )}
               </div>
@@ -235,13 +239,13 @@ export default function AuthForm() {
                 disabled={loading}
                 className="w-full py-3 px-4 bg-gradient-to-r from-pink-400 to-orange-300 text-white font-semibold rounded-full hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-6"
               >
-                {loading ? 'Signing Up...' : 'Sign Up'}
+                {loading ? "Signing Up..." : "Sign Up"}
               </button>
             </form>
           )}
 
           {/* Login Form */}
-          {activeTab === 'login' && (
+          {activeTab === "login" && (
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -253,14 +257,14 @@ export default function AuthForm() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
                   className={`w-full px-4 py-3 rounded-lg border ${
-                    getFieldError('email')
-                      ? 'border-red-400 bg-red-50'
-                      : 'border-gray-300'
+                    getFieldError("email")
+                      ? "border-red-400 bg-red-50"
+                      : "border-gray-300"
                   } focus:outline-none focus:ring-2 focus:ring-pink-300`}
                 />
-                {getFieldError('email') && (
+                {getFieldError("email") && (
                   <p className="mt-1 text-xs text-red-600">
-                    {getFieldError('email')}
+                    {getFieldError("email")}
                   </p>
                 )}
               </div>
@@ -275,14 +279,14 @@ export default function AuthForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   className={`w-full px-4 py-3 rounded-lg border ${
-                    getFieldError('password')
-                      ? 'border-red-400 bg-red-50'
-                      : 'border-gray-300'
+                    getFieldError("password")
+                      ? "border-red-400 bg-red-50"
+                      : "border-gray-300"
                   } focus:outline-none focus:ring-2 focus:ring-pink-300`}
                 />
-                {getFieldError('password') && (
+                {getFieldError("password") && (
                   <p className="mt-1 text-xs text-red-600">
-                    {getFieldError('password')}
+                    {getFieldError("password")}
                   </p>
                 )}
               </div>
@@ -292,7 +296,7 @@ export default function AuthForm() {
                 disabled={loading}
                 className="w-full py-3 px-4 bg-gradient-to-r from-pink-400 to-orange-300 text-white font-semibold rounded-full hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-6"
               >
-                {loading ? 'Logging In...' : 'Log In'}
+                {loading ? "Logging In..." : "Log In"}
               </button>
             </form>
           )}
