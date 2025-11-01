@@ -1,7 +1,18 @@
 // src/components/Sidebar.tsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRightToLine, Home, BookOpen, Calendar, Heart, Baby, Book, User, Crown, LogOut } from 'lucide-react';
+import {
+  ArrowRightToLine,
+  Home,
+  BookOpen,
+  Calendar,
+  Heart,
+  Baby,
+  Book,
+  User,
+  Crown,
+  LogOut,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface SidebarProps {
@@ -28,7 +39,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     setShowLogoutModal(false);
     onClose();
     setTimeout(() => {
-      navigate('/');
+      navigate("/");
     }, 500);
   };
 
@@ -37,28 +48,28 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   const menuItems = [
-    { icon: Home, label: 'Home', path: '/dashboard' },
-    { icon: BookOpen, label: 'BloomGuide', path: '/bloomguide' },
-    { icon: Calendar, label: 'Planner', path: '/planner' },
-    { icon: Heart, label: 'Health Tracker', path: '/healthtracker' },
-    { icon: Baby, label: 'BB\'s Tools', path: '/tools' },
-    { icon: Book, label: 'Journal', path: '/journal' }
+    { icon: Home, label: "Home", path: "/dashboard" },
+    { icon: BookOpen, label: "BloomGuide", path: "/bloomguide" },
+    { icon: Calendar, label: "Planner", path: "/planner" },
+    { icon: Heart, label: "Health Tracker", path: "/healthtracker" },
+    { icon: Baby, label: "BB's Tools", path: "/tools" },
+    { icon: Book, label: "Journal", path: "/journal" },
   ];
 
   return (
     <>
       {/* Overlay */}
-      <div 
+      <div
         className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-600 ease-in-out ${
-          isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={onClose}
       />
 
       {/* Sidebar */}
-      <div 
+      <div
         className={`fixed left-0 top-0 h-full w-80 bg-white shadow-xl z-50 overflow-y-auto transition-transform duration-500 ease-out ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+          isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Header */}
@@ -68,16 +79,19 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               <h2 className="text-xl font-bold text-[#474747]">Bloom stage:</h2>
               <h2 className="text-xl font-bold text-white">Pregnant</h2>
             </div>
-            <button onClick={onClose} className="text-white hover:bg-white/10 rounded-lg transition-colors w-10 h-10 flex items-center justify-center">
+            <button
+              onClick={onClose}
+              className="text-white hover:bg-white/10 rounded-lg transition-colors w-10 h-10 flex items-center justify-center"
+            >
               <ArrowRightToLine size={24} />
             </button>
           </div>
           <div className="w-full h-px bg-white/30 mb-2"></div>
-     
+
           {/* User Profile */}
-          <Link 
-            to="/profile" 
-            onClick={() => handleNavigation("/profile")}
+          <Link
+            to="/userprofile"
+            onClick={() => handleNavigation("/userprofile")}
             className="w-full flex items-center space-x-3 p-1 hover:bg-white/10 rounded-lg transition-colors text-left"
           >
             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -114,7 +128,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               <Crown size={20} />
               <span className="font-bold">Get BB Premium!</span>
             </div>
-            <p className="text-sm text-white/90 text-left ml-1">Bloom Even Better.</p>
+            <p className="text-sm text-white/90 text-left ml-1">
+              Bloom Even Better.
+            </p>
           </button>
 
           {/* Logout Button */}
@@ -127,9 +143,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           </button>
 
           {/* Bottom Section */}
-        <div className="mt-8 pt-6 border-t border-gray-200 absolute bottom-0 mb-4 ml-[-8px] mr-8">
+          <div className="mt-8 pt-6 border-t border-gray-200 absolute bottom-0 mb-4 ml-[-8px] mr-8">
             <p className="text-center text-gray-500 text-xs">
-              © 2025 BloomBuhay by Mixed Berries Productions. All rights reserved.
+              © 2025 BloomBuhay by Mixed Berries Productions. All rights
+              reserved.
             </p>
           </div>
         </div>
@@ -139,9 +156,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       {showLogoutModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-auto shadow-xl">
-            <h3 className="text-xl font-bold text-gray-800 mb-2">Are you sure?</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              Are you sure?
+            </h3>
             <p className="text-gray-600 mb-6">
-              You're about to log out of your account. Are you sure you want to leave?
+              You're about to log out of your account. Are you sure you want to
+              leave?
             </p>
             <div className="flex space-x-3">
               <button
@@ -163,4 +183,3 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     </>
   );
 }
-       

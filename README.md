@@ -17,4 +17,4 @@ Most existing apps focus only on pregnancy and neglect postpartum care, mental h
 
 BloomBuhay solves this by providing a holistic, continuous digital companion for mothers — before, during, and after pregnancy.
 
-🥷 Devloped by Team Mixed Berries
+🥷 Developed by Team Mixed Berries

@@ -11,7 +11,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "ignoreDeprecations": "6.0",
+    "forceConsistentCasingInFileNames": true,
     "types": []
   },
   "ignoreDeprecations": "6.0",

@@ -1,10 +1,19 @@
 import { Router } from "express";
-import { signup, login } from "../controllers/authController";
+import {
+  signup,
+  login,
+  refreshToken,
+  logout,
+} from "../controllers/authController";
 
 const router = Router();
 // registers new user
 router.post("/signup", signup);
-// login user   
+// login user
 router.post("/login", login);
+// refresh access token using refresh token
+router.post("/refresh", refreshToken);
+// logout (revoke refresh token)
+router.post("/logout", logout);
 
 export default router;

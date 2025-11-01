@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface InputFieldProps {
   label: string;
@@ -7,6 +7,7 @@ interface InputFieldProps {
   onChange: (value: string) => void;
   placeholder: string;
   error?: string;
+  min?: string | number;
 }
 
 export default function InputField({
@@ -16,6 +17,7 @@ export default function InputField({
   onChange,
   placeholder,
   error,
+  min,
 }: InputFieldProps) {
   return (
     <div>
@@ -25,11 +27,12 @@ export default function InputField({
       <input
         type={type}
         value={value}
+        min={min}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={`w-full px-4 py-3 rounded-lg border ${
-          error ? 'border-red-400 bg-red-50' : 'border-gray-300'
-        } focus:outline-none focus:ring-2 focus:ring-pink-300`}
+          error ? "border-red-400 bg-red-50" : "border-gray-300"
+        } focus:outline-none focus:ring-2 focus:ring-pink-300 placeholder-gray-400`}
       />
       {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
