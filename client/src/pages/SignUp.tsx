@@ -88,7 +88,7 @@ export default function SignupPage() {
               <span className="block -mt-4">Buhay</span>
             </h1>
           </div>
-          <h2 className="font-rubik text-xl font-bold text-bloomBlack -ml-2">
+          <h2 className="font-rubik text-xl mt-6 font-bold text-bloomBlack -ml-2">
             Let's get you started!
           </h2>
           <p className="font-rubik text-bloomBlack text-xs -mb-2">
@@ -98,7 +98,7 @@ export default function SignupPage() {
 
         {/* Form Container */}
         <div className="bg-white rounded-2xl w-500 shadow-lg p-8 -pb- pl-16 pr-16">
-          <form onSubmit={handleSubmit} className="space-y-2 mt-2">
+          <form onSubmit={handleSubmit} className="space-y-4 mt-2">
             <AuthToggle />
             <InputField
               label="Full Name"
@@ -134,6 +134,7 @@ export default function SignupPage() {
               onChange={setConfirmPassword}
               placeholder="Re-enter your password"
               error={getFieldError("confirmPassword")}
+      
             />
 
             <button
@@ -146,11 +147,11 @@ export default function SignupPage() {
           </form>
 
           {/* Already have an account section */}
-          <div className="text-center mt-6">
+          <div className="text-center mt-6 text-xs text-gray-400 ">
             <button
               type="button"
               onClick={handleLoginRedirect}
-              className="text-sm text-gray-500 mb-3"
+              className="hover:underline"
             >
               Already have an account?
             </button>

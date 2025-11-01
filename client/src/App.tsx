@@ -28,6 +28,7 @@ export default function App() {
         <Route path="/mainsetup" element={<MainSetup />} />
         <Route path="/setup" element={<MainSetup />} />
         <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/bloomguide" element={<BloomGuide />} />
       </Routes>
     </Router>
   );
