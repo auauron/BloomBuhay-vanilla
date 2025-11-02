@@ -45,7 +45,9 @@ export default function AuthToggle() {
         return (
           <button
             key={tab.path}
-            type="button" // Explicitly set type="button" to prevent form submission
+            type="button"
+            role="tab"
+            aria-selected={isActive}
             ref={(el) => void tabsRef.current.set(tab.path, el)}
             onClick={(e) => {
               e.preventDefault(); // Prevent any form submission

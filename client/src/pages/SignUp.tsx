@@ -38,35 +38,11 @@ export default function SignupPage() {
         confirmPassword,
       });
 
-      if (result.success) {
-        // Clear any pending navigations
-        window.onbeforeunload = null;
-
-        // Add a small delay to ensure any storage has settled
-        await new Promise((resolve) => setTimeout(resolve, 100));
-
-        // Prefer using the result token for navigation instead of reading localStorage
-        if (result.token) {
-          // Navigate using react-router so app state stays consistent
-          navigate("/mainsetup", { replace: true });
-          return; // Exit early
-        }
-        // fallback: check authService
-        if (authService.isAuthenticated() && authService.getUser()) {
-          navigate("/mainsetup", { replace: true });
-          return;
-        }
-        setErrors([
-          { field: "email", message: "Authentication failed after signup" },
-        ]);
-      } else {
-        if (result.errors) setErrors(result.errors);
-      }
-    } catch (error) {
-      setErrors([{ field: "email", message: "An unexpected error occurred" }]);
-    } finally {
-      window.onbeforeunload = null; // Clear navigation block
-      setLoading(false);
+    if (result.success) {
+      // Include fullName and email in navigation state
+      navigate("/mainsetup", { state: { fullName, email } }); // Redirect after successful signup
+    } else {
+      if (result.errors) setErrors(result.errors);
     }
   };
 
@@ -78,7 +54,7 @@ export default function SignupPage() {
   // };
 
   return (
-    <div className="min-h-screen bg-bloomWhite flex items-center justify-center">
+    <div className="min-h-screen bg-bloomWhite flex flex-col items-center justify-center">
       <div className="max-w-3xl w-full">
         <div className="text-center mb-6">
           <div className="flex items-center justify-center -mb-6 -ml-2 mr-20">
@@ -136,7 +112,6 @@ export default function SignupPage() {
               error={getFieldError("confirmPassword")}
       
             />
-
             <button
               type="submit"
               disabled={loading}
@@ -147,11 +122,11 @@ export default function SignupPage() {
           </form>
 
           {/* Already have an account section */}
-          <div className="text-center mt-6 text-xs text-gray-400 ">
+          <div className="text-center mt-6">
             <button
               type="button"
               onClick={handleLoginRedirect}
-              className="hover:underline"
+              className="text-sm text-gray-500 mb-3"
             >
               Already have an account?
             </button>

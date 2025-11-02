@@ -15,11 +15,12 @@ export type PregnancyPayload = {
 };
 
 interface PregnancyProps {
-  // parent can receive an optional payload
-  onComplete?: (payload?: PregnancyPayload) => void;
+  onComplete?: (data: Record<string, any>) => void;
+  fullName?: string;
+  email?: string;
 }
 
-export default function Pregnancy({ onComplete }: PregnancyProps) {
+export default function Pregnancy({ onComplete, fullName, email }: PregnancyProps) {
   const [selectedOption, setSelectedOption] = useState("");
   const [value, setValue] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
@@ -65,6 +66,20 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
   const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(e.target.value);
   };
+
+  const handleNext = () => {
+    // basic validation: require selectedGender (matches existing disabled logic)
+    if (!selectedGender) return;
+
+    // save or validate data here if needed
+  onComplete?.({
+    motherhoodStage: "Pregnant",
+    weeksPregnant: value,
+    lastPeriodDate: selectedDate,
+    babyName: inputValue,
+    babyGender: selectedGender,
+  });
+};
 
   return (
     <div className="bg-bloomWhite min-h-screen flex flex-col">
@@ -202,26 +217,12 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                     )}
                   </div>
 
-                  {/* Next button container */}
-                  <NextButton
-                    isReady={!!selectedGender}
-                    onComplete={() => {
-                      const payload: PregnancyPayload = {
-                        weeksPregnant: value ? Number(value) : null,
-                        lmpDate: selectedDate || null,
-                        babyName: inputValue || null,
-                        babyGender: selectedGender
-                          ? selectedGender.toLowerCase() === "girl"
-                            ? "female"
-                            : selectedGender.toLowerCase() === "boy"
-                            ? "male"
-                            : "unknown"
-                          : null,
-                      };
-
-                      onComplete?.(payload);
-                    }}
-                  />
+                  <div className="ml-4 mt-6">
+                    <NextButton
+                      onComplete={handleNext}
+                      isReady={Boolean(inputValue && value && selectedGender)}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
