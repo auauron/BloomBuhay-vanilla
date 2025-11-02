@@ -105,7 +105,16 @@ const ArticleCard = ({
       </h3>
       
       <div className="flex justify-end mt-auto pt-4">
-        <button className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white rounded-full hover:shadow-lg transform group-hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-lg">
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            const article = articlesData.articles.find(a => a.title === title);
+            if (article?.externalLink) {
+              window.open(article.externalLink, '_blank');
+            }
+      }}
+      className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white rounded-full hover:shadow-lg transform group-hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-lg"
+>
           <span 
             className="text-sm font-medium text-white px-4 py-2"
             style={{textShadow: '0.5px 0.5px 1px black'}}
