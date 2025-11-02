@@ -70,8 +70,6 @@ export default function Pregnancy({ onComplete, fullName, email }: PregnancyProp
     lastPeriodDate: selectedDate,
     babyName: inputValue,
     babyGender: selectedGender,
-    fullName,
-    email,
   });
 };
 

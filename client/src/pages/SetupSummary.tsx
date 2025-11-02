@@ -19,6 +19,9 @@ export default function SetupSummary() {
     babyAgeMonths,
   } = data;
 
+  // Debug: Log the received data
+  console.log("SetupSummary received data:", { fullName, email, allData: data });
+
   const handleStart = () => {
     navigate("/dashboard");
   };
@@ -31,7 +34,7 @@ const handleBack = () => {
   } else if (motherhoodStage === "Early Childcare") {
     navigate("/setup/childbirth", { state: data });
   } else {
-    navigate("/mainsetup");
+    navigate("/mainsetup", { state: {fullName, email} });
   }
 };
 

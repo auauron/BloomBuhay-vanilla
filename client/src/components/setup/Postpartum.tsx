@@ -48,8 +48,6 @@ export default function Postpartum({ onComplete, fullName, email  }: PostpartumP
       babyName: inputValue,
       babyGender: selectedGender,
       trackRecovery: selectedOption === "option1" ? true : false,
-      fullName,
-      email,
     };
     onComplete?.(stageData);
   };

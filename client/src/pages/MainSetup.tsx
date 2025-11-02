@@ -7,6 +7,7 @@ import Postpartum from "../components/setup/Postpartum";
 import Childbirth from "../components/setup/Childbirth";
 import Setup from "./Setup";
 import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
+import { authService } from "../services/authService";
 
 export default function MainSetup() {
   const [selectedStage, setSelectedStage] = useState<string | null>(null);
@@ -16,7 +17,16 @@ export default function MainSetup() {
   const navigate = useNavigate();
 
   const location = useLocation();
-  const { fullName, email } = location.state || {};
+  // Get user data from navigation state or fallback to localStorage
+  const stateData = location.state || {};
+  const user = authService.getUser();
+  const fullName = stateData.fullName || user?.fullName || "";
+  const email = stateData.email || user?.email || "";
+
+  // Debug: Log the received state
+  useEffect(() => {
+    console.log("MainSetup received state:", { fullName, email, fullState: location.state });
+  }, [fullName, email, location.state]);
 
   // Sync state from URL params so route and UI stay consistent
   useEffect(() => {
@@ -42,12 +52,24 @@ export default function MainSetup() {
   const handleComplete = (stageData?: Record<string, any>) => {
     // clear setup params then go to dashboard with the stage in state
     setSearchParams({});
+    console.log("MainSetup handleComplete - Passing to summary:", {
+      motherhoodStage: selectedStage,
+      stageData,
+      fullName,
+      email,
+      finalState: {
+        motherhoodStage: selectedStage,
+        ...stageData,
+        fullName,
+        email,
+      }
+    });
     navigate("/setup/summary", {
       state: {
         motherhoodStage: selectedStage,
+        ...stageData,
         fullName,
         email,
-        ...stageData,
       },
     });
   };
@@ -104,7 +126,7 @@ export default function MainSetup() {
   };
 
   if (currentPage === "setup") {
-    return <Setup onStageSelect={handleStageSelect} />;
+    return <Setup onStageSelect={handleStageSelect} fullName={fullName} email={email} />;
   }
 
   return (
