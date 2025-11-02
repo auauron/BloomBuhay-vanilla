@@ -142,7 +142,7 @@ const SymptomsList: React.FC = () => {
     actionButtons?: React.ReactNode;
     className?: string
   }> = ({ title, onClose, children, actionButtons }) => (
-    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto">
+    <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl max-h-[90vh] overflow-y-auto scrollbar-thin">
       <h3 className="text-xl font-bold text-bloomPink mb-4">{title}</h3>
       {children}
       {actionButtons}
@@ -210,7 +210,7 @@ const SymptomsList: React.FC = () => {
         <p className="text-bloomBlack font-rubik font-normal mb-4">How have you been feeling? Tracking symptoms help you monitor health patterns better. 🌸💗</p>
 
       {/* Symptoms List */}
-      <div className="space-y-3 mb-6 max-h-80 overflow-y-auto">
+      <div className="space-y-3 mb-6 max-h-80 scrollbar-thin overflow-y-auto scrollbar-thumb-white/50 scrollbar-track-transparent hover:scrollbar-thumb-white/50">
         {symptoms
           .sort((a, b) => Number(a.resolved) - Number(b.resolved)) // unresolved first
           .map((item, idx) => (
