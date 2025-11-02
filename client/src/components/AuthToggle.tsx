@@ -45,6 +45,9 @@ export default function AuthToggle() {
         return (
           <button
             key={tab.path}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
             ref={(el) => void tabsRef.current.set(tab.path, el)}
             onClick={() => navigate(tab.path)}
             className={`

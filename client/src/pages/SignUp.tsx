@@ -34,7 +34,7 @@ export default function SignupPage() {
     setLoading(false);
 
     if (result.success) {
-      navigate("/mainsetup", { state: { fullName, email } }); // Redirect after successful signup
+      navigate("/mainsetup"); // Redirect after successful signup
     } else {
       if (result.errors) setErrors(result.errors);
     }
@@ -48,7 +48,7 @@ export default function SignupPage() {
   // };
 
   return (
-    <div className="min-h-screen bg-bloomWhite flex items-center justify-center">
+    <div className="min-h-screen bg-bloomWhite flex flex-col items-center justify-center">
       <div className="max-w-3xl w-full">
         <div className="text-center mb-6">
           <div className="flex items-center justify-center -mb-6 -ml-2 mr-20">

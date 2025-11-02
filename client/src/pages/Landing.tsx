@@ -12,7 +12,7 @@ export default function Landing() {
   return (
     <div className="landing-container flex items-center justify-center gap-4">
       <div className="content">
-        <img src="/assets/logo_white.webp" className="logo object-contain" />
+        <img src="/assets/logo_white.png" className="logo object-contain" />
         <h1 className="title text-5xl font-bold font-poppins">
           Bloom <span>Buhay</span>
         </h1>
