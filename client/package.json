@@ -32,8 +32,9 @@
     "build": "webpack"
   },
   "dependencies": {
-    "framer-motion": "^12.23.24",
+    "@alloc/quick-lru": "^5.2.0",
     "lucide-react": "^0.548.0",
+    "object-hash": "^3.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.4"
