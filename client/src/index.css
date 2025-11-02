@@ -32,7 +32,6 @@ body {
   /* @apply bg-white; */
   background-color: #fff;
   font-family: "Poppins", sans-serif;
-  overflow: hidden;
 }
 
 .pregnancy-card {
@@ -317,3 +316,9 @@ img {
   transform: none;
 }
 
+
+.scrollable-container {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
