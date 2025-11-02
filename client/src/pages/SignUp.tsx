@@ -19,28 +19,21 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    e.stopPropagation(); // Stop event bubbling
-
-    // Prevent double submission
-    if (loading) return;
-
     setLoading(true);
     setErrors([]);
 
-    try {
-      // Disable any navigation during signup
-      window.onbeforeunload = () => true;
+    const result = await authService.signup({
+      fullName,
+      email,
+      password,
+      confirmPassword,
+    });
 
-      const result = await authService.signup({
-        fullName,
-        email,
-        password,
-        confirmPassword,
-      });
+    setLoading(false);
 
     if (result.success) {
       // Include fullName and email in navigation state
-      navigate("/mainsetup", { state: { fullName, email } }); // Redirect after successful signup
+      navigate("/mainsetup", { state: { fullName, email } });
     } else {
       if (result.errors) setErrors(result.errors);
     }
@@ -49,9 +42,6 @@ export default function SignupPage() {
   const handleLoginRedirect = () => {
     navigate("/login");
   };
-  // const handleLoginRedirect = () => {
-  //   navigate("/login");
-  // };
 
   return (
     <div className="min-h-screen bg-bloomWhite flex flex-col items-center justify-center">
@@ -64,7 +54,7 @@ export default function SignupPage() {
               <span className="block -mt-4">Buhay</span>
             </h1>
           </div>
-          <h2 className="font-rubik text-xl mt-6 font-bold text-bloomBlack -ml-2">
+          <h2 className="font-rubik text-xl font-bold text-bloomBlack -ml-2">
             Let's get you started!
           </h2>
           <p className="font-rubik text-bloomBlack text-xs -mb-2">
@@ -74,7 +64,7 @@ export default function SignupPage() {
 
         {/* Form Container */}
         <div className="bg-white rounded-2xl w-500 shadow-lg p-8 -pb- pl-16 pr-16">
-          <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+          <form onSubmit={handleSubmit} className="space-y-2 mt-2">
             <AuthToggle />
             <InputField
               label="Full Name"
@@ -110,7 +100,6 @@ export default function SignupPage() {
               onChange={setConfirmPassword}
               placeholder="Re-enter your password"
               error={getFieldError("confirmPassword")}
-      
             />
             <button
               type="submit"
