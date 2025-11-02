@@ -101,13 +101,15 @@ export default function SignupPage() {
               placeholder="Re-enter your password"
               error={getFieldError("confirmPassword")}
             />
-            <button
+            <div>
+              <button
               type="submit"
               disabled={loading}
               className="mx-auto mt-6 flex items-center justify-center rounded-3xl bg-gradient-to-r from-bloomPink to-bloomYellow px-8 py-4 text-white font-semibold shadow-md transition-all hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 min-w-[500px] -mb-5"
             >
               {loading ? "Signing Up..." : "Sign Up"}
             </button>
+            </div>
           </form>
 
           {/* Already have an account section */}
