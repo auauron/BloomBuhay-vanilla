@@ -12,7 +12,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "forceConsistentCasingInFileNames": true,
-    "types": []
+    "types": [],
+    "ignoreDeprecations": "6.0",
   },
   "ignoreDeprecations": "6.0",
   "include": ["src", "global.d.ts"]

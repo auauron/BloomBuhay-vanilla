@@ -4,6 +4,7 @@ import { useState } from "react";
 import Header from "../components/ui/Header";
 import Sidebar from "../components/ui/Sidebar";
 import { Search } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function BloomGuide() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

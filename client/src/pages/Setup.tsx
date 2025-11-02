@@ -6,6 +6,8 @@ import SetupHeader from "../components/ui/SetupHeader";
 
 interface SetupProps {
   onStageSelect: (stage: string) => void;
+  fullName?: string;
+  email?: string;
 }
 
 export default function Setup({ onStageSelect }: SetupProps) {
@@ -24,10 +26,9 @@ export default function Setup({ onStageSelect }: SetupProps) {
   const handleNext = () => {
     if (!selectedStage) return;
 
-    // Tell parent to show the details screen for the selected stage
+    // Tell parent to show the details screen for the selected stage and preserve user data
     onStageSelect(selectedStage);
     setIsOpen(false);
-    // NO navigation to /dashboard here — the stage component will call onComplete when it finishes the form
   };
 
   return (
