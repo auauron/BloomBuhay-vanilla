@@ -11,8 +11,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "forceConsistentCasingInFileNames": true,
-    "types": []
+    "types": [],
+    "forceConsistentCasingInFileNames": true
   },
   "ignoreDeprecations": "6.0",
   "include": ["src", "global.d.ts"]
