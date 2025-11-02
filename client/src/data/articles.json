@@ -119,6 +119,67 @@
       }
     },
     {
+      "id": "body-adjusting-pregnancy",
+      "title": "Signs Your Body is Adjusting to Pregnancy",
+      "image": "/assets/article1.webp",
+      "category": "Health",
+      "section": "maternal",
+      "content": {
+        "headline": "Recognizing Your Body's Pregnancy Changes",
+        "intro": "Pregnancy brings remarkable physical and hormonal changes as your body adapts to support your growing baby. Understanding these normal adjustments can help you feel more confident and prepared for each stage of this incredible journey.",
+        "sections": [
+          {
+            "title": "Early Pregnancy Changes (First Trimester)",
+            "content": "Your body begins significant transformations from the very beginning:",
+            "points": [
+              "Missed period - often the first noticeable sign",
+              "Fatigue and increased need for rest",
+              "Nausea with or without vomiting (morning sickness)",
+              "Tender, swollen breasts and darker areolas",
+              "Frequent urination as uterus expands",
+              "Food cravings or aversions to certain smells"
+            ]
+          },
+          {
+            "title": "Mid-Pregnancy Adjustments (Second Trimester)",
+            "content": "Many early symptoms ease while new changes emerge:",
+            "points": [
+              "Visible baby bump as uterus grows upward",
+              "Feeling baby movements (quickening)",
+              "Skin changes like linea nigra and glow",
+              "Round ligament pain as uterus expands",
+              "Nasal congestion and occasional nosebleeds",
+              "Improved energy levels typically return"
+            ]
+          },
+          {
+            "title": "Late Pregnancy Transformations (Third Trimester)",
+            "content": "Your body prepares for childbirth and breastfeeding:",
+            "points": [
+              "Shortness of breath as baby pushes diaphragm",
+              "Braxton Hicks contraction practice",
+              "Increased back pain and pelvic pressure",
+              "Swelling in ankles and feet",
+              "Colostrum production in breasts",
+              "Nesting instinct and preparation urges"
+            ]
+          },
+          {
+            "title": "When to Contact Your Healthcare Provider",
+            "points": [
+              "Severe or persistent abdominal pain",
+              "Heavy bleeding or fluid leakage",
+              "Severe headaches or vision changes",
+              "Significant swelling in hands/face",
+              "Decreased fetal movement after 28 weeks",
+              "Fever over 38°C or signs of infection"
+            ]
+          }
+        ],
+        "source": "Source: https://www.betterhealth.vic.gov.au/health/healthyliving/pregnancy-stages-and-changes"
+      }
+    },
+    {
       "id": "postpartum-self-care",
       "title": "Postpartum Self-Care Routine",
       "image": "/assets/article1.webp",
