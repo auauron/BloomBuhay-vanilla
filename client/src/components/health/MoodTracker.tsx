@@ -291,8 +291,6 @@ const MoodTracker: React.FC = () => {
         </button>
         </div>
 
-      {/* class="w-full bg-white/30 hover:bg-white/40 text-white font-semibold py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 mt-2 shadow-sm hover:shadow-md" */}
-
       {/* Mood Selection Modal */}
       {showMoodModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -303,7 +301,7 @@ const MoodTracker: React.FC = () => {
                 <div className="p-2 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-xl">
                   <Smile className="w-5 h-5 text-white" />
                 </div>
-                <h2 className="text-xl font-bold text-gray-800">How are you feeling?</h2>
+                <h2 className="text-xl font-bold text-bloomPink">How are you feeling? </h2> 
               </div>
               <button
                 onClick={handleCloseModal}
@@ -314,6 +312,7 @@ const MoodTracker: React.FC = () => {
             </div>
 
             {/* Mood Selection */}
+            <p className="mr-6 ml-6 mt-8 text-sm font-medium text-gray-700 mb-[-4px]">Select your current mood</p>
             <div className="p-6">
               <div className="grid grid-cols-5 gap-3 mb-6">
                 {moodOptions.map((mood, idx) => (

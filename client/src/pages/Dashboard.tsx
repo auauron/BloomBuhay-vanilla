@@ -5,6 +5,7 @@ import "../index.css";
 import Header from "../components/ui/Header";
 import Sidebar from "../components/ui/Sidebar";
 import { authService } from "../services/authService";
+import { motion } from "framer-motion";
 
 const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
 
@@ -232,6 +233,8 @@ export default function Dashboard() {
   };
 
   return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+
     <div className="min-h-screen bg-pink-50 flex flex-col font-poppins">
       <Header onMenuClick={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
@@ -313,5 +316,6 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
+    </motion.div>
   );
 }
