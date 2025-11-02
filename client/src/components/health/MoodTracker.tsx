@@ -242,21 +242,22 @@ const MoodTracker: React.FC = () => {
                     <textarea
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
-                      className="w-full px-3 py-2 border border-white/0 rounded-xl focus:ring-2 focus:ring-white focus:border-transparent bg-white/10 text-white placeholder-white/60"
+                      className="w-full px-3 py-2 border border-white/0 rounded-xl focus:ring-2 focus:ring-white focus:border-white bg-bloomYellow/50 text-bloomBlack placeholder-white/60"
                       rows={3}
                       placeholder="Add your notes here..."
                     />
                     <div className="flex gap-2">
                       <button
                         onClick={saveEdit}
-                        className="flex items-center gap-2 px-4 py-2 bg-white text-bloomPink rounded-xl hover:shadow-lg transition-all duration-300 font-medium"
+                        className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-bloomPink to-bloomYellow text-white rounded-xl hover:shadow-lg transition-all duration-300 text-sm"
+
                       >
                         <Save className="w-4 h-4" />
                         Save
                       </button>
                       <button
                         onClick={cancelEdit}
-                        className="flex items-center gap-2 px-4 py-2 border border-white/30 text-white rounded-xl hover:bg-white/10 transition-all duration-300"
+                        className="flex items-center gap-2 px-3 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-300 text-sm"
                       >
                         <X className="w-4 h-4" />
                         Cancel

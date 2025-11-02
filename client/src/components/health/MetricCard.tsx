@@ -136,11 +136,13 @@ const MetricCard: React.FC<MetricCardProps> = ({ metric, onRemove, onUpdate, tre
             <button
               onClick={() => setIsEditing(true)}
               className="p-2 hover:bg-pink-50 rounded-xl transition-colors duration-200 text-gray-600 hover:text-bloomPink"
+              title="Edit Metric"
             >
               <Edit3 className="w-4 h-4" />
             </button>
             <button
               onClick={onRemove}
+              title="Delete Metric"
               className="p-2 hover:bg-red-50 rounded-xl transition-colors duration-200 text-gray-600 hover:text-red-500"
             >
               <Trash2 className="w-4 h-4" />

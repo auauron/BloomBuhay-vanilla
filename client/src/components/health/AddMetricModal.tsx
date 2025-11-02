@@ -20,7 +20,7 @@ const metricOptions = [
     label: "Blood Pressure", 
     icon: <Heart className="w-5 h-5" />, 
     units: ["mmHg"],
-    color: "from-bloomPink to-bloomYellow",
+    color: "from-bloomPink to-red-600",
     category: "vitals"
   },
   { 
@@ -36,7 +36,7 @@ const metricOptions = [
     label: "Water Intake", 
     icon: <Droplets className="w-5 h-5" />, 
     units: ["L", "ml", "cups", "oz"],
-    color: "from-bloomPink to-[#F5ABA1]",
+    color: "from-bloomPink to-blue-500",
     category: "nutrition"
   },
   { 
@@ -60,7 +60,7 @@ const metricOptions = [
     label: "Heart Rate", 
     icon: <Activity className="w-5 h-5" />, 
     units: ["bpm"],
-    color: "from-red-400 to-pink-400",
+    color: "from-red-500 to-pink-400",
     category: "vitals"
   },
   { 
