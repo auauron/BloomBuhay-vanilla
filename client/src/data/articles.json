@@ -707,6 +707,7 @@
       "category": "Fitness",
       "section": "maternal",
       "externalLink": "https://diabetesjournals.org/care/article/44/2/425/35500/Exercise-During-the-First-Trimester-of-Pregnancy",
+      "content": {
         "headline": "🏃‍♀️ First Trimester Exercise: Higher Activity Levels May Reduce Gestational Diabetes Risk",
         "intro": "New research reveals that exercise during the first trimester significantly reduces the risk of abnormal glucose screening and gestational diabetes mellitus (GDM). The study found that the amount of exercise needed to achieve these benefits may be higher than current recommendations, suggesting that more vigorous activity provides greater protection. Understanding these findings can help you make informed decisions about physical activity during early pregnancy.",
         "sections": [
@@ -756,6 +757,7 @@
           },
           {
             "title": "Practical Implementation Tips",
+            "content": "To incorporate these findings into your pregnancy:",
             "points": [
               "Aim for at least 38 minutes of moderate exercise daily",
               "Combine cardiovascular and resistance exercises",

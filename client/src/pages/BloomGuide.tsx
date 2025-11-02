@@ -535,4 +535,4 @@ export default function BloomGuide() {
       />
     </div> 
   );
-}
+};
