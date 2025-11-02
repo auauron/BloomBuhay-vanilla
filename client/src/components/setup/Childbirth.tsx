@@ -6,10 +6,12 @@ import SetupHeader from "../ui/SetupHeader";
 import NextButton from "../ui/NextButton";
 
 interface ChildbirthProps {
-  onComplete?: () => void;
+  onComplete?: (data: Record<string, any>) => void;
+  fullName?: string;
+  email?: string;
 }
 
-export default function Childbirth({ onComplete }: ChildbirthProps) {
+export default function Childbirth({ onComplete,  fullName, email  }: ChildbirthProps) {
   const [value, setValue] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -35,9 +37,15 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
     if (!selectedGender) return;
 
     // TODO: save the data (API/localStorage) before completing if needed
+    const stageData = {
+      motherhoodStage: "Early Childcare",
+      babyName: inputValue,
+      babyGender: selectedGender,
+      babyAgeMonths: value,
+    };
 
     // inform parent (MainSetup) that setup is complete and navigate to dashboard
-    onComplete?.();
+    onComplete?.(stageData);
   };
 
   return (
@@ -137,8 +145,7 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
 
                 {/* Next button */}
                 <NextButton
-                  onComplete={onComplete}
-                  route="/dashboard"
+                  onComplete={handleNext}
                   isReady={Boolean(inputValue && value && selectedGender)}
                 />
               </div>

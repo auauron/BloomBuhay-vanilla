@@ -7,10 +7,12 @@ import NextButton from "../ui/NextButton";
 import { useRef, useEffect } from "react";
 
 interface PregnancyProps {
-  onComplete?: () => void;
+  onComplete?: (data: Record<string, any>) => void;
+  fullName?: string;
+  email?: string;
 }
 
-export default function Pregnancy({ onComplete }: PregnancyProps) {
+export default function Pregnancy({ onComplete, fullName, email }: PregnancyProps) {
   const [selectedOption, setSelectedOption] = useState("");
   const [value, setValue] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
@@ -62,8 +64,16 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
     if (!selectedGender) return;
 
     // save or validate data here if needed
-    onComplete?.();
-  };
+  onComplete?.({
+    motherhoodStage: "Pregnant",
+    weeksPregnant: value,
+    lastPeriodDate: selectedDate,
+    babyName: inputValue,
+    babyGender: selectedGender,
+    fullName,
+    email,
+  });
+};
 
   return (
     <div className="bg-bloomWhite min-h-screen flex flex-col">
@@ -204,8 +214,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
 
                   <div className="ml-4 mt-6">
                     <NextButton
-                      onComplete={onComplete}
-                      route="/dashboard"
+                      onComplete={handleNext}
                       isReady={Boolean(inputValue && value && selectedGender)}
                     />
                   </div>

@@ -34,7 +34,7 @@ export default function SignupPage() {
     setLoading(false);
 
     if (result.success) {
-      navigate("/mainsetup"); // Redirect after successful signup
+      navigate("/mainsetup", { state: { fullName, email } }); // Redirect after successful signup
     } else {
       if (result.errors) setErrors(result.errors);
     }

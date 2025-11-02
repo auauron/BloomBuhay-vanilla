@@ -5,10 +5,12 @@ import SetupHeader from "../ui/SetupHeader";
 import NextButton from "../ui/NextButton";
 
 interface PostpartumProps {
-  onComplete?: () => void;
+  onComplete?: (data: Record<string, any>) => void;
+  fullName?: string;
+  email?: string;
 }
 
-export default function Postpartum({ onComplete }: PostpartumProps) {
+export default function Postpartum({ onComplete, fullName, email  }: PostpartumProps) {
   const [value, setValue] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
   const [inputValue, setInputValue] = useState("");
@@ -40,7 +42,16 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
 
     // do any save/validation here (API call, localStorage...)
     // on success:
-    onComplete?.();
+    const stageData = {
+      motherhoodStage: "Postpartum",
+      weeksAfterBirth: value,
+      babyName: inputValue,
+      babyGender: selectedGender,
+      trackRecovery: selectedOption === "option1" ? true : false,
+      fullName,
+      email,
+    };
+    onComplete?.(stageData);
   };
 
   return (
@@ -167,8 +178,7 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
 
               {/* Next button */}
               <NextButton
-                onComplete={onComplete}
-                route="/dashboard"
+                onComplete={handleNext}
                 isReady={Boolean(inputValue && value && selectedGender)}
               />
             </div>

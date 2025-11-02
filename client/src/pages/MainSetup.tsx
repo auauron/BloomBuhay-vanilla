@@ -6,7 +6,7 @@ import Pregnancy from "../components/setup/Pregnancy";
 import Postpartum from "../components/setup/Postpartum";
 import Childbirth from "../components/setup/Childbirth";
 import Setup from "./Setup";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 
 export default function MainSetup() {
   const [selectedStage, setSelectedStage] = useState<string | null>(null);
@@ -14,6 +14,9 @@ export default function MainSetup() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const { fullName, email } = location.state || {};
 
   // Sync state from URL params so route and UI stay consistent
   useEffect(() => {
@@ -36,10 +39,17 @@ export default function MainSetup() {
     setSearchParams({ page: "details", stage });
   };
 
-  const handleComplete = (stage?: string) => {
+  const handleComplete = (stageData?: Record<string, any>) => {
     // clear setup params then go to dashboard with the stage in state
     setSearchParams({});
-    navigate("/dashboard", { state: { stage: stage ?? selectedStage } });
+    navigate("/setup/summary", {
+      state: {
+        motherhoodStage: selectedStage,
+        fullName,
+        email,
+        ...stageData,
+      },
+    });
   };
 
   const handleBack = () => {
@@ -52,12 +62,28 @@ export default function MainSetup() {
     switch (selectedStage) {
       case "Pregnant":
         // pass onComplete so Pregnancy can call it after successful submit
-        return <Pregnancy onComplete={() => handleComplete("Pregnant")} />;
+        return (
+          <Pregnancy
+            onComplete={handleComplete}
+            fullName={fullName}
+            email={email}
+          />
+        );
       case "Postpartum":
-        return <Postpartum onComplete={() => handleComplete("Postpartum")} />;
+        return (
+          <Postpartum
+            onComplete={handleComplete}
+            fullName={fullName}
+            email={email}
+          />
+        );
       case "Early Childcare":
         return (
-          <Childbirth onComplete={() => handleComplete("Early Childcare")} />
+          <Childbirth
+            onComplete={handleComplete}
+            fullName={fullName}
+            email={email}
+          />
         );
       default:
         return null;
