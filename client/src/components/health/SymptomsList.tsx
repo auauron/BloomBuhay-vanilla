@@ -1,6 +1,9 @@
 import React, { useState } from "react";
-import { Plus, Edit, Trash2, CheckCircle, XCircle, Calendar, Clock } from "lucide-react";
+import { Plus, HeartHandshake, Info, Eye, Edit3, Trash2, ThumbsDown, Calendar, Clock, ThumbsUp } from "lucide-react";
 import "../../index.css"
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+
 
 interface Symptom {
   symptom: string;
@@ -127,6 +130,13 @@ const SymptomsList: React.FC = () => {
     resetFormState();
   };
 
+  const navigate = useNavigate();
+  // Navigate to Bloom Guide
+    const handleInfoClick = () => {
+    navigate("/bloomguide");
+  };
+
+
   // Modal backdrop component
   const ModalBackdrop: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
@@ -205,9 +215,42 @@ const SymptomsList: React.FC = () => {
   );
 
   return (
-    <div className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white p-6 rounded-2xl shadow-lg ">
-      <h3 className="text-2xl font-bold mb-2">Recent Symptoms</h3>
-        <p className="text-bloomBlack font-rubik font-normal mb-4">How have you been feeling? Tracking symptoms help you monitor health patterns better. 🌸💗</p>
+
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+
+    <div className="bg-gradient-to-r from-bloomPink to-bloomYellow p-6 rounded-3xl shadow-lg border-pink-100 overflow-hidden">
+
+    
+      <div className="flex justify-between items-center mb-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-white/20 rounded-2xl backdrop-blur-sm">
+            <Eye className="text-white w-6 h-6" />
+          </div>
+          <h3 className="text-2xl font-bold text-white">Symptoms</h3>
+        </div>
+        <button
+          onClick={handleInfoClick}
+          className="p-2 rounded-xl bg-white/20 hover:bg-white/30 transition-all duration-300"
+          title="Learn more about your symtoms and how to manage them."
+        >
+          <Info className="text-white w-5 h-5" />
+        </button>
+      </div>
+
+    <p className="text-bloomBlack font-rubik font-normal mb-4">
+        Feel any discomfort in your body lately? Manage them better here. 🌸💗
+      </p>
+      
+        <div className="flex items-center gap-2 mb-4">
+          <HeartHandshake  className="w-5 h-5 text-white" />
+          <h4 className="text-lg font-semibold text-white">Symptom Logs</h4>
+          <span className="bg-white/30 text-white text-sm px-2 py-1 rounded-full">
+            {symptoms.length}
+          </span>
+        </div>
 
       {/* Symptoms List */}
       <div className="space-y-3 mb-6 max-h-80 scrollbar-thin overflow-y-auto scrollbar-thumb-white/50 scrollbar-track-transparent hover:scrollbar-thumb-white/50">
@@ -248,10 +291,10 @@ const SymptomsList: React.FC = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => openEditModal(idx)}
-                  className="p-2 rounded-lg bg-bloomYellow hover:bg-white/30 text-bloomBlack transition-colors"
+                  className="p-2 rounded-xl transition-colors duration-200 text-bloomBlack hover:text-bloomPink"
                   title="Edit symptom"
                 >
-                  <Edit size={16} />
+                  <Edit3 size={16} />
                 </button>
                 
                 <button
@@ -259,11 +302,11 @@ const SymptomsList: React.FC = () => {
                   className={`p-2 rounded-lg transition-colors ${
                     item.resolved 
                       ? "bg-green-500/90 hover:bg-green-600 text-white" 
-                      : "bg-blue-500/90 hover:bg-blue-600 text-white"
+                      : "bg-red-500/90 hover:bg-green-300 text-white"
                   }`}
                   title={item.resolved ? "Mark as unresolved" : "Mark as resolved"}
                 >
-                  {item.resolved ? <CheckCircle size={16} /> : <XCircle size={16} />}
+                  {item.resolved ? <ThumbsUp size={16} /> : <ThumbsDown size={16} />}
                 </button>
               </div>
             </div>
@@ -271,15 +314,17 @@ const SymptomsList: React.FC = () => {
       </div>
 
       {/* Add Symptom Button */}
-      <button
-        onClick={openAddModal}
-        className="w-full bg-white/30 hover:bg-white/40 text-white font-semibold py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 mt-2 shadow-sm hover:shadow-md"
-      >
-        <Plus size={20} />
-        Log New Symptom
-      </button>
+        <div className="flex justify-center">
+        <button
+            onClick={() => setShowAddModal(true)}
+            className="w-full group bg-white/30 text-white px-8 py-3 rounded-2xl font-semibold over:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 shadow-md"
+        >
+            <Plus className="group-hover:rotate-90 transition-transform duration-200" />
+            <span className="text-center">Log New  Symptom</span>
+        </button>
+        </div>
 
-      {/* Add Symptom Modal */}
+     {/* Add Symptom Modal */}
       {showAddModal && (
         <ModalBackdrop>
           <ModalContent 
@@ -321,7 +366,7 @@ const SymptomsList: React.FC = () => {
                   className="flex-1 py-3 rounded-lg bg-bloomPink hover:bg-bloomPink/90 text-white font-semibold transition-colors flex items-center justify-center gap-2"
                   disabled={!formState.symptom.trim()}
                 >
-                  <Edit size={16} />
+                  <Edit3 size={16} />
                   Update
                 </button>
               </div>
@@ -332,6 +377,7 @@ const SymptomsList: React.FC = () => {
         </ModalBackdrop>
       )}
         </div>
+        </motion.div>
   );
 };
 
