@@ -12,6 +12,7 @@ import SignUp from "./pages/SignUp";
 import LoginPage from "./pages/LoginPage";
 import UserProfile from "./pages/UserProfile";
 import MainSetup from "./pages/MainSetup";
+import Planner from "./pages/Planner";
 
 export default function App() {
   return (

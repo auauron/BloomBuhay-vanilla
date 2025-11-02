@@ -6,8 +6,6 @@ import Sidebar from "../components/ui/Sidebar";
 import CalendarComponent from "../components/CalendarComponent";
 import ToDoListComponent from "../components/ToDoListComponent";
 
-
-
 export default function Planner() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
