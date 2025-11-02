@@ -45,3 +45,7 @@ server/prisma/migrations/*.sql
 server/.env.test
 # Test coverage
 coverage/
+
+
+#docs
+DETAILED_PROJECT_GUIDE.md
