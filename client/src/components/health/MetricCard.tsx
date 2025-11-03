@@ -160,7 +160,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ metric, onRemove, onUpdate, tre
                 type="text"
                 value={editedValue}
                 onChange={(e) => setEditedValue(e.target.value)}
-                className="flex-1 px-3 py-2 border border-pink-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent"
+                className="flex-1 px-3 w-4 py-2 border border-pink-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent"
                 placeholder={`Enter ${metric.title} value`}
               />
               <span className="text-gray-600 font-medium">{metric.unit}</span>
