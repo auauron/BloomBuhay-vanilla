@@ -91,7 +91,7 @@ export default function Pregnancy({ onComplete, fullName, email }: PregnancyProp
         >
           <div
             style={{ maxWidth: "700px", maxHeight: "450px" }}
-            className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] overflow-y-auto shadow-lg p-8 pb-4 mb-6"
+            className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] scrollbar-thin overflow-y-auto scrollbar-thumb-white/50 scrollbar-track hover:scrollbar-thumb-white/50 shadow-lg p-8 pb-4 mb-6"
           >
             <div className="text-left">
               <h2 className="text-bloomBlack font-semibold">

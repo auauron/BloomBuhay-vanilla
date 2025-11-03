@@ -54,7 +54,7 @@ export default function SignupPage() {
               <span className="block -mt-4">Buhay</span>
             </h1>
           </div>
-          <h2 className="font-rubik text-xl font-bold text-bloomBlack -ml-2">
+          <h2 className="mt-6 font-rubik text-xl font-bold text-bloomBlack -ml-2">
             Let's get you started!
           </h2>
           <p className="font-rubik text-bloomBlack text-xs -mb-2">
