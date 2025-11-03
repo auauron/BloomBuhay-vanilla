@@ -167,7 +167,7 @@ const VaccinationReminders: React.FC = () => {
         <div className="p-2 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-xl">
           <Syringe className="w-6 h-6 text-white" />
         </div>
-        <h3 className="text-2xl font-bold text-bloomBlack">Nutrition Log</h3>
+        <h3 className="text-2xl font-bold text-bloomBlack">Vaccination Reminders</h3>
       </div>
 
         {!isAdding && (
