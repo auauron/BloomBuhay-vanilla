@@ -246,7 +246,7 @@ const MoodTracker: React.FC = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={saveEdit}
-                        className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-bloomPink to-bloomYellow text-white rounded-xl hover:shadow-lg transition-all duration-300 text-sm"
+                        className="flex items-center gap-2 px-3 py-2 bg-bloomPink text-white rounded-xl hover:shadow-lg hover:bg-bloomPink/90 transition-all duration-300 text-sm"
 
                       >
                         <Save className="w-4 h-4" />
