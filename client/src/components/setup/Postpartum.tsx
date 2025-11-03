@@ -40,15 +40,29 @@ export default function Postpartum({ onComplete, fullName, email  }: PostpartumP
     // basic validation — require a selected gender (keeps current behavior)
     if (!selectedGender) return;
 
-    // do any save/validation here (API call, localStorage...)
-    // on success:
+    // normalize gender
+    const genderMap: Record<string, "male" | "female" | "unknown"> = {
+      Boy: "male",
+      Girl: "female",
+    };
+    const babyGenderNormalized = (genderMap[selectedGender] ?? "unknown") as
+      | "male"
+      | "female"
+      | "unknown";
+
+    // convert weeksAfterBirth value to number if present
+    const weeksAfterBirthNum =
+      value !== "" && !Number.isNaN(Number(value)) ? Number(value) : null;
+
+    // Build canonical payload
     const stageData = {
-      motherhoodStage: "Postpartum",
-      weeksAfterBirth: value,
-      babyName: inputValue,
-      babyGender: selectedGender,
+      stage: "postpartum", // canonical key
+      weeksAfterBirth: weeksAfterBirthNum, // UI field — server will accept extra fields
+      babyName: inputValue || null,
+      babyGender: babyGenderNormalized,
       trackRecovery: selectedOption === "option1" ? true : false,
     };
+
     onComplete?.(stageData);
   };
 

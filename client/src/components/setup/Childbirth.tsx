@@ -36,12 +36,25 @@ export default function Childbirth({ onComplete,  fullName, email  }: Childbirth
     // basic validation: require a selected gender (matches other components)
     if (!selectedGender) return;
 
-    // TODO: save the data (API/localStorage) before completing if needed
+    // normalize gender to server enum: male | female | unknown
+    const genderMap: Record<string, "male" | "female" | "unknown"> = {
+      Boy: "male",
+      Girl: "female",
+    };
+    const babyGenderNormalized = (genderMap[selectedGender] ?? "unknown") as
+      | "male"
+      | "female"
+      | "unknown";
+
+    // convert age value to number if present
+    const babyAgeMonthsNum = value !== "" && !Number.isNaN(Number(value)) ? Number(value) : null;
+
+    // Build canonical payload expected by parent/server
     const stageData = {
-      motherhoodStage: "Early Childcare",
-      babyName: inputValue,
-      babyGender: selectedGender,
-      babyAgeMonths: value,
+      stage: "childcare", // canonical key (server expects 'childcare')
+      babyName: inputValue || null,
+      babyGender: babyGenderNormalized,
+      babyAgeMonths: babyAgeMonthsNum,
     };
 
     // inform parent (MainSetup) that setup is complete and navigate to dashboard

@@ -5,47 +5,57 @@ import { useNavigate } from "react-router-dom";
 import SetupHeader from "../components/ui/SetupHeader";
 
 interface SetupProps {
-  onStageSelect: (stage: string) => void;
+  onStageSelect: (stageKey: string) => void;
   fullName?: string;
   email?: string;
 }
 
-export default function Setup({ onStageSelect }: SetupProps) {
+export default function Setup({ onStageSelect, fullName, email }: SetupProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedStage, setSelectedStage] = useState("");
+  const [selectedStageKey, setSelectedStageKey] = useState<string>("");
 
-  const motherhoodStages = ["Pregnant", "Postpartum", "Early Childcare"];
+  const motherhoodStages = [
+    { key: "pregnant", label: "Pregnant" },
+    { key: "postpartum", label: "Postpartum" },
+    { key: "childcare", label: "Early Childcare" },
+  ];
 
   const navigate = useNavigate();
 
-  const handleStageSelect = (stage: string) => {
-    setSelectedStage(stage);
+  const handleStageSelect = (stageKey: string) => {
+    setSelectedStageKey(stageKey);
     setIsOpen(false);
   };
 
   const handleNext = () => {
-    if (!selectedStage) return;
-
-    // Tell parent to show the details screen for the selected stage and preserve user data
-    onStageSelect(selectedStage);
+    if (!selectedStageKey) return;
+    onStageSelect(selectedStageKey);
     setIsOpen(false);
   };
 
+  const selectedLabel =
+    motherhoodStages.find((s) => s.key === selectedStageKey)?.label || "";
+
   return (
     <div className="bg-bloomWhite min-h-screen flex flex-col">
-      {/* Header */}
       <SetupHeader onBackClick={() => navigate(-1)} />
 
-      {/* Main content */}
       <div className="main-container flex-1 flex items-center justify-center px-6 mt-16">
         <div style={{ maxWidth: "800px" }} className="p-8 w-full">
           <div className="text-center mb-2">
             <h1 className="text-2xl font-bold font-rubik text-bloomBlack mb-1">
               Let's get you started!
             </h1>
-            <p className="text-[#474747]">
-              We'd like to get to know more about you.
-            </p>
+            <p className="text-[#474747]">We'd like to get to know more about you.</p>
+
+            {/* Optional: show prefilled name/email if available */}
+            {(fullName || email) && (
+              <p className="text-sm text-[#6b6b6b] mt-2">
+                {fullName && <span>{fullName}</span>}
+                {fullName && email && <span> • </span>}
+                {email && <span>{email}</span>}
+              </p>
+            )}
           </div>
 
           <div className="flex justify-center">
@@ -63,55 +73,42 @@ export default function Setup({ onStageSelect }: SetupProps) {
                   className="dropdown w-full flex items-center justify-between p-4 border border-gray-300 rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left"
                   type="button"
                 >
-                  <span
-                    className={
-                      selectedStage ? "text-bloomBlack" : "text-[#9a9a9a]"
-                    }
-                  >
-                    {selectedStage || "Select a stage"}
+                  <span className={selectedLabel ? "text-bloomBlack" : "text-[#9a9a9a]"}>
+                    {selectedLabel || "Select a stage"}
                   </span>
                   <ChevronDownIcon
                     size={20}
-                    className={`text-[#9a9a9a] transition-transform ${
-                      isOpen ? "rotate-180" : ""
-                    }`}
+                    className={`text-[#9a9a9a] transition-transform ${isOpen ? "rotate-180" : ""}`}
                   />
                 </button>
 
-                {/* Dropdown menu */}
                 {isOpen && (
                   <div className="dropdown-menu absolute top-full left-0 right-0 mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-10">
-                    {motherhoodStages.map((stage: string) => (
+                    {motherhoodStages.map((stage) => (
                       <div
-                        key={stage}
-                        onClick={() => handleStageSelect(stage)}
+                        key={stage.key}
+                        onClick={() => handleStageSelect(stage.key)}
                         className={`choices p-4 cursor-pointer hover:bg-[#FFF6F6] transition-colors ${
-                          selectedStage === stage
-                            ? "bg-bloomWhite text-bloomPink"
-                            : "text-bloomBlack"
+                          selectedStageKey === stage.key ? "bg-bloomWhite text-bloomPink" : "text-bloomBlack"
                         }`}
                         role="button"
                         tabIndex={0}
                         onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ")
-                            handleStageSelect(stage);
+                          if (e.key === "Enter" || e.key === " ") handleStageSelect(stage.key);
                         }}
                       >
-                        {stage}
+                        {stage.label}
                       </div>
                     ))}
                   </div>
                 )}
 
-                {/* Next button */}
                 <button
                   onClick={handleNext}
                   className={`next-button w-full rounded-lg font-semibold transition-colors text-center justify-center flex mt-6 ${
-                    selectedStage
-                      ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600"
-                      : "bg-gray-300 text-gray-500"
+                    selectedStageKey ? "cursor-pointer bg-bloomPink text-white hover:bg-pink-600" : "bg-gray-300 text-gray-500"
                   }`}
-                  disabled={!selectedStage}
+                  disabled={!selectedStageKey}
                   type="button"
                 >
                   Next
