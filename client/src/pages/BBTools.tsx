@@ -98,7 +98,7 @@ export default function BBTools() {
         </div> */}
 
         {/* Tools Container */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-pink-100 p-6 mx-4 mb-8 max-w-7xl">
+    <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-pink-100 p-6 mb-8 max-w-7xl w-[90%] mx-auto">
           {activeStage === "pregnant" && <PregnantTools />}
           {activeStage === "postpartum" && <PostpartumTools />}
           {activeStage === "childcare" && <EarlyChildcareTools />}
