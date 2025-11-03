@@ -100,7 +100,7 @@ const KickCounter: React.FC = () => {
                     onClick={addKick}
                     className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-6 py-3 rounded-2xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center gap-2"
                   >
-                    <Footprints className="w-4 h-4" />
+                    <Footprints className="w-8 h-8" />
                     Add Kick
                   </button>
                   <button
