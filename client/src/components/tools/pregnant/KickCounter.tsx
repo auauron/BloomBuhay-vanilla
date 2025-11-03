@@ -68,7 +68,7 @@ const KickCounter: React.FC = () => {
     <div className="max-w-2xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
         <div className="p-2 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-xl">
-          <Footprints className="w-8 h-8 text-white" />
+          <Footprints className="w-6 h-6 text-white" />
         </div>
         <h3 className="text-2xl font-bold text-bloomBlack">Kick Counter</h3>
       </div>
