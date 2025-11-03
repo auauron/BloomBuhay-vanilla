@@ -52,7 +52,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { icon: BookOpen, label: "BloomGuide", path: "/bloomguide" },
     { icon: Calendar, label: "Planner", path: "/planner" },
     { icon: Heart, label: "Health Tracker", path: "/healthtracker" },
-    { icon: Baby, label: "BB's Tools", path: "/tools" },
+    { icon: Baby, label: "BB's Tools", path: "/bbtools" },
     { icon: Book, label: "Journal", path: "/journal" },
   ];
 

@@ -32,6 +32,9 @@
     "build": "webpack"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.1.0",
+    "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@fortawesome/react-fontawesome": "^3.1.0",
     "@alloc/quick-lru": "^5.2.0",
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.548.0",

@@ -13,6 +13,7 @@ import HealthTracker from "./pages/HealthTracker";
 import LoginPage from "./pages/LoginPage";
 import UserProfile from "./pages/UserProfile";
 import MainSetup from "./pages/MainSetup";
+import BBTools from "./pages/BBTools";
 import SetupSummary from "./pages/SetupSummary";
 import Planner from "./pages/Planner";
 
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="/setup/summary" element={<SetupSummary />} />
         <Route path="*" element={<Navigate to="/" replace />} />
         <Route path="/bloomguide" element={<BloomGuide />} />
+        <Route path="/bbtools" element={<BBTools />} />
         <Route path="/planner" element={<Planner />} />
       </Routes>
     </Router>

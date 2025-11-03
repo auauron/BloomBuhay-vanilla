@@ -150,10 +150,7 @@ const MoodTracker: React.FC = () => {
   };
 
   return (
-    <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
     <div className="bg-gradient-to-r from-bloomPink to-bloomYellow p-6 rounded-3xl shadow-lg border-pink-100 overflow-hidden">
       {/* Header */}
       <div className="flex justify-between items-center mb-3">

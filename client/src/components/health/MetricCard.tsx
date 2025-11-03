@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Edit3, Trash2, Save, X } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface Metric {
   id: number;
@@ -121,6 +122,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ metric, onRemove, onUpdate, tre
   };
 
   return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
     <div className="group relative bg-gradient-to-r from-pink-50 to-pink-100 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-pink-100">
       {/* Card Content */}
       <div className="p-6">
@@ -201,8 +203,8 @@ const MetricCard: React.FC<MetricCardProps> = ({ metric, onRemove, onUpdate, tre
           </>
         )}
       </div>
-
     </div>
+    </motion.div>
   );
 };
 
