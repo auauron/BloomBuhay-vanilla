@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { Article, ArticleSection } from "../types/guide";
 import articlesData from '../data/articles.json';
 import ArticleModal from '../components/ArticleModal';
+import { BookOpen } from "lucide-react";
 
 // === GRADIENT SEARCH BAR COMPONENT ===
 const GradientSearchBar = ({ 
@@ -112,9 +113,9 @@ const ArticleCard = ({
             if (article?.externalLink) {
               window.open(article.externalLink, '_blank');
             }
-      }}
-      className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white rounded-full hover:shadow-lg transform group-hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-lg"
->
+          }}
+          className="bg-bloomPink text-white rounded-full hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow transform group-hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl"
+        >
           <span 
             className="text-sm font-medium text-white px-4 py-2"
             style={{textShadow: '0.5px 0.5px 1px black'}}
@@ -415,7 +416,7 @@ export default function BloomGuide() {
       <Header onMenuClick={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
-      {/* Main scrollable content area with FORCED scrolling */}
+      {/* Main scrollable content area */}
       <div 
         className={`flex-1 w-full ${isModalOpen ? 'blur-sm' : ''}`}
         style={{
@@ -438,13 +439,22 @@ export default function BloomGuide() {
         <div 
           className="relative z-10"
           style={{
-            minHeight: '1000px' // Force enough content for scrolling
+            minHeight: '1000px'
           }}
         >
-          {/* BLOOMGUIDE BAR */}
-          <div className="text-[#F875AA] text-center mt-5 px-6 py-2">
-            <div className="font-semibold text-3xl">BloomGuide</div>
-            <div className="text-lg font-rubik text-[#474747]">know more, care better.</div>
+          {/* BLOOMGUIDE HEADER WITH LOGO */}
+          <div className="text-center mt-5 px-6 py-2">
+            <div className="flex items-center justify-center gap-3 mb-2">
+              <div className="bg-gradient-to-r from-bloomPink to-bloomYellow p-2 rounded-xl">
+                <BookOpen className="w-8 h-8 text-white" />
+              </div>
+              <div className="flex flex-col items-center">
+                <h1 className="font-poppins font-bold text-4xl bg-bloomPink bg-clip-text text-transparent">
+                  BloomGuide
+                </h1>
+                <div className="font-rubik font-light text-md text-[#474747] -mt-1 -ml-2">know more, care better</div>
+              </div>
+            </div>
           </div>
 
           {/* SEARCH BAR */}
@@ -489,7 +499,7 @@ export default function BloomGuide() {
               </section>
             ))}
 
-            {/* Show message if no articles found for a specific filter */}
+            {/* Show message if no articles found */}
             {Object.keys(filteredSections).length === 0 && (
               <div className="text-center py-12 px-8">
                 <div className="text-gray-400 text-6xl mb-4">
