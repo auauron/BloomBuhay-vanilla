@@ -68,18 +68,35 @@ export default function Pregnancy({ onComplete, fullName, email }: PregnancyProp
   };
 
   const handleNext = () => {
-    // basic validation: require selectedGender (matches existing disabled logic)
+    // basic validation: require selectedGender (matches existing logic)
     if (!selectedGender) return;
 
-    // save or validate data here if needed
-  onComplete?.({
-    motherhoodStage: "Pregnant",
-    weeksPregnant: value,
-    lastPeriodDate: selectedDate,
-    babyName: inputValue,
-    babyGender: selectedGender,
-  });
-};
+    // normalize gender
+    const genderMap: Record<string, "male" | "female" | "unknown"> = {
+      Boy: "male",
+      Girl: "female",
+      Unknown: "unknown",
+    };
+    const babyGenderNormalized = (genderMap[selectedGender] ?? "unknown") as
+      | "male"
+      | "female"
+      | "unknown";
+
+    // convert weeksPregnant value to number if present
+    const weeksPregnantNum = value !== "" && !Number.isNaN(Number(value)) ? Number(value) : null;
+
+    // lmpDate should be a proper ISO date string or null (we're reading selectedDate)
+    const lmpDate = selectedDate || null;
+
+    // Build canonical payload expected by server
+    onComplete?.({
+      stage: "pregnant", // canonical key
+      weeksPregnant: weeksPregnantNum,
+      lmpDate: lmpDate,
+      babyName: inputValue || null,
+      babyGender: babyGenderNormalized,
+    });
+  };
 
   return (
     <div className="bg-bloomWhite min-h-screen flex flex-col">
