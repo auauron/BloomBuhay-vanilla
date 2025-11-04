@@ -1,0 +1,100 @@
+{
+  "articles": [
+    {
+      "id": "baby-development-5-weeks",
+      "title": "The Baby: Development at 5 Weeks",
+      "image": "/assets/article1.webp",
+      "category": "Pregnancy",
+      "section": "maternal",
+      "externalLink": "https://www.whattoexpect.com/pregnancy/week-by-week/week-5.aspx",
+      "content": {
+        "headline": "Your Guide to 5 Weeks Pregnant: A Journey Begins!",
+        "intro": "Week 5 marks the beginning of your second month of pregnancy and is often when many women realize they've missed a period and start to experience early symptoms. This is an exciting time of rapid development for your baby and significant hormonal shifts for you!",
+        "sections": [
+          {
+            "title": "The Baby: Development at 5 Weeks",
+            "content": "At 5 weeks pregnant, your baby (now called an embryo) is the size of a sesame seed (about 2mm). Major development is underway:",
+            "points": [
+              "Neural tube forming - will become brain and spinal cord",
+              "Tiny heart begins beating and circulating blood",
+              "Foundations for major organs developing",
+              "Placenta and umbilical cord starting to function",
+              "Basic facial features beginning to form"
+            ]
+          },
+          {
+            "title": "Your Body: What to Expect at 5 Weeks",
+            "content": "Your body is adapting to pregnancy hormones (hCG and progesterone):",
+            "points": [
+              "Fatigue - your body is working hard building the placenta",
+              "Morning sickness (can happen any time of day)",
+              "Tender, swollen breasts and darker areolas",
+              "Frequent urination as uterus expands",
+              "Food cravings/aversions and heightened smell sensitivity"
+            ]
+          },
+          {
+            "title": "Important Steps This Week",
+            "points": [
+              "Take a pregnancy test - hCG levels are now detectable",
+              "Schedule your first prenatal appointment",
+              "Continue healthy habits: avoid alcohol, limit caffeine",
+              "Start taking prenatal vitamins with folic acid",
+              "Listen to your body and rest when needed"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "body-adjusting-pregnancy",
+      "title": "Signs Your Body is Adjusting to Pregnancy",
+      "image": "/assets/article1.webp",
+      "category": "Health",
+      "section": "maternal",
+      "externalLink": "https://www.betterhealth.vic.gov.au/health/healthyliving/pregnancy-stages-and-changes",
+      "content": {
+        "headline": "Recognizing Your Body's Pregnancy Changes",
+        "intro": "Pregnancy brings remarkable physical and hormonal changes as your body adapts to support your growing baby. Understanding these normal adjustments can help you feel more confident and prepared for each stage of this incredible journey.",
+        "sections": [
+          {
+            "title": "Early Pregnancy Changes (First Trimester)",
+            "content": "Your body begins significant transformations from the very beginning:",
+            "points": [
+              "Missed period - often the first noticeable sign",
+              "Fatigue and increased need for rest",
+              "Nausea with or without vomiting (morning sickness)",
+              "Tender, swollen breasts and darker areolas",
+              "Frequent urination as uterus expands",
+              "Food cravings or aversions to certain smells"
+            ]
+          },
+          {
+            "title": "Mid-Pregnancy Adjustments (Second Trimester)",
+            "content": "Many early symptoms ease while new changes emerge:",
+            "points": [
+              "Visible baby bump as uterus grows upward",
+              "Feeling baby movements (quickening) around 18-20 weeks",
+              "Skin changes like linea nigra and pregnancy glow",
+              "Round ligament pain as uterus expands",
+              "Nasal congestion and occasional nosebleeds",
+              "Improved energy levels typically return"
+            ]
+          },
+          {
+            "title": "Late Pregnancy Transformations (Third Trimester)",
+            "content": "Your body prepares for childbirth and breastfeeding:",
+            "points": [
+              "Shortness of breath as baby pushes diaphragm",
+              "Braxton Hicks contraction practice",
+              "Increased back pain and pelvic pressure",
+              "Swelling in ankles and feet",
+              "Colostrum production in breasts",
+              "Nesting instinct and preparation urges"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

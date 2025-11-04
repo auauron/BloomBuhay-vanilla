@@ -1,0 +1,53 @@
+{
+  "articles": [
+    {
+      "id": "managing-morning-sickness",
+      "title": "Managing Morning Sickness",
+      "image": "/assets/article1.webp",
+      "category": "Health",
+      "section": "maternal",
+      "externalLink": "https://my.clevelandclinic.org/health/diseases/16566-morning-sickness-nausea-and-vomiting-of-pregnancy",
+      "content": {
+        "headline": "Managing Morning Sickness: Evidence-Based Strategies for Nausea Relief",
+        "intro": "Morning sickness affects about 70% of pregnant women, typically beginning around 6 weeks and peaking between 8-10 weeks. While the name suggests morning-only symptoms, nausea and vomiting can occur at any time.",
+        "sections": [
+          {
+            "title": "Understanding Morning Sickness Patterns",
+            "content": "Knowing what to expect can help you manage symptoms more effectively:",
+            "points": [
+              "Starts around week 6 of pregnancy for most women",
+              "Peaks in intensity between weeks 8-10",
+              "Typically improves or resolves by week 13-14",
+              "Despite the name, can occur at any time of day",
+              "Symptoms range from mild nausea to frequent vomiting"
+            ]
+          },
+          {
+            "title": "Dietary Strategies for Relief",
+            "content": "Simple changes to eating habits can significantly reduce nausea:",
+            "points": [
+              "Eat crackers or dry toast before getting out of bed",
+              "Consume several small meals instead of three large ones",
+              "Avoid spicy, fatty, or strongly flavored foods",
+              "Choose bland foods: bananas, rice, applesauce, toast",
+              "Stay hydrated with water, ginger tea, or electrolyte drinks",
+              "Eat protein-rich snacks between meals"
+            ]
+          },
+          {
+            "title": "When to Seek Medical Attention",
+            "content": "Some symptoms indicate a more serious condition called hyperemesis gravidarum:",
+            "points": [
+              "Vomiting more than three times per day",
+              "Signs of dehydration: dark urine, dizziness, reduced urination",
+              "Weight loss of 10 pounds or more",
+              "Inability to keep any food or liquids down",
+              "Brown or bloody vomit",
+              "Extreme fatigue or confusion"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

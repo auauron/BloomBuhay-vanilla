@@ -1,0 +1,51 @@
+{
+  "articles": [
+    {
+      "id": "exercise-first-trimester",
+      "title": "Exercise During First Trimester",
+      "image": "/assets/article1.webp",
+      "category": "Fitness",
+      "section": "maternal",
+      "externalLink": "https://diabetesjournals.org/care/article/44/2/425/35500/Exercise-During-the-First-Trimester-of-Pregnancy",
+      "content": {
+        "headline": "First Trimester Exercise: Higher Activity Levels May Reduce Gestational Diabetes Risk",
+        "intro": "New research reveals that exercise during the first trimester significantly reduces the risk of abnormal glucose screening and gestational diabetes mellitus (GDM). The study found that the amount of exercise needed to achieve these benefits may be higher than current recommendations.",
+        "sections": [
+          {
+            "title": "Key Research Findings",
+            "content": "A major study of 2,246 pregnant women found significant benefits from first-trimester exercise:",
+            "points": [
+              "Women exercising ≥264 minutes weekly had 4.8% lower risk of abnormal glucose screening",
+              "High-exercise group had 2.1% lower risk of developing gestational diabetes",
+              "Benefits observed after adjusting for pre-pregnancy BMI and weight gain",
+              "Vigorous exercise was also beneficial and considered safe for most women",
+              "Exercise volume combines intensity, duration, and frequency"
+            ]
+          },
+          {
+            "title": "Recommended Exercise Levels for Maximum Benefit",
+            "content": "The study suggests current recommendations might be insufficient for optimal diabetes prevention:",
+            "points": [
+              "Current guidelines: ≥150 minutes of moderate exercise per week",
+              "Study recommendation: ≥264 minutes of moderate exercise per week",
+              "This represents about 38 minutes of daily exercise",
+              "Combination of cardiovascular and resistance exercises recommended",
+              "Always consult your healthcare provider before starting"
+            ]
+          },
+          {
+            "title": "Safe First Trimester Exercises",
+            "content": "These activities are generally safe during early pregnancy:",
+            "points": [
+              "Walking - start with 20-30 minutes daily",
+              "Swimming and water aerobics - gentle on joints",
+              "Stationary cycling - reduces fall risk",
+              "Prenatal yoga - improves flexibility and relaxation",
+              "Light strength training - focus on proper form"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

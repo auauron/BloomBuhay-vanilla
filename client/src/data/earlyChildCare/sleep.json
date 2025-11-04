@@ -1,0 +1,51 @@
+{
+  "articles": [
+    {
+      "id": "understanding-baby-sleep-patterns",
+      "title": "Understanding Baby's Sleep Patterns",
+      "image": "/assets/article1.webp",
+      "category": "Sleep",
+      "section": "baby",
+      "externalLink": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0237240",
+      "content": {
+        "headline": "The 'Sleep, Baby & You' Approach: A New Way to Understand Infant Sleep",
+        "intro": "The 'Sleep, Baby & You' program offers a revolutionary approach to infant sleep that focuses on parental well-being and realistic expectations rather than sleep training.",
+        "sections": [
+          {
+            "title": "The Challenge of Postpartum Fatigue and Infant Sleep",
+            "content": "Sleep disruption affects most new parents and can have significant impacts:",
+            "points": [
+              "64-67% of women experience postpartum fatigue for up to 2 years after birth",
+              "Sleep disruption is linked to increased depression and anxiety in both parents",
+              "Parental fatigue can affect emotional stability and relationships",
+              "Traditional sleep training often conflicts with responsive parenting",
+              "Parents need support that aligns with their values and infant's needs"
+            ]
+          },
+          {
+            "title": "The 'Sleep, Baby & You' Approach Explained",
+            "content": "This innovative program combines sleep science with psychological support:",
+            "points": [
+              "Recalibrate expectations of normal infant sleep development",
+              "Encourage responsive parenting and experimentation with different strategies",
+              "Support development of baby's biological sleep regulators naturally",
+              "Manage negative thinking and anxiety using Acceptance and Commitment Therapy",
+              "Promote parental wellbeing alongside infant sleep needs"
+            ]
+          },
+          {
+            "title": "Practical Strategies for Parents",
+            "content": "The program offers concrete tools that parents can implement immediately:",
+            "points": [
+              "Understand and work with your baby's natural sleep regulators",
+              "Experiment with different approaches to find what works for your family",
+              "Manage anxiety and negative thoughts about sleep disruption",
+              "Balance meeting infant needs with parental self-care",
+              "Build confidence in responding to your baby's unique sleep patterns"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

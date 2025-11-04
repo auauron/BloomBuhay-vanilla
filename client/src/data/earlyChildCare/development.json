@@ -1,0 +1,49 @@
+{
+  "articles": [
+    {
+      "id": "baby-development-milestones-2-5",
+      "title": "Baby Development Milestones",
+      "image": "/assets/article1.webp",
+      "category": "Development",
+      "section": "baby",
+      "externalLink": "https://opentextbc.ca/psychologymtdi/chapter/ages-stages-and-milestones-of-development",
+      "content": {
+        "headline": "Developmental Milestones: Tracking Your Child's Growth from 2-5 Years",
+        "intro": "Understanding developmental milestones helps parents track their child's progress and identify areas where they might need additional support.",
+        "sections": [
+          {
+            "title": "Key Developmental Domains Explained",
+            "content": "Child development occurs across four main areas:",
+            "points": [
+              "Physical Development: Gross and fine motor skills, coordination",
+              "Personal/Social Development: Emotional regulation, social interactions",
+              "Language Development: Communication, vocabulary, understanding",
+              "Cognitive Development: Thinking, reasoning, problem-solving"
+            ]
+          },
+          {
+            "title": "Developmental Milestones by Age",
+            "content": "Here's what to expect at each stage from ages 2-5:",
+            "points": [
+              "Age 2: Kicks ball, walks stairs, plays alongside others, 2-4 word sentences",
+              "Age 3: Climbs and runs, pedals tricycle, takes turns, expresses emotions",
+              "Age 4: Catches balls, uses scissors, prefers social play, knows songs",
+              "Age 5: Hops and swings, uses utensils, speaks clearly, counts to 10"
+            ]
+          },
+          {
+            "title": "Supporting Healthy Development",
+            "content": "You can actively support your child's development:",
+            "points": [
+              "Provide plenty of opportunities for physical play and exploration",
+              "Encourage social interactions with peers through playdates",
+              "Read together daily to build language and cognitive skills",
+              "Offer age-appropriate puzzles and games that challenge thinking",
+              "Create consistent routines that provide security and predictability"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

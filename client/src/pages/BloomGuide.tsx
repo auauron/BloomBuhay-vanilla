@@ -4,9 +4,9 @@ import Header from "../components/ui/Header";
 import Sidebar from "../components/ui/Sidebar";
 import { Search } from "lucide-react";
 import { Article, ArticleSection } from "../types/guide";
-import articlesData from '../data/articles.json';
 import ArticleModal from '../components/ArticleModal';
 import { BookOpen } from "lucide-react";
+import { pregnant, postpartum, earlyChildCare } from '../data';
 
 // === GRADIENT SEARCH BAR COMPONENT ===
 const GradientSearchBar = ({ 
@@ -66,14 +66,10 @@ const GradientSearchBar = ({
 
 // === ARTICLE CARD COMPONENT ===
 const ArticleCard = ({ 
-  title, 
-  image, 
-  category, 
+  article,
   onClick 
 }: { 
-  title: string; 
-  image: string; 
-  category?: string;
+  article: Article;
   onClick: () => void;
 }) => (
   <div 
@@ -82,19 +78,19 @@ const ArticleCard = ({
   >
     <div className="relative overflow-hidden">
       <img 
-        src={image} 
-        alt={title} 
+        src={article.image} 
+        alt={article.title} 
         className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110" 
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       
-      {category && (
+      {article.category && (
         <div className="absolute top-3 left-3">
           <span 
             className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg"
             style={{textShadow: '1px 1px 1px black'}}
           >
-            {category}
+            {article.category}
           </span>
         </div>
       )}
@@ -102,15 +98,14 @@ const ArticleCard = ({
     
     <div className="p-6 flex flex-col flex-grow">
       <h3 className="text-xl font-bold text-gray-800 leading-tight mb-4 line-clamp-2 group-hover:text-bloomPink transition-colors flex-grow">
-        {title}
+        {article.title}
       </h3>
       
       <div className="flex justify-end mt-auto pt-4">
         <button 
           onClick={(e) => {
             e.stopPropagation();
-            const article = articlesData.articles.find(a => a.title === title);
-            if (article?.externalLink) {
+            if (article.externalLink) {
               window.open(article.externalLink, '_blank');
             }
           }}
@@ -142,59 +137,18 @@ const FilterButtons = ({
   activeFilter, 
   setActiveFilter, 
   searchQuery,
-  maternalTips,
-  motherCare, 
-  babyCare 
+  stageCounts
 }: {
   activeFilter: string;
   setActiveFilter: (filter: string) => void;
   searchQuery: string;
-  maternalTips: Article[];
-  motherCare: Article[];
-  babyCare: Article[];
+  stageCounts: { [key: string]: number };
 }) => {
-  // Helper function to filter articles by search query
-  const filterArticlesBySearch = (articles: Article[]): Article[] => {
-    if (!searchQuery.trim()) return articles;
-    
-    return articles.filter(article =>
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.category.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  };
-
-  // Calculate counts based on current search results
-  const getFilterCount = (filterKey: string) => {
-    if (!searchQuery.trim()) {
-      // No search, use original counts
-      switch (filterKey) {
-        case "maternal": return maternalTips.length;
-        case "mother": return motherCare.length;
-        case "baby": return babyCare.length;
-        case "all": return maternalTips.length + motherCare.length + babyCare.length;
-        default: return 0;
-      }
-    } else {
-      // With search, count filtered results
-      const maternalFiltered = filterArticlesBySearch(maternalTips);
-      const motherFiltered = filterArticlesBySearch(motherCare);
-      const babyFiltered = filterArticlesBySearch(babyCare);
-      
-      switch (filterKey) {
-        case "maternal": return maternalFiltered.length;
-        case "mother": return motherFiltered.length;
-        case "baby": return babyFiltered.length;
-        case "all": return maternalFiltered.length + motherFiltered.length + babyFiltered.length;
-        default: return 0;
-      }
-    }
-  };
-
   const filters = [
-    { key: "all", label: "All Articles", count: getFilterCount("all") },
-    { key: "maternal", label: "Maternal Tips", count: getFilterCount("maternal") },
-    { key: "mother", label: "Mother Care", count: getFilterCount("mother") },
-    { key: "baby", label: "Baby Care", count: getFilterCount("baby") },
+    { key: "all", label: "All Articles", count: stageCounts.all || 0 },
+    { key: "pregnant", label: "Pregnancy", count: stageCounts.pregnant || 0 },
+    { key: "postpartum", label: "Postpartum", count: stageCounts.postpartum || 0 },
+    { key: "earlyChildcare", label: "Early Childcare", count: stageCounts.earlyChildcare || 0 },
   ];
 
   return (
@@ -228,8 +182,40 @@ export default function BloomGuide() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedArticle, setSelectedArticle] = useState<any>(null);
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Get all articles using useMemo for performance
+  const allArticles = useMemo(() => {
+    const pregnantArticles = [
+      ...pregnant.maternalTips.articles,
+      ...pregnant.nutrition.articles,
+      ...pregnant.symptoms.articles,
+      ...pregnant.fitness.articles,
+      ...pregnant.development.articles
+    ];
+
+    const postpartumArticles = [
+      ...postpartum.mentalHealth.articles,
+      ...postpartum.recovery.articles,
+      ...postpartum.selfCare.articles,
+      ...postpartum.breastfeeding.articles
+    ];
+
+    const earlyChildcareArticles = [
+      ...earlyChildCare.newbornCare.articles,
+      ...earlyChildCare.sleep.articles,
+      ...earlyChildCare.feeding.articles,
+      ...earlyChildCare.development.articles
+    ];
+
+    return {
+      pregnant: pregnantArticles,
+      postpartum: postpartumArticles,
+      earlyChildcare: earlyChildcareArticles,
+      all: [...pregnantArticles, ...postpartumArticles, ...earlyChildcareArticles]
+    };
+  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -239,157 +225,91 @@ export default function BloomGuide() {
     setIsSidebarOpen(false);
   };
 
-  // === DATA SECTION ===
-  const maternalTips: Article[] = [
-    {
-      title: "The Baby: Development at 5 Weeks",
-      image: "/assets/article1.webp",
-      category: "Pregnancy",
-      section: "maternal"
-    },
-    {
-      title: "Nutrition Tips for Early Pregnancy",
-      image: "/assets/article1.webp",
-      category: "Nutrition",
-      section: "maternal"
-    },
-    {
-      title: "Signs Your Body is Adjusting to Pregnancy",
-      image: "/assets/article1.webp",
-      category: "Health",
-      section: "maternal"
-    },
-    {
-      title: "Exercise During First Trimester",
-      image: "/assets/article1.webp",
-      category: "Fitness",
-      section: "maternal"
-    },
-    {
-      title: "Managing Morning Sickness",
-      image: "/assets/article1.webp",
-      category: "Health",
-      section: "maternal"
-    },
-  ];
-
-  const motherCare: Article[] = [
-    {
-      title: "Postpartum Self-Care Routine",
-      image: "/assets/article1.webp",
-      category: "Self-Care",
-      section: "mother"
-    },
-    {
-      title: "Caring for Yourself While Caring for Baby",
-      image: "/assets/article1.webp",
-      category: "Wellness",
-      section: "mother"
-    },
-    {
-      title: "Mental Health After Birth",
-      image: "/assets/article1.webp",
-      category: "Mental Health",
-      section: "mother"
-    },
-    {
-      title: "Returning to Exercise Postpartum",
-      image: "/assets/article1.webp",
-      category: "Fitness",
-      section: "mother"
-    },
-  ];
-
-  const babyCare: Article[] = [
-    {
-      title: "Newborn Care Essentials",
-      image: "/assets/article1.webp",
-      category: "Baby Care",
-      section: "baby"
-    },
-    {
-      title: "Understanding Baby's Sleep Patterns",
-      image: "/assets/article1.webp",
-      category: "Sleep",
-      section: "baby"
-    },
-    {
-      title: "Feeding Guide for Newborns",
-      image: "/assets/article1.webp",
-      category: "Feeding",
-      section: "baby"
-    },
-    {
-      title: "Baby Development Milestones",
-      image: "/assets/article1.webp",
-      category: "Development",
-      section: "baby"
-    },
-    {
-      title: "Common Newborn Health Concerns",
-      image: "/assets/article1.webp",
-      category: "Health",
-      section: "baby"
-    },
-  ];
-
-  const topMaternalTips = maternalTips.slice(0, 3);
-  const topMotherCare = motherCare.slice(0, 3);
-  const topBabyCare = babyCare.slice(0, 3);
-
   // Helper function to filter articles by search query
   const filterArticlesBySearch = (articles: Article[]): Article[] => {
     if (!searchQuery.trim()) return articles;
     
+    const query = searchQuery.toLowerCase();
     return articles.filter(article =>
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.category.toLowerCase().includes(searchQuery.toLowerCase())
+      article.title.toLowerCase().includes(query) ||
+      article.category.toLowerCase().includes(query) ||
+      (article.content?.headline && article.content.headline.toLowerCase().includes(query)) ||
+      (article.content?.intro && article.content.intro.toLowerCase().includes(query))
     );
   };
 
+  // Calculate stage counts for filter buttons
+  const stageCounts = useMemo(() => {
+    const pregnantCount = filterArticlesBySearch(allArticles.pregnant).length;
+    const postpartumCount = filterArticlesBySearch(allArticles.postpartum).length;
+    const earlyChildcareCount = filterArticlesBySearch(allArticles.earlyChildcare).length;
+    
+    return {
+      all: pregnantCount + postpartumCount + earlyChildcareCount,
+      pregnant: pregnantCount,
+      postpartum: postpartumCount,
+      earlyChildcare: earlyChildcareCount
+    };
+  }, [searchQuery, allArticles]);
+
   // Filter articles based on active filter and search query
   const getFilteredArticles = (): ArticleSection => {
-    let baseArticles;
-    
+    let articlesToFilter: Article[] = [];
+
+    // Get base articles based on active filter
     switch (activeFilter) {
-      case "maternal":
-        baseArticles = { maternal: maternalTips };
+      case "pregnant":
+        articlesToFilter = allArticles.pregnant;
         break;
-      case "mother":
-        baseArticles = { mother: motherCare };
+      case "postpartum":
+        articlesToFilter = allArticles.postpartum;
         break;
-      case "baby":
-        baseArticles = { baby: babyCare };
+      case "earlyChildcare":
+        articlesToFilter = allArticles.earlyChildcare;
         break;
       default: // "all"
-        baseArticles = {
-          maternal: topMaternalTips,
-          mother: topMotherCare,
-          baby: topBabyCare
-        };
+        articlesToFilter = allArticles.all;
     }
 
-    // Apply search filtering to each section
-    const filteredSections: ArticleSection = {};
-    Object.entries(baseArticles).forEach(([section, articles]) => {
-      const filtered = filterArticlesBySearch(articles);
-      if (filtered.length > 0) {
-        filteredSections[section as keyof ArticleSection] = filtered;
-      }
-    });
+    // Apply search filtering
+    const filteredArticles = filterArticlesBySearch(articlesToFilter);
 
-    return filteredSections;
+    // If showing "all", group by stage for display
+    if (activeFilter === "all") {
+      const grouped: ArticleSection = {};
+      
+      filteredArticles.forEach(article => {
+        // Determine which stage this article belongs to
+        let stage = "";
+        if (allArticles.pregnant.some(a => a.id === article.id)) {
+          stage = "pregnant";
+        } else if (allArticles.postpartum.some(a => a.id === article.id)) {
+          stage = "postpartum";
+        } else {
+          stage = "earlyChildcare";
+        }
+
+        if (!grouped[stage]) {
+          grouped[stage] = [];
+        }
+        grouped[stage].push(article);
+      });
+
+      return grouped;
+    } else {
+      // For specific stage filters, just return that stage
+      return { [activeFilter]: filteredArticles };
+    }
   };
 
   // Use useMemo to prevent unnecessary recalculations
-  const filteredSections = useMemo(() => getFilteredArticles(), [activeFilter, searchQuery, maternalTips, motherCare, babyCare]);
+  const filteredSections = useMemo(() => getFilteredArticles(), [activeFilter, searchQuery, allArticles]);
 
   // Check if search has no results
   const hasNoResults = Boolean(searchQuery && Object.keys(filteredSections).length === 0);
 
   // Handle article click
-  const handleArticleClick = (title: string) => {
-    const article = articlesData.articles.find(a => a.title === title);
+  const handleArticleClick = (article: Article) => {
     setSelectedArticle(article);
     setIsModalOpen(true);
   };
@@ -397,9 +317,9 @@ export default function BloomGuide() {
   // === SECTION TITLE HELPER ===
   const getSectionTitle = (section: string) => {
     const titles = {
-      maternal: "Maternal Tips",
-      mother: "Mother Care", 
-      baby: "Baby Care"
+      pregnant: "Pregnancy Articles",
+      postpartum: "Postpartum Care", 
+      earlyChildcare: "Early Childcare"
     };
     return titles[section as keyof typeof titles] || section;
   };
@@ -471,9 +391,7 @@ export default function BloomGuide() {
             activeFilter={activeFilter}
             setActiveFilter={setActiveFilter}
             searchQuery={searchQuery}
-            maternalTips={maternalTips}
-            motherCare={motherCare}
-            babyCare={babyCare}
+            stageCounts={stageCounts}
           />
 
           {/* ARTICLES SECTIONS */}
@@ -484,15 +402,16 @@ export default function BloomGuide() {
                   <h2 className="text-3xl font-bold text-bloomPink">
                     {getSectionTitle(section)}
                   </h2>
+                  <span className="bg-bloomPink/10 text-bloomPink px-3 py-1 rounded-full text-sm font-medium">
+                    {articles.length} {articles.length === 1 ? 'article' : 'articles'}
+                  </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {articles.map((article, i) => (
                     <ArticleCard 
-                      key={i} 
-                      title={article.title} 
-                      image={article.image} 
-                      category={article.category}
-                      onClick={() => handleArticleClick(article.title)}
+                      key={`${article.id}-${i}`} 
+                      article={article}
+                      onClick={() => handleArticleClick(article)}
                     />
                   ))}
                 </div>

@@ -1,0 +1,122 @@
+{
+  "articles": [
+    {
+      "id": "fetal-development-stages",
+      "title": "Fetal Development Stages",
+      "image": "/assets/article1.webp",
+      "category": "Development",
+      "section": "maternal",
+      "externalLink": "https://my.clevelandclinic.org/health/articles/7247-fetal-development-stages-of-growth",
+      "content": {
+        "headline": "Comprehensive Guide to Fetal Development from Conception to Birth",
+        "intro": "Fetal development is an orderly and intricate process that begins before you even know you're pregnant and ends with the birth of your baby. There are three main stages of fetal development: germinal, embryonic and fetal.",
+        "sections": [
+          {
+            "title": "The Three Stages of Fetal Development",
+            "content": "Understanding the progression from conception to birth:",
+            "points": [
+              "Germinal Stage: Shortest stage beginning at conception, zygote divides and becomes blastocyst",
+              "Embryonic Stage: Weeks 3-8, embryo develops distinct human characteristics and major organs",
+              "Fetal Stage: Week 9 to birth, fetus grows and matures all body systems and features"
+            ]
+          },
+          {
+            "title": "First Trimester Development (Weeks 1-12)",
+            "content": "The most critical period for organ formation:",
+            "points": [
+              "Week 5: Neural tube forms, tiny heart begins pulsing",
+              "Week 6: Arm and leg buds develop, blood circulation begins",
+              "Week 8: All major organs and body systems developing",
+              "Week 12: Most critical development complete, risk of miscarriage decreases"
+            ]
+          },
+          {
+            "title": "Second Trimester Development (Weeks 13-26)",
+            "content": "Rapid growth and the beginning of movement:",
+            "points": [
+              "Week 16: Can hear sounds, fingerprints begin forming",
+              "Week 20: You may feel baby's first movements (quickening)",
+              "Week 24: Lungs developing, skin still translucent",
+              "Baby practices breathing and develops sleep-wake cycles"
+            ]
+          },
+          {
+            "title": "Third Trimester Development (Weeks 27-40)",
+            "content": "Final preparation for birth:",
+            "points": [
+              "Week 28: Eyes can open and blink, lungs producing surfactant",
+              "Week 32: Most organs well-formed except lungs and brain",
+              "Week 37: Considered full-term, baby gains 0.5 pounds weekly",
+              "Week 40: Ready for birth, average 7-9 pounds"
+            ]
+          },
+          {
+            "title": "Key Developmental Milestones",
+            "content": "Important markers in your baby's growth journey:",
+            "points": [
+              "Most critical development occurs in first 13 weeks",
+              "Baby's sex determined around week 9",
+              "Rapid brain development in third trimester",
+              "Vernix and lanugo protect skin in womb",
+              "Bones harden but skull remains soft for birth"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "medication-research-pregnancy",
+      "title": "Medication Safety in Pregnancy",
+      "image": "/assets/article1.webp",
+      "category": "Health",
+      "section": "maternal",
+      "externalLink": "https://www.sciencedirect.com/science/article/pii/S0002937821004579",
+      "content": {
+        "headline": "Understanding Medication Research and Safety During Pregnancy",
+        "intro": "Pregnant and lactating women have historically been excluded from clinical drug research, leading to most medications being used 'off-label' during pregnancy. Recent changes aim to improve safety data for medications used during pregnancy and lactation.",
+        "sections": [
+          {
+            "title": "The Challenge of Medication Use in Pregnancy",
+            "content": "Current landscape of medication safety during pregnancy:",
+            "points": [
+              "40-60% of pregnant women take 1 or more prescription medications",
+              "Over 90% of medications lack appropriate labeling for pregnancy use",
+              "Most medications are used 'off-label' during pregnancy",
+              "Pregnant women were historically excluded from clinical trials"
+            ]
+          },
+          {
+            "title": "Historical Context and Changes",
+            "content": "Evolution of medication safety research in pregnancy:",
+            "points": [
+              "1977 FDA guidelines prevented pregnant women from clinical trials",
+              "1993 NIH Revitalization Act required inclusion of women in research",
+              "Recent removal of 'vulnerable' classification for pregnant women",
+              "Increased focus on preexisting conditions in pregnancy"
+            ]
+          },
+          {
+            "title": "Current Research Initiatives",
+            "content": "Efforts to improve medication safety data:",
+            "points": [
+              "Obstetric-Fetal Pharmacology Research Centers established",
+              "Studying pharmacokinetics of common pregnancy medications",
+              "Research on diabetes, hypertension, and infection treatments",
+              "Focus on individualized dosing during pregnancy"
+            ]
+          },
+          {
+            "title": "Important Considerations",
+            "content": "What every pregnant woman should know about medications:",
+            "points": [
+              "Always consult your provider before taking any medication",
+              "Discuss preexisting conditions and necessary medications early",
+              "Understand that medication needs may change during pregnancy",
+              "Ask about latest research on specific medications you need"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

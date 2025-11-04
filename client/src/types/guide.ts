@@ -1,10 +1,22 @@
-// types  guide.tsx
+export interface ArticleContent {
+  headline?: string;
+  intro?: string;
+  sections?: Array<{
+    title?: string;
+    content?: string;
+    points?: string[];
+  }>;
+  source?: string;
+}
 
 export interface Article {
+  id: string;
   title: string;
   image: string;
   category: string;
   section: string;
+  externalLink?: string;
+  content?: ArticleContent;
 }
 
 export interface ArticleSection {
@@ -12,7 +24,7 @@ export interface ArticleSection {
 }
 
 export interface ArticleModalProps {
-  article: any;
+  article: Article | null;
   isOpen: boolean;
   onClose: () => void;
 }
