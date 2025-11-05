@@ -7,13 +7,13 @@ type Task = {
   completed: boolean;
 };
 
-type TodoListProps = {
+type ToDoListProps = {
   selectedDate: Date;
   addTask: (task: Task) => void;
   tasks: Task[];
 };
 
-export default function TodoList( {selectedDate, addTask, tasks}: TodoListProps ) {
+export default function TodoList( {selectedDate, addTask, tasks}: ToDoListProps ) {
   const [text, setText] = useState("");
 
   const formattedDate = selectedDate.toLocaleDateString();
