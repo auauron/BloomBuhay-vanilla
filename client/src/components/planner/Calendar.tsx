@@ -99,8 +99,8 @@ export default function CalendarView() {
                 {day}
                 </div>
               ))}
-            {currentCalendar.map((week, yindex) => (
-              week.map((day, xindex) => (
+            {currentCalendar.map((week) => (
+              week.map((day) => (
               <div className="p-3 group relative bg-gradient-to-r from-pink-50 to-pink-100 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100 text-center">
                 {day}
                 </div>
