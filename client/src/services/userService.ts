@@ -1,8 +1,8 @@
-import { authService } from './authService';
+import { authService } from "./authService";
 
-const API_URL = 'http://localhost:3000/api/users';
+const API_URL = "http://localhost:3000/api/users";
 
-interface UserProfile {
+export interface UserProfile {
   id: number;
   fullName: string;
   email: string;
@@ -11,13 +11,13 @@ interface UserProfile {
   updatedAt: string;
 }
 
-interface GetProfileResponse {
+export interface GetProfileResponse {
   success: boolean;
   user?: UserProfile;
   error?: string;
 }
 
-interface UpdateProfileRequest {
+export interface UpdateProfileRequest {
   fullName?: string;
   email?: string;
   profilePic?: string;
@@ -25,11 +25,17 @@ interface UpdateProfileRequest {
   confirmPassword?: string;
 }
 
-interface UpdateProfileResponse {
+export interface UpdateProfileResponse {
   success: boolean;
   user?: UserProfile;
   error?: string;
   errors?: Array<{ field: string; message: string }>;
+}
+
+export interface DeleteAccountResponse {
+  success: boolean;
+  error?: string;
+  message?: string;
 }
 
 export const userService = {
@@ -39,15 +45,15 @@ export const userService = {
       if (!token) {
         return {
           success: false,
-          error: 'Not authenticated',
+          error: "Not authenticated",
         };
       }
 
       const response = await fetch(`${API_URL}/me`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -55,34 +61,36 @@ export const userService = {
 
       if (result.success && result.user) {
         // Update stored user data
-        localStorage.setItem('user', JSON.stringify(result.user));
+        localStorage.setItem("user", JSON.stringify(result.user));
       }
 
       return result;
     } catch (error) {
-      console.error('Get profile error:', error);
+      console.error("Get profile error:", error);
       return {
         success: false,
-        error: 'Failed to connect to server',
+        error: "Failed to connect to server",
       };
     }
   },
 
-  async updateProfile(data: UpdateProfileRequest): Promise<UpdateProfileResponse> {
+  async updateProfile(
+    data: UpdateProfileRequest
+  ): Promise<UpdateProfileResponse> {
     try {
       const token = authService.getToken();
       if (!token) {
         return {
           success: false,
-          error: 'Not authenticated',
+          error: "Not authenticated",
         };
       }
 
       const response = await fetch(`${API_URL}/me`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
       });
@@ -91,17 +99,54 @@ export const userService = {
 
       if (result.success && result.user) {
         // Update stored user data
-        localStorage.setItem('user', JSON.stringify(result.user));
+        localStorage.setItem("user", JSON.stringify(result.user));
       }
 
       return result;
     } catch (error) {
-      console.error('Update profile error:', error);
+      console.error("Update profile error:", error);
       return {
         success: false,
-        error: 'Failed to connect to server',
+        error: "Failed to update profile",
+      };
+    }
+  },
+
+  async deleteAccount(password: string): Promise<DeleteAccountResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) {
+        return {
+          success: false,
+          error: "Not authenticated",
+        };
+      }
+
+      const response = await fetch(`${API_URL}/delete`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ password }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Clear all stored data on successful deletion
+        localStorage.clear();
+        // Also clear auth service state
+        authService.logout();
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Delete account error:", error);
+      return {
+        success: false,
+        error: "Failed to delete account",
       };
     }
   },
 };
-
