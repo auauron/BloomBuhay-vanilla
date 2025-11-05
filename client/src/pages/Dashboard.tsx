@@ -5,6 +5,8 @@ import Header from "../components/ui/Header";
 import Sidebar from "../components/ui/Sidebar";
 import { authService } from "../services/authService";
 import { motion } from "framer-motion";
+import PostpartumTip from "../components/ui/postpartumTips";
+
 
 const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
 
@@ -181,9 +183,9 @@ export default function Dashboard() {
               Welcome to your recovery journey
             </h1>
             <p className="text-lg font-semibold mb-6">Tips and self-care for the first weeks</p>
-            <p className="text-white/90 text-xl absolute bottom-8 font-rubik font-light">
-              Rest when you can — you’re doing great, mama.
-            </p>
+
+            {/* replaced the static p tag with the RandomTip component */}
+            <PostpartumTip className="text-white/90 text-xl absolute bottom-8 font-rubik font-light" />
           </>
         );
       case "childcare":
