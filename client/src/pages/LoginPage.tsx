@@ -41,7 +41,7 @@ export default function LoginPage() {
   };
   return (
     <div className="min-h-screen bg-bloomWhite flex flex-col items-center justify-center">
-      <div className="max-w-3xl w-full justify-center items-center">
+      <div className="max-w-3xl w-full">
         <div className="text-center mb-6">
           <div className="flex items-center justify-center -mb-6 -ml-2 mr-20">
             <img src="../assets/logo_pink.png" alt="Logo" className="h-40" />

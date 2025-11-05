@@ -46,8 +46,8 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-bloomWhite flex flex-col items-center justify-center">
       <div className="max-w-3xl w-full">
-        <div className="text-center mb-6">
-          <div className="flex items-center justify-center -mb-6 -ml-2 mr-20">
+        <div className="text-center mb-6 ">
+          <div className="flex items-center justify-center -mb-12 -ml-2 mr-20">
             <img src="../assets/logo_pink.png" alt="Logo" className="h-40" />
             <h1 className="font-poppins text-7xl font-bold text-bloomPink -ml-6">
               <span className="block leading-none">Bloom</span>
@@ -117,7 +117,7 @@ export default function SignupPage() {
             <button
               type="button"
               onClick={handleLoginRedirect}
-              className="text-sm text-gray-500 mb-3"
+              className="text-sm text-gray-500 mb-3 mt-2"
             >
               Already have an account?
             </button>
