@@ -1,65 +1,75 @@
-// CalendarComponent.tsx
-import React, { useState } from 'react';
 
-interface CalendarProps {
-    selectedDate: Date;
-    onDateSelect: (date: Date) => void;
-    allTasks: { date: Date }[]; // Simplified task structure for demonstration
+function isLeapYear(year: number): boolean {
+  if (year % 400 === 0) return true;
+  if (year % 100 === 0) return false;
+  return year % 4 === 0;
 }
 
-const CalendarComponent: React.FC<CalendarProps> = ({ selectedDate, onDateSelect, allTasks }) => {
-  const [viewDate, setViewDate] = useState(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1));
-
-  // --- Helper Functions to get calendar days ---
-
-  const getDaysInMonth = (year: number, month: number) => {
-    // Logic to calculate days...
-    // This is complex! It must handle month length and weekday starting position.
-    return [/* array of day numbers or Date objects */]; 
-  };
-  
-  const days = getDaysInMonth(viewDate.getFullYear(), viewDate.getMonth());
-
-  // Function to check if a day has a task
-  const hasTask = (dayDate: Date) => {
-      return allTasks.some(task => task.date.toDateString() === dayDate.toDateString());
+function dayOfTheMonth(day: number, year: number, month: number): number {
+  if (month < 3) {
+    month += 12;
+    year -= 1;
   }
 
-  // --- Navigation Handlers ---
-  const prevMonth = () => {
-      setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
-  }
-  const nextMonth = () => {
-      setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
-  }
+  const K = year % 100;
+  const J = Math.floor(year / 100);
 
-  // --- Rendering ---
   return (
-    <div className="calendar">
-      <div className="calendar-header">
-        <button onClick={prevMonth}>&lt;</button>
-        <span>{viewDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</span>
-        <button onClick={nextMonth}>&gt;</button>
-      </div>
-      <div className="calendar-grid">
-        {/* Render Weekday Headers (Su, Mo, Tu, etc.) */}
-        {/* Render day cells using 'days.map' */}
-        {/*
-        {days.map(day => (
-            <div 
-                key={day.getTime()} 
-                onClick={() => onDateSelect(day)}
-                className={hasTask(day) ? 'day-with-task' : ''}
-            >
-                {day.getDate()}
-            </div>
-        ))}
-        */}
-        {/* Placeholder for complex day rendering logic */}
-        <p>Calendar rendering logic is complex and omitted for brevity.</p>
-      </div>
-    </div>
+    (day + Math.floor((13 * (month + 1)) / 5) + K + Math.floor(K / 4) + Math.floor(J / 4) + 5 * J) % 7
   );
+}
+
+function createCalendar(month: number, year: number): number[][] {
+  const daysInMonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (isLeapYear(year)) daysInMonths[1] = 29;
+
+  const firstDay = dayOfTheMonth(1, year, month);
+
+  // determine number of weeks in the calendar grid
+  const calendar: number[][] =
+    firstDay === 6 && daysInMonths[month] > 29
+      ? [[], [], [], [], [], []]
+      : [[], [], [], [], []];
+
+  for (let i = 0; i < calendar.length; i++) {
+    for (let j = 0; j < 7; j++) {
+      const day = 7 * i + j - firstDay + 1;
+      if (day < 1) {
+        // days from previous month
+        const prevMonthDays = daysInMonths[month - 2 < 0 ? 11 : month - 2];
+        calendar[i].push(prevMonthDays + day);
+      } else if (day > daysInMonths[month - 1]) {
+        // days from next month
+        calendar[i].push(day - daysInMonths[month - 1]);
+      } else {
+        calendar[i].push(day);
+      }
+    }
+  }
+
+  return calendar;
+}
+
+// Example
+console.log(createCalendar(8, 2025));
+type Task = {
+  id: number;
+  text: string;
+  date: Date;
+  completed: boolean;
 };
 
-export default CalendarComponent;
+type CalendarViewProps = {
+  selectedDate: Date;
+  setSelectedDate: (date: Date) => void;
+  tasks: Task[];
+};
+
+export default function CalendarView() {
+
+  return (
+    <div className="p-4 bg-white rounded-2xl shadow-lg border border-pink-100">
+      
+    </div>
+  );
+}
