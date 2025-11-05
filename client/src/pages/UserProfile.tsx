@@ -434,7 +434,7 @@ export default function UserProfile() {
               <button
                 onClick={confirmDelete}
                 disabled={!deletePassword || deleting}
-                className="px-6 py-2 rounded-2xl w-[200px] bg-white text-red-500 hover:bg-red-50 transition-all duration-300 w-40 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 rounded-2xl bg-white text-red-500 hover:bg-red-50 transition-all duration-300 w-40 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {deleting ? "Deleting..." : "Delete Account"}
               </button>
