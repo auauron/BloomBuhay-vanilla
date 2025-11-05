@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 
 interface PostpartumTIpsProps {
-  className?: string; // optional className to match your layout
-  tips?: string[]; // optional override of the tips list
-  storageKey?: string; // optional sessionStorage key
+  className?: string; 
+  tips?: string[];
+  storageKey?: string;
 }
 
 const DEFAULT_TIPS = [
@@ -41,12 +41,10 @@ export default function RandomTip({
       return;
     }
 
-    // Try avoid repeating the same tip on refresh by checking sessionStorage
     const lastStr = sessionStorage.getItem(storageKey);
     const lastIndex = lastStr ? Number(lastStr) : -1;
 
     let idx = Math.floor(Math.random() * tips.length);
-    // up to a few attempts to get a different tip
     let attempts = 0;
     while (tips.length > 1 && idx === lastIndex && attempts < 5) {
       idx = Math.floor(Math.random() * tips.length);
