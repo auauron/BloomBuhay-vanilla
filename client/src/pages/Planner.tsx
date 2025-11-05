@@ -3,6 +3,7 @@ import { useState } from "react";
 import "../index.css";
 import Header from '../components/ui/Header';
 import Sidebar from "../components/ui/Sidebar";
+import CalendarView from "../components/planner/Calendar";
 import { motion } from "framer-motion";
 import { Calendar } from "lucide-react";
 
@@ -57,12 +58,7 @@ export default function Planner() {
         </div>
 
         {/* Calendar */}
-        <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-4 rounded-[20px] shadow-lg relative">
-          <h3 className="text-2xl mb-2 text-white font-bold">August 2025</h3>
-          <div className="bg-white rounded-xl text-[#474747] h-72 md:h-96">
-            
-          </div>
-        </div>
+        <CalendarView />
 
         {/* To Do */}
         <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-4 rounded-[20px] shadow-lg relative">
