@@ -33,7 +33,7 @@ export default function PremiumPage(): ReactElement {
       title: "Advanced",
       price: (
         <>
-          ₱ 149 <span className="text-black">/month</span>
+          ₱ 149 <span className="text-bloomBlack text-sm font-light">/month</span>
         </>
       ),
       bullets: [
@@ -52,7 +52,7 @@ export default function PremiumPage(): ReactElement {
       title: "Premium",
       price: (
         <>
-          ₱ 299 <span className="text-black">/month</span>
+          ₱ 299 <span className="text-bloomBlack text-sm font-light">/month</span>
         </>
       ),
       bullets: [
@@ -82,13 +82,13 @@ export default function PremiumPage(): ReactElement {
     }
     if (variant === "premium") {
       return (
-        <button className="w-full py-2 rounded-full font-semibold shadow-md bg-gradient-to-r from-[#F875AA] to-[#F3E198] text-bloomWhite hover:opacity-95 transition">
+        <button className="w-full py-2 rounded-full font-semibold shadow-md bg-gradient-to-r from-[#F875AA] to-[#F3E198] text-bloomWhite hover:bg-gradient-to-r hover:from-[#F3E198] hover:to-[#F875AA] transition">
           Choose Premium
         </button>
       );
     }
     return (
-      <button className="w-full py-2 rounded-full font-semibold shadow-md bg-gradient-to-r from-[#F875AA] to-[#F3E198] text-bloomWhite hover:opacity-95 transition">
+      <button className="w-full py-2 rounded-full font-semibold shadow-md bg-gradient-to-r from-[#F875AA] to-[#F3E198] text-bloomWhite hover:opacity-95 transition hover:bg-gradient-to-r hover:from-[#F3E198] hover:to-[#F875AA]">
         Return to Basic
       </button>
     );
@@ -104,10 +104,10 @@ export default function PremiumPage(): ReactElement {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Page heading */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold text-bloomPink tracking-tight">
+          <h1 className="text-4xl font-bold text-bloomPink tracking-tight">
             Subscription Plans
           </h1>
-          <p className="mt-2 text-gray-600">Find your plan, find your bloom.</p>
+          <p className="mt-2 text-bloomBlack font-rubik font-light text-md">Find your plan, find your bloom.</p>
         </div>
 
         {/* Plans grid */}
@@ -117,14 +117,14 @@ export default function PremiumPage(): ReactElement {
             return (
               <section
                 key={plan.title}
-                className={`rounded-2xl p-6 backdrop-blur-sm border shadow-xl flex flex-col justify-between h-full transition-all duration-200 ${
+                className={`rounded-2xl p-6 border shadow-xl flex flex-col justify-between h-full transition-all duration-100 hover:scale-105 ${
                   plan.variant === "advanced"
                     ? "bg-pink-50 border-pink-200 ring-1 ring-pink-100"
                     : "bg-white/95 border-gray-100"
                 }`}
               >
                 <div>
-                  <div className="flex flex-col items-center text-center">
+                  <div className="flex flex-col items-center text-center hover:scale-110 transition-all">
                     {/* Icon in rounded square with gradient background (matches provided image) */}
                     <div className="flex items-center gap-3 mb-2">
                       <div
@@ -143,16 +143,16 @@ export default function PremiumPage(): ReactElement {
                     </div>
 
                     {/* Price inline with vertical gradient for the price part */}
-                    <p className="text-lg font-semibold bg-gradient-to-b from-[#F875AA] to-[#F3E198] bg-clip-text text-transparent">
+                    <p className="text-2xl font-semibold bg-gradient-to-b from-[#F875AA] to-[#F3E198] bg-clip-text text-transparent">
                       {plan.price}
                     </p>
                   </div>
 
-                  <ul className="mt-6 space-y-3 text-sm text-gray-600 divide-y divide-gray-100">
+                  <ul className="mt-6 space-y-3 text-sm">
                     {plan.bullets.map((b, i) => (
                       <li key={i} className="py-2 flex items-start gap-3">
-                        <span className="mt-1 mr-2 text-pink-400">•</span>
-                        <span className="leading-tight">{b}</span>
+                        <span className="mr-2 text-pink-400">•</span>
+                        <span className="text-gray-700 leading-tight">{b}</span>
                       </li>
                     ))}
                   </ul>
@@ -165,7 +165,7 @@ export default function PremiumPage(): ReactElement {
         </div>
 
         {/* FAQ box */}
-        <div className="mt-8 rounded-2xl bg-white p-6 border border-gray-100 shadow-lg">
+        <div className="mt-8 rounded-2xl bg-white p-6 border border-gray-100 shadow-lg hover:scale-105 transition-all">
           <h3 className="text-xl font-semibold text-bloomPink">
             Frequently Asked Questions
           </h3>
