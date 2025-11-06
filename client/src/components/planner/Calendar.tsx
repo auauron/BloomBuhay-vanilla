@@ -1,113 +1,154 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { ChevronsLeft, ChevronsRight } from "lucide-react";
 import { motion } from "framer-motion";
 
+type BloomDate = {
+  day: number;
+  month: number;
+  year: number;
+};
+
 export default function CalendarView() {
+  const now = new Date();
+  const [selectedDay, setSelectedDay] = useState<string | null>(
+    `${now.getDate()}${now.getMonth()}${now.getFullYear()}`
+  );
+  const [month, setMonth] = useState(now.getMonth());
+  const [year, setYear] = useState(now.getFullYear());
 
-  const [currentMonth, setCurrentMonth] = useState((new Date()).getMonth())
-  const [currentYear, setCurrentYear] = useState((new Date()).getFullYear())
+  const daysOfWeek = ["Su", "M", "Tu", "W", "Th", "F", "Sa"];
 
-  const daysOfTheWeek: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  const handleSelect = (id: string) => {
+    setSelectedDay((prev) => (prev === id ? null : id));
+  };
 
-  // Checks for leap year
-  function isLeapYear(year: number): boolean {
-    if (year % 400 === 0) return true;
-    if (year % 100 === 0) return false;
-    return year % 4 === 0;
-  }
+  const isLeapYear = (y: number) =>
+    (y % 400 === 0) || (y % 4 === 0 && y % 100 !== 0);
 
-  //What day of the week was that day of the month
-  function dayOfTheMonth(day: number, year: number, month: number): number {
-    if (month < 3) {
-      month += 12;
-      year -= 1;
+  const getDayOfWeek = (day: number, y: number, m: number): number => {
+    if (m < 3) {
+      m += 12;
+      y -= 1;
     }
+    const K = y % 100;
+    const J = Math.floor(y / 100);
+    const h =
+      (day +
+        Math.floor((13 * (m + 1)) / 5) +
+        K +
+        Math.floor(K / 4) +
+        Math.floor(J / 4) +
+        5 * J) %
+      7;
+    return (h + 6) % 7; // Convert to 0=Sunday
+  };
 
-    const K = year % 100;
-    const J = Math.floor(year / 100);
+  const createCalendar = (m: number, y: number): BloomDate[] => {
+    const daysInMonth = [31, isLeapYear(y) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    const prevMonth = m === 0 ? 11 : m - 1;
+    const nextMonth = m === 11 ? 0 : m + 1;
+    const prevYear = m === 0 ? y - 1 : y;
+    const nextYear = m === 11 ? y + 1 : y;
 
-    return (
-      (day + 2 + Math.floor((13 * (month + 1)) / 5) + K + Math.floor(K / 4) + Math.floor(J / 4) + 5 * J) % 7
-    );
-  }
+    const firstDay = getDayOfWeek(1, y, m + 1);
+    const totalCells = Math.ceil((daysInMonth[m] + firstDay) / 7) * 7;
 
-  // Calendar generator using arrays
-  function createCalendar(month: number, year: number): number[][] {
+    const calendar: BloomDate[] = [];
 
-    const prevMonth = (month === 0) ? 11 : month - 1
-    const daysInMonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    if (isLeapYear(year)) daysInMonths[1] = 29;
-
-    const firstDay = dayOfTheMonth(1, year, month);
-    const calendar: number[][] = Array.from({ length: (Math.ceil((daysInMonths[month] + firstDay)/7)) }, () => []);
-
-    for (let i = 0; i < calendar.length; i++) {
-      for (let j = 0; j < 7; j++) {
-        const day = (7 * i + j) - firstDay + 1;
-        if (day < 1) {
-          calendar[i].push(daysInMonths[prevMonth] + day);
-        } else if (day > daysInMonths[month]) {
-          calendar[i].push(day - daysInMonths[month]);
-        } else {
-          calendar[i].push(day);
-        }
+    for (let i = 0; i < totalCells; i++) {
+      const dayNum = i - firstDay + 1;
+      if (dayNum < 1) {
+        calendar.push({ day: daysInMonth[prevMonth] + dayNum, month: prevMonth, year: prevYear });
+      } else if (dayNum > daysInMonth[m]) {
+        calendar.push({ day: dayNum - daysInMonth[m], month: nextMonth, year: nextYear });
+      } else {
+        calendar.push({ day: dayNum, month: m, year: y });
       }
     }
     return calendar;
-  }
+  };
 
-
-  const currentCalendar: number[][] = createCalendar(currentMonth, currentYear);
+  const calendar = useMemo(() => createCalendar(month, year), [month, year]);
+  const today = `${now.getDate()}${now.getMonth()}${now.getFullYear()}`;
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-    <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-4 rounded-[20px] shadow-lg relative items-center">
-        <h3 className="text-2xl mb-2 text-white font-bold text-center items-center flex col">
-
+      <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-4 rounded-[20px] shadow-lg">
+        {/* Header */}
+        <h3 className="text-2xl mb-2 font-bold flex items-center justify-center gap-4 p-2">
           <motion.button
             whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}>
-          <button
-          onClick={() => {
-            setCurrentMonth((currentMonth === 0) ? currentMonth + 11 : currentMonth - 1);
-            setCurrentYear((currentMonth === 0) ? currentYear - 1 : currentYear)
-            }}>
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              setMonth((prev) => (prev === 0 ? 11 : prev - 1));
+              setYear((prev) => (month === 0 ? prev - 1 : prev));
+            }}
+          >
             <ChevronsLeft className="w-8 h-8 text-white" />
-          </button>
           </motion.button>
 
-          {new Date(currentYear, currentMonth).toLocaleString("default", { month: "long" })}
-          {" "}
-          {currentYear}
-          
+          <span className="flex-1 text-center">
+            {new Date(year, month).toLocaleString("default", { month: "long" })} {year}
+          </span>
+
           <motion.button
             whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}>
-          <button
-          onClick={() => {
-            setCurrentMonth((currentMonth === 11) ? currentMonth - 11 : currentMonth + 1)
-            setCurrentYear((currentMonth === 11) ? currentYear + 1 : currentYear)
-            }}>
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              setMonth((prev) => (prev === 11 ? 0 : prev + 1));
+              setYear((prev) => (month === 11 ? prev + 1 : prev));
+            }}
+          >
             <ChevronsRight className="w-8 h-8 text-white" />
-          </button>
           </motion.button>
         </h3>
-        <div className="bg-white rounded-xl text-[#474747] h-72 md:h-96">
-          <div className="grid grid-cols-7 grid-rows-7 gap-1">
-            {daysOfTheWeek.map((day) => (
-              <div className="p-3 group relative bg-gradient-to-r from-pink-50 to-pink-100 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100 text-center">
-                {day}
+
+        {/* Calendar */}
+        <div className="bg-white rounded-xl p-4 text-[#474747]">
+          <div className="grid grid-cols-7 gap-3">
+            {daysOfWeek.map((d) => (
+              <div
+                key={d}
+                className="border border-pink-100 bg-pink-50 text-center rounded-xl p-4 font-semibold"
+              >
+                {d}
+              </div>
+            ))}
+
+            {calendar.map((date, i) => {
+              const id = `${date.day}${date.month}${date.year}`;
+              const isCurrentMonth = date.month === month;
+              const isToday = id === today;
+              const isSelected = id === selectedDay;
+
+              return (
+                <div
+                  key={i}
+                  onClick={() => {
+                    if (!isCurrentMonth) {
+                      setMonth(date.month);
+                      setYear(date.year);
+                    }
+                    handleSelect(id);
+                  }}
+                  className={[
+                    "p-4 text-center rounded-2xl transition-all duration-300 cursor-pointer select-none",
+                    isSelected
+                      ? "border-bloomPink border-2 scale-105"
+                      : isToday
+                      ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow-lg"
+                      : isCurrentMonth
+                      ? "hover:bg-gradient-to-r from-bloomPink/20 to-bloomYellow/20 hover:shadow-md"
+                      : "text-gray-400 opacity-60 cursor-default",
+                  ].join(" ")}
+                >
+                  {date.day}
                 </div>
-              ))}
-            {currentCalendar.map((week) => (
-              week.map((day) => (
-              <div className="p-3 group relative bg-gradient-to-r from-pink-50 to-pink-100 rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100 text-center">
-                {day}
-                </div>
-              ))))}
+              );
+            })}
+          </div>
         </div>
       </div>
-    </div>
     </motion.div>
   );
 }
