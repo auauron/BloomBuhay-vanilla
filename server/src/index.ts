@@ -4,6 +4,7 @@ import "dotenv/config";
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import motherProfilesRoutes from "./routes/motherProfiles"; 
+import plannerRoutes from "./routes/plannerRoutes"
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,9 +22,10 @@ app
   .use(express.json({ limit: "10mb" }));
 
 // api routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/mother-profiles", motherProfilesRoutes); 
+app.use("/api/auth", authRoutes)
+.use("/api/users", userRoutes)
+.use("/api/mother-profiles", motherProfilesRoutes) 
+.use("/api/planner", plannerRoutes)
 
 app.get("/", (req, res) => {
   res.json({
