@@ -72,6 +72,13 @@ export default function MainSetup() {
 
     const token = authService.getToken?.() ?? localStorage.getItem("token");
 
+    // Map stage keys to display labels for backend API
+    const stageLabels: Record<string, string> = {
+      pregnant: "Pregnant",
+      postpartum: "Postpartum",
+      childcare: "Early Childcare",
+    };
+
     if (token) {
       try {
         const resp = await fetch("http://localhost:3000/api/mother-profiles", {
@@ -81,7 +88,7 @@ export default function MainSetup() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            stage: selectedStage,
+            stage: stageLabels[selectedStage || ""] || selectedStage,
             weeksPregnant: stageData?.weeksPregnant ?? null,
             lmpDate: stageData?.lmpDate ?? null,
             babyName: stageData?.babyName ?? null,
@@ -128,8 +135,19 @@ export default function MainSetup() {
       );
     }
 
-    // navigate to dashboard and pass canonical stage in state (so Dashboard can read it immediately)
-    navigate("/dashboard", { state: { stage: selectedStage } });
+    // Navigate to setup summary with all collected data
+    navigate("/setup/summary", {
+      state: {
+        fullName,
+        email,
+        motherhoodStage: stageLabels[selectedStage || ""] || selectedStage,
+        weeksPregnant: stageData?.weeksPregnant,
+        weeksAfterBirth: stageData?.weeksAfterBirth,
+        babyName: stageData?.babyName,
+        babyGender: stageData?.babyGender === "male" ? "Boy" : stageData?.babyGender === "female" ? "Girl" : "Unknown",
+        babyAgeMonths: stageData?.babyAgeMonths,
+      },
+    });
   };
 
   const handleBack = () => {
