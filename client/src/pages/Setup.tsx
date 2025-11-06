@@ -43,7 +43,7 @@ export default function Setup({ onStageSelect, fullName, email }: SetupProps) {
       <div className="main-container flex-1 flex items-center justify-center px-6 mt-16">
         <div style={{ maxWidth: "800px" }} className="p-8 w-full">
           <div className="text-center mb-2">
-            <h1 className="text-2xl font-bold font-rubik text-bloomBlack mb-1">
+            <h1 className="text-3xl font-bold font-poppins text-bloomPink mb-1">
               Let's get you started!
             </h1>
             <p className="text-[#474747]">We'd like to get to know more about you.</p>

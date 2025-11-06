@@ -20,13 +20,19 @@ interface PregnancyProps {
   email?: string;
 }
 
-export default function Pregnancy({ onComplete, fullName, email }: PregnancyProps) {
+export default function Pregnancy({
+  onComplete,
+  fullName,
+  email,
+}: PregnancyProps) {
   const [selectedOption, setSelectedOption] = useState("");
   const [value, setValue] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedGender, setSelectedGender] = useState("");
+  const [weekError, setWeekError] = useState("");
+
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -83,7 +89,8 @@ export default function Pregnancy({ onComplete, fullName, email }: PregnancyProp
       | "unknown";
 
     // convert weeksPregnant value to number if present
-    const weeksPregnantNum = value !== "" && !Number.isNaN(Number(value)) ? Number(value) : null;
+    const weeksPregnantNum =
+      value !== "" && !Number.isNaN(Number(value)) ? Number(value) : null;
 
     // lmpDate should be a proper ISO date string or null (we're reading selectedDate)
     const lmpDate = selectedDate || null;
@@ -108,7 +115,7 @@ export default function Pregnancy({ onComplete, fullName, email }: PregnancyProp
         >
           <div
             style={{ maxWidth: "700px", maxHeight: "450px" }}
-            className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] scrollbar-thin overflow-y-auto scrollbar-thumb-white/50 scrollbar-track hover:scrollbar-thumb-white/50 shadow-lg p-8 pb-4 mb-6"
+            className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] scrollbar-thin overflow-y-auto scrollbar-thumb-white/50 scrollbar-track hover:scrollbar-thumb-white/50 shadow-lg p-10 pb-4 mb-6"
           >
             <div className="text-left">
               <h2 className="text-bloomBlack font-semibold">
@@ -130,11 +137,26 @@ export default function Pregnancy({ onComplete, fullName, email }: PregnancyProp
                     <InputField
                       label=""
                       type="number"
-                      min= "0"
+                      min="0"
                       value={value}
-                      onChange={setValue}
+                      onChange={(val) => {
+                        const num = Number(val);
+
+                        if (val === "") {
+                          setValue("");
+                          setWeekError("");
+                        } else if (isNaN(num) || num < 0) {
+                          setWeekError("Please enter a valid number");
+                        } else {
+                          setValue(val);
+                          setWeekError("");
+                        }
+                      }}
                       placeholder="Enter the number of weeks"
                     />
+                    {weekError && (
+                      <p className="text-red-500 text-sm mt-1">{weekError}</p>
+                    )}
                   </div>
                 </label>
 
@@ -170,18 +192,20 @@ export default function Pregnancy({ onComplete, fullName, email }: PregnancyProp
                 </label>
 
                 {/* Baby's details */}
-                <hr className="border-gray-200 my-4" />
-                <div className="baby-details">
+                <hr className="border-gray-200 my-4 mt-4" />
+                <div className="baby-details mt-4">
                   <label>
                     <h2 className="font-semibold text-bloomBlack">
                       Baby's Name
                     </h2>
-                    <div className="ml-4 mt-3 w-60">
+                    <div className="ml-6 mt-3 w-60">
                       <InputField
                         label=""
                         type="text"
                         value={inputValue}
-                        onChange={(val) => setInputValue(val.replace(/[^a-zA-Z\s]/g, ""))}
+                        onChange={(val) =>
+                          setInputValue(val.replace(/[^a-zA-Z\s]/g, ""))
+                        }
                         placeholder="Enter your baby's name"
                       />
                     </div>
@@ -193,7 +217,7 @@ export default function Pregnancy({ onComplete, fullName, email }: PregnancyProp
                     </h2>
                   </label>
 
-                  <div className="relative mb-4 w-[350px] ml-4">
+                  <div className="relative mb-4 w-[350px] ml-6">
                     <button
                       onClick={() => setIsOpen(!isOpen)}
                       className="flex items-center justify-between p-4 mt-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors text-left w-full"
@@ -234,10 +258,15 @@ export default function Pregnancy({ onComplete, fullName, email }: PregnancyProp
                     )}
                   </div>
 
-                  <div className="ml-4 mt-6">
+                  <div className="ml-4 ">
                     <NextButton
                       onComplete={handleNext}
-                      isReady={Boolean(inputValue && value && selectedGender)}
+                      isReady={(() => {
+                        if (!inputValue || !selectedGender) return false;
+                        if (selectedOption === "option1") return value !== "";
+                        if (selectedOption === "option2") return !!selectedDate;
+                        return false;
+                      })()}
                     />
                   </div>
                 </div>
