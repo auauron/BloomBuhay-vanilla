@@ -7,7 +7,7 @@ import Childbirth from "../components/setup/Childbirth";
 import Setup from "./Setup";
 import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { authService } from "../services/authService";
-import { keyToLabel } from "../utils/stages"; 
+import { keyToLabel } from "../utils/stages";
 
 export default function MainSetup() {
   const [selectedStage, setSelectedStage] = useState<string | null>(null);
@@ -17,20 +17,24 @@ export default function MainSetup() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Get user data from navigation state or fallback to localStorage 
+  // Get user data from navigation state or fallback to localStorage
   const stateData = (location.state as any) || {};
   const user = authService.getUser?.();
   const fullName = stateData.fullName || user?.fullName || "";
   const email = stateData.email || user?.email || "";
 
   useEffect(() => {
-    console.log("MainSetup received state:", { fullName, email, fullState: location.state });
+    console.log("MainSetup received state:", {
+      fullName,
+      email,
+      fullState: location.state,
+    });
   }, [fullName, email, location.state]);
 
   // Sync state from URL params
   useEffect(() => {
     const page = searchParams.get("page");
-    const stage = searchParams.get("stage"); 
+    const stage = searchParams.get("stage");
     if (page === "details") {
       setCurrentPage("details");
       setSelectedStage(stage);
@@ -39,6 +43,16 @@ export default function MainSetup() {
       setSelectedStage(null);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    // Disable page scrolling globally
+    document.body.style.overflow = "hidden";
+
+    // Restore scroll on unmount
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
 
   const handleStageSelect = (stageKey: string) => {
     setSelectedStage(stageKey);
@@ -75,7 +89,12 @@ export default function MainSetup() {
           }),
         });
 
-        console.log("POST /api/mother-profiles status:", resp.status, "ok:", resp.ok);
+        console.log(
+          "POST /api/mother-profiles status:",
+          resp.status,
+          "ok:",
+          resp.ok
+        );
 
         // try to read JSON body (defensive)
         const serverBody = await resp.json().catch(() => null);
@@ -86,19 +105,27 @@ export default function MainSetup() {
           try {
             localStorage.setItem("lastStage", String(serverBody.stage));
             if (typeof serverBody.weeksPregnant === "number") {
-              localStorage.setItem("lastWeeksPregnant", String(serverBody.weeksPregnant));
+              localStorage.setItem(
+                "lastWeeksPregnant",
+                String(serverBody.weeksPregnant)
+              );
             }
           } catch (e) {}
         }
 
         if (!resp.ok) {
-          console.warn("Server responded with non-ok status when saving profile:", resp.status);
+          console.warn(
+            "Server responded with non-ok status when saving profile:",
+            resp.status
+          );
         }
       } catch (err) {
         console.error("Could not post profile:", err);
       }
     } else {
-      console.warn("No token available — profile not saved server-side, only cached locally.");
+      console.warn(
+        "No token available — profile not saved server-side, only cached locally."
+      );
     }
 
     // navigate to dashboard and pass canonical stage in state (so Dashboard can read it immediately)
@@ -114,11 +141,29 @@ export default function MainSetup() {
   const renderStageComponent = () => {
     switch (selectedStage) {
       case "pregnant":
-        return <Pregnancy onComplete={handleComplete} fullName={fullName} email={email} />;
+        return (
+          <Pregnancy
+            onComplete={handleComplete}
+            fullName={fullName}
+            email={email}
+          />
+        );
       case "postpartum":
-        return <Postpartum onComplete={handleComplete} fullName={fullName} email={email} />;
+        return (
+          <Postpartum
+            onComplete={handleComplete}
+            fullName={fullName}
+            email={email}
+          />
+        );
       case "childcare":
-        return <Childbirth onComplete={handleComplete} fullName={fullName} email={email} />;
+        return (
+          <Childbirth
+            onComplete={handleComplete}
+            fullName={fullName}
+            email={email}
+          />
+        );
       default:
         return null;
     }
@@ -139,11 +184,17 @@ export default function MainSetup() {
   };
 
   if (currentPage === "setup") {
-    return <Setup onStageSelect={handleStageSelect} fullName={fullName} email={email} />;
+    return (
+      <Setup
+        onStageSelect={handleStageSelect}
+        fullName={fullName}
+        email={email}
+      />
+    );
   }
 
   return (
-    <div className="bg-bloomWhite min-h-screen flex flex-col overflow-hidden">
+    <div className="bg-bloomWhite min-h-screen flex flex-col overflow-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {/* Header */}
       <header className="fixed top-0 left-0 flex flex-row items-center shadow-none bg-bloomWhite w-full py-4 px-6">
         <div className="flex items-center space-x-4">
@@ -166,7 +217,7 @@ export default function MainSetup() {
       <div className="flex-1 flex items-center justify-center px-6 mt-16">
         <div className="p-8 w-full max-w-2xl">
           <div className="text-center mb-2">
-            <h1 className="text-2xl font-bold font-rubik text-bloomBlack mb-1">
+            <h1 className="text-3xl font-bold font-poppins text-bloomPink mb-1">
               You're blooming beautifully, mama!
             </h1>
             <p className="text-[#474747] font-rubik">{getSubtitle()}</p>

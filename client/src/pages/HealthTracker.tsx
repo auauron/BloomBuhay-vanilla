@@ -7,14 +7,14 @@ import MoodTracker from "../components/health/MoodTracker";
 import SymptomsList from "../components/health/SymptomsList";
 import { 
   Plus, 
-  Activity,
   TrendingUp,
   TrendingDown,
   Minus,
   Heart,
   Scale,
   BarChart3,
-  Droplets
+  Droplets,
+  ScanHeart
 } from "lucide-react";
 import '../index.css';
 
@@ -127,7 +127,7 @@ export default function HealthTracker() {
         <div className="text-center py-8 px-4">
           <div className="inline-flex items-center gap-3 mb-4">
             <div className="p-3 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-2xl shadow-lg">
-              <Activity className="w-8 h-8 text-white" />
+              <ScanHeart className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold bg-clip-text text-bloomPink">
               Health Tracker

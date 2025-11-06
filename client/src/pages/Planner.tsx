@@ -1,91 +1,66 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import "../index.css";
-import Header from '../components/ui/Header';
+import Header from "../components/ui/Header";
 import Sidebar from "../components/ui/Sidebar";
-import CalendarComponent from "../components/CalendarComponent";
-import ToDoListComponent from "../components/ToDoListComponent";
+import CalendarView from "../components/planner/Calendar";
+import ToDoList from "../components/planner/ToDoList";
+import { motion } from "framer-motion";
+import { Calendar } from "lucide-react";
+
+type Task = {
+  id: number;
+  text: string;
+  date: Date;
+  completed: boolean;
+};
 
 export default function Planner() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [tasks, setTasks] = useState<Task[]>([]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const closeSidebar = () => setIsSidebarOpen(false);
 
-  const closeSidebar = () => {
-    setIsSidebarOpen(false);
-  };
-
-  // Example: State to hold all tasks, which might be linked to a date
-  const [tasks, setTasks] = useState([
-    { id: 1, text: 'Plan project structure', completed: false, date: new Date(2025, 9, 30) }, // Use actual date objects
-    { id: 2, text: 'Review calendar component code', completed: true, date: new Date(2025, 10, 5) },
-  ]);
-
-  // Example: State for the currently selected date in the calendar
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date()); 
-
-  // Functions to pass to the TodoListComponent for management
-  const addTask = (text: string, date: Date) => {
-    const newTask = { id: Date.now(), text, completed: false, date };
-    setTasks((prevTasks) => [...prevTasks, newTask]);
-  };
-
-  const toggleTaskCompletion = (id: number) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
-  };
-
-    // Filter tasks for the selected day to pass to the ToDo list
-  const tasksForSelectedDate = tasks.filter(task => 
-    task.date.toDateString() === selectedDate.toDateString()
-  );
+  function addTask(task: Task): void {
+    setTasks((prev) => [...prev, task]);
+  }
 
   return (
-    <div className="min-h-screen bg-pink-50 flex flex-col font-poppins">
-      <Header onMenuClick={toggleSidebar} />
-      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      <div className="flex flex-col h-screen font-poppins bg-gradient-to-br from-pink-50 via-white to-rose-50">
+        <Header onMenuClick={toggleSidebar} />
+        <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
-      {/*Greeting*/}
-      <div className="flex flex-col item-center text-center mt-8 px-4">
-        <h2 className="text-4xl font-bold text-bloomPink">Planner</h2>
-        <p className="text-[#474747] font-rubik mt-2 mb-[-5px] font-light text-lg">
-          Your journey, organized.
-        </p>
-      </div>
-
-      {/* Planner Content */}
-      <div className="grid grid-cols-1 md:grid-cols-[0.6fr_0.4fr] gap-6 p-8 max-w-6xl mx-auto w-full">
-
-        {/* Calendar */}
-        <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-4 rounded-[20px] shadow-lg relative">
-          <h3 className="text-2xl mb-2 text-white font-bold">August 2025</h3>
-          <div className="bg-white rounded-xl text-[#474747] h-72 md:h-96">
-            <CalendarComponent 
-              selectedDate={selectedDate} 
-              onDateSelect={setSelectedDate} 
-              allTasks={tasks} // Pass tasks to mark days with tasks
-            />
+        {/* Planner Body */}
+        <div className="flex-1 overflow-y-auto px-6 py-8">
+          {/* Subheader */}
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-3 mb-3">
+              <div className="p-3 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-2xl shadow-lg">
+                <Calendar className="w-8 h-8 text-white" />
+              </div>
+              <h1 className="text-4xl font-bold text-bloomPink">Planner</h1>
+            </div>
+            <p className="text-bloomBlack font-rubik text-lg font-light">
+              Your journey, organized.
+            </p>
           </div>
-        </div>
 
-        {/* To Do */}
-        <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-4 rounded-[20px] shadow-lg relative">
-          <h3 className="text-2xl mb-2 text-white font-bold">To Do</h3>
-          <div className="bg-white rounded-xl text-[#474747] h-72 md:h-96">
-            <ToDoListComponent 
-              tasks={tasksForSelectedDate} 
-              addTask={addTask} 
-              toggleTaskCompletion={toggleTaskCompletion}
-              currentDate={selectedDate} // Pass current date for new tasks
-            />
+          {/* Calendar + To-Do Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 max-w-6xl mx-auto w-full">
+            {/* Calendar Section */}
+            <div className="rounded-2xl shadow-md bg-gradient-to-r from-pink-100 to-yellow-100 p-6">
+              <CalendarView/>
+            </div>
+
+            {/* To-Do List Section */}
+            <div className="rounded-2xl shadow-md bg-gradient-to-r from-pink-100 to-yellow-100 p-6 overflow-y-auto max-h-[600px]">
+              <ToDoList/>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

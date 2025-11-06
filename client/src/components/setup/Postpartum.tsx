@@ -10,12 +10,17 @@ interface PostpartumProps {
   email?: string;
 }
 
-export default function Postpartum({ onComplete, fullName, email  }: PostpartumProps) {
+export default function Postpartum({
+  onComplete,
+  fullName,
+  email,
+}: PostpartumProps) {
   const [value, setValue] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
+  const [weekError, setWeekError] = useState("");
 
   const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(e.target.value);
@@ -88,9 +93,24 @@ export default function Postpartum({ onComplete, fullName, email  }: PostpartumP
                   type="number"
                   min="0"
                   value={value}
-                  onChange={setValue}
+                  onChange={(val) => {
+                    const num = Number(val);
+
+                    if (val === "") {
+                      setValue("");
+                      setWeekError("");
+                    } else if (isNaN(num) || num < 0) {
+                      setWeekError("Please enter a valid number");
+                    } else {
+                      setValue(val);
+                      setWeekError("");
+                    }
+                  }}
                   placeholder="Enter the number of weeks"
                 />
+                {weekError && (
+                  <p className="text-red-500 text-sm mt-1">{weekError}</p>
+                )}
               </div>
             </div>
 
