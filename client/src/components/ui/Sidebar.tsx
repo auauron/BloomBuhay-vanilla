@@ -6,12 +6,12 @@ import {
   Home,
   BookOpen,
   Calendar,
-  Heart,
   Baby,
-  Book,
   User,
   Crown,
   LogOut,
+  BookImage,
+  ScanHeart
 } from "lucide-react";
 
 interface SidebarProps {
@@ -50,9 +50,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { icon: Home, label: "Home", path: "/dashboard" },
     { icon: BookOpen, label: "BloomGuide", path: "/bloomguide" },
     { icon: Calendar, label: "Planner", path: "/planner" },
-    { icon: Heart, label: "Health Tracker", path: "/healthtracker" },
+    { icon: ScanHeart, label: "Health Tracker", path: "/healthtracker" },
     { icon: Baby, label: "BB's Tools", path: "/bbtools" },
-    { icon: Book, label: "Journal", path: "/journal" },
+    { icon: BookImage, label: "Journal", path: "/journal" },
   ];
 
   return (
