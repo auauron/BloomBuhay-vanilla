@@ -128,8 +128,26 @@ export default function MainSetup() {
       );
     }
 
-    // navigate to dashboard and pass canonical stage in state (so Dashboard can read it immediately)
-    navigate("/dashboard", { state: { stage: selectedStage } });
+    // Map stage keys to display labels for SetupSummary
+    const stageLabels: Record<string, string> = {
+      pregnant: "Pregnant",
+      postpartum: "Postpartum",
+      childcare: "Early Childcare",
+    };
+
+    // Navigate to setup summary with all collected data
+    navigate("/setup/summary", {
+      state: {
+        fullName,
+        email,
+        motherhoodStage: stageLabels[selectedStage || ""] || selectedStage,
+        weeksPregnant: stageData?.weeksPregnant,
+        weeksAfterBirth: stageData?.weeksAfterBirth,
+        babyName: stageData?.babyName,
+        babyGender: stageData?.babyGender === "male" ? "Boy" : stageData?.babyGender === "female" ? "Girl" : "Unknown",
+        babyAgeMonths: stageData?.babyAgeMonths,
+      },
+    });
   };
 
   const handleBack = () => {
