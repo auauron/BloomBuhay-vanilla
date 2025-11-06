@@ -49,3 +49,4 @@ coverage/
 
 #docs
 DETAILED_PROJECT_GUIDE.md
+client/src/pages/Planner.tsx
