@@ -1,0 +1,121 @@
+{
+  "articles": [
+    {
+      "id": "pregnancy-second-trimester",
+      "title": "Pregnancy: Second Trimester",
+      "image": "/assets/articles.webp",
+      "category": "Development",
+      "section": "maternal",
+      "externalLink": "https://my.clevelandclinic.org/health/articles/16092-pregnancy-second-trimester",
+      "content": {
+        "headline": "Pregnancy Second Trimester: Weeks 13-27",
+        "intro": "Lasting from week 13 to week 27, the second trimester of pregnancy is often thought of as the best part of pregnancy. For many people, morning sickness and fatigue from the first trimester go away at this point.",
+        "sections": [
+          {
+            "title": "What is the second trimester of pregnancy?",
+            "content": "Your second trimester begins around week 13 of pregnancy and lasts through the end of week 27. When you're in your second trimester, you're in the middle of your pregnancy.",
+            "points": [
+              "Often feels like the best trimester with fading morning sickness and fatigue",
+              "Anxiety from first trimester typically goes away",
+              "You'll start looking and feeling more pregnant",
+              "May experience a burst of energy",
+              "Start to feel the fetus move by 18 to 20 weeks"
+            ]
+          },
+          {
+            "title": "How does my baby develop during the second trimester?",
+            "content": "The fetus goes through many changes during your second trimester of pregnancy:",
+            "points": [
+              "Starts to look more like a child with defined facial features",
+              "Develops eyelids, eyebrows, eyelashes, nails and hair by month four",
+              "Can stretch, make faces and suck its thumb",
+              "Sex can be determined on ultrasound around 20 weeks",
+              "You'll feel movement called 'quickening' - like flutters or butterflies",
+              "Can hear you in the last few weeks of the trimester"
+            ]
+          },
+          {
+            "title": "What happens to my body during the second trimester?",
+            "content": "Your body continues to change and adapt:",
+            "points": [
+              "Uterus continues to expand to the size of a watermelon",
+              "You'll start gaining weight and developing a visible baby bump",
+              "Everyone shows at different times - no two bodies look the same"
+            ]
+          },
+          {
+            "title": "Common discomforts in the second trimester",
+            "content": "While generally feeling better, you might experience:",
+            "points": [
+              "Increased appetite",
+              "Bleeding gums and nosebleeds (due to hormones)",
+              "Hemorrhoids and nasal congestion",
+              "Skin changes like linea nigra and darkened areolas",
+              "Round ligament pain",
+              "Swelling in hands, feet and ankles",
+              "Varicose veins and stretch marks",
+              "Increased risk of UTIs and yeast infections"
+            ]
+          },
+          {
+            "title": "Tests during the second trimester",
+            "content": "Your provider will order various tests:",
+            "points": [
+              "Anatomy ultrasound to check fetal development",
+              "Gestational diabetes screening",
+              "Rh factor testing",
+              "Complete blood count for anemia",
+              "Rescreening of syphilis"
+            ]
+          },
+          {
+            "title": "Preparing for birth and beyond",
+            "content": "Start thinking about these important topics:",
+            "points": [
+              "Discuss your birth preferences (vaginal, assisted, C-section)",
+              "Take educational classes about labor, breastfeeding and parenting",
+              "Choose a pediatrician",
+              "Tour the hospital where you'll give birth"
+            ]
+          },
+          {
+            "title": "Staying healthy in the second trimester",
+            "content": "Continue maintaining a healthy lifestyle:",
+            "points": [
+              "Exercise for about 20 minutes daily (walking, swimming)",
+              "Eat nutritious foods and take prenatal vitamins",
+              "Attend all prenatal appointments",
+              "Avoid contact sports and activities with fall risk"
+            ]
+          },
+          {
+            "title": "What to avoid during the second trimester",
+            "content": "Continue following pregnancy safety guidelines:",
+            "points": [
+              "Raw or undercooked meat and unpasteurized dairy",
+              "Deli meats and fish high in mercury",
+              "Hot tubs and saunas",
+              "Smoking, alcohol and recreational drugs",
+              "Cleaning litter boxes (risk of toxoplasmosis)",
+              "Sleeping on your back - sleep on your side instead"
+            ]
+          },
+          {
+            "title": "When to call your provider",
+            "content": "Contact your healthcare provider right away if you experience:",
+            "points": [
+              "Unusual or severe cramping or abdominal pain",
+              "Vaginal bleeding",
+              "Difficulty breathing that gets worse",
+              "Signs of premature labor:",
+              "• Regular contractions (more than 4 times per hour)",
+              "• Fluid leakage (possible water breaking)",
+              "• Any concerns about your pregnancy"
+            ]
+          }
+        ],
+        "source": "Cleveland Clinic - Pregnancy: Second Trimester"
+      }
+    }
+  ]
+}

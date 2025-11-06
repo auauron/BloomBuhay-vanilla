@@ -132,19 +132,21 @@ const ArticleCard = ({
   </div>
 );
 
-// === FILTER BUTTONS COMPONENT ===
-const FilterButtons = ({ 
-  activeFilter, 
-  setActiveFilter, 
+// === MAIN STAGE FILTER BUTTONS ===
+const StageFilterButtons = ({ 
+  activeStage, 
+  setActiveStage,
+  setActiveCategory,
   searchQuery,
   stageCounts
 }: {
-  activeFilter: string;
-  setActiveFilter: (filter: string) => void;
+  activeStage: string;
+  setActiveStage: (stage: string) => void;
+  setActiveCategory: (category: string) => void;
   searchQuery: string;
   stageCounts: { [key: string]: number };
 }) => {
-  const filters = [
+  const stages = [
     { key: "all", label: "All Articles", count: stageCounts.all || 0 },
     { key: "pregnant", label: "Pregnancy", count: stageCounts.pregnant || 0 },
     { key: "postpartum", label: "Postpartum", count: stageCounts.postpartum || 0 },
@@ -153,23 +155,98 @@ const FilterButtons = ({
 
   return (
     <div className="flex flex-wrap gap-3 px-6 pb-4">
-      {filters.map((filter) => (
+      {stages.map((stage) => (
         <button
-          key={filter.key}
-          onClick={() => setActiveFilter(filter.key)}
+          key={stage.key}
+          onClick={() => {
+            setActiveStage(stage.key);
+            setActiveCategory("all"); // Reset category when stage changes
+          }}
           className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300 ${
-            activeFilter === filter.key
+            activeStage === stage.key
               ? "bg-bloomPink text-white border-transparent shadow-lg"
               : "bg-white text-gray-600 border-bloomPink/30 hover:border-bloomPink hover:shadow-md"
           }`}
         >
-          <span className="font-medium">{filter.label}</span>
+          <span className="font-medium">{stage.label}</span>
           <span className={`text-xs px-2 py-1 rounded-full ${
-            activeFilter === filter.key 
+            activeStage === stage.key 
               ? "bg-white/20 text-white" 
               : "bg-bloomPink/10 text-bloomPink"
           }`}>
-            {filter.count}
+            {stage.count}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+};
+
+// === TRIMESTER/CATEGORY FILTER BUTTONS ===
+const CategoryFilterButtons = ({ 
+  activeStage,
+  activeCategory, 
+  setActiveCategory,
+  searchQuery,
+  categoryCounts
+}: {
+  activeStage: string;
+  activeCategory: string;
+  setActiveCategory: (category: string) => void;
+  searchQuery: string;
+  categoryCounts: { [key: string]: number };
+}) => {
+  // Define categories for each stage
+  const stageCategories = {
+    pregnant: [
+      { key: "all", label: "All Pregnancy", count: categoryCounts.all || 0 },
+      { key: "first-trimester", label: "First Trimester", count: categoryCounts["first-trimester"] || 0 },
+      { key: "second-trimester", label: "Second Trimester", count: categoryCounts["second-trimester"] || 0 },
+      { key: "third-trimester", label: "Third Trimester", count: categoryCounts["third-trimester"] || 0 },
+      { key: "nutrition", label: "Nutrition", count: categoryCounts.nutrition || 0 },
+      { key: "fitness", label: "Fitness", count: categoryCounts.fitness || 0 },
+      { key: "symptoms", label: "Symptoms", count: categoryCounts.symptoms || 0 }
+    ],
+    postpartum: [
+      { key: "all", label: "All Postpartum", count: categoryCounts.all || 0 },
+      { key: "recovery", label: "Physical Recovery", count: categoryCounts.recovery || 0 },
+      { key: "mental-health", label: "Mental Health", count: categoryCounts["mental-health"] || 0 },
+      { key: "breastfeeding", label: "Breastfeeding", count: categoryCounts.breastfeeding || 0 },
+      { key: "self-care", label: "Self Care", count: categoryCounts["self-care"] || 0 }
+    ],
+    earlyChildcare: [
+      { key: "all", label: "All Early Childcare", count: categoryCounts.all || 0 },
+      { key: "newborn-care", label: "Newborn Care", count: categoryCounts["newborn-care"] || 0 },
+      { key: "feeding", label: "Feeding", count: categoryCounts.feeding || 0 },
+      { key: "sleep", label: "Sleep", count: categoryCounts.sleep || 0 },
+      { key: "development", label: "Development", count: categoryCounts.development || 0 }
+    ]
+  };
+
+  // Don't show category filters for "all" stage
+  if (activeStage === "all") return null;
+
+  const categories = stageCategories[activeStage as keyof typeof stageCategories] || [];
+
+  return (
+    <div className="flex flex-wrap gap-2 px-6 pb-4 border-b border-gray-200">
+      {categories.map((category) => (
+        <button
+          key={category.key}
+          onClick={() => setActiveCategory(category.key)}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 text-sm ${
+            activeCategory === category.key
+              ? "bg-bloomPink/20 text-bloomPink border-bloomPink"
+              : "bg-white text-gray-600 border-gray-300 hover:border-bloomPink"
+          }`}
+        >
+          <span>{category.label}</span>
+          <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+            activeCategory === category.key 
+              ? "bg-bloomPink text-white" 
+              : "bg-gray-200 text-gray-600"
+          }`}>
+            {category.count}
           </span>
         </button>
       ))}
@@ -180,7 +257,8 @@ const FilterButtons = ({
 // === MAIN COMPONENT ===
 export default function BloomGuide() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeStage, setActiveStage] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -192,21 +270,27 @@ export default function BloomGuide() {
       ...pregnant.nutrition.articles,
       ...pregnant.symptoms.articles,
       ...pregnant.fitness.articles,
-      ...pregnant.development.articles
+      ...pregnant.development.articles,
+      ...pregnant.commonConcerns.articles,
+      ...pregnant.medicalResearch.articles,
+      ...pregnant.secondTrimester.articles
     ];
 
     const postpartumArticles = [
       ...postpartum.mentalHealth.articles,
       ...postpartum.recovery.articles,
       ...postpartum.selfCare.articles,
-      ...postpartum.breastfeeding.articles
+      ...postpartum.breastfeeding.articles,
+      ...postpartum.physicalChanges.articles,
+      ...postpartum.bf2.articles
     ];
 
     const earlyChildcareArticles = [
       ...earlyChildCare.newbornCare.articles,
       ...earlyChildCare.sleep.articles,
       ...earlyChildCare.feeding.articles,
-      ...earlyChildCare.development.articles
+      ...earlyChildCare.development.articles,
+      ...earlyChildCare.health.articles
     ];
 
     return {
@@ -238,6 +322,36 @@ export default function BloomGuide() {
     );
   };
 
+  // Categorize pregnancy articles by trimester
+  const categorizePregnancyArticles = (articles: Article[]) => {
+    const categorized = {
+      "first-trimester": articles.filter(article => 
+        article.id === "baby-development-5-weeks" ||
+        article.id === "body-adjusting-pregnancy" ||
+        article.id === "managing-morning-sickness"
+      ),
+      "second-trimester": articles.filter(article => 
+        article.id === "pregnancy-second-trimester" ||
+        article.title.includes("Second Trimester")
+      ),
+      "third-trimester": articles.filter(article => 
+        article.id === "fetal-development-stages" ||
+        article.title.includes("Third Trimester")
+      ),
+      "nutrition": articles.filter(article => 
+        article.id === "nutrition-tips-early-pregnancy"
+      ),
+      "fitness": articles.filter(article => 
+        article.id === "exercise-first-trimester"
+      ),
+      "symptoms": articles.filter(article => 
+        article.id === "managing-morning-sickness"
+      )
+    };
+    
+    return categorized;
+  };
+
   // Calculate stage counts for filter buttons
   const stageCounts = useMemo(() => {
     const pregnantCount = filterArticlesBySearch(allArticles.pregnant).length;
@@ -252,12 +366,55 @@ export default function BloomGuide() {
     };
   }, [searchQuery, allArticles]);
 
-  // Filter articles based on active filter and search query
+  // Calculate category counts
+  const categoryCounts = useMemo((): { [key: string]: number } => {
+    if (activeStage === "all") return {};
+    
+    const stageArticles = allArticles[activeStage as keyof typeof allArticles];
+    const filteredArticles = filterArticlesBySearch(stageArticles);
+    
+    if (activeStage === "pregnant") {
+      const categorized = categorizePregnancyArticles(filteredArticles);
+      return {
+        all: filteredArticles.length,
+        "first-trimester": categorized["first-trimester"]?.length || 0,
+        "second-trimester": categorized["second-trimester"]?.length || 0,
+        "third-trimester": categorized["third-trimester"]?.length || 0,
+        "nutrition": categorized.nutrition?.length || 0,
+        "fitness": categorized.fitness?.length || 0,
+        "symptoms": categorized.symptoms?.length || 0
+      };
+    }
+    
+    if (activeStage === "postpartum") {
+      return {
+        all: filteredArticles.length,
+        "recovery": filteredArticles.filter(a => a.category === "Fitness" || a.category === "Self-Care").length,
+        "mental-health": filteredArticles.filter(a => a.category === "Mental Health").length,
+        "breastfeeding": filteredArticles.filter(a => a.category === "Breastfeeding").length,
+        "self-care": filteredArticles.filter(a => a.category === "Wellness").length
+      };
+    }
+    
+    if (activeStage === "earlyChildcare") {
+      return {
+        all: filteredArticles.length,
+        "newborn-care": filteredArticles.filter(a => a.category === "Baby Care" || a.category === "Health").length,
+        "feeding": filteredArticles.filter(a => a.category === "Feeding").length,
+        "sleep": filteredArticles.filter(a => a.category === "Sleep").length,
+        "development": filteredArticles.filter(a => a.category === "Development").length
+      };
+    }
+    
+    return {};
+  }, [activeStage, searchQuery, allArticles]);
+
+  // Filter articles based on active stage, category and search query
   const getFilteredArticles = (): ArticleSection => {
     let articlesToFilter: Article[] = [];
 
-    // Get base articles based on active filter
-    switch (activeFilter) {
+    // Get base articles based on active stage
+    switch (activeStage) {
       case "pregnant":
         articlesToFilter = allArticles.pregnant;
         break;
@@ -271,11 +428,47 @@ export default function BloomGuide() {
         articlesToFilter = allArticles.all;
     }
 
+    // Apply category filtering for specific stages
+    if (activeStage === "pregnant" && activeCategory !== "all") {
+      const categorized = categorizePregnancyArticles(articlesToFilter);
+      articlesToFilter = categorized[activeCategory as keyof typeof categorized] || [];
+    } else if (activeStage === "postpartum" && activeCategory !== "all") {
+      switch (activeCategory) {
+        case "recovery":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Fitness" || a.category === "Self-Care");
+          break;
+        case "mental-health":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Mental Health");
+          break;
+        case "breastfeeding":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Breastfeeding");
+          break;
+        case "self-care":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Wellness");
+          break;
+      }
+    } else if (activeStage === "earlyChildcare" && activeCategory !== "all") {
+      switch (activeCategory) {
+        case "newborn-care":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Baby Care" || a.category === "Health");
+          break;
+        case "feeding":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Feeding");
+          break;
+        case "sleep":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Sleep");
+          break;
+        case "development":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Development");
+          break;
+      }
+    }
+
     // Apply search filtering
     const filteredArticles = filterArticlesBySearch(articlesToFilter);
 
     // If showing "all", group by stage for display
-    if (activeFilter === "all") {
+    if (activeStage === "all") {
       const grouped: ArticleSection = {};
       
       filteredArticles.forEach(article => {
@@ -298,12 +491,12 @@ export default function BloomGuide() {
       return grouped;
     } else {
       // For specific stage filters, just return that stage
-      return { [activeFilter]: filteredArticles };
+      return { [activeStage]: filteredArticles };
     }
   };
 
   // Use useMemo to prevent unnecessary recalculations
-  const filteredSections = useMemo(() => getFilteredArticles(), [activeFilter, searchQuery, allArticles]);
+  const filteredSections = useMemo(() => getFilteredArticles(), [activeStage, activeCategory, searchQuery, allArticles]);
 
   // Check if search has no results
   const hasNoResults = Boolean(searchQuery && Object.keys(filteredSections).length === 0);
@@ -386,12 +579,22 @@ export default function BloomGuide() {
             />
           </div>
 
-          {/* FILTER BUTTONS */}
-          <FilterButtons 
-            activeFilter={activeFilter}
-            setActiveFilter={setActiveFilter}
+          {/* STAGE FILTER BUTTONS */}
+          <StageFilterButtons 
+            activeStage={activeStage}
+            setActiveStage={setActiveStage}
+            setActiveCategory={setActiveCategory}
             searchQuery={searchQuery}
             stageCounts={stageCounts}
+          />
+
+          {/* CATEGORY FILTER BUTTONS */}
+          <CategoryFilterButtons 
+            activeStage={activeStage}
+            activeCategory={activeCategory}
+            setActiveCategory={setActiveCategory}
+            searchQuery={searchQuery}
+            categoryCounts={categoryCounts}
           />
 
           {/* ARTICLES SECTIONS */}

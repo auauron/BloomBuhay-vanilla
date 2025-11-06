@@ -1,0 +1,50 @@
+{
+  "articles": [
+    {
+      "id": "caring-while-caring",
+      "title": "Caring for Yourself While Caring for Baby",
+      "image": "/assets/article1.webp",
+      "category": "Wellness",
+      "section": "mother",
+      "externalLink": "https://www.zerotothree.org/resource/caring-for-yourself-while-you-care-for-your-children/",
+      "content": {
+        "headline": "Balancing Your Needs While Nurturing Your Baby",
+        "intro": "Caring for a newborn is demanding, but neglecting your own needs can lead to burnout. Finding balance between caring for your baby and yourself is crucial for sustainable parenting.",
+        "sections": [
+          {
+            "title": "Why Parent Self-Care Matters",
+            "content": "Taking care of yourself directly impacts your ability to care for your baby:",
+            "points": [
+              "Reduced stress helps you respond more patiently to your baby",
+              "Better physical health means more energy for parenting",
+              "Emotional regulation models healthy coping for your child",
+              "Prevents caregiver burnout and exhaustion",
+              "Maintains your identity beyond being a parent"
+            ]
+          },
+          {
+            "title": "Practical Self-Care Strategies",
+            "content": "Small, consistent practices can make a big difference in your wellbeing:",
+            "points": [
+              "Take micro-breaks - even 5 minutes of deep breathing helps",
+              "Ask for help with household tasks and baby care",
+              "Connect with friends who understand your experience",
+              "Practice saying 'no' to unnecessary commitments",
+              "Keep a list of quick self-care activities for busy days"
+            ]
+          },
+          {
+            "title": "Building a Support System",
+            "points": [
+              "Identify trusted people who can provide practical help",
+              "Join parent groups for shared experiences and advice",
+              "Communicate your needs clearly to your partner",
+              "Consider professional support if feeling overwhelmed",
+              "Remember it's okay to not be perfect - good enough is great!"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

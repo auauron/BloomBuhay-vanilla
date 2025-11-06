@@ -68,64 +68,6 @@
           }
         ]
       }
-    },
-    {
-      "id": "who-breastfeeding-recommendations",
-      "title": "WHO Breastfeeding Recommendations",
-      "image": "/assets/article1.webp",
-      "category": "Breastfeeding",
-      "section": "mother",
-      "externalLink": "https://www.who.int/health-topics/breastfeeding",
-      "content": {
-        "headline": "Global Breastfeeding Guidelines for Optimal Child Health",
-        "intro": "Breastmilk is the ideal food for infants - safe, clean and containing antibodies that protect against common childhood illnesses. However, fewer than half of infants under 6 months old are exclusively breastfed worldwide.",
-        "sections": [
-          {
-            "title": "WHO and UNICEF Recommendations",
-            "content": "Follow these evidence-based guidelines for optimal breastfeeding:",
-            "points": [
-              "Initiate breastfeeding within the first hour of birth",
-              "Exclusive breastfeeding for the first 6 months of life",
-              "Continue breastfeeding for up to two years or beyond",
-              "Breastfeed on demand - as often as the child wants",
-              "No bottles, teats or pacifiers should be used initially"
-            ]
-          },
-          {
-            "title": "Benefits of Breastfeeding",
-            "content": "Breastfeeding provides lifelong advantages for both mother and child:",
-            "points": [
-              "Breastfed children perform better on intelligence tests",
-              "Reduced risk of overweight, obesity and diabetes later in life",
-              "Lower risk of breast and ovarian cancers for mothers",
-              "Provides all energy and nutrients for first months of life",
-              "Continues to provide significant nutrition through second year"
-            ]
-          },
-          {
-            "title": "Global Breastfeeding Initiatives",
-            "content": "WHO is working to improve breastfeeding rates worldwide:",
-            "points": [
-              "Aiming for 50% exclusive breastfeeding rate by 2025",
-              "Global Breastfeeding Collective rallies political support",
-              "NetCode prevents inappropriate marketing of breast-milk substitutes",
-              "Training courses for health workers to support mothers",
-              "Monitoring growth and development of breastfed children"
-            ]
-          },
-          {
-            "title": "Complementary Feeding",
-            "content": "When and how to introduce solid foods:",
-            "points": [
-              "Begin safe complementary foods from age 6 months",
-              "Continue breastfeeding while introducing solids",
-              "Ensure complementary foods are nutritionally adequate",
-              "Maintain breastfeeding during illness episodes",
-              "Gradually increase food variety and texture"
-            ]
-          }
-        ]
-      }
     }
   ]
 }
