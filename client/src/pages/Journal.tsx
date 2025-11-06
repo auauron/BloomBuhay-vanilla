@@ -5,7 +5,7 @@ import PhotoAlbums from "../components/journal/PhotoAlbums";
 import NotesList from "../components/journal/NotesList";
 import AddAlbumModal from "../components/journal/AddAlbumModal";
 import AddNoteModal from "../components/journal/AddNoteModal";
-import { Camera, BookImage , NotebookPen, Plus } from "lucide-react";
+import { Camera, Search,BookImage , NotebookPen, Plus } from "lucide-react";
 import { Note, Album, Photo } from "../components/journal/types";
 import { motion } from "framer-motion";
 
@@ -24,6 +24,61 @@ export default function Journal() {
       reader.onerror = error => reject(error);
     });
   };
+
+const GradientSearchBar = ({ 
+  searchQuery, 
+  setSearchQuery,
+  hasNoResults 
+}: { 
+  searchQuery: string; 
+  setSearchQuery: (query: string) => void;
+  hasNoResults: boolean;
+}) => {
+  const [focused, setFocused] = useState(false);
+
+  return (
+    <div
+      className={`w-full rounded-full p-[2px] transition-all duration-300 ${
+        focused
+          ? "bg-white shadow-[0_0_12px_rgba(248,117,170,0.4)]"
+          : "bg-gradient-to-r from-bloomPink to-bloomYellow"
+      }`}
+    >
+      <div className="bg-white rounded-full relative w-full">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-bloomPink text-lg">
+          <Search />
+        </span>
+
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder="Search articles..."
+          className="w-full rounded-full py-3 pl-12 pr-12 bg-transparent focus:outline-none placeholder-transparent text-gray-800"
+        />
+
+        {hasNoResults && (
+          <button
+            onClick={() => setSearchQuery("")}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-bloomPink transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+
+        {!searchQuery && !focused && (
+          <span className="absolute left-12 top-1/2 -translate-y-1/2 text-bloomPink pointer-events-none select-none">
+            Search articles...
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const [albums, setAlbums] = useState<Album[]>([
   {
