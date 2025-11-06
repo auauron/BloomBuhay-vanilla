@@ -24,27 +24,112 @@ export default function Journal() {
     });
   };
 
-  const [albums, setAlbums] = useState<Album[]>([
-    {
-      id: "1",
-      title: "First Ultrasound",
-      coverPhoto: "/assets/albumCovers/ultrasound.png",
-      photos: [
-        {
-          id: "1-1",
-          file: "/assets/albumCovers/ultrasound.png",
-          name: "First Glimpse",
-          notes: "Our first ultrasound at 8 weeks!",
-          createdAt: "2024-01-15T10:30:00",
-          uploadedAt: "2024-01-15T10:30:00"
-        }
-      ],
-      createdAt: "2024-01-15T10:30:00",
-      lastUpdated: "2024-01-20T14:25:00",
-      description: "Our first glimpse of our little one 💕"
-    },
-    
-  ]);
+const [albums, setAlbums] = useState<Album[]>([
+  {
+    id: "1",
+    title: "Ultrasounds",
+    coverPhoto: "/assets/albumCovers/ultrasound.png",
+    photos: [
+      {
+        id: "1-1",
+        file: "/assets/albumCovers/ultrasound.png",
+        name: "First Glimpse",
+        notes: "Our first ultrasound at 8 weeks!",
+        createdAt: "2024-01-15T10:30:00",
+        uploadedAt: "2024-01-15T10:30:00",
+      },
+            {
+        id: "1-1",
+        file: "/assets/albumCovers/ultrasound-16.jpg",
+        name: "16 Weeks Glimpse",
+        notes: "Our ultrasound at 16 weeks!",
+        createdAt: "2024-02-15T10:30:00",
+        uploadedAt: "2024-02-15T10:30:00",
+      },
+    ],
+    createdAt: "2024-01-15T10:30:00",
+    lastUpdated: "2024-01-20T14:25:00",
+    description: "Our first glimpse of our little one 💕",
+  },
+  {
+    id: "2",
+    title: "Baby Shower",
+    coverPhoto: "/assets/albumCovers/babyshower.webp",
+    photos: [
+      {
+        id: "2-1",
+        file: "/assets/albumCovers/babyshower.webp",
+        name: "Family Photos",
+        notes: "Beautiful pink and gold setup by my friends!",
+        createdAt: "2024-03-10T15:00:00",
+        uploadedAt: "2024-03-10T15:00:00",
+      },
+      {
+        id: "2-2",
+        file: "/assets/albumCovers/gifts.jpg",
+        name: "Opening Gifts",
+        notes: "So grateful for everyone's thoughtful presents 🎁",
+        createdAt: "2024-03-10T16:30:00",
+        uploadedAt: "2024-03-10T16:30:00",
+      },
+    ],
+    createdAt: "2024-03-10T15:00:00",
+    lastUpdated: "2024-03-10T17:00:00",
+    description: "Celebrating our baby’s upcoming arrival 🎀",
+  },
+  {
+    id: "3",
+    title: "Labor Day",
+    coverPhoto: "/assets/albumCovers/birthday.jpg",
+    photos: [
+      {
+        id: "3-1",
+        file: "/assets/albumCovers/baby.avif",
+        name: "At the Hospital",
+        notes: "The longest night, but the happiest morning 💖",
+        createdAt: "2024-04-20T06:45:00",
+        uploadedAt: "2024-04-20T06:45:00",
+      },
+      {
+        id: "3-2",
+        file: "/assets/albumCovers/birthday.jpg",
+        name: "Me and Baby",
+        notes: "It felt like time stopped! Thank you, Lord",
+        createdAt: "2024-04-20T06:45:00",
+        uploadedAt: "2024-04-20T06:45:00",
+      },
+    ],
+    createdAt: "2024-04-20T06:45:00",
+    lastUpdated: "2024-04-21T09:00:00",
+    description: "The day our lives changed forever 💫",
+  },
+  {
+    id: "4",
+    title: "Important Hospital Documents",
+    coverPhoto: "/assets/albumCovers/documents.jpg",
+    photos: [
+      {
+        id: "4-1",
+        file: "/assets/albumCovers/birth-cert.jpg",
+        name: "Birth Certificate",
+        notes: "Name inspired by the movie character! 🎉",
+        createdAt: "2024-05-20T12:00:00",
+        uploadedAt: "2024-05-20T12:00:00",
+      },
+            {
+        id: "4-2",
+        file: "/assets/albumCovers/bill.webp",
+        name: "Maternity Hospital Bill",
+        notes: "Full Bill Details",
+        createdAt: "2024-06-20T12:00:00",
+        uploadedAt: "2024-06-20T12:00:00",
+      },
+    ],
+    createdAt: "2024-05-20T12:00:00",
+    lastUpdated: "2024-05-21T08:00:00",
+    description: "Important documents from the hospital",
+  },
+]);
 
   const [notes, setNotes] = useState<Note[]>([
     {
@@ -55,7 +140,27 @@ export default function Journal() {
       lastUpdated: "2024-01-25T20:30:00",
       tags: ["milestone", "excited"],
       mood: "happy"
-    }
+    },
+    {
+      id: "2",
+      title: "Doctor Checkup",
+      content:
+        "Had my prenatal checkup today. Baby’s heartbeat is strong and everything looks great according to the doctor. Feeling relieved and thankful. ❤️",
+      createdAt: "2024-02-12T10:00:00",
+      lastUpdated: "2024-02-12T10:00:00",
+      tags: ["health", "pregnancy", "thankful"],
+      mood: "relieved",
+    },
+    {
+      id: "3",
+      title: "Baby Shower Memories",
+      content:
+        "My friends threw the sweetest baby shower! The decorations were pink and gold, and the love I felt was overwhelming. I can’t wait for our baby girl to arrive 🎀",
+      createdAt: "2024-03-10T18:45:00",
+      lastUpdated: "2024-03-10T18:45:00",
+      tags: ["celebration", "friends", "joy"],
+      mood: "grateful",
+    },
   ]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
