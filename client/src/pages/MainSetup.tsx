@@ -72,6 +72,13 @@ export default function MainSetup() {
 
     const token = authService.getToken?.() ?? localStorage.getItem("token");
 
+    // Map stage keys to display labels for backend API
+    const stageLabels: Record<string, string> = {
+      pregnant: "Pregnant",
+      postpartum: "Postpartum",
+      childcare: "Early Childcare",
+    };
+
     if (token) {
       try {
         const resp = await fetch("http://localhost:3000/api/mother-profiles", {
@@ -81,7 +88,7 @@ export default function MainSetup() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            stage: selectedStage,
+            stage: stageLabels[selectedStage || ""] || selectedStage,
             weeksPregnant: stageData?.weeksPregnant ?? null,
             lmpDate: stageData?.lmpDate ?? null,
             babyName: stageData?.babyName ?? null,
@@ -127,13 +134,6 @@ export default function MainSetup() {
         "No token available — profile not saved server-side, only cached locally."
       );
     }
-
-    // Map stage keys to display labels for SetupSummary
-    const stageLabels: Record<string, string> = {
-      pregnant: "Pregnant",
-      postpartum: "Postpartum",
-      childcare: "Early Childcare",
-    };
 
     // Navigate to setup summary with all collected data
     navigate("/setup/summary", {
