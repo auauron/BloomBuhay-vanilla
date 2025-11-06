@@ -5,8 +5,9 @@ import PhotoAlbums from "../components/journal/PhotoAlbums";
 import NotesList from "../components/journal/NotesList";
 import AddAlbumModal from "../components/journal/AddAlbumModal";
 import AddNoteModal from "../components/journal/AddNoteModal";
-import { Camera, BookOpen, Plus } from "lucide-react";
+import { Camera, BookImage , NotebookPen, Plus } from "lucide-react";
 import { Note, Album, Photo } from "../components/journal/types";
+import { motion } from "framer-motion";
 
 export default function Journal() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -280,6 +281,8 @@ const [albums, setAlbums] = useState<Album[]>([
   };
 
   return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+
     <div className="flex flex-col h-screen font-poppins bg-gradient-to-br from-pink-50 via-white to-rose-50">
       <Header onMenuClick={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
@@ -289,7 +292,7 @@ const [albums, setAlbums] = useState<Album[]>([
         <div className="text-center py-8 px-4">
           <div className="inline-flex items-center gap-3 mb-4">
             <div className="p-3 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-2xl shadow-lg">
-              <BookOpen className="w-8 h-8 text-white" />
+              <BookImage className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-bloomPink to-bloomYellow">
               Memory Journal
@@ -323,7 +326,7 @@ const [albums, setAlbums] = useState<Album[]>([
                     : "text-gray-600 hover:bg-gray-50"
                 }`}
               >
-                <BookOpen className="w-5 h-5" />
+                <NotebookPen className="w-5 h-5" />
                 <span className="font-medium">Notes</span>
               </button>
             </div>
@@ -387,5 +390,6 @@ const [albums, setAlbums] = useState<Album[]>([
         />
       )}
     </div>
+    </motion.div>
   );
 }
