@@ -11,11 +11,16 @@ interface ChildbirthProps {
   email?: string;
 }
 
-export default function Childbirth({ onComplete,  fullName, email  }: ChildbirthProps) {
+export default function Childbirth({
+  onComplete,
+  fullName,
+  email,
+}: ChildbirthProps) {
   const [value, setValue] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [ageError, setAgeError] = useState("");
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -47,7 +52,8 @@ export default function Childbirth({ onComplete,  fullName, email  }: Childbirth
       | "unknown";
 
     // convert age value to number if present
-    const babyAgeMonthsNum = value !== "" && !Number.isNaN(Number(value)) ? Number(value) : null;
+    const babyAgeMonthsNum =
+      value !== "" && !Number.isNaN(Number(value)) ? Number(value) : null;
 
     // Build canonical payload expected by parent/server
     const stageData = {
@@ -103,9 +109,24 @@ export default function Childbirth({ onComplete,  fullName, email  }: Childbirth
                       type="number"
                       min="0"
                       value={value}
-                      onChange={setValue}
+                      onChange={(val) => {
+                        const num = Number(val);
+
+                        if (val === "") {
+                          setValue("");
+                          setAgeError("");
+                        } else if (isNaN(num) || num < 0) {
+                          setAgeError("Please enter a valid number");
+                        } else {
+                          setValue(val);
+                          setAgeError("");
+                        }
+                      }}
                       placeholder="Enter your baby's age in months"
                     />
+                    {ageError && (
+                      <p className="text-red-500 text-sm mt-1">{ageError}</p>
+                    )}
                   </div>
                 </label>
 
