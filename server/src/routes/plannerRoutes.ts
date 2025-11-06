@@ -119,10 +119,75 @@ router.patch(
             // verify if task belongs to the user
             const existingTask = await db.plannerTask.findFirst({
                 where: {
-                    
+                    id: taskId,
+                    userId
                 }
-            })
+            });
+
+            if (!existingTask) {
+                res.status(404).json({
+                    success:false,
+                    error:"Task not found",
+                });
+                return;
+            }
+
+            const task = await db.plannerTask.update({
+                where:{
+                    id: taskId
+                },
+                data: { isCompleted },
+            });
+
+            res.status(200).json({success: true, data: task})
+        } catch (error) {
+            console.error("Update task error:", error);
+            res.status(500).json({ success: false, error:"failed to update task",});
         }
     }
-    
-)
+);
+
+// this delete task
+router.delete(
+    "/:id",
+    authenticateToken,
+    async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.userId;
+            const taskId = parseInt(req.params.id);
+
+            if (!userId) {
+                res.status(401).json({ success: false, error: "Unautiorized"});
+                return;
+            }
+
+            if (isNaN(taskId)) {
+                res.status(400).json({ success: false, errror:"Invalid Task ID"});
+                return;
+            }
+             
+            const existingTask = await db.plannerTask.findFirst({
+                where: { id: taskId, userId},
+            });
+
+            if (!existingTask) {
+                res.status(404).json({success:true, error: "Task not found"});
+                return;
+            }
+
+            await db.plannerTask.delete({
+                where: { id: taskId }
+            })
+
+            res.status(200).json({
+                success: true,
+                message: "Task deleted successfully"
+            })
+        } catch (error) {
+            console.error("Delete task error:", error);
+            res.status(500).json({success: false, error: "Failed to delete task"});
+        }
+    }
+);
+
+export default router
