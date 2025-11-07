@@ -1,44 +1,123 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { PlusCircle, Trash2 } from "lucide-react";
+import { plannerService } from "../../services/plannerService";
 
 type Task = {
   id: number;
   title: string;
   completed: boolean;
   createdAt: string;
+  date: string;
 };
 
 export default function ToDoList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch tasks on component mount
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  async function fetchTasks() {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await plannerService.getTasks();
+      
+      if (response.success && response.data) {
+        // Transform API data to component format
+        const transformedTasks = response.data.map((task) => ({
+          id: task.id,
+          title: task.title,
+          completed: task.isCompleted,
+          createdAt: new Date(task.createdAt).toLocaleString(),
+          date: task.date,
+        }));
+        setTasks(transformedTasks);
+      } else {
+        setError(response.error || "Failed to fetch tasks");
+      }
+    } catch (err) {
+      setError("Failed to load tasks");
+      console.error("Fetch tasks error:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   // Add new task
-  function handleAddTask() {
+  async function handleAddTask() {
     if (!newTaskTitle.trim()) return;
 
-    const newTask: Task = {
-      id: Date.now(),
-      title: newTaskTitle.trim(),
-      completed: false,
-      createdAt: new Date().toLocaleString(),
-    };
-    setTasks((prev) => [newTask, ...prev]);
-    setNewTaskTitle("");
+    try {
+      const response = await plannerService.createTask({
+        title: newTaskTitle.trim(),
+        description: "",
+        date: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+      });
+
+      if (response.success && response.data) {
+        const newTask: Task = {
+          id: response.data.id,
+          title: response.data.title,
+          completed: response.data.isCompleted,
+          createdAt: new Date(response.data.createdAt).toLocaleString(),
+          date: response.data.date,
+        };
+        setTasks((prev) => [newTask, ...prev]);
+        setNewTaskTitle("");
+      } else {
+        setError(response.error || "Failed to create task");
+      }
+    } catch (err) {
+      setError("Failed to create task");
+      console.error("Create task error:", err);
+    }
   }
 
   // Delete task
-  function handleDeleteTask(id: number) {
-    setTasks((prev) => prev.filter((task) => task.id !== id));
+  async function handleDeleteTask(id: number) {
+    try {
+      const response = await plannerService.deleteTask(id);
+      
+      if (response.success) {
+        setTasks((prev) => prev.filter((task) => task.id !== id));
+      } else {
+        setError(response.error || "Failed to delete task");
+      }
+    } catch (err) {
+      setError("Failed to delete task");
+      console.error("Delete task error:", err);
+    }
   }
 
   // Toggle checkbox
-  function handleToggleTask(id: number) {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
+  async function handleToggleTask(id: number) {
+    const task = tasks.find((t) => t.id === id);
+    if (!task) return;
+
+    try {
+      const response = await plannerService.updateTask(id, {
+        isCompleted: !task.completed,
+      });
+
+      if (response.success) {
+        setTasks((prev) =>
+          prev.map((t) =>
+            t.id === id ? { ...t, completed: !t.completed } : t
+          )
+        );
+      } else {
+        setError(response.error || "Failed to update task");
+      }
+    } catch (err) {
+      setError("Failed to update task");
+      console.error("Update task error:", err);
+    }
   }
 
   return (
@@ -60,9 +139,18 @@ export default function ToDoList() {
           </motion.button>
         </h3>
 
+        {/* Error Message */}
+        {error && (
+          <div className="mb-3 p-3 bg-red-100 text-red-700 rounded-xl text-sm">
+            {error}
+          </div>
+        )}
+
         {/* Task List Container */}
         <div className="bg-white rounded-xl p-4 text-[#474747] max-h-[500px] overflow-y-auto shadow-inner">
-          {tasks.length === 0 ? (
+          {loading ? (
+            <p className="text-center text-gray-400 italic">Loading tasks...</p>
+          ) : tasks.length === 0 ? (
             <p className="text-center text-gray-400 italic">No tasks yet.</p>
           ) : (
             tasks.map((task) => (
