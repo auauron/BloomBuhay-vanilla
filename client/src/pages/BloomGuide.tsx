@@ -520,7 +520,7 @@ export default function BloomGuide() {
   // === MAIN PAGE ===
   return (
     <div 
-      className="bg-pink-50 flex flex-col font-poppins relative"
+      className="bg-white flex flex-col font-poppins relative"
       style={{
         height: '100vh',
         overflow: 'hidden'
@@ -540,14 +540,7 @@ export default function BloomGuide() {
           paddingTop: '20px'
         }}
       >
-        {/* Background decorative element */}
-        <div 
-          className="fixed top-20 right-10 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse pointer-events-none"
-          style={{
-            zIndex: 0
-          }}
-        />
-
+     
         {/* Content Container */}
         <div 
           className="relative z-10"
@@ -556,19 +549,20 @@ export default function BloomGuide() {
           }}
         >
           {/* BLOOMGUIDE HEADER WITH LOGO */}
-          <div className="text-center mt-5 px-6 py-2">
-            <div className="flex items-center justify-center gap-3 mb-2">
-              <div className="bg-gradient-to-r from-bloomPink to-bloomYellow p-2 rounded-xl">
+          <div className="text-center py-8 px-4">
+            <div className="inline-flex items-center gap-3 mb-4">
+              <div className="p-3 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-2xl shadow-lg">
                 <BookOpen className="w-8 h-8 text-white" />
               </div>
-              <div className="flex flex-col items-center">
-                <h1 className="font-poppins font-bold text-4xl bg-bloomPink bg-clip-text text-transparent">
-                  BloomGuide
-                </h1>
-                <div className="font-rubik font-light text-md text-[#474747] -mt-1 -ml-2">know more, care better</div>
-              </div>
+              <h1 className="text-4xl font-bold bg-clip-text text-bloomPink">
+                BloomGuide
+              </h1>
             </div>
+            <p className="text-bloomBlack font-rubik text-lg font-light max-w-2xl mx-auto">
+              Know more, care better. <br></br>Wisdom for your motherhood journey.
+            </p>
           </div>
+
 
           {/* SEARCH BAR */}
           <div className="w-full px-6 py-4">
