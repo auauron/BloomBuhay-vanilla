@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { PlusCircle, Trash2 } from "lucide-react";
-
 type Task = {
   id: number;
   title: string;
