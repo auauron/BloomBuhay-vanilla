@@ -1,7 +1,6 @@
-import { P } from "framer-motion/dist/types.d-BJcRxCew";
 import { authService } from "./authService";
 
-const API_URL = "http://localhost:3000/planner";
+const API_URL = "http://localhost:3000/api/planner";
 
 export interface PlannerTask {
     id: number;
@@ -86,7 +85,7 @@ export const plannerService = {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        authenticated: `Bearer ${token}`,
+                        Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify(data)
                 })
@@ -109,11 +108,11 @@ export const plannerService = {
                     return { success: false, error: "Not authenticated"};
                 }
 
-                const response = await fetch(`${API_URL}`, {
+                const response = await fetch(`${API_URL}/${taskId}`, {
                     method: "PATCH",
                     headers: {
                         "Content-Type": "application/json",
-                        authenticated: `Bearer ${token}`
+                        Authorization: `Bearer ${token}`
                     },
                     body: JSON.stringify(data)
                 });
@@ -133,11 +132,11 @@ export const plannerService = {
                     return {success: false, error: "Failed to delete task"}
                 }
 
-                const response = await fetch(`${API_URL}`, {
+                const response = await fetch(`${API_URL}/${taskId}`, {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
-                        authenticated: `Bearer ${token}`
+                        Authorization: `Bearer ${token}`
                     },
                 })
                 const result = await response.json();

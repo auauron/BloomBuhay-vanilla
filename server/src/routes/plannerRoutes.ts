@@ -3,7 +3,7 @@ import { authenticateToken, AuthRequest } from "../middleware/auth";
 import { PrismaClient } from "@prisma/client";
 
 const router = Router();
-const db = new PrismaClient;
+const db = new PrismaClient();
 
 interface CreateTaskRequest { 
     title: string;
@@ -88,10 +88,10 @@ router.post(
                 },
             });
 
-            res.status(201).json({ success: true, date: task });
+            res.status(201).json({ success: true, data: task });
         } catch (error) {
             console.error("Create task error:", error);
-            res.status(500).json({ success: true, error: "failed to fetch task"});
+            res.status(500).json({ success: false, error: "failed to create task"});
         }
     }
 );
@@ -157,12 +157,12 @@ router.delete(
             const taskId = parseInt(req.params.id);
 
             if (!userId) {
-                res.status(401).json({ success: false, error: "Unautiorized"});
+                res.status(401).json({ success: false, error: "Unauthorized"});
                 return;
             }
 
             if (isNaN(taskId)) {
-                res.status(400).json({ success: false, errror:"Invalid Task ID"});
+                res.status(400).json({ success: false, error:"Invalid Task ID"});
                 return;
             }
              
@@ -171,7 +171,7 @@ router.delete(
             });
 
             if (!existingTask) {
-                res.status(404).json({success:true, error: "Task not found"});
+                res.status(404).json({success: false, error: "Task not found"});
                 return;
             }
 
