@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import  { authenticateToken, AuthRequest } from '../middleware/auth';
 import { PrismaClient } from "@prisma/client";
 
+
 const router = Router();
 const db = new PrismaClient();
 
@@ -233,6 +234,110 @@ router.patch(
     "/albums/:id",
     authenticateToken,
     async (req: AuthRequest, res: Response): Promise<void> => {
-        
+        try {
+            const userId = req.userId;
+            const albumId = parseInt(req.params.id);
+            const {title, coverPhoto, description} = req.body;
+
+            if (!userId) {
+                res.status(401).json({success: false, error: "Unauthorized"})
+                return;
+            }
+
+            const existingAlbum = await db.album.findFirst({
+                where: { id: albumId, motherId: userId},
+            })
+
+            if (!existingAlbum){
+                res.status(404).json({success: false, error: "Album not"});
+                return;
+            }
+
+            const album = await db.album.update({
+                where: { id: albumId },
+                data: {
+                    title: title?.trim() || existingAlbum.title,
+                    coverPhoto: coverPhoto !== undefined ? coverPhoto : existingAlbum.coverPhoto,
+                    description: description !== undefined ? description?.trim() : existingAlbum.description
+                },
+                include: { photos: true },
+            });
+
+            res.status(200).json({success: true, data: album});
+        } catch (error) {
+            console.error("Update album error", error);
+            res.status(500).json({ success: false, error: "Failed to update album"});
+        }
     }
-)
+);
+
+// this delete an album
+router.delete(
+    "/album/:id",
+    authenticateToken,
+    async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.userId;
+            const albumId = parseInt(req.params.id);
+        
+            if (!userId) {
+                res.status(401).json({ success: false, errro: "Unauthorized"})
+                return;
+            }
+
+            if (isNaN(albumId)) {
+                res.status(400).json({success: false, error: "Unautorized"});
+                return;
+            }
+
+            const existingAlbum = await db.album.findFirst({ where: { id: albumId, motherId: userId}});
+
+            if (!existingAlbum) {
+                res.status(404).json({ success: false, error: "Album not found"})
+            
+            res.status(200).json({success: true, message:"Album deleted successfully"});
+            }
+        } catch (error) {
+            console.error("Delete album error:", error);
+            res.status(500).json({success: false, error: "Failed to delete album"})
+        }
+    }
+);
+
+router.delete(
+    "/album/:id",
+    authenticateToken,
+    async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.userId;
+            const albumId = parseInt(req.params.id);
+
+            if (!userId) {
+                res.status(401).json({success: false, error: "Unauthorized"});
+                return;
+            }
+
+            if (isNaN(albumId)){
+                res.status(400).json({ success: false, error: "Invalid album"});
+                return;
+            }
+
+            const existingAlbum = await db.album.findFirst({
+                where: { id: albumId, motherId: userId },
+            })
+
+            if (!existingAlbum) {
+                res.status(404).json({success: false, error: "Album not found"});
+                return;
+            }
+            await db.album.delete({ where: { id: albumId }})
+            
+            res.status(200).json({ success: true, message: "Album deleted"});
+        } catch (error) {
+            console.error("Delete album error:", error);
+            res.status(500).json({ success: false, error: "Failed to delete "})
+        }
+    }
+);
+
+// PHOTO ROUTES
