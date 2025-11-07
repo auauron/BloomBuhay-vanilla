@@ -13,6 +13,7 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<ValidationError[]>([]);
+  const [generalError, setGeneralError] = useState("");
   const getFieldError = (fieldName: string): string | undefined => {
     return errors.find((err) => err.field === fieldName)?.message;
   };
@@ -21,6 +22,7 @@ export default function SignupPage() {
     e.preventDefault();
     setLoading(true);
     setErrors([]);
+    setGeneralError("");
 
     const result = await authService.signup({
       fullName,
@@ -36,6 +38,7 @@ export default function SignupPage() {
       navigate("/mainsetup", { state: { fullName, email } });
     } else {
       if (result.errors) setErrors(result.errors);
+      if (result.error) setGeneralError(result.error);
     }
   };
 
@@ -66,6 +69,13 @@ export default function SignupPage() {
         <div className="bg-white rounded-2xl w-500 shadow-lg p-8 -pb- pl-16 pr-16">
           <form onSubmit={handleSubmit} className="space-y-2 mt-2">
             <AuthToggle />
+
+            {/* General Error Message */}
+            {generalError && (
+              <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+                {generalError}
+              </div>
+            )}
             <InputField
               label="Full Name"
               type="text"
