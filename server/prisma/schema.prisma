@@ -115,16 +115,48 @@ model Article {
 }
 
 model JournalEntry {
-    id        Int      @id @default(autoincrement())
-    mother    User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
-    motherId  Int
-    title     String
-    content   String
-    photoUrl  String?
-    createdAt DateTime @default(now()) @db.Timestamptz(6)
+    id          Int      @id @default(autoincrement())
+    mother      User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
+    motherId    Int
+    title       String
+    content     String
+    photoUrl    String?
+    tags        String[] @default([])
+    mood        String?
+    createdAt   DateTime @default(now()) @db.Timestamptz(6)
+    lastUpdated DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 
     @@index([motherId], name: "idx_journal_entries_mother_id")
     @@map("journal_entries")
+}
+
+model Album {
+    id          Int      @id @default(autoincrement())
+    mother      User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
+    motherId    Int
+    title       String
+    coverPhoto  String?
+    description String?
+    createdAt   DateTime @default(now()) @db.Timestamptz(6)
+    lastUpdated DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+    photos      Photo[]
+
+    @@index([motherId], name: "idx_albums_mother_id")
+    @@map("albums")
+}
+
+model Photo {
+    id         Int      @id @default(autoincrement())
+    album      Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
+    albumId    Int
+    fileUrl    String
+    name       String?
+    notes      String?
+    createdAt  DateTime @default(now()) @db.Timestamptz(6)
+    uploadedAt DateTime @default(now()) @db.Timestamptz(6)
+
+    @@index([albumId], name: "idx_photos_album_id")
+    @@map("photos")
 }
 
 model RefreshToken {
