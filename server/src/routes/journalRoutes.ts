@@ -1,9 +1,10 @@
 import { Router, Response } from "express";
 import  { authenticateToken, AuthRequest } from '../middleware/auth';
 import { PrismaClient } from "@prisma/client";
-import { endianness } from "os";
+import { endianness, userInfo } from "os";
 import { unescape } from "querystring";
 import { error } from "console";
+import { subscribe } from "diagnostics_channel";
 
 const router = Router();
 const db = new PrismaClient();
@@ -91,7 +92,7 @@ router.patch(
             const { title, content, photoUrl, tags, mood } = req.body;
 
             if (!userId) {
-                res.status(401).json({success: false, error:"Unauthenticated"})l;
+                res.status(401).json({success: false, error:"Unauthorized"});
                 return;
             }
 
@@ -122,6 +123,43 @@ router.patch(
         } catch(err) {
             console.error("Update note error:", err);
             res.status(500).json({success: false, error:"Update note failed"})
+        }
+    }
+);
+
+// this deletes the user's note
+router.delete(
+    "/notes/:id",
+    authenticateToken,
+    async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.userId;
+            const noteId = parseInt(req.params.id);
+
+            if (!userId) {
+                res.status(401).json({success: false, errro: "Unauthorized"})
+                return;
+            }
+
+            if (isNaN(noteId)) {
+                res.status(400).json({success: false, error: "Invalid note"})
+                return;
+            }
+
+            const existingNote = await db.journalEntry.findFirst({ where: { id: noteId, motherId: userId}});
+
+            if (!existingNote) {
+                res.status(404).json({success: false, error: "Note not found"});
+                return;
+            }
+
+            await db.journalEntry.delete({where: {id: noteId }});
+
+            res.status(200).json({success: true, message: "Note deleted successfuly"});
+
+        } catch (e) {
+            console.error("Delete note error:", e);
+            res.status(500).json({ succes: false, error:"Delete note failed"})
         }
     }
 );
