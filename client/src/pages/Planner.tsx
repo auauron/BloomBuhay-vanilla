@@ -7,24 +7,11 @@ import ToDoList from "../components/planner/ToDoList";
 import { motion } from "framer-motion";
 import { Calendar } from "lucide-react";
 
-type Task = {
-  id: number;
-  text: string;
-  date: Date;
-  completed: boolean;
-};
-
 export default function Planner() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [tasks, setTasks] = useState<Task[]>([]);
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => setIsSidebarOpen(false);
-
-  function addTask(task: Task): void {
-    setTasks((prev) => [...prev, task]);
-  }
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
@@ -50,13 +37,13 @@ export default function Planner() {
           {/* Calendar + To-Do Layout */}
           <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 max-w-6xl mx-auto w-full">
             {/* Calendar Section */}
-            <div className="rounded-2xl shadow-md bg-gradient-to-r from-pink-100 to-yellow-100 p-6">
-              <CalendarView/>
+            <div className="rounded-2xl shadow-md bg-gradient-to-r from-pink-100 to-yellow-100 p-4">
+              <CalendarView />
             </div>
 
             {/* To-Do List Section */}
-            <div className="rounded-2xl shadow-md bg-gradient-to-r from-pink-100 to-yellow-100 p-6 overflow-y-auto max-h-[600px]">
-              <ToDoList/>
+            <div className="rounded-2xl shadow-md bg-gradient-to-r from-pink-100 to-yellow-100 p-4">
+              <ToDoList />
             </div>
           </div>
         </div>
