@@ -88,7 +88,7 @@ const ArticleCard = ({
         <div className="absolute top-3 left-3">
           <span 
             className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg"
-            style={{textShadow: '1px 1px 1px black'}}
+            style={{textShadow: '0.5px 1px 0.5px black'}}
           >
             {article.category}
           </span>
@@ -113,7 +113,7 @@ const ArticleCard = ({
         >
           <span 
             className="text-sm font-medium text-white px-4 py-2"
-            style={{textShadow: '0.5px 0.5px 1px black'}}
+            style={{textShadow: '0.5px 0.5px 0.5px black'}}
           >
             Read more
           </span>
