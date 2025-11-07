@@ -32,6 +32,7 @@ model User {
     HealthLog      HealthLog[]
     ToolsLog       ToolsLog[]
     JournalEntry   JournalEntry[]
+    Album          Album[]
     refreshTokens  RefreshToken[]
 
     @@map("user")
