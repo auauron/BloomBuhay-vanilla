@@ -4,30 +4,34 @@ import { motion, AnimatePresence } from "framer-motion";
 
 interface CustomDateProps {
   isOpen: boolean;
-  onClose: () => void;
+  onCancel: () => void;
   onSave: (month: number, year: number) => void;
 }
 
-export default function CustomDate({ isOpen, onClose, onSave, }: CustomDateProps) {
+export default function CustomDate({ isOpen, onCancel, onSave, }: CustomDateProps) {
   const months = [
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   ];
 
   const currentDate = new Date();
-  const [dodecade, setDodecade] = useState(Math.floor(new Date().getFullYear() / 12))
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
   const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
 
   const nameMonth = months[selectedMonth]
 
-  const years = Array.from({ length: 12 }, (_, i) => (dodecade * 12) + i);
-
 
   const handleSave = () => {
     onSave(selectedMonth, selectedYear);
-    onClose();
+    onCancel();
   };
+
+  const handleCancel = () => {
+    setSelectedMonth(new Date().getMonth())
+    setSelectedYear(new Date().getFullYear())
+    onSave(new Date().getMonth(), new Date().getFullYear());
+    onCancel();
+  }
 
   return (
     <AnimatePresence>
@@ -44,13 +48,38 @@ export default function CustomDate({ isOpen, onClose, onSave, }: CustomDateProps
             exit={{ scale: 0.9, opacity: 0 }}
             className="bg-white rounded-[30px] shadow-xl p-8 w-[480px] flex flex-col items-center border-2 border-bloomPink"
           >
+
             <h2 className="text-2xl font-bold text-bloomPink mb-4 w-full">
               Jump to Date {nameMonth} {selectedYear}
             </h2>
-            <h2 className="text-xl font-bold text-bloomPink mb-4">
-              Select Month
-            </h2>
-            <div className="grid grid-cols-4 gap-y-4 gap-x-8 mb-4">
+
+            <h3 className="text-xl flex w-[200px] font-bold text-bloomPink flex items-center justify-center mb-4 gap-4 p-2">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  setSelectedYear((prev) => prev - 1)
+                }}
+              >
+                <ChevronsLeft className="w-8 h-8" color="#f875aa" />
+              </motion.button>
+
+              <span className="flex-1 text-center">
+                {selectedYear}
+              </span>
+
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  setSelectedYear((prev) => prev + 1)
+                }}
+              >
+                <ChevronsRight className="w-8 h-8" color="#f875aa" />
+              </motion.button>
+            </h3>
+
+            <div className="grid grid-cols-4 gap-y-4 gap-x-8 mb-8">
               {months.map((m, i) => (
                 <motion.button
                   whileHover={{ scale: 1.1 }}
@@ -62,58 +91,10 @@ export default function CustomDate({ isOpen, onClose, onSave, }: CustomDateProps
                     className={`rounded-full h-[80px] w-[80px] font-medium transition-all duration-300 
                     ${selectedMonth === i
                         ? "shadow-md bg-gradient-to-r from-bloomPink to-bloomYellow hover:border-2 hover:border-bloomPink hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-bloomPink to-bloomYellow"
-                        : "border-2 border-bloomPink text-transparent bg-clip-text bg-gradient-to-r from-bloomPink to-bloomYellow"
+                        : "hover:border-2 hover:border-bloomPink text-transparent bg-clip-text bg-gradient-to-r from-bloomPink to-bloomYellow"
                       }`}
                   >
                     {m}
-                  </button>
-                </motion.button>
-              ))}
-            </div>
-
-            <h3 className="text-xl flex font-bold text-bloomPink justify-center mb-4 gap-4 p-2">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  setDodecade((prev) => prev - 1)
-                }}
-              >
-                <ChevronsLeft className="w-8 h-8" color="#f875aa" />
-              </motion.button>
-
-              <span className="flex-1 text-center">
-                Select Year
-              </span>
-
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  setDodecade((prev) => prev + 1)
-                }}
-              >
-                <ChevronsRight className="w-8 h-8" color="#f875aa" />
-              </motion.button>
-            </h3>
-
-
-            <div className="grid grid-cols-4 gap-y-4 gap-x-8 mb-4">
-              {years.map((y) => (
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <button
-                    key={y}
-                    onClick={() => setSelectedYear(y)}
-                    className={`rounded-full h-[80px] w-[80px] font-medium transition-all duration-300
-                        ${selectedYear === y
-                        ? "shadow-md bg-gradient-to-r from-bloomPink to-bloomYellow hover:border-2 hover:border-bloomPink hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-bloomPink to-bloomYellow"
-                        : "border-2 border-bloomPink text-transparent bg-clip-text bg-gradient-to-r from-bloomPink to-bloomYellow"
-                      }`}
-                  >
-                    {y}
                   </button>
                 </motion.button>
               ))}
@@ -124,7 +105,7 @@ export default function CustomDate({ isOpen, onClose, onSave, }: CustomDateProps
                 whileHover={{ scale: 1.1 }}
               >
                 <button
-                  onClick={onClose}
+                  onClick={handleCancel}
                   className="py-2 w-[200px] rounded-full border border-bloomPink text-bloomPink bg-white hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white hover:shadow-md"
                 >
                   Cancel

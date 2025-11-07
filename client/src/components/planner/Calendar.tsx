@@ -164,7 +164,7 @@ export default function CalendarView() {
         </div>
         <CustomDate
           isOpen={showPicker}
-          onClose={() => setShowPicker(false)}
+          onCancel={() => setShowPicker(false)}
           onSave={(m, y) => {
             setMonth(m);
             setYear(y);
