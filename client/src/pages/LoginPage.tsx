@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<ValidationError[]>([]);
+  const [generalError, setGeneralError] = useState("");
 
   const getFieldError = (fieldName: string): string | undefined => {
     return errors.find((err) => err.field === fieldName)?.message;
@@ -20,6 +21,7 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setErrors([]);
+    setGeneralError("");
 
     const result = await authService.login({ email, password });
 
@@ -29,6 +31,7 @@ export default function LoginPage() {
       navigate("/dashboard");
     } else {
       if (result.errors) setErrors(result.errors);
+      if (result.error) setGeneralError(result.error);
     }
   };
 
@@ -62,6 +65,13 @@ export default function LoginPage() {
         <div className="bg-white rounded-2xl w-500 shadow-lg p-6 pl-16 pr-16">
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
             <AuthToggle />
+
+            {/* General Error Message */}
+            {generalError && (
+              <div className="p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+                {generalError}
+              </div>
+            )}
 
             <InputField
               label="Email Address"
