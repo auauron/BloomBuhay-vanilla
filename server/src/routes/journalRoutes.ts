@@ -1,16 +1,13 @@
 import { Router, Response } from "express";
 import  { authenticateToken, AuthRequest } from '../middleware/auth';
 import { PrismaClient } from "@prisma/client";
-import { endianness, userInfo } from "os";
-import { unescape } from "querystring";
-import { error } from "console";
-import { subscribe } from "diagnostics_channel";
 
 const router = Router();
 const db = new PrismaClient();
 
 // CRUD 
 
+// NOTES ROUTE
 // this get all the user notes
 router.get(
     "/notes",
@@ -163,3 +160,79 @@ router.delete(
         }
     }
 );
+
+
+// ALBUM ROUTE
+
+// this gets the user's album
+
+router.get(
+    "/albums",
+    authenticateToken,
+    async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+             const userId = req.userId;
+
+             if (!userId) {
+                res.status(401).json({success: false, error: "Unauthorized"})
+                return;
+             }
+
+             const albums = await db.album.findMany({
+                where: { motherId: userId },
+                include: { photos: true },
+                orderBy: { createdAt: "desc" }
+             });
+
+             res.status(200).json({success: true, data: albums})
+        } catch (e) {
+            console.error("Get albums error:", e);
+            res.status(500).json({success: false, error:"Failed to fetch albums"})
+        }
+    }
+)
+
+// this creates album
+router.post(
+    "/albums",
+    authenticateToken,
+    async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.userId;
+            const { title, coverPhoto, description } = req.body;
+            
+            if (!userId) {
+                res.status(401).json({success: false, error: "Unauthorized"});
+                return;
+            }
+            if (!title || !title.trim()){
+                res.status(400).json({success: false, error:"Title is required"})
+                return;
+            }
+
+            const album = await db.album.create({
+                data: {
+                    motherId: userId,
+                    title: title.trim(),
+                    coverPhoto: coverPhoto || null,
+                    description: description?.trim() || null,
+                },
+                include: { photos: true},
+            });
+
+            res.status(201).json({success: true, data: album});
+        } catch (e) {
+            console.error("Create album error:", e);
+            res.status(500).json({success: false, error: "Failed to create album"});
+        }
+    }
+)
+
+// this updates the album
+router.patch(
+    "/albums/:id",
+    authenticateToken,
+    async (req: AuthRequest, res: Response): Promise<void> => {
+        
+    }
+)
