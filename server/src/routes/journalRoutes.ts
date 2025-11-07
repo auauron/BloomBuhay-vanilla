@@ -341,3 +341,142 @@ router.delete(
 );
 
 // PHOTO ROUTES
+router.post(
+    "/albums/:albumId/photos",
+    authenticateToken,
+    async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.userId;
+            const albumId = parseInt(req.params.albumId);
+            const { photos } = req.body;
+            
+            if (!userId) {
+                res.status(401).json({ success: false, error: "Unauthorized"})
+                return;
+            }
+
+            if (isNaN(albumId)) {
+                res.status(400).json({ success: false, error: "Invalid album"});
+                return;
+            }
+
+            const existingAlbum = await db.album.findFirst({
+                where: { id: albumId, motherId: userId },
+            })
+
+            if (!existingAlbum) {
+                res.status(404).json({ success: false, error: "Album not found"});
+                return;
+            }
+
+            if (!photos || !Array.isArray(photos) || photos.length == 0) {
+                res.status(400).json({ success: false, errror: "Photo array is required"})
+                return;
+            }
+
+            // Create photos
+            const createdPhotos = await db.photo.createMany({
+                data: photos.map((photo: any) => ({
+                    albumId,
+                    fileUrl: photo.fileUrl,
+                    name: photo.name || null,
+                    notes: photo.notes || null,
+                })),
+            });
+
+            // Fetch the album with all photos
+            const updatedAlbum = await db.album.findUnique({
+                where: { id: albumId },
+                include: { photos: true },
+            })
+
+            res.status(201).json({success: true, data: updatedAlbum});
+        } catch (error) {
+            console.error("Add photos error:", error);
+            res.status(500).json({success: false, error: "Failed to add photos"});
+        }
+    }
+);
+
+router.patch(
+    "/photos/:id",
+    authenticateToken,
+    async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.userId;
+            const photoId = parseInt(req.params.id);
+            const { name, notes } = req.body;
+
+            if (!userId) {
+                res.status(401).json({ success: false, error: "Unauthorized "});
+                return;
+            }
+
+            if (isNaN(photoId)) {
+                res.status(400).json({ success: false, error: "Invalid photo ID"});
+                return;
+            }
+
+            // very photo if belong to user
+            const existingPhoto = await db.photo.findFirst({
+                where: { id: photoId },
+                include: { album: true },
+            })
+
+            if (!existingPhoto || existingPhoto.album.motherId !== userId) {
+                res.status(404).json({ success: false, error: "Photo not found"})
+                return;
+            }
+
+            const photo = await db.photo.update({
+                where: { id: photoId },
+                data: {
+                    name: name !== undefined ? name : existingPhoto.name,
+                    notes: notes !== undefined ? notes: existingPhoto.notes
+                },
+            });
+
+            res.status(200).json({ success: true, data: photo })
+        } catch (error) {
+            console.error("Update photo error:", error);
+            res.status(500).json({ success: false, error: "Failed to update photo" })
+        }
+    }
+);
+
+router.delete(
+    "/photos/:id",
+    authenticateToken,
+    async (req: AuthRequest, res: Response): Promise<void> => {
+        try {
+            const userId = req.userId;
+            const photoId = parseInt(req.params.id);
+
+            if (!userId) {
+                res.status(401).json({ success: false, error: "Unauthorized "})
+                return;
+            }
+
+            if (isNaN(photoId)) {
+                res.status(400).json({ success: false, error: "Invalid photo ID"});
+                return;
+            }
+
+            const existingPhoto = await db.photo.findFirst({ where: { id: photoId }, include: {album: true} });
+
+            if (!existingPhoto || existingPhoto.album.motherId !== userId) {
+                res.status(404).json({ success: false, error: "Photo not found"})
+                return;
+            }
+
+            await db.photo.delete({ where: { id: photoId }});
+
+            res.status(200).json({ success: true, message: "Photo deleted succesfully"});
+        } catch (error) {
+            console.error("Delete photo error:", error);
+            res.status(500).json({ success: false, error: "Failed to delete" })
+        }
+    }
+);
+
+export default router;

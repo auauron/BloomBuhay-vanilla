@@ -5,6 +5,7 @@ import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import motherProfilesRoutes from "./routes/motherProfiles"; 
 import plannerRoutes from "./routes/plannerRoutes"
+import journalRoutes from "./routes/journalRoutes"
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,6 +27,7 @@ app.use("/api/auth", authRoutes)
 .use("/api/users", userRoutes)
 .use("/api/mother-profiles", motherProfilesRoutes) 
 .use("/api/planner", plannerRoutes)
+.use("/api/journal", journalRoutes)
 
 app.get("/", (req, res) => {
   res.json({
