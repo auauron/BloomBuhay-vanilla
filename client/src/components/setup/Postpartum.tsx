@@ -5,15 +5,22 @@ import SetupHeader from "../ui/SetupHeader";
 import NextButton from "../ui/NextButton";
 
 interface PostpartumProps {
-  onComplete?: () => void;
+  onComplete?: (data: Record<string, any>) => void;
+  fullName?: string;
+  email?: string;
 }
 
-export default function Postpartum({ onComplete }: PostpartumProps) {
+export default function Postpartum({
+  onComplete,
+  fullName,
+  email,
+}: PostpartumProps) {
   const [value, setValue] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
+  const [weekError, setWeekError] = useState("");
 
   const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(e.target.value);
@@ -38,9 +45,30 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
     // basic validation — require a selected gender (keeps current behavior)
     if (!selectedGender) return;
 
-    // do any save/validation here (API call, localStorage...)
-    // on success:
-    onComplete?.();
+    // normalize gender
+    const genderMap: Record<string, "male" | "female" | "unknown"> = {
+      Boy: "male",
+      Girl: "female",
+    };
+    const babyGenderNormalized = (genderMap[selectedGender] ?? "unknown") as
+      | "male"
+      | "female"
+      | "unknown";
+
+    // convert weeksAfterBirth value to number if present
+    const weeksAfterBirthNum =
+      value !== "" && !Number.isNaN(Number(value)) ? Number(value) : null;
+
+    // Build canonical payload
+    const stageData = {
+      stage: "postpartum", // canonical key
+      weeksAfterBirth: weeksAfterBirthNum, // UI field — server will accept extra fields
+      babyName: inputValue || null,
+      babyGender: babyGenderNormalized,
+      trackRecovery: selectedOption === "option1" ? true : false,
+    };
+
+    onComplete?.(stageData);
   };
 
   return (
@@ -53,7 +81,7 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
         >
           <div
             style={{ maxWidth: "700px", maxHeight: "450px" }}
-            className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] overflow-y-auto shadow-lg p-8 pb-4 mb-6"
+            className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] scrollbar-thin overflow-y-auto scrollbar-thumb-white/50 scrollbar-track hover:scrollbar-thumb-white/50 shadow-lg p-8 pb-4 mb-6"
           >
             <div className="text-left ">
               <h2 className="text-bloomBlack font-semibold">
@@ -65,9 +93,24 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
                   type="number"
                   min="0"
                   value={value}
-                  onChange={setValue}
+                  onChange={(val) => {
+                    const num = Number(val);
+
+                    if (val === "") {
+                      setValue("");
+                      setWeekError("");
+                    } else if (isNaN(num) || num < 0) {
+                      setWeekError("Please enter a valid number");
+                    } else {
+                      setValue(val);
+                      setWeekError("");
+                    }
+                  }}
                   placeholder="Enter the number of weeks"
                 />
+                {weekError && (
+                  <p className="text-red-500 text-sm mt-1">{weekError}</p>
+                )}
               </div>
             </div>
 
@@ -167,8 +210,7 @@ export default function Postpartum({ onComplete }: PostpartumProps) {
 
               {/* Next button */}
               <NextButton
-                onComplete={onComplete}
-                route="/dashboard"
+                onComplete={handleNext}
                 isReady={Boolean(inputValue && value && selectedGender)}
               />
             </div>

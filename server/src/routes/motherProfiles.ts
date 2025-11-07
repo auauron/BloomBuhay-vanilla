@@ -6,16 +6,9 @@ const prisma = new PrismaClient();
 const router = express.Router();
 
 const uiStageToEnum = (ui?: string | null): Stage | null => {
-  switch (ui) {
-    case "Pregnant":
-      return "pregnant";
-    case "Postpartum":
-      return "postpartum";
-    case "Early Childcare":
-      return "childcare";
-    default:
-      return null;
-  }
+  // Now expects keys like "pregnant", "postpartum", "childcare" from client
+  if (!ui || !isValidStageEnum(ui)) return null;
+  return ui as Stage;
 };
 
 const isValidStageEnum = (v: any): v is Stage =>

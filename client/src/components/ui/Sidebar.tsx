@@ -1,19 +1,18 @@
 // src/components/Sidebar.tsx
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRightToLine,
   Home,
   BookOpen,
   Calendar,
-  Heart,
   Baby,
-  Book,
   User,
   Crown,
   LogOut,
+  BookImage,
+  ScanHeart
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -51,9 +50,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { icon: Home, label: "Home", path: "/dashboard" },
     { icon: BookOpen, label: "BloomGuide", path: "/bloomguide" },
     { icon: Calendar, label: "Planner", path: "/planner" },
-    { icon: Heart, label: "Health Tracker", path: "/healthtracker" },
-    { icon: Baby, label: "BB's Tools", path: "/tools" },
-    { icon: Book, label: "Journal", path: "/journal" },
+    { icon: ScanHeart, label: "Health Tracker", path: "/healthtracker" },
+    { icon: Baby, label: "BB's Tools", path: "/bbtools" },
+    { icon: BookImage, label: "Journal", path: "/journal" },
   ];
 
   return (
@@ -105,7 +104,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         {/* Navigation Menu */}
-        <div className="p-6">
+        <div className="p-6 pb-48">
           <nav className="space-y-2">
             {menuItems.map((item, index) => (
               <button
@@ -118,17 +117,20 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               </button>
             ))}
           </nav>
+        </div>
 
+        {/* Premium + Logout + Footer */}
+        <div className="absolute bottom-0 left-0 right-0 px-6 pb-4 bg-white">
           {/* Premium Banner */}
           <button
             onClick={() => handleNavigation("/premium")}
-            className="mt-8 p-4 bg-gradient-to-r from-[#F875AA] to-[#F4C69D] rounded-lg text-white absolute bottom-[20px] mb-32 left-4 right-4 hover:from-[#F9649C] hover:to-[#F3B287] transition-colors block"
+            className="p-1 bg-gradient-to-r from-[#F875AA] to-[#F4C69D] rounded-lg text-white w-full hover:from-[#F9649C] hover:to-[#F3B287] transition-colors block"
           >
-            <div className="flex items-center space-x-2 mb-2">
+            <div className="flex items-center space-x-2 mb-2 ml-2">
               <Crown size={20} />
               <span className="font-bold">Get BB Premium!</span>
             </div>
-            <p className="text-sm text-white/90 text-left ml-1">
+            <p className="text-sm text-white/90 text-left ml-2">
               Bloom Even Better.
             </p>
           </button>
@@ -136,14 +138,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* Logout Button */}
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-3 p-2 absolute bottom-20 mb-2 left-4 right-4 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors duration-300 "
+            className="flex items-center space-x-3 p-2 w-full mt-3 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors duration-300"
           >
             <LogOut size={20} color="#7a7a7a" />
-            <span className="font-sm text-gray-500">Log Out</span>
+            <span className="text-gray-500">Log Out</span>
           </button>
 
-          {/* Bottom Section */}
-          <div className="mt-8 pt-6 border-t border-gray-200 absolute bottom-0 mb-4 ml-[-8px] mr-8">
+          {/* Footer */}
+          <div className="mt-6 pt-4 border-t border-gray-200">
             <p className="text-center text-gray-500 text-xs">
               © 2025 BloomBuhay by Mixed Berries Productions. All rights
               reserved.

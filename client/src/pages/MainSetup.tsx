@@ -5,7 +5,9 @@ import Pregnancy from "../components/setup/Pregnancy";
 import Postpartum from "../components/setup/Postpartum";
 import Childbirth from "../components/setup/Childbirth";
 import Setup from "./Setup";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
+import { authService } from "../services/authService";
+import { keyToLabel } from "../utils/stages";
 
 export default function MainSetup() {
   const [selectedStage, setSelectedStage] = useState<string | null>(null);
@@ -13,12 +15,26 @@ export default function MainSetup() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Sync state from URL params so route and UI stay consistent
+  // Get user data from navigation state or fallback to localStorage
+  const stateData = (location.state as any) || {};
+  const user = authService.getUser?.();
+  const fullName = stateData.fullName || user?.fullName || "";
+  const email = stateData.email || user?.email || "";
+
+  useEffect(() => {
+    console.log("MainSetup received state:", {
+      fullName,
+      email,
+      fullState: location.state,
+    });
+  }, [fullName, email, location.state]);
+
+  // Sync state from URL params
   useEffect(() => {
     const page = searchParams.get("page");
     const stage = searchParams.get("stage");
-
     if (page === "details") {
       setCurrentPage("details");
       setSelectedStage(stage);
@@ -28,93 +44,110 @@ export default function MainSetup() {
     }
   }, [searchParams]);
 
-  const handleStageSelect = (stage: string) => {
-    // update local state and push params to URL
-    setSelectedStage(stage);
+  useEffect(() => {
+    // Disable page scrolling globally
+    document.body.style.overflow = "hidden";
+
+    // Restore scroll on unmount
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
+  const handleStageSelect = (stageKey: string) => {
+    setSelectedStage(stageKey);
     setCurrentPage("details");
-    setSearchParams({ page: "details", stage });
+    setSearchParams({ page: "details", stage: stageKey });
   };
 
-  const handleComplete = async (
-    stage?: string,
-    payload?: {
-      weeksPregnant?: number | null;
-      lmpDate?: string | null;
-      babyName?: string | null;
-      babyGender?: string | null;
-    }
-  ) => {
-    const uiStage = stage ?? selectedStage;
+  const handleComplete = async (stageData?: Record<string, any>) => {
+    setSearchParams({});
 
-    if (!uiStage) {
-      setSearchParams({});
-      navigate("/dashboard", { state: { stage: uiStage } });
-      return;
-    }
-
+    // persist canonical key locally immediately (optimistic)
     try {
-      const token = localStorage.getItem("token");
-
-      // Optimistic cache for immediate dashboard display
-      try {
-        localStorage.setItem("lastStage", uiStage);
-        if (payload?.weeksPregnant != null) {
-          localStorage.setItem("lastWeeksPregnant", String(payload.weeksPregnant));
-        } else if (payload?.lmpDate) {
-          // optional: compute weeks locally from lmpDate fallback (simple)
-          const lmp = new Date(payload.lmpDate);
-          if (!isNaN(lmp.getTime())) {
-            const diffDays = Math.floor((Date.now() - lmp.getTime()) / (1000 * 60 * 60 * 24));
-            if (diffDays >= 0) localStorage.setItem("lastWeeksPregnant", String(Math.floor(diffDays / 7)));
-          }
-        }
-      } catch (e) {
-        // ignore localStorage errors
-      }
-
-      if (!token) {
-        console.warn("No token found in localStorage; profile will NOT be saved server-side.");
-        setSearchParams({});
-        navigate("/dashboard", { state: { stage: uiStage } });
-        return;
-      }
-
-      const body: any = {
-        stage: uiStage,
-        weeksPregnant: payload?.weeksPregnant ?? null,
-        lmpDate: payload?.lmpDate ?? null,
-        babyName: payload?.babyName ?? null,
-        babyGender: payload?.babyGender ?? null,
-      };
-
-      const resp = await fetch("http://localhost:3000/api/mother-profiles", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (!resp.ok) {
-        const err = await resp.json().catch(() => null);
-        console.error("Failed creating mother profile:", err);
-      } else {
-        const created = await resp.json().catch(() => null);
-        console.log("Stage saved to DB", created);
-        // update local cache with authoritative server response if available
-        if (created?.weeksPregnant != null) {
-          try {
-            localStorage.setItem("lastWeeksPregnant", String(created.weeksPregnant));
-          } catch {}
-        }
-      }
-    } catch (error) {
-      console.error("Error saving stage:", error);
-    } finally {
-      setSearchParams({});
-      navigate("/dashboard", { state: { stage: uiStage } });
+      if (selectedStage) localStorage.setItem("lastStage", selectedStage);
+    } catch (e) {
+      /* ignore localStorage errors */
     }
+
+    const token = authService.getToken?.() ?? localStorage.getItem("token");
+
+    // Map stage keys to display labels for backend API
+    const stageLabels: Record<string, string> = {
+      pregnant: "Pregnant",
+      postpartum: "Postpartum",
+      childcare: "Early Childcare",
+    };
+
+    if (token) {
+      try {
+        const resp = await fetch("http://localhost:3000/api/mother-profiles", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            stage: stageLabels[selectedStage || ""] || selectedStage,
+            weeksPregnant: stageData?.weeksPregnant ?? null,
+            lmpDate: stageData?.lmpDate ?? null,
+            babyName: stageData?.babyName ?? null,
+            babyGender: stageData?.babyGender ?? null,
+          }),
+        });
+
+        console.log(
+          "POST /api/mother-profiles status:",
+          resp.status,
+          "ok:",
+          resp.ok
+        );
+
+        // try to read JSON body (defensive)
+        const serverBody = await resp.json().catch(() => null);
+        console.log("POST /api/mother-profiles body:", serverBody);
+
+        // if server returned a canonical stage, prefer and persist it
+        if (serverBody?.stage) {
+          try {
+            localStorage.setItem("lastStage", String(serverBody.stage));
+            if (typeof serverBody.weeksPregnant === "number") {
+              localStorage.setItem(
+                "lastWeeksPregnant",
+                String(serverBody.weeksPregnant)
+              );
+            }
+          } catch (e) {}
+        }
+
+        if (!resp.ok) {
+          console.warn(
+            "Server responded with non-ok status when saving profile:",
+            resp.status
+          );
+        }
+      } catch (err) {
+        console.error("Could not post profile:", err);
+      }
+    } else {
+      console.warn(
+        "No token available — profile not saved server-side, only cached locally."
+      );
+    }
+
+    // Navigate to setup summary with all collected data
+    navigate("/setup/summary", {
+      state: {
+        fullName,
+        email,
+        motherhoodStage: stageLabels[selectedStage || ""] || selectedStage,
+        weeksPregnant: stageData?.weeksPregnant,
+        weeksAfterBirth: stageData?.weeksAfterBirth,
+        babyName: stageData?.babyName,
+        babyGender: stageData?.babyGender === "male" ? "Boy" : stageData?.babyGender === "female" ? "Girl" : "Unknown",
+        babyAgeMonths: stageData?.babyAgeMonths,
+      },
+    });
   };
 
   const handleBack = () => {
@@ -125,14 +158,29 @@ export default function MainSetup() {
 
   const renderStageComponent = () => {
     switch (selectedStage) {
-      case "Pregnant":
-        // pass onComplete so Pregnancy can call it after successful submit
-       return <Pregnancy onComplete={(payload: any) => handleComplete("Pregnant", payload)} />;
-      case "Postpartum":
-        return <Postpartum onComplete={() => handleComplete("Postpartum")} />;
-      case "Early Childcare":
+      case "pregnant":
         return (
-          <Childbirth onComplete={() => handleComplete("Early Childcare")} />
+          <Pregnancy
+            onComplete={handleComplete}
+            fullName={fullName}
+            email={email}
+          />
+        );
+      case "postpartum":
+        return (
+          <Postpartum
+            onComplete={handleComplete}
+            fullName={fullName}
+            email={email}
+          />
+        );
+      case "childcare":
+        return (
+          <Childbirth
+            onComplete={handleComplete}
+            fullName={fullName}
+            email={email}
+          />
         );
       default:
         return null;
@@ -140,12 +188,13 @@ export default function MainSetup() {
   };
 
   const getSubtitle = () => {
+    const label = keyToLabel(selectedStage);
     switch (selectedStage) {
-      case "Pregnant":
+      case "pregnant":
         return "Let's begin your pregnancy journey together.";
-      case "Postpartum":
+      case "postpartum":
         return "Let's navigate your postpartum recovery together.";
-      case "Early Childcare":
+      case "childcare":
         return "Let's track your baby's growth and development.";
       default:
         return "Let's begin your journey together.";
@@ -153,11 +202,17 @@ export default function MainSetup() {
   };
 
   if (currentPage === "setup") {
-    return <Setup onStageSelect={handleStageSelect} />;
+    return (
+      <Setup
+        onStageSelect={handleStageSelect}
+        fullName={fullName}
+        email={email}
+      />
+    );
   }
 
   return (
-    <div className="bg-bloomWhite min-h-screen flex flex-col overflow-hidden">
+    <div className="bg-bloomWhite min-h-screen flex flex-col overflow-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {/* Header */}
       <header className="fixed top-0 left-0 flex flex-row items-center shadow-none bg-bloomWhite w-full py-4 px-6">
         <div className="flex items-center space-x-4">
@@ -180,7 +235,7 @@ export default function MainSetup() {
       <div className="flex-1 flex items-center justify-center px-6 mt-16">
         <div className="p-8 w-full max-w-2xl">
           <div className="text-center mb-2">
-            <h1 className="text-2xl font-bold font-rubik text-bloomBlack mb-1">
+            <h1 className="text-3xl font-bold font-poppins text-bloomPink mb-1">
               You're blooming beautifully, mama!
             </h1>
             <p className="text-[#474747] font-rubik">{getSubtitle()}</p>

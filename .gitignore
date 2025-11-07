@@ -45,3 +45,9 @@ server/prisma/migrations/*.sql
 server/.env.test
 # Test coverage
 coverage/
+
+
+#docs
+DETAILED_PROJECT_GUIDE.md
+client/src/pages/Planner.tsx
+server/API_DOCS.md

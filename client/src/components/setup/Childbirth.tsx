@@ -6,14 +6,21 @@ import SetupHeader from "../ui/SetupHeader";
 import NextButton from "../ui/NextButton";
 
 interface ChildbirthProps {
-  onComplete?: () => void;
+  onComplete?: (data: Record<string, any>) => void;
+  fullName?: string;
+  email?: string;
 }
 
-export default function Childbirth({ onComplete }: ChildbirthProps) {
+export default function Childbirth({
+  onComplete,
+  fullName,
+  email,
+}: ChildbirthProps) {
   const [value, setValue] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [ageError, setAgeError] = useState("");
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -34,10 +41,30 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
     // basic validation: require a selected gender (matches other components)
     if (!selectedGender) return;
 
-    // TODO: save the data (API/localStorage) before completing if needed
+    // normalize gender to server enum: male | female | unknown
+    const genderMap: Record<string, "male" | "female" | "unknown"> = {
+      Boy: "male",
+      Girl: "female",
+    };
+    const babyGenderNormalized = (genderMap[selectedGender] ?? "unknown") as
+      | "male"
+      | "female"
+      | "unknown";
+
+    // convert age value to number if present
+    const babyAgeMonthsNum =
+      value !== "" && !Number.isNaN(Number(value)) ? Number(value) : null;
+
+    // Build canonical payload expected by parent/server
+    const stageData = {
+      stage: "childcare", // canonical key (server expects 'childcare')
+      babyName: inputValue || null,
+      babyGender: babyGenderNormalized,
+      babyAgeMonths: babyAgeMonthsNum,
+    };
 
     // inform parent (MainSetup) that setup is complete and navigate to dashboard
-    onComplete?.();
+    onComplete?.(stageData);
   };
 
   return (
@@ -50,7 +77,7 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
         >
           <div
             style={{ maxWidth: "700px", maxHeight: "450px" }}
-            className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] overflow-y-auto shadow-lg p-8 pb-4 mb-6"
+            className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh]  scrollbar-thin overflow-y-auto scrollbar-thumb-white/50 scrollbar-track hover:scrollbar-thumb-white/50 shadow-lg p-8 pb-4 mb-6"
           >
             {/* baby's details */}
             <div className="baby-details flex flex-col">
@@ -82,9 +109,24 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
                       type="number"
                       min="0"
                       value={value}
-                      onChange={setValue}
+                      onChange={(val) => {
+                        const num = Number(val);
+
+                        if (val === "") {
+                          setValue("");
+                          setAgeError("");
+                        } else if (isNaN(num) || num < 0) {
+                          setAgeError("Please enter a valid number");
+                        } else {
+                          setValue(val);
+                          setAgeError("");
+                        }
+                      }}
                       placeholder="Enter your baby's age in months"
                     />
+                    {ageError && (
+                      <p className="text-red-500 text-sm mt-1">{ageError}</p>
+                    )}
                   </div>
                 </label>
 
@@ -137,8 +179,7 @@ export default function Childbirth({ onComplete }: ChildbirthProps) {
 
                 {/* Next button */}
                 <NextButton
-                  onComplete={onComplete}
-                  route="/dashboard"
+                  onComplete={handleNext}
                   isReady={Boolean(inputValue && value && selectedGender)}
                 />
               </div>
