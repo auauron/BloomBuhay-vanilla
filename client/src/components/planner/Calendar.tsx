@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
-import { ChevronsLeft, ChevronsRight } from "lucide-react";
+import { ChevronsLeft, ChevronsRight, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
+import CustomDate from "./modal/GoToModal";
 
 type BloomDate = {
   day: number;
@@ -15,8 +16,9 @@ export default function CalendarView() {
   );
   const [month, setMonth] = useState(now.getMonth());
   const [year, setYear] = useState(now.getFullYear());
+  const [showPicker, setShowPicker] = useState(false);
 
-  const daysOfWeek = ["Su", "M", "Tu", "W", "Th", "F", "Sa"];
+  const daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"];
 
   const handleSelect = (id: string) => {
     setSelectedDay((prev) => (prev === id ? null : id));
@@ -91,6 +93,18 @@ export default function CalendarView() {
             {new Date(year, month).toLocaleString("default", { month: "long" })} {year}
           </span>
 
+          <span>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                setShowPicker(true)
+              }}
+            >
+              <Calendar className="w-8 h-8 text-white" />
+            </motion.button>
+          </span>
+
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
@@ -123,7 +137,7 @@ export default function CalendarView() {
 
               return (
                 <div
-                  key={i}
+                  key={id}
                   onClick={() => {
                     if (!isCurrentMonth) {
                       setMonth(date.month);
@@ -136,10 +150,10 @@ export default function CalendarView() {
                     isSelected
                       ? "border-bloomPink border-2 scale-105"
                       : isToday
-                      ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow-lg"
-                      : isCurrentMonth
-                      ? "hover:bg-gradient-to-r from-bloomPink/20 to-bloomYellow/20 hover:shadow-md"
-                      : "text-gray-400 opacity-60 cursor-default",
+                        ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow-lg"
+                        : isCurrentMonth
+                          ? "hover:bg-gradient-to-r from-bloomPink/20 to-bloomYellow/20 hover:shadow-md"
+                          : "text-gray-400 opacity-60 cursor-default",
                   ].join(" ")}
                 >
                   {date.day}
@@ -148,6 +162,14 @@ export default function CalendarView() {
             })}
           </div>
         </div>
+        <CustomDate
+          isOpen={showPicker}
+          onCancel={() => setShowPicker(false)}
+          onSave={(m, y) => {
+            setMonth(m);
+            setYear(y);
+          }}
+        />
       </div>
     </motion.div>
   );
