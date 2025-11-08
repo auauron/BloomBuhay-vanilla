@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/ui/Header";
 import Sidebar from "../components/ui/Sidebar";
 import MetricCard from "../components/health/MetricCard";
@@ -17,6 +17,7 @@ import {
   ScanHeart
 } from "lucide-react";
 import '../index.css';
+import { healthtrackerService, HealthMetric } from "../services/healthtrackerService"; // adjust path if needed
 
 export default function HealthTracker() {
   // State for sidebar visibility
@@ -25,53 +26,58 @@ export default function HealthTracker() {
   // State for add metric modal visibility
   const [showAddMetric, setShowAddMetric] = useState(false);
   
-  // State for health metrics with sample data
-  const [healthMetrics, setHealthMetrics] = useState([
+  // Loading state
+  const [loadingMetrics, setLoadingMetrics] = useState(true);
+
+  // Sample fallback metrics used only if API fails (kept similar to your original)
+  const fallbackSampleMetrics: HealthMetric[] = [
     { 
-      id: 1,
+      id: "1",
       title: "Weight", 
       value: "62", 
       unit: "kg", 
       change: "+1.2", 
       trend: "up", 
-      icon: <Scale className="w-6 h-6" />, 
       color: "from-bloomPink to-[#F5ABA1]",
-      category: "vitals"
+      category: "vitals",
+      createdAt: new Date().toISOString()
     },
     { 
-      id: 2,
+      id: "2",
       title: "Blood Pressure", 
       value: "110/70", 
       unit: "mmHg", 
       change: "Stable", 
       trend: "stable", 
-      icon: <Heart className="w-6 h-6" />, 
       color: "from-bloomPink to-bloomYellow",
-      category: "vitals"
+      category: "vitals",
+      createdAt: new Date().toISOString()
     },
     { 
-      id: 3,
+      id: "3",
       title: "BMI", 
       value: "23.4", 
       unit: "", 
       change: "Healthy", 
       trend: "stable", 
-      icon: <BarChart3 className="w-6 h-6" />, 
       color: "from-[#F5ABA1] to-[#F3E198]",
-      category: "health"
+      category: "health",
+      createdAt: new Date().toISOString()
     },
     { 
-      id: 4,
+      id: "4",
       title: "Water Intake", 
       value: "2.1", 
       unit: "L", 
       change: "-0.3", 
       trend: "down", 
-      icon: <Droplets className="w-6 h-6" />, 
       color: "from-bloomPink to-[#F5ABA1]",
-      category: "nutrition"
+      category: "nutrition",
+      createdAt: new Date().toISOString()
     },
-  ]);
+  ];
+
+  const [healthMetrics, setHealthMetrics] = useState<HealthMetric[]>([]);
 
   // Toggle sidebar open/close
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
@@ -79,29 +85,19 @@ export default function HealthTracker() {
   // Close sidebar
   const closeSidebar = () => setIsSidebarOpen(false);
 
-  // Add new metric to the list
-  const addMetric = (metric: any) => {
-    const newMetric = {
-      ...metric,
-      id: Date.now() // Generate unique ID
-    };
-    setHealthMetrics([...healthMetrics, newMetric]);
-  };
+  const getIconForMetric = (metric: HealthMetric) => {
+    const title = (metric.title || "").toLowerCase();
+    const cat = (metric.category || "").toLowerCase();
 
-  // Remove metric by index
-  const removeMetric = (id: number) => {
-    setHealthMetrics(healthMetrics.filter(metric => metric.id !== id));
-  };
-
-  // Update existing metric
-  const updateMetric = (updatedMetric: any) => {
-    setHealthMetrics(healthMetrics.map(metric => 
-      metric.id === updatedMetric.id ? updatedMetric : metric
-    ));
+    if (title.includes("weight") || cat === "vitals") return <Scale className="w-6 h-6" />;
+    if (title.includes("blood") || title.includes("pressure")) return <Heart className="w-6 h-6" />;
+    if (title.includes("bmi")) return <BarChart3 className="w-6 h-6" />;
+    if (title.includes("water") || title.includes("intake")) return <Droplets className="w-6 h-6" />;
+    return <ScanHeart className="w-6 h-6" />; // default
   };
 
   // Get trend icon based on trend type
-  const getTrendIcon = (trend: string) => {
+  const getTrendIcon = (trend: string | undefined) => {
     switch (trend) {
       case "up":
         return <TrendingUp className="w-4 h-4" />;
@@ -109,6 +105,97 @@ export default function HealthTracker() {
         return <TrendingDown className="w-4 h-4" />;
       default:
         return <Minus className="w-4 h-4" />;
+    }
+  };
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      setLoadingMetrics(true);
+      try {
+        const res = await healthtrackerService.getAll();
+        if (!mounted) return;
+        if (res.success && res.data && res.data.metrics) {
+          setHealthMetrics(res.data.metrics.map((m: any) => ({ ...m, id: String(m.id) })));
+        } else {
+          setHealthMetrics(fallbackSampleMetrics);
+          if (!res.success) console.error("Failed to load health data:", res.error);
+        }
+      } catch (err) {
+        console.error("Health fetch error:", err);
+        setHealthMetrics(fallbackSampleMetrics);
+      } finally {
+        if (mounted) setLoadingMetrics(false);
+      }
+    })();
+
+    return () => { mounted = false; };
+  }, []);
+
+  const addMetric = async (metric: any) => {
+    const payload = {
+      title: metric.title,
+      value: String(metric.value ?? ""),
+      unit: metric.unit ?? "",
+      change: metric.change ?? "",
+      trend: metric.trend ?? "stable",
+      color: metric.color ?? null,
+      category: metric.category ?? null,
+    };
+
+    try {
+      const res = await healthtrackerService.createMetric(payload);
+      if (res.success && res.data) {
+        setHealthMetrics(prev => [{ ...res.data, id: String(res.data.id) }, ...prev]);
+      } else {
+        const newMetric: HealthMetric = { id: Date.now().toString(), ...payload, createdAt: new Date().toISOString() };
+        setHealthMetrics(prev => [newMetric, ...prev]);
+        console.error("create metric failed", res.error);
+      }
+    } catch (err) {
+      console.error("create metric exception", err);
+      const newMetric: HealthMetric = { id: Date.now().toString(), ...payload, createdAt: new Date().toISOString() };
+      setHealthMetrics(prev => [newMetric, ...prev]);
+    }
+  };
+
+  const removeMetric = async (id: string | number) => {
+    const idStr = String(id);
+    try {
+      const res = await healthtrackerService.deleteMetric(idStr);
+      if (res.success) {
+        setHealthMetrics(prev => prev.filter(metric => String(metric.id) !== idStr));
+      } else {
+        console.error("delete metric failed", res.error);
+      }
+    } catch (err) {
+      console.error("delete metric exception", err);
+    }
+  };
+
+  const updateMetric = async (updatedMetric: any) => {
+    const idStr = String(updatedMetric.id);
+    const payload = {
+      title: updatedMetric.title,
+      value: String(updatedMetric.value ?? ""),
+      unit: updatedMetric.unit ?? "",
+      change: updatedMetric.change ?? "",
+      trend: updatedMetric.trend ?? "stable",
+      color: updatedMetric.color ?? null,
+      category: updatedMetric.category ?? null,
+    };
+
+    try {
+      const res = await healthtrackerService.updateMetric(idStr, payload);
+      if (res.success && res.data) {
+        setHealthMetrics(prev => prev.map(m => (String(m.id) === idStr ? { ...res.data, id: idStr } : m)));
+      } else {
+        setHealthMetrics(prev => prev.map(m => (String(m.id) === idStr ? { ...m, ...payload } : m)));
+        console.error("update metric failed", res.error);
+      }
+    } catch (err) {
+      console.error("update metric exception", err);
+      setHealthMetrics(prev => prev.map(m => (String(m.id) === idStr ? { ...m, ...payload } : m)));
     }
   };
 
@@ -134,7 +221,8 @@ export default function HealthTracker() {
             </h1>
           </div>
           <p className="text-bloomBlack font-rubik text-lg font-light max-w-2xl mx-auto">
-            Better health, better life, better motherhood. <br></br>Track your vitals, mood, and wellness.          </p>
+            Better health, better life, better motherhood. <br />Track your vitals, mood, and wellness.
+          </p>
         </div>
 
         {/* Add Metric Button Section */}
@@ -150,15 +238,22 @@ export default function HealthTracker() {
 
         {/* Health Metrics Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 px-8 mb-12 max-w-7xl mx-auto">
-          {healthMetrics.map((metric) => (
-            <MetricCard 
-              key={metric.id} 
-              metric={metric} 
-              onRemove={() => removeMetric(metric.id)}
-              onUpdate={updateMetric}
-              trendIcon={getTrendIcon(metric.trend)}
-            />
-          ))}
+          {loadingMetrics ? (
+            <div className="col-span-full text-center text-gray-500">Loading metrics...</div>
+          ) : (
+            healthMetrics.map((metric) => (
+              <MetricCard 
+                key={metric.id} 
+                metric={{
+                  ...metric,
+                  icon: (metric as any).icon ?? getIconForMetric(metric)
+                }} 
+                onRemove={() => removeMetric(metric.id)}
+                onUpdate={updateMetric}
+                trendIcon={getTrendIcon(metric.trend)}
+              />
+            ))
+          )}
         </div>
 
         {/* Mood & Symptoms Section */}

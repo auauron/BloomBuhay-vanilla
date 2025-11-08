@@ -3,15 +3,15 @@ import { Edit3, Trash2, Save, X } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Metric {
-  id: number;
+  id: string;
   title: string;
   value: string;
-  unit: string;
-  change: string;
-  trend: string;
-  icon: React.ReactNode;
-  color: string;
-  category: string;
+  unit?: string;
+  change?: string;
+  trend?: string;
+  icon?: React.ReactNode;
+  color?: string;
+  category?: string;
 }
 
 interface MetricCardProps {
@@ -27,7 +27,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ metric, onRemove, onUpdate, tre
 
   const handleSave = () => {
     // Calculate new trend based on value and metric type
-    const newTrend = calculateTrend(metric.title, editedValue, metric.unit);
+  const newTrend = calculateTrend(metric.title, editedValue, metric.unit ?? "");
     
     onUpdate({
       ...metric,
@@ -193,9 +193,9 @@ const MetricCard: React.FC<MetricCardProps> = ({ metric, onRemove, onUpdate, tre
 
             {/* Trend and Status */}
             <div className="flex items-center gap-2">
-              <div className={`flex items-center gap-1 ${getTrendColor(metric.trend)}`}>
+              <div className={`flex items-center gap-1 ${getTrendColor(metric.trend ?? "stable")}`}>
                 {trendIcon}
-                <span className={`text-sm font-medium ${getStatusColor(metric.change)}`}>
+                <span className={`text-sm font-medium ${getStatusColor(metric.change ?? "")}`}>
                   {metric.change}
                 </span>
               </div>
