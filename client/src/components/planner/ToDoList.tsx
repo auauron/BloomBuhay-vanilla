@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { PlusCircle, Trash2 } from "lucide-react";
 import { plannerService } from "../../services/plannerService";
+import AddTaskModal from "./modal/AddTask";
 
 type Task = {
   id: number;
@@ -16,6 +17,7 @@ export default function ToDoList() {
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAdding, setIsAdding] = useState(false)
 
   // Fetch tasks on component mount
   useEffect(() => {
@@ -121,91 +123,93 @@ export default function ToDoList() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-4 rounded-[20px] shadow-lg relative items-center">
+    (isAdding)
+      ? <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white p-4 rounded-[20px] shadow-lg">
 
-        {/* Header */}
-        <h3 className="text-2xl mb-2 text-white font-bold flex items-center justify-center gap-4 p-2">
-          <span className="flex-1 text-center">To Do List</span>
+          {/* Header */}
+          <h3 className="text-2xl mb-2 text-white font-bold flex items-center justify-center gap-4 p-2">
+            <span className="flex-1 text-center">To Do List</span>
 
-          {/* Add Button */}
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleAddTask}
-            className="rounded-full bg-white/20 hover:bg-white/30 p-2 transition"
-          >
-            <PlusCircle className="w-8 h-8 text-white" />
-          </motion.button>
-        </h3>
+            {/* Add Button */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsAdding(!isAdding)}
+              className="rounded-full bg-white/20 hover:bg-white/30 p-2 transition"
+            >
+              <PlusCircle className="w-8 h-8 text-white" />
+            </motion.button>
+          </h3>
 
-        {/* Error Message */}
-        {error && (
-          <div className="mb-3 p-3 bg-red-100 text-red-700 rounded-xl text-sm">
-            {error}
+          {/* Error Message */}
+          {error && (
+            <div className="mb-3 p-3 bg-red-100 text-red-700 rounded-xl text-sm">
+              {error}
+            </div>
+          )}
+
+          {/* Task List Container */}
+          <div className="bg-white rounded-xl p-4 text-[#474747] max-h-[500px] overflow-y-auto shadow-inner">
+            {loading ? (
+              <p className="text-center text-gray-400 italic">Loading tasks...</p>
+            ) : tasks.length === 0 ? (
+              <p className="text-center text-gray-400 italic">No tasks yet.</p>
+            ) : (
+              tasks.map((task) => (
+                <motion.div
+                  key={task.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center justify-between bg-gradient-to-r from-pink-50 to-pink-100 p-3 rounded-xl mb-3 shadow-sm hover:shadow-md transition"
+                >
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={task.completed}
+                      onChange={() => handleToggleTask(task.id)}
+                      className="w-5 h-5 accent-bloomPink cursor-pointer"
+                    />
+                    <span
+                      className={`text-lg ${
+                        task.completed
+                          ? "line-through text-gray-400"
+                          : "text-gray-800"
+                      }`}
+                    >
+                      {task.title}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-sm text-gray-500">
+                    <span>{task.createdAt}</span>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => handleDeleteTask(task.id)}
+                      className="text-red-500 hover:text-red-600"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </motion.button>
+                  </div>
+                </motion.div>
+              ))
+            )}
           </div>
-        )}
 
-        {/* Task List Container */}
-        <div className="bg-white rounded-xl p-4 text-[#474747] max-h-[500px] overflow-y-auto shadow-inner">
-          {loading ? (
-            <p className="text-center text-gray-400 italic">Loading tasks...</p>
-          ) : tasks.length === 0 ? (
-            <p className="text-center text-gray-400 italic">No tasks yet.</p>
-          ) : (
-            tasks.map((task) => (
-              <motion.div
-                key={task.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center justify-between bg-gradient-to-r from-pink-50 to-pink-100 p-3 rounded-xl mb-3 shadow-sm hover:shadow-md transition"
-              >
-                <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked={task.completed}
-                    onChange={() => handleToggleTask(task.id)}
-                    className="w-5 h-5 accent-bloomPink cursor-pointer"
-                  />
-                  <span
-                    className={`text-lg ${
-                      task.completed
-                        ? "line-through text-gray-400"
-                        : "text-gray-800"
-                    }`}
-                  >
-                    {task.title}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-3 text-sm text-gray-500">
-                  <span>{task.createdAt}</span>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleDeleteTask(task.id)}
-                    className="text-red-500 hover:text-red-600"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </motion.button>
-                </div>
-              </motion.div>
-            ))
+          {/* Hidden input for creating tasks (appears when typing) */}
+          {newTaskTitle.length >= 0 && (
+            <input
+              type="text"
+              placeholder="Type new task..."
+              value={newTaskTitle}
+              onChange={(e) => setNewTaskTitle(e.target.value)}
+              className="mt-3 w-full p-3 rounded-xl bg-white/80 focus:bg-white outline-none text-gray-700"
+              onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
+            />
           )}
         </div>
-
-        {/* Hidden input for creating tasks (appears when typing) */}
-        {newTaskTitle.length >= 0 && (
-          <input
-            type="text"
-            placeholder="Type new task..."
-            value={newTaskTitle}
-            onChange={(e) => setNewTaskTitle(e.target.value)}
-            className="mt-3 w-full p-3 rounded-xl bg-white/80 focus:bg-white outline-none text-gray-700"
-            onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
-          />
-        )}
-      </div>
-    </motion.div>
+        </motion.div>
+      : AddTaskModal()
   );
 }
