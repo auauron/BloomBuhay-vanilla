@@ -6,7 +6,7 @@ import { Search } from "lucide-react";
 import { Article, ArticleSection } from "../types/guide";
 import ArticleModal from '../components/ArticleModal';
 import { BookOpen } from "lucide-react";
-import { pregnant, postpartum, earlyChildCare } from '../data';
+import { pregnant, postpartum, earlyChildCare, generalMotherhood } from '../data';
 
 // === GRADIENT SEARCH BAR COMPONENT ===
 const GradientSearchBar = ({ 
@@ -148,6 +148,7 @@ const StageFilterButtons = ({
 }) => {
   const stages = [
     { key: "all", label: "All Articles", count: stageCounts.all || 0 },
+    { key: "generalMotherhood", label: "General Motherhood", count: stageCounts.generalMotherhood || 0 },
     { key: "pregnant", label: "Pregnancy", count: stageCounts.pregnant || 0 },
     { key: "postpartum", label: "Postpartum", count: stageCounts.postpartum || 0 },
     { key: "earlyChildcare", label: "Early Childcare", count: stageCounts.earlyChildcare || 0 },
@@ -198,6 +199,14 @@ const CategoryFilterButtons = ({
 }) => {
   // Define categories for each stage
   const stageCategories = {
+    generalMotherhood: [
+      { key: "all", label: "All General", count: categoryCounts.all || 0 },
+      { key: "wellness", label: "Must Reads", count: categoryCounts.wellness || 0 },
+      { key: "moods", label: "Moods & Emotions", count: categoryCounts.moods || 0 },
+      { key: "symptoms", label: "Common Symptoms", count: categoryCounts.symptoms || 0 },
+      { key: "tips", label: "Motherhood Tips", count: categoryCounts.tips || 0 },
+      { key: "relationships", label: "Relationships", count: categoryCounts.relationships || 0 }
+    ],
     pregnant: [
       { key: "all", label: "All Pregnancy", count: categoryCounts.all || 0 },
       { key: "first-trimester", label: "First Trimester", count: categoryCounts["first-trimester"] || 0 },
@@ -293,11 +302,21 @@ export default function BloomGuide() {
       ...earlyChildCare.health.articles
     ];
 
+    // Use actual generalMotherhood data
+    const generalMotherhoodArticles = [
+      ...generalMotherhood.moods.articles,
+      ...generalMotherhood.mustReads.articles,
+      ...generalMotherhood.symptoms.articles,
+      ...generalMotherhood.relationships.articles,
+      ...generalMotherhood.tips.articles
+    ];
+
     return {
+      generalMotherhood: generalMotherhoodArticles,
       pregnant: pregnantArticles,
       postpartum: postpartumArticles,
       earlyChildcare: earlyChildcareArticles,
-      all: [...pregnantArticles, ...postpartumArticles, ...earlyChildcareArticles]
+      all: [...generalMotherhoodArticles, ...pregnantArticles, ...postpartumArticles, ...earlyChildcareArticles]
     };
   }, []);
 
@@ -320,6 +339,38 @@ export default function BloomGuide() {
       (article.content?.headline && article.content.headline.toLowerCase().includes(query)) ||
       (article.content?.intro && article.content.intro.toLowerCase().includes(query))
     );
+  };
+
+  // Categorize general motherhood articles
+  const categorizeGeneralMotherhoodArticles = (articles: Article[]) => {
+    const categorized = {
+      "moods": articles.filter(article => 
+        article.category === "Moods" || 
+        article.title.toLowerCase().includes("mood") ||
+        article.title.toLowerCase().includes("emotional")
+      ),
+      "symptoms": articles.filter(article => 
+        article.category === "Symptoms" || 
+        article.title.toLowerCase().includes("symptom")
+      ),
+      "tips": articles.filter(article => 
+        article.category === "Tips" || 
+        article.title.toLowerCase().includes("tip") ||
+        article.title.toLowerCase().includes("advice")
+      ),
+      "wellness": articles.filter(article => 
+        article.category === "MustReads" || 
+        article.title.toLowerCase().includes("mustreads") ||
+        article.title.toLowerCase().includes("self-care") 
+      ),
+      "relationships": articles.filter(article => 
+        article.category === "Relationships" || 
+        article.title.toLowerCase().includes("relationship") ||
+        article.title.toLowerCase().includes("partner")
+      )
+    };
+    
+    return categorized;
   };
 
   // Categorize pregnancy articles by trimester
@@ -354,12 +405,14 @@ export default function BloomGuide() {
 
   // Calculate stage counts for filter buttons
   const stageCounts = useMemo(() => {
+    const generalCount = filterArticlesBySearch(allArticles.generalMotherhood).length;
     const pregnantCount = filterArticlesBySearch(allArticles.pregnant).length;
     const postpartumCount = filterArticlesBySearch(allArticles.postpartum).length;
     const earlyChildcareCount = filterArticlesBySearch(allArticles.earlyChildcare).length;
     
     return {
-      all: pregnantCount + postpartumCount + earlyChildcareCount,
+      all: generalCount + pregnantCount + postpartumCount + earlyChildcareCount,
+      generalMotherhood: generalCount,
       pregnant: pregnantCount,
       postpartum: postpartumCount,
       earlyChildcare: earlyChildcareCount
@@ -372,6 +425,18 @@ export default function BloomGuide() {
     
     const stageArticles = allArticles[activeStage as keyof typeof allArticles];
     const filteredArticles = filterArticlesBySearch(stageArticles);
+    
+    if (activeStage === "generalMotherhood") {
+      const categorized = categorizeGeneralMotherhoodArticles(filteredArticles);
+      return {
+        all: filteredArticles.length,
+        "moods": categorized.moods?.length || 0,
+        "symptoms": categorized.symptoms?.length || 0,
+        "tips": categorized.tips?.length || 0,
+        "wellness": categorized.wellness?.length || 0,
+        "relationships": categorized.relationships?.length || 0
+      };
+    }
     
     if (activeStage === "pregnant") {
       const categorized = categorizePregnancyArticles(filteredArticles);
@@ -415,6 +480,9 @@ export default function BloomGuide() {
 
     // Get base articles based on active stage
     switch (activeStage) {
+      case "generalMotherhood":
+        articlesToFilter = allArticles.generalMotherhood;
+        break;
       case "pregnant":
         articlesToFilter = allArticles.pregnant;
         break;
@@ -429,7 +497,10 @@ export default function BloomGuide() {
     }
 
     // Apply category filtering for specific stages
-    if (activeStage === "pregnant" && activeCategory !== "all") {
+    if (activeStage === "generalMotherhood" && activeCategory !== "all") {
+      const categorized = categorizeGeneralMotherhoodArticles(articlesToFilter);
+      articlesToFilter = categorized[activeCategory as keyof typeof categorized] || [];
+    } else if (activeStage === "pregnant" && activeCategory !== "all") {
       const categorized = categorizePregnancyArticles(articlesToFilter);
       articlesToFilter = categorized[activeCategory as keyof typeof categorized] || [];
     } else if (activeStage === "postpartum" && activeCategory !== "all") {
@@ -474,7 +545,9 @@ export default function BloomGuide() {
       filteredArticles.forEach(article => {
         // Determine which stage this article belongs to
         let stage = "";
-        if (allArticles.pregnant.some(a => a.id === article.id)) {
+        if (allArticles.generalMotherhood.some(a => a.id === article.id)) {
+          stage = "generalMotherhood";
+        } else if (allArticles.pregnant.some(a => a.id === article.id)) {
           stage = "pregnant";
         } else if (allArticles.postpartum.some(a => a.id === article.id)) {
           stage = "postpartum";
@@ -510,6 +583,7 @@ export default function BloomGuide() {
   // === SECTION TITLE HELPER ===
   const getSectionTitle = (section: string) => {
     const titles = {
+      generalMotherhood: "General Motherhood",
       pregnant: "Pregnancy Articles",
       postpartum: "Postpartum Care", 
       earlyChildcare: "Early Childcare"

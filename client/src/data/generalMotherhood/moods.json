@@ -1,0 +1,205 @@
+{
+  "articles": [
+    {
+      "id": "motherhood-moods-emotional-regulation",
+      "title": "Motherhood Moods: Emotional Regulation for Moms",
+      "image": "/assets/generalMotherhoodArticle/moods/mood1.png",
+      "category": "Moods",
+      "section": "moods",
+      "externalLink": "https://momwell.com/blog/emotional-regulation-skills-for-moms",
+      "content": {
+        "headline": "Emotional Regulation Skills for Moms: Understanding and Managing Motherhood Moods",
+        "intro": "Motherhood can bring overwhelming emotional highs and lows. Learning to understand and manage these moods helps mothers navigate daily challenges with compassion and resilience.",
+        "sections": [
+          {
+            "title": "Why Emotional Regulation is Hard for Moms",
+            "content": "Modern motherhood often leads to emotional dysregulation due to the constant mental and emotional demands placed on mothers.",
+            "points": [
+              "High mental and emotional load from multitasking and caregiving",
+              "Unresolved past trauma or unhealed emotional wounds",
+              "Societal pressure to appear calm and 'perfect'",
+              "Isolation or lack of support systems",
+              "Chronic sleep deprivation and stress"
+            ]
+          },
+          {
+            "title": "Types of Dysregulation in Motherhood",
+            "content": "Emotional challenges can manifest in different ways:",
+            "points": [
+              "Emotional Dysregulation: Intense feelings, anger outbursts, or guilt after reacting",
+              "Cognitive Dysregulation: Racing thoughts, overthinking, or mental fog",
+              "Physical Dysregulation: Sensory overload, tension, or feeling detached from the body"
+            ]
+          },
+          {
+            "title": "The PCR Framework for Emotional Regulation",
+            "content": "Dr. Amber Thornton introduces the 'PCR' approach — Practical, Conscious, and Realistic — to help mothers regulate emotions effectively.",
+            "points": [
+              "Practical: Identify lifestyle contributors such as lack of sleep, nutrition, or rest",
+              "Conscious: Reflect on your emotions and triggers with curiosity, not judgment",
+              "Realistic: Accept imperfection and aim for progress over perfection"
+            ]
+          },
+          {
+            "title": "Healthy Regulation Strategies for Moms",
+            "content": "Moms can regain balance through intentional, supportive practices:",
+            "points": [
+              "Take mindful breaks or breathing exercises when overwhelmed",
+              "Communicate boundaries with family and ask for help when needed",
+              "Engage in daily grounding activities such as journaling or walking",
+              "Prioritize self-care and realistic expectations",
+              "Remind yourself that emotional ups and downs are normal parts of motherhood"
+            ]
+          },
+          { 
+            "title": "Final Takeaway",
+            "content": "The goal isn’t to be calm all the time — it’s to stay connected and compassionate, even in difficult moments.",
+            "points": [
+              "Struggling doesn’t mean failure — it means you’re human",
+              "Motherhood regulation is about building a sustainable emotional rhythm",
+              "Small daily practices can lead to big emotional improvements over time"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cope-with-mommy-stress",
+      "title": "6 Effective Ways to Cope With Mommy Stress",
+      "image": "/assets/generalMotherhoodArticle/moods/mood2.jpeg", 
+      "category": "Moods",
+      "section": "mother",
+      "externalLink": "https://intermountainhealthcare.org/blogs/6-effective-ways-to-cope-with-mommy-stress",
+      "content": {
+        "headline": "Practical Strategies for Managing Mom Stress and Staying Connected",
+        "intro": "Our relationship with our children depends heavily on how we manage stress. Here are six strategies to help busy mothers cope better and be more present.",
+        "sections": [
+          {
+            "title": "1. Notice Your Stress Signals",
+            "content": "Learn what signs of stress show up for you — physical cues (heart racing, chest tightness) or mood shifts — so you can respond earlier.",
+            "points": [
+              "Increased heart rate or chest-pounding",
+              "Dizziness or lightheaded feeling",
+              "Sudden irritability or mood change",
+              "Recognizing these signals helps you pause before reacting"
+            ]
+          },
+          {
+            "title": "2. Identify Stressful Times in Your Day",
+            "content": "Find the parts of your routine that trigger high stress and plan ahead to ease the burden.",
+            "points": [
+              "Morning rush to get kids off to school",
+              "Evening prep: dinner + homework + schedules",
+              "Preparing breakfast or outfits the night before",
+              "Choosing easier meals or outsourcing a night to reduce load"
+            ]
+          },
+          {
+            "title": "3. Take Breaks and Decompress",
+            "content": "It’s okay to step away for a few minutes to recharge—this actually helps you stay calmer and more connected with your family.",
+            "points": [
+              "Give yourself 5–10 minutes when kids are safe",
+              "Try deep abdominal breathing or meditation",
+              "Engage in a quiet moment of prayer or reflection",
+              "Model these practices for older children too"
+            ]
+          },
+          {
+            "title": "4. Move Your Body – Together or Alone",
+            "content": "Physical activity helps release tension and is a stress-coping tool you can share with the family.",
+            "points": [
+              "Go for a family walk, bike ride or swim",
+              "Let each family member pick an activity rotation",
+              "Exercise releases endorphins and lowers stress",
+              "Adding movement into your routine improves mood"
+            ]
+          },
+          {
+            "title": "5. Build Strong Support Networks",
+            "content": "You don’t have to go it alone. Surrounding yourself with supportive people makes coping with stress easier and less isolating.",
+            "points": [
+              "Connect with other moms or trusted friends who ‘get it’",
+              "Join a formal or informal support group",
+              "Share your candid feelings and receive constructive feedback",
+              "Having someone to lean on makes stress more manageable"
+            ]
+          },
+          {
+            "title": "6. Use Humor to Diffuse Stress",
+            "content": "Laughter truly is medicine—incorporating more joy and lightness in your day shifts the mood and calms tension.",
+            "points": [
+              "When was the last time you had a belly laugh with your kids?",
+              "Use humor to diffuse tense situations",
+              "Studies show laughter releases facial and body tension",
+              "Make time for fun, silliness and shared laughter"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "emotional-wellness-for-moms",
+      "title": "Emotional Wellness for Moms",
+      "image": "/assets/generalMotherhoodArticle/moods/mood3.jpg",
+      "category": "Moods",
+      "section": "mother",
+      "externalLink": "https://www.thewellhousesouthlake.com/emotional-wellness-for-moms/",
+      "content": {
+        "headline": "Nurture your emotional wellness so you can show up as you and for your family",
+        "intro": "Motherhood brings a wave of emotion—joy, exhaustion, identity shifts, and more. Prioritising your emotional wellness isn’t a luxury—it’s essential. Here are four realistic practices you can use today.",
+        "sections": [
+          {
+            "title": "1. Understand your emotional landscape",
+            "content": "Hormonal changes, sleep loss and identity shifts all add to emotional overwhelm. Recognising what’s going on inside helps you respond instead of reacting."
+          },
+          {
+            "title": "2. Prioritise your physical foundation: sleep, nutrition, movement",
+            "content": "Adequate rest, balanced meals and even a short walk can boost mood and resilience. When your body is depleted, your emotions also suffer."
+          },
+          {
+            "title": "3. Master practical daily emotional‑wellness habits",
+            "content": "Tiny practices—deep breaths, journaling three things you’re grateful for, or a quick creative moment—help regulate stress and support self‑connection."
+          },
+          {
+            "title": "4. Build your support village & know when to ask for help",
+            "content": "Isolation breeds overwhelm. Reach out to other moms, talk with your partner, and if stress or low mood persist, seek professional support."
+          }
+        ]
+      }
+    },
+
+
+  
+    {
+      "id": "generations-of-motherhood-mental-health-journey",
+      "title": "How A Mom's Mental Health Changes Over Time",
+      "image": "/assets/generalMotherhoodArticle/moods/mood4.jpg",
+      "category": "Moods",
+      "section": "mother",
+      "externalLink": "https://behavioralhealthnews.org/generations-of-motherhood-how-mental-health-changes-over-time/",
+      "content": {
+        "headline": "Motherhood is a lifelong journey—emotional work begins before your first child and continues long after",
+        "intro": "Mental health in motherhood isn’t confined to the postpartum period. From fertility struggles to managing grown children, each stage brings unique emotional challenges and opportunities for growth.",
+        "sections": [
+          {
+            "title": "Pre‑parenthood & fertility",
+            "content": "Before conception, many women face pressure, loss, or uncertainty. These experiences can trigger anxiety, self‑doubt or grief that carry into motherhood."
+          },
+          {
+            "title": "Pregnancy and early postpartum",
+            "content": "Hormonal shifts, identity change, sleep loss and newborn care contribute to heightened emotional vulnerability. Conditions like postpartum depression and anxiety often arise here."
+          },
+          {
+            "title": "Raising children & “middle” motherhood",
+            "content": "As kids grow, new emotional burdens appear: juggling demands, school years, emotional load of children’s lives, and sometimes decline in self‑care or identity neglect."
+          },
+          {
+            "title": "Empty nest & life after children",
+            "content": "When children leave home, many mothers face a shifting identity, possible grief, and rediscovery of self. Professional life, health changes and menopause may also influence emotional wellness."
+          }
+        ]
+      }
+    }
+  ]
+}
+
