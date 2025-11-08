@@ -37,12 +37,12 @@ export default function Planner() {
           {/* Calendar + To-Do Layout */}
           <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 max-w-6xl mx-auto w-full">
             {/* Calendar Section */}
-            <div className="rounded-2xl shadow-md bg-gradient-to-r from-pink-100 to-yellow-100 p-4">
+            <div className="rounded-[22px] shadow-md bg-bloomPink p-[2px]">
               <CalendarView />
             </div>
 
             {/* To-Do List Section */}
-            <div className="rounded-2xl shadow-md bg-gradient-to-r from-pink-100 to-yellow-100 p-4">
+            <div className="rounded-[22px] shadow-md bg-bloomPink p-[2px]">
               <ToDoList />
             </div>
           </div>

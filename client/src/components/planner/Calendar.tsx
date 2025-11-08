@@ -47,12 +47,11 @@ export default function CalendarView() {
     const prevYear = m === 0 ? y - 1 : y;
     const nextYear = m === 11 ? y + 1 : y;
 
-    const firstDay = getDayOfWeek(1, y, m + 1);
-    const totalCells = Math.ceil((daysInMonth[m] + firstDay) / 7) * 7;
+    const firstDay = (getDayOfWeek(1, y, m + 1) <= 3) ? getDayOfWeek(1, y, m + 1) + 7 : getDayOfWeek(1, y, m + 1)
 
     const calendar: BloomDate[] = [];
 
-    for (let i = 0; i < totalCells; i++) {
+    for (let i = 0; i < 42; i++) {
       const dayNum = i - firstDay + 1;
       if (dayNum < 1) {
         calendar.push({ day: daysInMonth[prevMonth] + dayNum, month: prevMonth, year: prevYear });
@@ -70,7 +69,7 @@ export default function CalendarView() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-4 rounded-[20px] shadow-lg">
+      <div className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white p-4 rounded-[20px] shadow-lg">
         {/* Header */}
         <h3 className="text-2xl mb-2 font-bold flex items-center justify-center gap-4 p-2">
           <motion.button
@@ -88,17 +87,15 @@ export default function CalendarView() {
             {new Date(year, month).toLocaleString("default", { month: "long" })} {year}
           </span>
 
-          <span>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                setShowPicker(true)
-              }}
-            >
-              <Calendar className="w-8 h-8 text-white" />
-            </motion.button>
-          </span>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              setShowPicker(true)
+            }}
+          >
+            <Calendar className="w-8 h-8 text-white" />
+          </motion.button>
 
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -113,12 +110,12 @@ export default function CalendarView() {
         </h3>
 
         {/* Calendar */}
-        <div className="bg-white rounded-xl p-4 text-[#474747]">
+        <div className="bg-white h-[500px] rounded-xl p-4 text-[#474747]">
           <div className="grid grid-cols-7 gap-3">
             {daysOfWeek.map((d) => (
               <div
                 key={d}
-                className="border border-pink-100 bg-pink-50 text-center rounded-xl p-4 font-semibold"
+                className="border border-bloomYellow bg-bloomPink-50 text-center rounded-xl p-4 font-semibold"
               >
                 {d}
               </div>
@@ -143,12 +140,12 @@ export default function CalendarView() {
                   className={[
                     "p-4 text-center rounded-2xl transition-all duration-300 cursor-pointer select-none",
                     isSelected
-                      ? "border-bloomPink border-2 scale-105"
+                      ? "border-bloomPink border scale-105"
                       : isToday
-                        ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow-lg"
+                        ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow-lg hover:scale-105"
                         : isCurrentMonth
-                          ? "hover:bg-gradient-to-r from-bloomPink/20 to-bloomYellow/20 hover:shadow-md"
-                          : "text-bloomGrey opacity-60 cursor-default",
+                          ? "hover:bg-gradient-to-r from-bloomPink/50 to-bloomYellow/50 hover:shadow-md hover:scale-105"
+                          : "text-bloomBlack opacity-60",
                   ].join(" ")}
                 >
                   {date.day}
