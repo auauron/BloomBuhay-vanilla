@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import "../index.css";
 import Header from "../components/ui/Header";
 import Sidebar from "../components/ui/Sidebar";
@@ -7,6 +7,8 @@ import { Article, ArticleSection } from "../types/guide";
 import ArticleModal from '../components/ArticleModal';
 import { BookOpen } from "lucide-react";
 import { pregnant, postpartum, earlyChildCare, generalMotherhood } from '../data';
+import { useSearchParams } from "react-router-dom";
+
 
 // === GRADIENT SEARCH BAR COMPONENT ===
 const GradientSearchBar = ({ 
@@ -271,6 +273,36 @@ export default function BloomGuide() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // Add URL parameter handling
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Handle URL parameters on component mount and when searchParams change
+  useEffect(() => {
+    const stage = searchParams.get('stage');
+    const category = searchParams.get('category');
+    
+    if (stage) {
+      setActiveStage(stage);
+    }
+    if (category) {
+      setActiveCategory(category);
+    }
+  }, [searchParams]);
+
+  
+  // Update URL when filters change (optional)
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (activeStage !== "all") {
+      params.set('stage', activeStage);
+    }
+    if (activeCategory !== "all") {
+      params.set('category', activeCategory);
+    }
+    setSearchParams(params);
+  }, [activeStage, activeCategory, setSearchParams]);
+
 
   // Get all articles using useMemo for performance
   const allArticles = useMemo(() => {
