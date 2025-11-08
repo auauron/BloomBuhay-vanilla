@@ -1,22 +1,16 @@
 import React, { useState } from "react";
 import { ChevronsLeft, ChevronsRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { DateJumperProps } from "../../../types/plan";
 
-interface CustomDateProps {
-  isOpen: boolean;
-  onCancel: () => void;
-  onSave: (month: number, year: number) => void;
-}
-
-export default function CustomDate({ isOpen, onCancel, onSave, }: CustomDateProps) {
+export default function DateJumper({ isOpen, curMonth, curYear, onCancel, onSave }: DateJumperProps) {
   const months = [
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   ];
 
-  const currentDate = new Date();
-  const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
-  const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(curMonth);
+  const [selectedYear, setSelectedYear] = useState(curYear);
 
   const nameMonth = months[selectedMonth]
 
@@ -27,9 +21,8 @@ export default function CustomDate({ isOpen, onCancel, onSave, }: CustomDateProp
   };
 
   const handleCancel = () => {
-    setSelectedMonth(new Date().getMonth())
-    setSelectedYear(new Date().getFullYear())
-    onSave(new Date().getMonth(), new Date().getFullYear());
+    setSelectedMonth(curMonth)
+    setSelectedYear(curYear)
     onCancel();
   }
 

@@ -1,13 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { ChevronsLeft, ChevronsRight, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
-import CustomDate from "./modal/GoToModal";
-
-type BloomDate = {
-  day: number;
-  month: number;
-  year: number;
-};
+import DateJumper from "./modal/DateJumper";
+import { BloomDate } from "../../types/plan";
 
 export default function CalendarView() {
   const now = new Date();
@@ -153,7 +148,7 @@ export default function CalendarView() {
                         ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow-lg"
                         : isCurrentMonth
                           ? "hover:bg-gradient-to-r from-bloomPink/20 to-bloomYellow/20 hover:shadow-md"
-                          : "text-gray-400 opacity-60 cursor-default",
+                          : "text-bloomGrey opacity-60 cursor-default",
                   ].join(" ")}
                 >
                   {date.day}
@@ -162,8 +157,10 @@ export default function CalendarView() {
             })}
           </div>
         </div>
-        <CustomDate
+        <DateJumper
           isOpen={showPicker}
+          curMonth={month}
+          curYear={year}
           onCancel={() => setShowPicker(false)}
           onSave={(m, y) => {
             setMonth(m);
