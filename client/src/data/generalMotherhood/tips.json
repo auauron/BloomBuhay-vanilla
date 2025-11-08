@@ -1,0 +1,113 @@
+{
+  "articles": [
+    {
+      "id": "tips-to-becoming-a-good-mother",
+      "title": "Tips to Becoming a Good Mother",
+      "image": "/assets/generalMotherhoodArticle/tips/t1.jpg",
+      "category": "Tips",
+      "section": "mother",
+      "externalLink": "https://momonpurpose.com/be-much-better-mother/",
+      "content": {
+        "headline": "Practical mindset and habit shifts to improve your motherhood journey",
+        "intro": "Being a good mother doesn’t mean being perfect. These 10 tips focus on presence, emotional intelligence, and self-care to help you connect and thrive with your children.",
+        "sections": [
+          {
+            "title": "1. Let go of perfection.",
+            "content": "Stop chasing the ‘perfect mom’ standard. Being human and real creates more meaningful connections."
+          },
+          {
+            "title": "2. Schedule self-care.",
+            "content": "Plan intentional moments for yourself to recharge, whether journaling, a walk, or quiet time."
+          },
+          {
+            "title": "3. Play in their world daily.",
+            "content": "Spend distraction-free time with your children, even for 15 minutes, to strengthen your bond."
+          },
+          {
+            "title": "4. Own your feelings.",
+            "content": "Avoid blaming your child for your emotions. Recognize your own feelings and guide your reactions."
+          },
+          {
+            "title": "5. Be a guide, not a director.",
+            "content": "Respect your child’s individuality and choices instead of trying to control their story."
+          },
+          {
+            "title": "6. Model respect.",
+            "content": "Treat your child with dignity regardless of age; set expectations with kindness and boundaries."
+          },
+          {
+            "title": "7. Separate actions from feelings.",
+            "content": "Help your child understand that feelings are natural, but actions must be responsible."
+          },
+          {
+            "title": "8. Embrace all feelings.",
+            "content": "Validate emotions like anger, sadness, or fear while teaching safe expression."
+          },
+          {
+            "title": "9. Restore when you make mistakes.",
+            "content": "Apologize, communicate, and repair the relationship—showing humility models emotional intelligence."
+          },
+          {
+            "title": "10. Acknowledge your other roles.",
+            "content": "You’re more than a mom. Modeling balance and identity teaches your child respect for boundaries."
+          }
+        ]
+      }
+    },
+
+    {
+      "id": "10‑self‑care‑tips‑for‑moms‑no‑support",
+      "title": "10 Self‑Care Tips for Moms With Little to No Support System",
+      "image": "/assets/generalMotherhoodArticle/tips/t2.webp",
+      "category": "Tips",
+      "section": "mother",
+      "externalLink": "https://diaryofanhonestmom.com/blog/10-self-care-tips-for-moms-with-little-to-no-support-system/",
+      "content": {
+        "headline": "How to prioritise yourself when your village doesn’t exist",
+        "intro": "Motherhood is harder when you don’t have a dependable support system. These 10 actionable self‑care tips are designed for moms carrying the load alone—so that you can restore your energy, value yourself, and keep showing up for your children from a place of strength.",
+        "sections": [
+          {
+            "title": "1. Say no to mom guilt",
+            "content": "Recognise you are worthy of rest, care and recharge. Prioritising yourself isn’t selfish—it’s essential for your wellbeing and your family’s health."
+          },
+          {
+            "title": "2. Follow a schedule",
+            "content": "Build a predictable routine for your kids and yourself. A structured day creates space for you to know when you will get downtime rather than losing track of time in constant reaction."
+          },
+          {
+            "title": "3. Put the kids to bed early",
+            "content": "An early bedtime gives you ‘you’ time each evening. This predictable chunk of time when the day winds down can help preserve your mental health."
+          },
+          {
+            "title": "4. Simplify meals",
+            "content": "Opt for easier, nutritious meal choices rather than striving for perfection. Simplifying meals frees up mental and physical energy for other things."
+          },
+          {
+            "title": "5. Use screen time for breaks",
+            "content": "Allow some screen time without guilt—it can serve as a valid, practical break for you when other support is lacking."
+          },
+          {
+            "title": "6. Lower your expectations",
+            "content": "Accept that you can’t do everything. Dropping unrealistic standards (for meals, housework, your role) gives you permission to rest and to be human."
+          },
+          {
+            "title": "7. Plan your playtime with them",
+            "content": "Schedule intentional times to connect with your kids, which helps emotional bonding and also frees up other periods for you to recharge."
+          },
+          {
+            "title": "8. Budget money for yourself",
+            "content": "Financial support of your own self‑care matters—even small indulgences support your self‑worth and compensate for low external support."
+          },
+          {
+            "title": "9. Hire help when you can",
+            "content": "When possible, outsource tasks (cleaning, laundry, childcare) to give yourself time back. Even small shifts in load matter when you’re doing it mostly alone."
+          },
+          {
+            "title": "10. Stop cleaning your house so much",
+            "content": "Strive for ‘functional’ rather than perfect. Reducing house‑cleaning pressure helps you reclaim energy and sanity."
+          }
+        ]
+      }
+    }
+  ]
+}

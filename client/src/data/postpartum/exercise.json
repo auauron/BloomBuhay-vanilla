@@ -1,0 +1,50 @@
+{
+  "articles": [
+    {
+      "id": "exercise-postpartum",
+      "title": "Returning to Exercise Postpartum",
+      "image": "/assets/postpartumArticle/pp3.png",
+      "category": "Fitness",
+      "section": "mother",
+      "externalLink": "https://www.mayoclinic.org/healthy-lifestyle/labor-and-delivery/in-depth/exercise-after-pregnancy/art-20044596",
+      "content": {
+        "headline": "Safe Return to Exercise After Pregnancy",
+        "intro": "Returning to physical activity after childbirth requires patience and proper progression. While exercise can boost your energy and mood, it's important to start slowly and listen to your body's signals.",
+        "sections": [
+          {
+            "title": "When to Start Exercising",
+            "content": "Timing depends on your delivery and recovery:",
+            "points": [
+              "Vaginal delivery: Often cleared at 4-6 weeks postpartum",
+              "C-section: Typically 6-8 weeks with provider clearance",
+              "Listen to your body - pain or bleeding means slow down",
+              "Start with gentle activities like walking first",
+              "Always get your provider's approval before beginning"
+            ]
+          },
+          {
+            "title": "Safe Postpartum Exercises",
+            "content": "Begin with low-impact activities that support recovery:",
+            "points": [
+              "Walking - start with short distances and gradually increase",
+              "Pelvic floor exercises (Kegels) for core recovery",
+              "Gentle stretching to improve flexibility",
+              "Deep breathing for core and relaxation",
+              "Modified strength training focusing on proper form"
+            ]
+          },
+          {
+            "title": "Important Safety Considerations",
+            "points": [
+              "Stop if you experience pain or increased bleeding",
+              "Wear supportive clothing, especially for breastfeeding moms",
+              "Stay hydrated and eat enough to support milk production",
+              "Be aware of diastasis recti (abdominal separation)",
+              "Progress gradually - this is a marathon, not a sprint!"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

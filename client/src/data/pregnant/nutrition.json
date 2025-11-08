@@ -1,0 +1,52 @@
+{
+  "articles": [
+    {
+      "id": "nutrition-tips-early-pregnancy",
+      "title": "Nutrition Tips for Early Pregnancy",
+      "image": "/assets/pregnancyArticle/pr3.png",
+      "category": "Nutrition",
+      "section": "maternal",
+      "externalLink": "https://www.mayoclinic.org/healthy-lifestyle/pregnancy-week-by-week/in-depth/pregnancy-nutrition/art-20045082",
+      "content": {
+        "headline": "Essential Nutrition for a Healthy Pregnancy",
+        "intro": "Eating a healthy diet during pregnancy helps support your baby's growth and development while keeping you energized and strong. Good nutrition is one of the best gifts you can give your growing baby!",
+        "sections": [
+          {
+            "title": "Key Nutrients You Need",
+            "content": "Focus on these essential nutrients for a healthy pregnancy:",
+            "points": [
+              "Folic acid: Prevents neural tube defects (600-800 mcg daily)",
+              "Calcium: Builds strong bones and teeth (1,000 mg daily)",
+              "Iron: Supports blood production for you and baby (27 mg daily)",
+              "Protein: Essential for baby's growth (71 grams daily)",
+              "Vitamin D: Promotes bone health (600 IU daily)",
+              "DHA: Supports brain development (200-300 mg daily)"
+            ]
+          },
+          {
+            "title": "Foods to Emphasize",
+            "content": "Include these nutrient-rich foods in your daily diet:",
+            "points": [
+              "Whole grains: Oatmeal, whole wheat bread, brown rice",
+              "Lean proteins: Chicken, fish, eggs, beans, lentils",
+              "Dairy: Milk, yogurt, cheese for calcium and protein",
+              "Fruits & vegetables: Colorful variety for vitamins and fiber",
+              "Healthy fats: Avocado, nuts, olive oil, fatty fish"
+            ]
+          },
+          {
+            "title": "Foods to Limit or Avoid",
+            "content": "Some foods require extra caution during pregnancy:",
+            "points": [
+              "Limit caffeine to less than 200 mg per day",
+              "Avoid raw or undercooked seafood, eggs, and meat",
+              "Skip unpasteurized dairy products and juices",
+              "Avoid high-mercury fish like shark and swordfish",
+              "Limit processed foods high in sugar and salt"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
