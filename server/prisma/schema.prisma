@@ -127,6 +127,35 @@ model JournalEntry {
     @@map("journal_entries")
 }
 
+model HealthMetric {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  value     String
+  unit      String?
+  change    String?
+  trend     String?
+  color     String?
+  category  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model HealthMood {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  mood      String
+  notes     String?
+  createdAt DateTime @default(now())
+}
+model HealthSymptom {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  name      String
+  severity  Int?
+  notes     String?
+  createdAt DateTime @default(now())
+}
+
 model RefreshToken {
     id        Int      @id @default(autoincrement())
     token     String   @unique
