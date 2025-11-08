@@ -65,20 +65,20 @@ export default function BBTools() {
 
         {/* Stage Selection */}
         <div className="flex justify-center mb-8 px-4">
-          <div className="bg-white rounded-2xl shadow-lg border border-pink-100 p-2 w-auto max-w-md sm:max-w-lg md:max-w-none">
-            <div className="flex flex-wrap gap-2 justify-center">
+          <div className="bg-white rounded-2xl shadow-lg border border-pink-100 p-2 max-w-xs sm:max-w-lg md:max-w-none">
+            <div className="flex flex-col sm:flex-row gap-2">
               {stages.map((stage) => (
                 <button
                   key={stage.id}
                   onClick={() => setActiveStage(stage.id)}
-                  className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-all duration-300 flex-1 min-w-[140px] sm:flex-none sm:min-w-0 ${
+                  className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all duration-300 w-full sm:w-auto ${
                     activeStage === stage.id
                       ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow-lg"
                       : "text-gray-600 hover:bg-gray-50"
                   }`}
                 >
                   {stage.icon}
-                  <span className="font-medium text-sm sm:text-base whitespace-nowrap">{stage.label}</span>
+                  <span className="font-medium text-sm sm:text-base">{stage.label}</span>
                 </button>
               ))}
             </div>
