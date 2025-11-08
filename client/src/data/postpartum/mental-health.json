@@ -1,0 +1,51 @@
+{
+  "articles": [
+    {
+      "id": "mental-health-after-birth",
+      "title": "Mental Health After Birth",
+      "image": "/assets/postpartumArticle/pp1.png",
+      "category": "Mental Health",
+      "section": "mother",
+      "externalLink": "https://www.mayoclinic.org/diseases-conditions/postpartum-depression/symptoms-causes/syc-20376617",
+      "content": {
+        "headline": "Understanding Postpartum Mental Health",
+        "intro": "The period after childbirth brings significant emotional changes. While many new parents experience temporary 'baby blues,' some may develop more serious conditions like postpartum depression. Recognizing the signs and seeking help early is crucial for your recovery.",
+        "sections": [
+          {
+            "title": "Common Postpartum Conditions",
+            "content": "Understanding the differences between normal adjustment and concerning symptoms:",
+            "points": [
+              "Baby Blues: Mild mood swings, anxiety, sadness affecting 70-80% of new moms",
+              "Postpartum Depression: Persistent sadness, loss of interest, difficulty bonding",
+              "Postpartum Anxiety: Excessive worry, racing thoughts, physical anxiety symptoms",
+              "Postpartum OCD: Intrusive thoughts and compulsive behaviors",
+              "Postpartum Psychosis: Rare but serious condition requiring immediate care"
+            ]
+          },
+          {
+            "title": "Warning Signs to Watch For",
+            "content": "These symptoms may indicate you need professional support:",
+            "points": [
+              "Overwhelming sadness or crying spells",
+              "Severe mood swings or irritability",
+              "Difficulty bonding with your baby",
+              "Withdrawing from family and friends",
+              "Thoughts of harming yourself or your baby",
+              "Inability to care for yourself or your baby"
+            ]
+          },
+          {
+            "title": "Getting Help and Treatment",
+            "points": [
+              "Talk to your healthcare provider about your symptoms",
+              "Therapy and counseling can provide effective support",
+              "Medication may be recommended in some cases",
+              "Support groups connect you with others who understand",
+              "Emergency help is available if you have thoughts of self-harm"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

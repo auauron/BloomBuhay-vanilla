@@ -1,0 +1,304 @@
+{
+  "articles": [
+    {
+      "id": "urgent-maternal-warning-signs",
+      "title": "Urgent Maternal Warning Signs: Know When to Seek Help",
+      "image": "/assets/generalMotherhoodArticle/symptoms/s1.webp",
+      "category": "Symptoms",
+      "section": "mother",
+      "externalLink": "https://www.cdc.gov/hearher/maternal-warning-signs/index.html",
+      "content": {
+        "headline": "Recognize serious signs during pregnancy or up to one year after delivery",
+        "intro": "Some signs and symptoms during pregnancy or in the year after giving birth can point to life-threatening complications. Recognizing them early and getting medical care quickly can save lives.",
+        "sections": [
+          {
+            "title": "Headache that won’t go away or worsens",
+            "content": "Persistent or severe headache, especially if coupled with vision changes, could be a sign of a serious condition.",
+            "points": [
+              "Feels like the worst headache of your life",
+              "Lasts even after rest or medication",
+              "Throbs and occurs mostly on one side above the ear",
+              "Comes with blurred vision or dizziness"
+            ]
+          },
+          {
+            "title": "Dizziness or fainting",
+            "content": "Feeling light-headed, fainting, or losing consciousness can indicate a serious maternal issue.",
+            "points": [
+              "You faint or pass out",
+              "You experience dizziness/light-headedness over several days",
+              "Gap in memory of fainting incident"
+            ]
+          },
+          {
+            "title": "Changes in your vision",
+            "content": "Visual disturbances such as flashes of light, blind spots, or double vision can signal danger.",
+            "points": [
+              "Seeing flashes of light or bright spots",
+              "Experiencing blind spots or loss of vision for short time",
+              "Blurry vision or double vision"
+            ]
+          },
+          {
+            "title": "Fever of 100.4 °F (38 °C) or higher",
+            "content": "A high fever in pregnancy or postpartum may reflect infection or serious inflammation.",
+            "points": [
+              "Measured temperature ≥ 100.4 °F",
+              "Fever in the context of pregnancy or postpartum should not be ignored"
+            ]
+          },
+          {
+            "title": "Extreme swelling of hands or face",
+            "content": "Swelling beyond the expected slight pregnancy swelling can be a warning sign, especially if sudden or severe.",
+            "points": [
+              "Swelling in hands making it hard to bend fingers or wear rings",
+              "Facial swelling causing difficulty opening eyes",
+              "Lips or mouth feel swollen or numb"
+            ]
+          },
+          {
+            "title": "Thoughts about harming yourself or your baby",
+            "content": "Intrusive thoughts of self-harm or harming your baby are serious and need prompt help.",
+            "points": [
+              "Feeling very sad, hopeless or out of control",
+              "Thinking about hurting your baby or yourself",
+              "Having distressing thoughts you cannot dismiss"
+            ]
+          },
+          {
+            "title": "Trouble breathing",
+            "content": "Shortness of breath, chest tightness or difficulty breathing when lying flat can signal serious cardiopulmonary issues.",
+            "points": [
+              "Suddenly can’t breathe deeply or enough air",
+              "Throat or chest feel tight",
+              "Struggle breathing when lying down"
+            ]
+          },
+          {
+            "title": "Chest pain or fast-beating heart",
+            "content": "Chest pain, pressure, or an abnormal fast/irregular heart rate are red flags during pregnancy/postpartum.",
+            "points": [
+              "Tightness or pressure in center of chest",
+              "Pain radiating to back, neck or arm",
+              "Heart beating fast or irregularly",
+              "Dizziness, fainting or trouble talking while breathing"
+            ]
+          },
+          {
+            "title": "Severe nausea and vomiting",
+            "content": "Vomiting beyond typical morning sickness, especially if you cannot keep fluids down, may indicate serious complication.",
+            "points": [
+              "Severe nausea beyond normal pregnancy symptoms",
+              "Unable to drink water for 8+ hours or eat for 24+ hours",
+              "Dry mouth, headache, confusion or fever along with vomiting"
+            ]
+          },
+          {
+            "title": "Severe belly pain that does not go away",
+            "content": "Sharp, cramp-like or constant pain in the belly, chest, shoulder or back may be a sign of something serious.",
+            "points": [
+              "Sharp or stabbing pain in abdomen",
+              "Pain starts suddenly and/or gets worse over time",
+              "Pain in chest, shoulder or back in addition to belly pain"
+            ]
+          },
+          {
+            "title": "Baby’s movement stopping or slowing (during pregnancy)",
+            "content": "A noticeable decline or cessation of your baby’s movements may indicate distress.",
+            "points": [
+              "You feel your baby has stopped moving",
+              "Movement is significantly less than before"
+            ]
+          },
+          {
+            "title": "Vaginal bleeding or fluid leaking (during pregnancy)",
+            "content": "Bleeding heavier than spotting or fluid leaking may signal placental issues or infection.",
+            "points": [
+              "Any bleeding from vagina more than spotting",
+              "Fluid leaking out of vagina",
+              "Foul-smelling vaginal discharge"
+            ]
+          },
+          {
+            "title": "Vaginal bleeding or discharge after pregnancy",
+            "content": "Heavy bleeding, large clots or foul smell in discharge postpartum may indicate serious postpartum complications.",
+            "points": [
+              "Soaking through one or more pads per hour",
+              "Passing clots bigger than an egg or tissue",
+              "Vaginal discharge that smells bad"
+            ]
+          },
+          {
+            "title": "Severe swelling, redness or pain of your leg or arm",
+            "content": "Swelling, pain, tenderness or redness—especially in one leg or arm—could point to blood clot or infection.",
+            "points": [
+              "Swelling or pain in one leg (calf) or one arm",
+              "Pain when flexing foot or moving limb",
+              "Warm or red area on arm or leg"
+            ]
+          },
+          {
+            "title": "Overwhelming tiredness",
+            "content": "Sudden, extreme fatigue that prevents you from daily care may reflect serious health issues postpartum.",
+            "points": [
+              "Very tired and weak—not like usual fatigue",
+              "Sleep doesn’t refresh you",
+              "Lack of energy to care for baby or self"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "mothers-health-what-it-says-about-you",
+      "title": "What Does Your Mother’s Health Say About You?",
+      "image": "/assets/generalMotherhoodArticle/symptoms/s2.png",
+      "category": "Symptoms",
+      "section": "mother",
+      "externalLink": "https://proactiveforher.com/blogs/menopause/what-does-your-mothers-health-say-about-you/",
+      "content": {
+        "headline": "How Your Mother’s Health Holds Clues to Your Own Risk Factors",
+        "intro": "Mothers and daughters share more than recipes and memories — your mother’s health history can give you meaningful insight into your own health risks and how to act now.",
+        "sections": [
+          {
+            "title": "Why Your Mother’s Health Information Matters",
+            "content": "Knowing your mother’s health history — especially her female-specific conditions — helps you understand inherited risks and take proactive steps.",
+            "points": [
+              "Genetics account for roughly half of age at menarche and menopause. ",
+              "A mother’s early menopause (under age 40) can signal earlier risk for you. ",
+              "Understanding patterns like breast cancer, PCOS, gestational diabetes or hypertension in your mother can guide you. "
+            ]
+          },
+          {
+            "title": "Key Health Questions to Ask Your Mother",
+            "content": "By asking targeted questions, you can build a clearer picture of your inherited and lifestyle-modifiable risks. ",
+            "points": [
+              "What age did you reach menopause and what symptoms did you have?",
+              "Did you ever have breast or ovarian cancer? The risk doubles if your mother did. ",
+              "Did you ever have PCOS (polycystic ovarian syndrome)? Having a mother with PCOS raises your risk ~35%. ",
+              "Did you have gestational diabetes or type 2 diabetes? Your risk may increase if she did. ",
+              "Does our family history include high blood pressure or heart disease? Your risk may increase by ~20% if mother did. "
+            ]
+          },
+          {
+            "title": "What You Can Do With This Knowledge",
+            "content": "Knowing the patterns is only useful if you act. Here are steps you can take to manage your own risks. ",
+            "points": [
+              "Modify lifestyle: diet, exercise, avoid smoking, maintain healthy weight.",
+              "Schedule preventive screenings based on family history: mammogram, Pap smear, bone health, diabetes checks.",
+              "Build a ‘disease family tree’ to visualize inherited risks and share with your doctor.",
+              "Support your mother’s health too: encourage check-ups, vaccinations, mental health awareness."
+            ]
+          },
+          {
+            "title": "Final Takeaway",
+            "content": "Your mother’s health doesn’t dictate your future, but it does give you a clearer map of what to watch—and what you *can* change.",
+            "points": [
+              "You can’t change your genetics, but you *can* change many lifestyle risk factors. ",
+              "Having the conversation with your mother opens the door to shared health and awareness.",
+              "Start acting early: the earlier you begin, the more you can influence outcomes."
+            ]
+          }
+        ]
+      }
+    },
+
+    {
+      "id": "6-common-causes-of-back-pain-for-mothers",
+      "title": "Back Pain for Mothers and How to Prevent Them",
+      "image": "/assets/generalMotherhoodArticle/symptoms/s3.jpg",
+      "category": "Symptoms",
+      "section": "mother",
+      "externalLink": "https://centrallondonchiropractor.co.uk/london-chiropractor/6-common-causes-of-back-pain-for-mothers-and-how-to-prevent-them",
+      "content": {
+        "headline": "Why many mothers develop back pain — and practical prevention strategies",
+        "intro": "Many mothers experience back pain due to the physical demands of pregnancy, infancy and everyday parenting tasks. Recognising the common causes offers a pathway to prevention and relief.",
+        "sections": [
+          {
+            "title": "Cause 1: Pregnancy weight gain & shifting centre of gravity",
+            "content": "As pregnancy progresses with added weight (often 12‑16 kg), the body’s centre of gravity moves forward, which increases strain on the lower back. At the same time hormones like relaxin loosen ligaments, which reduces joint stability and can worsen back pain. "
+          },
+          {
+            "title": "Cause 2: Lifting infants from cribs",
+            "content": "Picking up an infant from a crib often involves bending awkwardly and lifting at an angle, which places high strain on the lower back muscles. The recommended technique: stand with feet shoulder‑width apart, bend your knees, keep your back straight, pull the infant in using your arms and core muscles. "
+          },
+          {
+            "title": "Cause 3: Sitting for long periods while breastfeeding",
+            "content": "Extended sitting during breastfeeding—especially in chairs without proper back support—or slouching over a baby can cause tension and pain in the upper and lower back. Using a supportive chair, placing pillows to bring baby up, and maintaining an upright posture help. :"
+          },
+          {
+            "title": "Cause 4: Leaning over high chairs & strollers",
+            "content": "Activities like leaning over to place an infant in a high‑chair or stroller frequently require bending from the waist, which elevates back stress. Tips include removing high chair trays, kneeling down when adjusting strollers and trying to minimise awkward twists."
+          },
+          {
+            "title": "Cause 5: Handling car seats with awkward posture",
+            "content": "Placing a baby into a car seat often involves twisting the torso or bending over from outside the car seat location. These movements strain the spine. Better approach: arrange the straps beforehand, kneel on the back seat with the child in your lap, then turn your torso with your feet instead of twisting. "
+          },
+          {
+            "title": "Cause 6: Carrying infants & repetitive movement",
+            "content": "Constant carrying of babies, diaper bags, shopping and other loads can lead to muscle fatigue, postural imbalances and chronic back pain. Simple load‑redistribution, using ergonomic carriers and alternating sides can reduce cumulative strain. "
+          },
+          {
+            "title": "Prevention Strategies & Relief Tips",
+            "content": "• Apply ice or heat therapy to relax tense muscles.\n• Take over‑the‑counter pain relievers (after consultation) if appropriate.\n• Strengthen core and abdominal muscles; focus on posture and supportive movement. \n• Practice proper lifting techniques and posture throughout the day.\n• Seek professional assessment (e.g., chiropractic, physiotherapy) if pain persists or is severe. "
+          }
+        ]
+      }
+    },
+    {
+      "id": "10-ways-to-reduce-pain",
+      "title": "10 Ways to Reduce Pain",
+      "image": "/assets/generalMotherhoodArticle/symptoms/s4.jpg",
+      "category": "Symptoms",
+      "section": "mother",
+      "externalLink": "https://www.nhs.uk/live-well/pain/10-ways-to-ease-pain/",
+      "content": {
+        "headline": "Effective self‑help strategies for managing pain and improving wellbeing",
+        "intro": "Whether your pain has just started or has been ongoing, these tried‑and‑tested self‑help steps can bring relief and help you live more comfortably.",
+        "sections": [
+          {
+            "title": "Get some gentle exercise",
+            "content": "Simple activities like walking, swimming, gardening or dancing can help ease pain by stretching stiff muscles and joints and by sending healthy signals to the brain."
+          },
+          {
+            "title": "Breathe right to ease pain",
+            "content": "Focusing on slow, deep breathing helps you stay relaxed and prevents shallow, rapid breaths that can increase muscle tension, anxiety and pain. "
+          },
+          {
+            "title": "Read books and leaflets on pain",
+            "content": "Educational resources like The Pain Toolkit or British Pain Society materials provide practical advice on living better with pain. "
+          },
+          {
+            "title": "Talking therapies can help with pain",
+            "content": "Psychological therapies (such as CBT or hypnotherapy) can assist in managing the emotional and mental aspects of pain, thereby reducing its impact."
+          },
+          {
+            "title": "Distract yourself",
+            "content": "Shifting your attention to enjoyable or stimulating activities can reduce the focus on pain and help break the cycle of persistent discomfort."
+          },
+          {
+            "title": "Share your story about pain",
+            "content": "Talking with others who have similar pain experiences or joining a support group can reduce isolation and provide understanding, resources and encouragement."
+          },
+          {
+            "title": "The sleep cure for pain",
+            "content": "Maintaining a regular sleep routine and avoiding daytime naps can improve pain‑management outcomes, since sleep deprivation often worsens pain. "
+          },
+          {
+            "title": "Take a course",
+            "content": "Enrolling in NHS‑based self‑management courses for chronic conditions can build skills to manage pain better and potentially reduce reliance on medications. "
+          },
+          {
+            "title": "Keep in touch with friends and family",
+            "content": "Maintaining social connections—even brief contact—supports emotional health and helps reduce the burden of living with pain. "
+          },
+          {
+            "title": "Relax to beat pain",
+            "content": "Regular use of relaxation techniques—such as meditation, breathing exercises or guided imagery—can help reduce persistent pain levels."
+          }
+        ]
+      }
+    }
+  ]
+}
+

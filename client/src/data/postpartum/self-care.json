@@ -1,0 +1,51 @@
+{
+  "articles": [
+    {
+      "id": "postpartum-self-care",
+      "title": "Postpartum Self-Care Routine",
+      "image": "/assets/postpartumArticle/pp2.png",
+      "category": "Self-Care",
+      "section": "mother",
+      "externalLink": "https://www.stanfordchildrens.org/en/topic/default?id=the-new-mother-taking-care-of-yourself-after-birth-90-P02693",
+      "content": {
+        "headline": "Postpartum Self-Care: Nurturing Yourself After Birth",
+        "intro": "The postpartum period is a transformative time that requires special attention to your physical and emotional recovery. Taking care of yourself isn't selfish—it's essential for your wellbeing and your ability to care for your newborn.",
+        "sections": [
+          {
+            "title": "Physical Recovery Essentials",
+            "content": "Your body needs time and care to heal after childbirth:",
+            "points": [
+              "Rest whenever possible - sleep when your baby sleeps",
+              "Manage pain with prescribed medications and warm baths",
+              "Eat nutritious meals and stay hydrated",
+              "Care for your perineal area with proper hygiene",
+              "Watch for signs of infection and contact your provider if concerned"
+            ]
+          },
+          {
+            "title": "Emotional Wellbeing",
+            "content": "Hormonal changes and new responsibilities can affect your emotional health:",
+            "points": [
+              "Accept help from family and friends",
+              "Share your feelings with your partner or support person",
+              "Be patient with yourself - adjustment takes time",
+              "Watch for baby blues vs postpartum depression",
+              "Take breaks when needed - even 15 minutes alone can help"
+            ]
+          },
+          {
+            "title": "Daily Self-Care Practices",
+            "points": [
+              "Shower daily - it can boost your mood and energy",
+              "Wear comfortable clothes that make you feel good",
+              "Spend time outdoors when possible",
+              "Connect with other new parents for support",
+              "Keep water and healthy snacks nearby for easy access"
+            ]
+          }
+        ],
+        "source": "Source: https://www.stanfordchildrens.org/en/topic/default?id=the-new-mother-taking-care-of-yourself-after-birth-90-P02693"
+      }
+    }
+  ]
+}

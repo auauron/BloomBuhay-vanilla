@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState,  } from "react";
 import { Plus, HeartHandshake, Info, Eye, Edit3, Trash2, ThumbsDown, Calendar, Clock, ThumbsUp } from "lucide-react";
 import "../../index.css"
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+
 
 
 interface Symptom {
@@ -133,7 +134,7 @@ const SymptomsList: React.FC = () => {
   const navigate = useNavigate();
   // Navigate to Bloom Guide
     const handleInfoClick = () => {
-    navigate("/bloomguide");
+    navigate("/bloomguide?stage=generalMotherhood&category=symptoms");
   };
 
 

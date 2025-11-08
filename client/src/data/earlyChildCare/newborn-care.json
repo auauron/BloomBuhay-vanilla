@@ -1,0 +1,52 @@
+{
+  "articles": [
+    {
+      "id": "newborn-care-essentials-ethiopia",
+      "title": "Newborn Care Essentials",
+      "image": "/assets/earlyChildcareArticle/eCC1.png",
+      "category": "Baby Care",
+      "section": "baby",
+      "externalLink": "https://bmcpregnancychildbirth.biomedcentral.com/articles/10.1186/s12884-021-04108-6",
+      "content": {
+        "headline": "Essential Newborn Care: Evidence-Based Practices for Healthy Development",
+        "intro": "Essential newborn care practices are critical interventions that can significantly reduce newborn mortality and improve infant health outcomes. Research shows that proper newborn care utilization remains a challenge globally.",
+        "sections": [
+          {
+            "title": "The Importance of Essential Newborn Care",
+            "content": "Globally, newborn deaths account for 46% of under-five deaths, with more than 80% resulting from preventable and treatable conditions:",
+            "points": [
+              "Newborn deaths represent nearly half of all under-five mortality worldwide",
+              "Over 80% of newborn deaths are from preventable causes",
+              "Essential newborn care practices can reduce mortality by up to 50%",
+              "Proper care in the first 28 days is crucial for long-term development",
+              "Simple, cost-effective interventions can save millions of newborn lives"
+            ]
+          },
+          {
+            "title": "Key Essential Newborn Care Practices",
+            "content": "These evidence-based practices form the foundation of healthy newborn development:",
+            "points": [
+              "Immediate and exclusive breastfeeding within first hour after birth",
+              "Proper thermal care and prevention of hypothermia",
+              "Hygienic cord care and infection prevention",
+              "Early recognition of danger signs and prompt care-seeking",
+              "Appropriate bathing timing and techniques",
+              "Skin-to-skin contact for temperature regulation and bonding"
+            ]
+          },
+          {
+            "title": "Factors That Improve Newborn Care Utilization",
+            "content": "Research identified key factors that significantly increase proper newborn care practices:",
+            "points": [
+              "Postnatal care visits increase proper care by 5.5 times",
+              "Counseling during pregnancy and delivery improves practices 4.4 times",
+              "Regular antenatal care follow-up increases care utilization nearly 7 times",
+              "Maternal education improves care practices by 63%",
+              "Urban residence doubles the likelihood of proper newborn care"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

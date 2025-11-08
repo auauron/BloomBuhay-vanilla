@@ -126,7 +126,7 @@ export default function HealthTracker() {
         {/* Page Header Section */}
         <div className="text-center py-8 px-4">
           <div className="inline-flex items-center gap-3 mb-4">
-            <div className="p-3 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-2xl shadow-lg">
+            <div className="p-3 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-2xl shadow-lg text-center">
               <ScanHeart className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-4xl font-bold bg-clip-text text-bloomPink">

@@ -1,0 +1,73 @@
+{
+  "articles": [
+    {
+      "id": "breastfeeding-basics",
+      "title": "Breastfeeding Basics for New Mothers",
+      "image": "/assets/postpartumArticle/pp5.png",
+      "category": "Breastfeeding",
+      "section": "mother",
+      "externalLink": "https://my.clevelandclinic.org/health/articles/5182-breastfeeding",
+      "content": {
+        "headline": "Essential Guide to Breastfeeding: From Basics to Challenges",
+        "intro": "Breastfeeding is when you feed your baby milk that comes from your body. Experts recommend breastfeeding as your baby's only source of nutrition until age 6 months, whenever possible. This provides nutrients and antibodies to support your baby's health.",
+        "sections": [
+          {
+            "title": "The Five Basic Steps of Breastfeeding",
+            "content": "Follow these essential steps for successful breastfeeding:",
+            "points": [
+              "Find a comfortable breastfeeding position that brings your baby close to you",
+              "Guide your baby's mouth to your nipple, pointing toward their nose",
+              "Help your baby latch on with mouth wide open covering most of the areola",
+              "Let your baby settle into a rhythm of suckling and short pauses",
+              "Burp your baby after they break their latch or turn away from your breast"
+            ]
+          },
+          {
+            "title": "How Breastfeeding Works",
+            "content": "Understanding the lactation process helps you succeed:",
+            "points": [
+              "Baby's suckling stimulates nerves that release prolactin and oxytocin",
+              "Prolactin tells your alveoli to make milk",
+              "Oxytocin triggers milk let-down into milk ducts",
+              "Lactation works on supply and demand basis",
+              "Your body takes cues from your baby's feeding patterns"
+            ]
+          },
+          {
+            "title": "What to Avoid While Breastfeeding",
+            "content": "Limit or avoid these substances for your baby's safety:",
+            "points": [
+              "Limit caffeine to less than 300 milligrams per day",
+              "Limit alcohol and drink at least 2 hours before nursing",
+              "Avoid fish with high mercury levels like shark and swordfish",
+              "Avoid nicotine and marijuana completely",
+              "Consult your provider before taking any medications"
+            ]
+          },
+          {
+            "title": "Common Breastfeeding Challenges",
+            "content": "Many mothers face these issues - help is available:",
+            "points": [
+              "Breast engorgement and milk supply issues",
+              "Clogged milk ducts and mastitis",
+              "Sore, cracked or painful nipples",
+              "Latching difficulties",
+              "Challenges with pumping and expressing milk"
+            ]
+          },
+          {
+            "title": "Getting Professional Support",
+            "content": "Don't hesitate to seek help from these specialists:",
+            "points": [
+              "Breastfeeding medicine specialists for complex issues",
+              "International Board Certified Lactation Consultants",
+              "Breastfeeding educators and counselors",
+              "Your primary care provider or obstetrician",
+              "Breastfeeding peer supporters with personal experience"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

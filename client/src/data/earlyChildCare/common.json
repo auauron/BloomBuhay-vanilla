@@ -1,0 +1,50 @@
+{
+  "articles": [
+    {
+      "id": "common-newborn-health-concerns",
+      "title": "Common Newborn Health Concerns",
+      "image": "/assets/earlyChildcareArticle/eCC2.png",
+      "category": "Health",
+      "section": "baby",
+      "externalLink": "https://books.google.com/books?id=3jVCEAAAQBAJ",
+      "content": {
+        "headline": "Understanding Common Newborn Health Issues: Birth Injuries and Care",
+        "intro": "Many newborns experience minor health concerns and birth injuries that, while often alarming to parents, are typically temporary and resolve without intervention.",
+        "sections": [
+          {
+            "title": "Common Birth Injuries and Their Causes",
+            "content": "Several factors can predispose infants to birth injuries:",
+            "points": [
+              "Maternal factors: Prolonged labor, preterm/postterm delivery",
+              "Fetal factors: Macrosomia, multiple gestation, abnormal presentation",
+              "Obstetric factors: Forceps delivery, vacuum extraction, cesarean birth",
+              "Monitoring procedures: Fetal scalp monitoring during labor",
+              "Often multiple factors combine to increase injury risk"
+            ]
+          },
+          {
+            "title": "Head and Scalp Injuries",
+            "content": "The most common birth injuries involve the head and scalp during delivery:",
+            "points": [
+              "Caput Succedaneum: Soft swelling that crosses suture lines, resolves in days",
+              "Cephalohematoma: Bleeding between skull and periosteum",
+              "Subgaleal Hemorrhage: Serious bleeding into scalp compartment",
+              "Skull Fractures: Rare, usually linear or depressed type",
+              "Most require no treatment and resolve spontaneously"
+            ]
+          },
+          {
+            "title": "When to Seek Medical Attention",
+            "points": [
+              "Signs of infection: Redness, swelling, fever, pus drainage",
+              "Neurological changes: Lethargy, seizures, abnormal movements",
+              "Respiratory distress: Breathing difficulties, cyanosis",
+              "Feeding problems: Inability to suck or swallow effectively",
+              "Persistent symptoms beyond expected resolution time"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
