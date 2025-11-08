@@ -128,7 +128,7 @@ model JournalEntry {
 }
 
 model HealthMetric {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   userId    Int
   title     String
   value     String
@@ -141,14 +141,14 @@ model HealthMetric {
   updatedAt DateTime @updatedAt
 }
 model HealthMood {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   userId    Int
   mood      String
   notes     String?
   createdAt DateTime @default(now())
 }
 model HealthSymptom {
-  id        String   @id @default(cuid())
+  id        Int      @id @default(autoincrement())
   userId    Int
   name      String
   severity  Int?

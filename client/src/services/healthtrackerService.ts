@@ -3,7 +3,7 @@ import { authService } from "./authService";
 const API_URL = "http://localhost:3000/api/healthtracker";
 
 export interface HealthMetric {
-  id: string;
+  id: number;
   userId?: number;
   title: string;
   value: string;
@@ -17,7 +17,7 @@ export interface HealthMetric {
 }
 
 export interface HealthMood {
-  id: string;
+  id: number;
   userId?: number;
   mood: string;
   notes?: string;
@@ -25,7 +25,7 @@ export interface HealthMood {
 }
 
 export interface HealthSymptom {
-  id: string;
+  id: number;
   userId?: number;
   name: string;
   severity?: number;
