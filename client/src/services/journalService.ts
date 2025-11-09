@@ -1,8 +1,6 @@
 import { authService } from "./authService";
 import { Note, Album, Photo } from "../components/journal/types";
-import { addPointerEvent, applyGeneratorOptions } from "framer-motion";
-import { AppWindowIcon, Underline } from "lucide-react";
-import { a } from "framer-motion/dist/types.d-BJcRxCew";
+
 
 const API_URL = "http://localhost:3000/api/journal";
 
@@ -97,9 +95,9 @@ export const journalService = {
             }
 
             const response = await fetch(`${API_URL}/notes`, {
-                method: "POST",
+                method: "GET",
                 headers: {
-                    "Content-Type": "application.json",
+                    "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`
                 },
             });

@@ -6,6 +6,9 @@ import { PrismaClient } from "@prisma/client";
 const router = Router();
 const db = new PrismaClient();
 
+db.$connect()
+    .then(() => console.log('Database connected successfully'))
+    .catch(err => console.error('Database connection failed:', err));
 // CRUD 
 
 // NOTES ROUTE
@@ -27,7 +30,7 @@ router.get(
                 orderBy: { createdAt: "desc"}
             })
 
-            res.status(200).json({ success: true, date: notes})
+            res.status(200).json({ success: true, data: notes})
 
         } catch (error) {
             console.error("Get notes error:", error);
@@ -72,8 +75,18 @@ router.post(
             });
             res.status(201).json({success:true,data: note});
         } catch (error) {
-            console.error("Create note error:", error);
-            res.status(500).json({success:false, error:"Create note error"})
+            // Improve error logging
+            console.error("Get notes error details:", {
+                error: error instanceof Error ? error.message : error,
+                userId: req.userId,
+                stack: error instanceof Error ? error.stack : undefined
+            });
+            
+            res.status(500).json({ 
+                success: false, 
+                error: "Failed to fetch notes",
+                details: process.env.NODE_ENV === 'development' ? error : undefined
+            });
         }
     }
 );
@@ -267,39 +280,6 @@ router.patch(
         } catch (error) {
             console.error("Update album error", error);
             res.status(500).json({ success: false, error: "Failed to update album"});
-        }
-    }
-);
-
-// this delete an album
-router.delete(
-    "/album/:id",
-    authenticateToken,
-    async (req: AuthRequest, res: Response): Promise<void> => {
-        try {
-            const userId = req.userId;
-            const albumId = parseInt(req.params.id);
-        
-            if (!userId) {
-                res.status(401).json({ success: false, errro: "Unauthorized"})
-                return;
-            }
-
-            if (isNaN(albumId)) {
-                res.status(400).json({success: false, error: "Unautorized"});
-                return;
-            }
-
-            const existingAlbum = await db.album.findFirst({ where: { id: albumId, motherId: userId}});
-
-            if (!existingAlbum) {
-                res.status(404).json({ success: false, error: "Album not found"})
-            
-            res.status(200).json({success: true, message:"Album deleted successfully"});
-            }
-        } catch (error) {
-            console.error("Delete album error:", error);
-            res.status(500).json({success: false, error: "Failed to delete album"})
         }
     }
 );

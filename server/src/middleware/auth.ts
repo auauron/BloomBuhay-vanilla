@@ -36,12 +36,12 @@ export const authenticateToken = (
     next();
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError ) {
-      res.status(401).json({success: false, error:"Token has expiired"});
+      res.status(401).json({success: false, error:"Token has expired"});
       return;
     }
 
-    if (error instanceof jwt.TokenExpiredError ) {
-      res.status(403).json({success: false, errro:"Invalid token"})
+    if (error instanceof jwt.JsonWebTokenError ) {
+      res.status(403).json({success: false, error:"Invalid token"})
       return;
     }
 
