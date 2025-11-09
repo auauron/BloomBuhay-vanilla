@@ -35,7 +35,7 @@ export default function Planner() {
           </div>
 
           {/* Calendar + To-Do Layout */}
-          <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-6 max-w-6xl mx-auto w-full">
+          <div className="grid grid-cols-1 md:grid-cols-[59%_39%] gap-[2%] max-w-6xl mx-auto w-full">
             {/* Calendar Section */}
             <div className="rounded-[22px] shadow-md bg-bloomPink p-[2px]">
               <CalendarView />

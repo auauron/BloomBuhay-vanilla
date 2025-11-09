@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { X, ChevronRight } from "lucide-react";
 import { Task } from "../../../types/plan";
 import { BloomDate } from "../../../types/plan";
 import { AddTaskModalProps } from "../../../types/plan";
@@ -67,58 +67,63 @@ export default function AddTaskModal() {
             </motion.button>
           </h3>
 
-        <div className="bg-white rounded-xl p-4 text-[#474747] max-h-[500px] overflow-y-auto shadow-inner">
+        <div className="bg-white rounded-xl p-4 text-[#474747] h-[500px] overflow-y-auto">
           {/* Title input */}
-          <div className="flex gap-2 mb-2">
+          <div className="flex gap-2 mb-2 items-center">
             <input
               type="text"
               placeholder="Title"
-              className="w-full border border-bloomBlack/50 outline-none text-bloomBlack placeholder-bloomBlack/50 text-[12px] font-bold bg-White shadow-md rounded-full px-3 focus:placeholder-bloomPink/50 focus:border-bloomPink focus:text-bloomPink focus:bg-bloomYellow/25"
+              className="w-full border border-bloomBlack/50 outline-none text-bloomBlack placeholder-bloomBlack/50 text-[12px] font-bold bg-White shadow-md rounded-full px-2 focus:placeholder-bloomPink/50 focus:border-bloomPink focus:text-bloomPink focus:bg-bloomYellow/25"
             />
-
-            <span className="h-[24px] w-[24px] bg-bloomPink border border-bloomPink rounded-[12px]">
-
-            </span>
+            <div className="p-3 bg-bloomPink rounded-full"></div>
           </div>
 
           {/* Description input */}
           <textarea
             placeholder="Description..."
             rows={3}
-            className="w-full border outline-none bg-bloomWhite shadow-md rounded-2xl py-2 px-3 resize-none focus:ring-2 focus:ring-bloomPink"
+            className="w-full mb-2 resize-none overflow-hidden border border-bloomBlack/50 outline-none text-bloomBlack placeholder-bloomBlack/50 text-[12px] font-bold bg-White shadow-md rounded-[12px] p-2 focus:placeholder-bloomPink/50 focus:border-bloomPink focus:text-bloomPink focus:bg-bloomYellow/25"
           />
 
           {/* Date range */}
-          <div className="flex items-center justify-center gap-3">
-            <div className="px-4 py-1 bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-semibold rounded-full shadow">
-              Oct 12, 2025
-            </div>
-            <span className="font-bold text-gray-500">⇒</span>
-            <div className="px-4 py-1 bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-semibold rounded-full shadow">
-              Oct 26, 2025
-            </div>
+          <div className="flex items-center justify-center mb-2">
+
+            {/* Start Date */}
+            <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
+              10/12/2025
+            </button>
+
+            <span className="font-bold text-bloomPink">
+              <ChevronRight />
+            </span>
+
+            {/* End Date */}
+            <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
+              10/26/2025
+            </button>
           </div>
 
           {/* Single Date toggle */}
-          <div className="flex justify-between items-center">
-            <p className="font-semibold text-gray-700">Single Date</p>
-            <div className="w-10 h-5 bg-gray-400 rounded-full relative">
-              <div className="absolute top-0.5 left-0.5 bg-white w-4 h-4 rounded-full shadow transition" />
+          <div className="flex justify-between items-center mb-2">
+            <p className="font-bold text-bloomBlack">Single Date</p>
+            <div className="w-10 h-5 p-[2px] bg-gray-400 rounded-full relative">
+              <div className="absolute bg-white w-4 h-4 rounded-full shadow transition" />
             </div>
           </div>
 
           {/* Day selection */}
-          <p className="text-bloomPink font-semibold">
-            • Every Mon, Wed, Thu
-          </p>
-          <div className="flex justify-center gap-2">
+          <div className="flex items-center gap-2 mb-2">
+            <input type="radio" name="daySelection" className="appearance-none w-3 h-3 border border-bloomBlack/50 rounded-full checked:bg-bloomPink checked:border-bloomPink checked:shadow transition-all duration-300 cursor-pointer" />
+            <span className="font-semibold text-bloomBlack">Everyday</span>
+          </div>
+          <div className="flex justify-between w-full mb-2">
             {["Su", "M", "Tu", "W", "Th", "F", "Sa"].map((day, i) => (
               <div
                 key={i}
-                className={`w-10 h-10 flex items-center justify-center rounded-full text-sm font-semibold shadow ${
-                  ["M", "W", "Th"].includes(day)
-                    ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white"
-                    : "border border-bloomPink text-bloomPink"
+                className={`w-10 h-10 flex items-center justify-center rounded-full text-sm font-semibold ${
+                  ["Sa"].includes(day)
+                    ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow scale-105"
+                    : "border border-bloomPink text-bloomPink hover:bg-bloomYellow/50 hover:scale-105"
                 }`}
               >
                 {day}
@@ -127,21 +132,22 @@ export default function AddTaskModal() {
           </div>
 
           {/* Interval option */}
-          <div className="flex items-center gap-2">
-            <input type="radio" name="repeat" className="accent-bloomPink" />
-            <span className="font-semibold text-gray-700">Every __ days</span>
+          <div className="flex items-center gap-2 mb-2">
+            <input type="radio" name="daySelection" className="appearance-none w-3 h-3 border border-bloomBlack/50 rounded-full checked:bg-bloomPink checked:border-bloomPink checked:shadow transition-all duration-300 cursor-pointer" />
+            <span className="font-semibold text-bloomBlack">Every</span>
+            <span className="font-semibold text-bloomBlack">days</span>
           </div>
 
           {/* Whole Day toggle */}
-          <div className="flex justify-between items-center">
-            <p className="font-semibold text-gray-700">Whole Day</p>
+          <div className="flex justify-between items-center mb-2">
+            <p className="font-bold text-bloomBlack">Whole Day</p>
             <div className="w-10 h-5 bg-gray-400 rounded-full relative">
               <div className="absolute top-0.5 left-0.5 bg-white w-4 h-4 rounded-full shadow transition" />
             </div>
           </div>
 
           {/* Time picker mock */}
-          <div className="flex justify-center items-center gap-2">
+          <div className="flex justify-center items-center gap-2 mb-2">
             <div className="text-center text-3xl font-bold bg-gradient-to-r from-bloomPink to-bloomYellow bg-clip-text text-transparent">
               12 : 00 pm
             </div>

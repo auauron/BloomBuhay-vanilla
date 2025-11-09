@@ -115,7 +115,7 @@ export default function CalendarView() {
             {daysOfWeek.map((d) => (
               <div
                 key={d}
-                className="border border-bloomYellow bg-bloomPink-50 text-center rounded-xl p-4 font-semibold"
+                className="border border-bloomYellow bg-bloomPink-50 text-center rounded-xl py-4 font-semibold"
               >
                 {d}
               </div>
@@ -138,7 +138,7 @@ export default function CalendarView() {
                     handleSelect(id);
                   }}
                   className={[
-                    "p-4 text-center rounded-2xl transition-all duration-300 cursor-pointer select-none",
+                    "py-4 text-center rounded-2xl transition-all duration-300 cursor-pointer select-none",
                     isSelected
                       ? "border-bloomPink border scale-105"
                       : isToday
