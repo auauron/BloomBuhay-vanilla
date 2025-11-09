@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
-import { Task } from "../../../types/plan";
-import { BloomDate } from "../../../types/plan";
-import { AddTaskModalProps } from "../../../types/plan";
+import { X, ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
+import { Task, BloomDate, AddTaskModalProps } from "../../../types/plan";
+import { getFullDate, getNow, translateBloomdate } from "../PlannerFuntions";
 
 function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
   const result = {} as Pick<T, K>;
@@ -13,43 +12,56 @@ function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
   return result;
 }
 
-export default function AddTaskModal() {
+export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
 
-  // const now: BloomDate = {
-  //       day: new Date().getDay(),
-  //       month: new Date().getMonth(),
-  //       year: new Date().getFullYear()
-  //     }
+  const now: BloomDate = getNow()
 
-  // const [form, setForm] = useState<Task>({
-  //     task: "Task",
-  //     description: null,
-  //     isCompleted: false,
-  //     startDate: now
-  // });
+  const today: string = getFullDate(getNow())
 
-  // const [isSingleDate, setSingleDate] = useState(true);
-  // const [isWholeDay, setWholeDay] = useState(true);
-  // const [isEveryday, setEveryday] = useState(false)
-  // const [isWeekly, setWeekly] = useState(false)
-  // const [isInterval, setInterval] = useState(false)
+  const [form, setForm] = useState<Task>({
+    id: "null",
+    task: "Task",
+    description: null,
+    isCompleted: false,
+    startDate: now
+  });
 
-  // const handleSingleDay = () => {
-  //   const properties: string[] = ["task", "description", "isCompleted", "startDate"]
-  //   if (!isSingleDate) {
-  //     if (isEveryday) {
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+  const [editing, setIsEditing] = useState(false)
+  const [isSingleDate, setSingleDate] = useState(true);
+  const [isWholeDay, setWholeDay] = useState(true);
+  const [dateStart, setDateStart] = useState(today)
+  const [dateEnd, setDateEnd] = useState(today)
+  const [weekly, setWeekly] = useState<string[]>([])
+  const [interval, setInterval] = useState(0)
 
-  //     } else if (isWeekly) {
+  const [isSelectingDate, setIsSelectingDate] = useState(false)
+  const [selectedDay, setSelectedDay] = useState(now)
 
-  //     } else {
+  const handleSingleDay = () => {
+    setSingleDate(!isSingleDate)
+  }
 
-  //     }
-  //   }
+  const handleWholeDay = () => {
+    setWholeDay(!isWholeDay)
+  }
 
-  //   if(!isWholeDay) {
-  //     properties.push("time")
-  //   }
+  const handleClose = () => {
+    onClose();
+  }
+
+  // const handleCancel = () => {
+  //   onCancel();
   // }
+
+  // const handleAdd = () => {
+  //   onAdd(form)
+  // }
+
+  const handelStartDate = () => {
+    
+  }
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
@@ -62,99 +74,197 @@ export default function AddTaskModal() {
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
+              onClick={handleClose}
             >
               <X className="w-8 h-8 text-white" />
             </motion.button>
           </h3>
 
-        <div className="bg-white rounded-xl p-4 text-[#474747] max-h-[500px] overflow-y-auto shadow-inner">
-          {/* Title input */}
-          <div className="flex gap-2 mb-2">
-            <input
-              type="text"
-              placeholder="Title"
-              className="w-full border border-bloomBlack/50 outline-none text-bloomBlack placeholder-bloomBlack/50 text-[12px] font-bold bg-White shadow-md rounded-full px-3 focus:placeholder-bloomPink/50 focus:border-bloomPink focus:text-bloomPink focus:bg-bloomYellow/25"
+        <div className=" flex flex-col items-center content-center justify-between bg-white rounded-xl p-4 text-[#474747] h-[500px] overflow-y-auto">
+          <div className="w-full">
+            {/* Title input */}
+            <div className="flex gap-2 mb-2 items-center">
+              <input
+                id="title"
+                type="text"
+                placeholder="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full border border-bloomBlack/50 outline-none text-bloomBlack placeholder-bloomBlack/50 text-[12px] font-bold bg-White shadow-md rounded-full px-2 focus:placeholder-bloomPink/50 focus:border-bloomPink focus:text-bloomPink focus:bg-bloomYellow/25"
+              />
+              <div className="p-3 bg-bloomPink rounded-full"></div>
+            </div>
+
+            {/* Description input */}
+            <textarea
+              key="description"
+              placeholder="Description..."
+              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full mb-2 resize-none overflow-hidden border border-bloomBlack/50 outline-none text-bloomBlack placeholder-bloomBlack/50 text-[12px] font-bold bg-White shadow-md rounded-[12px] p-2 focus:placeholder-bloomPink/50 focus:border-bloomPink focus:text-bloomPink focus:bg-bloomYellow/25"
             />
 
-            <span className="h-[24px] w-[24px] bg-bloomPink border border-bloomPink rounded-[12px]">
-
-            </span>
-          </div>
-
-          {/* Description input */}
-          <textarea
-            placeholder="Description..."
-            rows={3}
-            className="w-full border outline-none bg-bloomWhite shadow-md rounded-2xl py-2 px-3 resize-none focus:ring-2 focus:ring-bloomPink"
-          />
-
-          {/* Date range */}
-          <div className="flex items-center justify-center gap-3">
-            <div className="px-4 py-1 bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-semibold rounded-full shadow">
-              Oct 12, 2025
-            </div>
-            <span className="font-bold text-gray-500">⇒</span>
-            <div className="px-4 py-1 bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-semibold rounded-full shadow">
-              Oct 26, 2025
-            </div>
-          </div>
-
-          {/* Single Date toggle */}
-          <div className="flex justify-between items-center">
-            <p className="font-semibold text-gray-700">Single Date</p>
-            <div className="w-10 h-5 bg-gray-400 rounded-full relative">
-              <div className="absolute top-0.5 left-0.5 bg-white w-4 h-4 rounded-full shadow transition" />
-            </div>
-          </div>
-
-          {/* Day selection */}
-          <p className="text-bloomPink font-semibold">
-            • Every Mon, Wed, Thu
-          </p>
-          <div className="flex justify-center gap-2">
-            {["Su", "M", "Tu", "W", "Th", "F", "Sa"].map((day, i) => (
-              <div
-                key={i}
-                className={`w-10 h-10 flex items-center justify-center rounded-full text-sm font-semibold shadow ${
-                  ["M", "W", "Th"].includes(day)
-                    ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white"
-                    : "border border-bloomPink text-bloomPink"
-                }`}
-              >
-                {day}
+            <AnimatePresence>
+              <div className="relative flex justify-center items-center mb-2">
+                {(!isSingleDate 
+                  ?
+                  <motion.div
+                  key="single1"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center justify-center gap-2"
+                  >
+                    <button 
+                    className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105"
+                    >
+                      {dateStart}
+                    </button>
+                    <ChevronRight className="text-bloomPink" />
+                    <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
+                      {dateEnd}
+                    </button>
+                  </motion.div>
+                  : 
+                  <motion.div
+                  key="single2"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center justify-center"
+                  >
+                    <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
+                        {dateStart}
+                      </button>
+                  </motion.div>
+                )}
               </div>
-            ))}
-          </div>
+            </AnimatePresence>
 
-          {/* Interval option */}
-          <div className="flex items-center gap-2">
-            <input type="radio" name="repeat" className="accent-bloomPink" />
-            <span className="font-semibold text-gray-700">Every __ days</span>
-          </div>
+            <AnimatePresence>
+              {/* Single Date toggle */}
+              <div key="single-toggle" className="flex justify-between items-center mb-2">
+                <p className="font-bold text-bloomBlack">Single Date</p>
+                <motion.button 
+                className={
+                  (isSingleDate)
+                  ? "w-[45px] h-[24px] p-[2px] flex justify-end flex-row items-center bg-gradient-to-r from-bloomPink to-bloomYellow rounded-full relative"
+                  : "w-[45px] h-[24px] p-[2px] flex justify-start flex-row items-center bg-bloomBlack rounded-full relative"
+                }
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                onClick={handleSingleDay}
+                >
+                  <div className="bg-white p-[10px] rounded-full"/>
+                </motion.button>
+              </div>
+            </AnimatePresence>
 
-          {/* Whole Day toggle */}
-          <div className="flex justify-between items-center">
-            <p className="font-semibold text-gray-700">Whole Day</p>
-            <div className="w-10 h-5 bg-gray-400 rounded-full relative">
-              <div className="absolute top-0.5 left-0.5 bg-white w-4 h-4 rounded-full shadow transition" />
+            {!isSingleDate && (
+            <div>
+              {/* Day selection */}
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex items-center gap-2 mb-2">
+                <input type="radio" name="daySelection" className="appearance-none w-3 h-3 border border-bloomBlack/50 rounded-full checked:bg-bloomPink checked:border-bloomPink checked:shadow transition-all duration-300 cursor-pointer" />
+                <span className="font-bold text-bloomBlack">Everyday</span>
+              </div>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex justify-evenly w-full gap-2 mb-2">
+                {["Su", "M", "Tu", "W", "Th", "F", "Sa"].map((day, i) => (
+                  <div
+                    key={i}
+                    className={`w-[32px] h-[32px] flex items-center justify-center rounded-full text-sm font-bold ${
+                      ["Sa"].includes(day)
+                        ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow scale-105"
+                        : "border border-bloomPink text-bloomPink hover:bg-bloomYellow/50 hover:scale-105"
+                    }`}
+                  >
+                    {day}
+                  </div>
+                ))}
+              </div>
+              </motion.div>
+
+              {/* Interval option */}
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex items-center mb-2">
+                <input type="radio" name="daySelection" className="appearance-none w-3 h-3 border border-bloomBlack/50 rounded-full checked:bg-bloomPink checked:border-bloomPink checked:shadow transition-all duration-300 cursor-pointer" />
+                <div className="px-1"></div>
+                <span className="font-bold text-bloomBlack">Every</span>
+                <input 
+                    type="text"
+                    className="w-[24px] outline-none text-center text-bloomblack placeholder-bloomBlack font-bold bg-White rounded-[6px] focus:border-bloomBlack focus:shadow"
+                    placeholder="_"
+                  />
+                <span className="font-bold text-bloomBlack">days</span>
+              </div>
+              </motion.div>
             </div>
-          </div>
-
-          {/* Time picker mock */}
-          <div className="flex justify-center items-center gap-2">
-            <div className="text-center text-3xl font-bold bg-gradient-to-r from-bloomPink to-bloomYellow bg-clip-text text-transparent">
-              12 : 00 pm
+            )}
+            
+            {/* Whole Day toggle */}
+            <div className="flex justify-between items-center mb-2 transition-all duration-300 ease-in-out">
+              <p className="font-bold text-bloomBlack">Whole Day</p>
+              <button className={
+                (isWholeDay)
+                ? "w-[45px] h-[24px] p-[2px] flex justify-end flex-row items-center bg-gradient-to-r from-bloomPink to-bloomYellow rounded-full relative"
+                : "w-[45px] h-[24px] p-[2px] flex justify-start flex-row items-center bg-bloomBlack rounded-full relative"
+              }
+              onClick={handleWholeDay}
+              >
+                <div className="bg-white p-[10px] rounded-full" />
+              </button>
             </div>
+            
+            {!isWholeDay && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                <div className="flex justify-center items-center gap-1 mb-2">
+                  <div className="flex flex-col justify-center items-center w-[50px]">
+                    <input 
+                      type="text"
+                      className="w-full outline-none text-3xl text-center text-bloomBlack placeholder-bloomBlack font-bold bg-White rounded-[6px] focus:border-bloomPink focus:shadow"
+                      placeholder="00"
+                      maxLength={2}
+                    />
+                  </div>
+                  <div className="text-center text-3xl font-bold text-bloomBlack">
+                    :
+                  </div>
+                  <div className="flex flex-col justify-center items-center w-[50px]">
+                    <input 
+                      type="text"
+                      className="w-full outline-none text-3xl text-center text-bloomBlack placeholder-bloomBlack font-bold bg-White rounded-[6px] focus:border-bloomPink focus:shadow"
+                      placeholder="00"
+                      maxLength={2}
+                    />
+                  </div>
+                  <div className="flex flex-col justify-center items-center w-[50px]">
+                    <div className="w-[50px] text-center text-3xl font-bold text-bloomBlack placeholder-bloomBlack">
+                      AM
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </div>
 
-          {/* Buttons */}
-          <div className="flex justify-center gap-4">
-            <button className="w-32 py-2 rounded-full border border-bloomPink text-bloomPink font-semibold hover:bg-pink-50 transition">
-              Cancel
-            </button>
-            <button className="w-32 py-2 rounded-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-semibold shadow hover:opacity-90 transition">
-              Add
-            </button>
+          <div className="w-full">
+            {/* Buttons */}
+            <div className="flex justify-between gap-4">
+              <button className="w-32 py-2 rounded-full border border-bloomPink text-bloomPink font-bold hover:bg-pink-50 transition">
+                Cancel
+              </button>
+              <button className="w-32 py-2 rounded-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-bold shadow hover:opacity-90 transition">
+                Add
+              </button>
+            </div>
           </div>
         </div>
       </div>
