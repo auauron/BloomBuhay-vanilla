@@ -101,24 +101,42 @@ export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
               className="w-full mb-2 resize-none overflow-hidden border border-bloomBlack/50 outline-none text-bloomBlack placeholder-bloomBlack/50 text-[12px] font-bold bg-White shadow-md rounded-[12px] p-2 focus:placeholder-bloomPink/50 focus:border-bloomPink focus:text-bloomPink focus:bg-bloomYellow/25"
             />
 
-            {/* Date range */}
-            <div className="flex items-center justify-center mb-2">
-
-              {/* Start Date */}
-              <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
-                10/12/2025
-              </button>
-
-              {!isSingleDate && (
-              <>
-                <ChevronRight className="text-bloomPink" />
-
-                <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
-                  10/26/2025
-                </button>
-              </>
-              )}
-            </div>
+            <AnimatePresence>
+              <div className="relative flex justify-center items-center mb-2">
+                {(!isSingleDate 
+                  ?
+                  <motion.div
+                  key="single1"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center justify-center gap-2"
+                  >
+                    <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
+                      10/12/2025
+                    </button>
+                    <ChevronRight className="text-bloomPink" />
+                    <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
+                      10/26/2025
+                    </button>
+                  </motion.div>
+                  : 
+                  <motion.div
+                  key="single2"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center justify-center"
+                  >
+                    <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
+                        10/12/2025
+                      </button>
+                  </motion.div>
+                )}
+              </div>
+            </AnimatePresence>
 
             {/* Single Date toggle */}
             <div className="flex justify-between items-center mb-2">
@@ -133,18 +151,23 @@ export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
                 <div className="bg-white p-[10px] rounded-full"/>
               </button>
             </div>
+
             {!isSingleDate && (
-            <>
+            <div>
               {/* Day selection */}
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <div className="flex items-center gap-2 mb-2">
                 <input type="radio" name="daySelection" className="appearance-none w-3 h-3 border border-bloomBlack/50 rounded-full checked:bg-bloomPink checked:border-bloomPink checked:shadow transition-all duration-300 cursor-pointer" />
                 <span className="font-bold text-bloomBlack">Everyday</span>
               </div>
-              <div className="flex justify-evenly w-full mb-2">
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex justify-evenly w-full gap-2 mb-2">
                 {["Su", "M", "Tu", "W", "Th", "F", "Sa"].map((day, i) => (
                   <div
                     key={i}
-                    className={`w-10 h-10 flex items-center justify-center rounded-full text-sm font-bold ${
+                    className={`w-[32px] h-[32px] flex items-center justify-center rounded-full text-sm font-bold ${
                       ["Sa"].includes(day)
                         ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow scale-105"
                         : "border border-bloomPink text-bloomPink hover:bg-bloomYellow/50 hover:scale-105"
@@ -154,8 +177,10 @@ export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
                   </div>
                 ))}
               </div>
+              </motion.div>
 
               {/* Interval option */}
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
               <div className="flex items-center mb-2">
                 <input type="radio" name="daySelection" className="appearance-none w-3 h-3 border border-bloomBlack/50 rounded-full checked:bg-bloomPink checked:border-bloomPink checked:shadow transition-all duration-300 cursor-pointer" />
                 <div className="px-1"></div>
@@ -167,11 +192,12 @@ export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
                   />
                 <span className="font-bold text-bloomBlack">days</span>
               </div>
-            </>
+              </motion.div>
+            </div>
             )}
             
             {/* Whole Day toggle */}
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex justify-between items-center mb-2 transition-all duration-300 ease-in-out">
               <p className="font-bold text-bloomBlack">Whole Day</p>
               <button className={
                 (isWholeDay)
@@ -185,39 +211,35 @@ export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
             </div>
             
             {!isWholeDay && (
-            <div className="flex justify-center items-center gap-1 mb-2">
-              <div className="flex flex-col justify-center items-center w-[50px]">
-                <ChevronUp className="text-bloomPink" />
-                <input 
-                  type="text"
-                  className="w-full outline-none text-3xl text-center bg-gradient-to-r from-bloomPink to-bloomYellow bg-clip-text text-transparent bg-clip-placeholder placeholder-transparent font-bold bg-White rounded-[6px] focus:border-bloomPink focus:shadow"
-                  placeholder="00"
-                  maxLength={2}
-                />
-                <ChevronDown className="text-bloomPink" />
-              </div>
-              <div className="text-center text-3xl font-bold bg-gradient-to-r from-bloomPink to-bloomYellow bg-clip-text text-transparent">
-                :
-              </div>
-              <div className="flex flex-col justify-center items-center w-[50px]">
-                <ChevronUp className="text-bloomPink" />
-                <input 
-                  type="text"
-                  className="w-full outline-none text-3xl text-center bg-gradient-to-r from-bloomPink to-bloomYellow bg-clip-text text-transparent bg-clip-placeholder placeholder-transparent font-bold bg-White rounded-[6px] focus:border-bloomPink focus:shadow"
-                  placeholder="00"
-                  maxLength={2}
-                />
-                <ChevronDown className="text-bloomPink" />
-              </div>
-              <div className="flex flex-col justify-center items-center w-[50px]">
-                <ChevronUp className="text-bloomPink" />
-                <div className="w-[50px] text-center text-3xl font-bold bg-gradient-to-r from-bloomPink to-bloomYellow bg-clip-text text-transparent">
-                  pm
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                <div className="flex justify-center items-center gap-1 mb-2">
+                  <div className="flex flex-col justify-center items-center w-[50px]">
+                    <input 
+                      type="text"
+                      className="w-full outline-none text-3xl text-center bg-gradient-to-r from-bloomPink to-bloomYellow bg-clip-text text-transparent bg-clip-placeholder placeholder-transparent font-bold bg-White rounded-[6px] focus:border-bloomPink focus:shadow"
+                      placeholder="00"
+                      maxLength={2}
+                    />
+                  </div>
+                  <div className="text-center text-3xl font-bold bg-gradient-to-r from-bloomPink to-bloomYellow bg-clip-text text-transparent">
+                    :
+                  </div>
+                  <div className="flex flex-col justify-center items-center w-[50px]">
+                    <input 
+                      type="text"
+                      className="w-full outline-none text-3xl text-center bg-gradient-to-r from-bloomPink to-bloomYellow bg-clip-text text-transparent bg-clip-placeholder placeholder-transparent font-bold bg-White rounded-[6px] focus:border-bloomPink focus:shadow"
+                      placeholder="00"
+                      maxLength={2}
+                    />
+                  </div>
+                  <div className="flex flex-col justify-center items-center w-[50px]">
+                    <div className="w-[50px] text-center text-3xl font-bold bg-gradient-to-r from-bloomPink to-bloomYellow bg-clip-text text-transparent">
+                      pm
+                    </div>
+                  </div>
                 </div>
-                <ChevronDown className="text-bloomPink" />
-              </div>
-            </div>
-          )}
+              </motion.div>
+            )}
           </div>
 
           <div className="w-full">

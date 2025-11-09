@@ -51,6 +51,8 @@ export default function CalendarView() {
 
     const calendar: BloomDate[] = [];
 
+    
+
     for (let i = 0; i < 42; i++) {
       const dayNum = i - firstDay + 1;
       if (dayNum < 1) {

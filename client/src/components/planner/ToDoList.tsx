@@ -126,7 +126,7 @@ export default function ToDoList() {
     !isAdding 
       ? (
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white p-4 rounded-[20px] shadow-lg">
+        <div className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white p-4 h-[588px] rounded-[20px] shadow-lg">
 
           {/* Header */}
           <h3 className="text-2xl mb-2 text-white font-bold flex items-center justify-center gap-4 p-2">
@@ -137,7 +137,6 @@ export default function ToDoList() {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsAdding(!isAdding)}
-              className="rounded-full bg-white/20 hover:bg-white/30 p-2 transition"
             >
               <PlusCircle className="w-8 h-8 text-white" />
             </motion.button>
@@ -151,7 +150,7 @@ export default function ToDoList() {
           )}
 
           {/* Task List Container */}
-          <div className="bg-white rounded-xl p-4 text-[#474747] max-h-[500px] overflow-y-auto shadow-inner">
+          <div className="flex justify-center items-center bg-white rounded-xl p-4 text-[#474747] h-auto overflow-y-auto shadow-inner">
             {loading ? (
               <p className="text-center text-gray-400 italic">Loading tasks...</p>
             ) : tasks.length === 0 ? (
