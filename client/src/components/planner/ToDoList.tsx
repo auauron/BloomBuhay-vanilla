@@ -142,15 +142,16 @@ export default function ToDoList() {
             </motion.button>
           </h3>
 
+          <div className="h-[500px] flex flex-col gap-3">
           {/* Error Message */}
           {error && (
-            <div className="mb-3 p-3 bg-red-100 text-red-700 rounded-xl text-sm">
+            <div className="p-3 bg-red-100 text-red-700 rounded-xl text-sm">
               {error}
             </div>
           )}
 
           {/* Task List Container */}
-          <div className="flex flex-col justify-start items-center bg-white rounded-xl p-4 text-[#474747] max-h-[440px] h-full overflow-y-auto shadow-inner">
+          <div className="flex flex-col justify-start items-center bg-white rounded-xl p-4 text-[#474747] h-full overflow-y-auto shadow-inner">
             {loading ? (
               <p className="text-center text-gray-400 italic">Loading tasks...</p>
             ) : tasks.length === 0 ? (
@@ -204,10 +205,11 @@ export default function ToDoList() {
               placeholder="Type new task..."
               value={newTaskTitle}
               onChange={(e) => setNewTaskTitle(e.target.value)}
-              className="mt-3 w-full p-3 rounded-xl bg-white/80 focus:bg-white outline-none text-gray-700"
+              className="w-full p-3 rounded-xl bg-white/80 focus:bg-white outline-none text-gray-700"
               onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
             />
           )}
+          </div>
         </div>
         </motion.div>
     ) : (
