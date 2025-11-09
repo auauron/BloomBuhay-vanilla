@@ -10,13 +10,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPersonPregnant } from '@fortawesome/free-solid-svg-icons'
 import { faPersonBreastfeeding } from '@fortawesome/free-solid-svg-icons'
 import { faChild } from '@fortawesome/free-solid-svg-icons'
+import { bbtoolsService } from "../services/BBToolsService";
 
 export default function BBTools() {
   const [activeStage, setActiveStage] = useState("pregnant");
   const [userStage, setUserStage] = useState("pregnant");
 
   useEffect(() => {
-    // Simulate fetching user stage from database
+    async function load() {
+      const res = await bbtoolsService.getAll();
+      if (res.success) {
+        // set state from res.data.metrics / feedings / sleeps / growths
+      }
+    }
+    load();
   }, []);
 
   const stages = [
