@@ -123,8 +123,9 @@ export default function ToDoList() {
   }
 
   return (
-    (isAdding)
-      ? <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+    !isAdding 
+      ? (
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <div className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white p-4 rounded-[20px] shadow-lg">
 
           {/* Header */}
@@ -210,6 +211,8 @@ export default function ToDoList() {
           )}
         </div>
         </motion.div>
-      : AddTaskModal()
+    ) : (
+      <AddTaskModal onClose = {() => setIsAdding(!isAdding)} />
+    )
   );
 }
