@@ -1,28 +1,32 @@
 import React, { useState } from "react";
 import { ChevronsLeft, ChevronsRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { DateJumperProps } from "../../../types/plan";
+import { BloomDate, DateJumperProps } from "../../../types/plan";
+import { getNow } from "../PlannerFuntions";
 
-export default function DateJumper({ isOpen, curMonth, curYear, onCancel, onSave }: DateJumperProps) {
+export default function DateJumper({ isOpen, onCancel, onSave }: DateJumperProps) {
   const months = [
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   ];
 
-  const [selectedMonth, setSelectedMonth] = useState(curMonth);
-  const [selectedYear, setSelectedYear] = useState(curYear);
+  const now: BloomDate = getNow()
+  const [selectedMonth, setSelectedMonth] = useState(now.month);
+  const [selectedYear, setSelectedYear] = useState(now.year);
 
   const nameMonth = months[selectedMonth]
 
 
   const handleSave = () => {
     onSave(selectedMonth, selectedYear);
+    setSelectedMonth(now.month);
+    setSelectedYear(now.year);
     onCancel();
   };
 
   const handleCancel = () => {
-    setSelectedMonth(curMonth)
-    setSelectedYear(curYear)
+    setSelectedMonth(now.month);
+    setSelectedYear(now.year);
     onCancel();
   }
 
@@ -34,11 +38,13 @@ export default function DateJumper({ isOpen, curMonth, curYear, onCancel, onSave
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          onClick={handleCancel}
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
+            onClick={(e) => e.stopPropagation()}
             className="bg-white rounded-[30px] shadow-xl p-8 w-[480px] flex flex-col items-center border-2 border-bloomPink"
           >
 

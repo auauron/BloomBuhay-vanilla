@@ -1,5 +1,6 @@
 export interface BloomDate {
   day: number;
+  date: number
   month: number;
   year: number;
 };
@@ -11,8 +12,6 @@ export interface BloomTime {
 
 export interface DateJumperProps {
   isOpen: boolean;
-  curMonth: number;
-  curYear: number;
   onCancel: () => void;
   onSave: (month: number, year: number) => void;
 }

@@ -150,7 +150,7 @@ export default function ToDoList() {
           )}
 
           {/* Task List Container */}
-          <div className="flex justify-center items-center bg-white rounded-xl p-4 text-[#474747] h-auto overflow-y-auto shadow-inner">
+          <div className="flex flex-col justify-start items-center bg-white rounded-xl p-4 text-[#474747] max-h-[440px] h-full overflow-y-auto shadow-inner">
             {loading ? (
               <p className="text-center text-gray-400 italic">Loading tasks...</p>
             ) : tasks.length === 0 ? (
@@ -161,7 +161,7 @@ export default function ToDoList() {
                   key={task.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center justify-between bg-gradient-to-r from-pink-50 to-pink-100 p-3 rounded-xl mb-3 shadow-sm hover:shadow-md transition"
+                  className="flex items-center w-full justify-between bg-gradient-to-r from-pink-50 to-pink-100 p-3 rounded-xl mb-3 shadow-sm hover:shadow-md transition"
                 >
                   <div className="flex items-center gap-3">
                     <input
