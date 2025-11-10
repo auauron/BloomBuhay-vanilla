@@ -4,20 +4,11 @@ import { X, ChevronRight, ChevronUp, ChevronDown } from "lucide-react";
 import { Task, BloomDate, AddTaskModalProps } from "../../../types/plan";
 import { getFullDate, getNow, translateBloomdate } from "../PlannerFuntions";
 
-function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
-  const result = {} as Pick<T, K>;
-  keys.forEach((key) => {
-    result[key] = obj[key];
-  });
-  return result;
-}
-
 export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
 
   const now: BloomDate = getNow()
-
   const today: string = getFullDate(getNow())
-
+  
   const [form, setForm] = useState<Task>({
     id: "null",
     task: "Task",
