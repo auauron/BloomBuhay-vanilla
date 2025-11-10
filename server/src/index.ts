@@ -1,3 +1,4 @@
+// server/src/index.ts
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
@@ -5,31 +6,28 @@ import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import motherProfilesRoutes from "./routes/motherProfiles"; 
 import plannerRoutes from "./routes/plannerRoutes"
-import healthtrackerRoutes from "./routes/healthtrackerRoutes"
-import BBToolsRoutes from "./routes/BBToolsRoutes"
+import aiRoutes from "./routes/aiRoutes";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app
-  .use(
-    cors({
-      origin: true,
-      credentials: true,
-      allowedHeaders:["Content-Type", "Authorization"],
-      exposedHeaders: ["Authorization"],
-    })
-  )
-  .use(express.urlencoded({ extended: true, limit: "10mb" }))
-  .use(express.json({ limit: "10mb" }));
+// Enhanced CORS configuration
+app.use(cors({
+  origin: ["http://localhost:5173", "http://127.0.0.1:5173"], // Your Vite dev server
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+}));
 
-// api routes
+app.use(express.urlencoded({ extended: true, limit: "10mb" }))
+app.use(express.json({ limit: "10mb" }))
+app.use("/api/ai", aiRoutes);
+
+// Other API routes
 app.use("/api/auth", authRoutes)
 .use("/api/users", userRoutes)
 .use("/api/mother-profiles", motherProfilesRoutes) 
-.use("/api/planner", plannerRoutes)
-.use("/api/healthtracker", healthtrackerRoutes)
-.use("/api/bbtools", BBToolsRoutes)
+.use("/api/planner", plannerRoutes);
 
 app.get("/", (req, res) => {
   res.json({
@@ -43,4 +41,5 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`CORS enabled for: http://localhost:5173`);
 });
