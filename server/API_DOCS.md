@@ -14,8 +14,8 @@ Authorization: Bearer <your_jwt_token>
 ```
 
 **Token Types:**
-- **Access Token**: Short-lived token (default: 24h) for API requests
-- **Refresh Token**: Long-lived token (default: 30 days) for obtaining new access tokens
+- **Access Token**: Short-lived token (default: 1h) for API requests
+- **Refresh Token**: Long-lived token (default: 7 days) for obtaining new access tokens
 
 ---
 

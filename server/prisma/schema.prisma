@@ -20,6 +20,22 @@ enum BabyGender {
 }
 
 model User {
+    id             Int              @id @default(autoincrement())
+    fullName       String
+    email          String           @unique
+    password       String
+    createdAt      DateTime         @default(now())
+    updatedAt      DateTime         @updatedAt
+    profilePic     String?
+    MotherProfiles MotherProfiles[]
+    PlannerTask    PlannerTask[]
+    HealthLog      HealthLog[]
+    ToolsLog       ToolsLog[]
+    JournalEntry   JournalEntry[]
+    Album          Album[]
+    refreshTokens  RefreshToken[]
+
+    @@map("user")
   id             Int              @id @default(autoincrement())
   fullName       String
   email          String           @unique
@@ -119,6 +135,16 @@ model Article {
 }
 
 model JournalEntry {
+    id          Int      @id @default(autoincrement())
+    mother      User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
+    motherId    Int
+    title       String
+    content     String
+    photoUrl    String?
+    tags        String[] @default([])
+    mood        String?
+    createdAt   DateTime @default(now()) @db.Timestamptz(6)
+    lastUpdated DateTime @default(now()) @updatedAt @db.Timestamptz(6)
   id        Int      @id @default(autoincrement())
   mother    User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
   motherId  Int
@@ -217,6 +243,35 @@ model GrowthRecord {
 
   @@index([userId], name: "idx_growth_records_user_id")
   @@map("growth_records")
+}
+
+model Album {
+    id          Int      @id @default(autoincrement())
+    mother      User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
+    motherId    Int
+    title       String
+    coverPhoto  String?
+    description String?
+    createdAt   DateTime @default(now()) @db.Timestamptz(6)
+    lastUpdated DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+    photos      Photo[]
+
+    @@index([motherId], name: "idx_albums_mother_id")
+    @@map("albums")
+}
+
+model Photo {
+    id         Int      @id @default(autoincrement())
+    album      Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
+    albumId    Int
+    fileUrl    String
+    name       String?
+    notes      String?
+    createdAt  DateTime @default(now()) @db.Timestamptz(6)
+    uploadedAt DateTime @default(now()) @db.Timestamptz(6)
+
+    @@index([albumId], name: "idx_photos_album_id")
+    @@map("photos")
 }
 
 model RefreshToken {
