@@ -131,9 +131,9 @@ const MoodTracker: React.FC = () => {
     }
   };
 
-  const handleInfoClick = () => {
-    navigate("/bloomguide");
-  };
+const handleInfoClick = () => {
+  navigate("/bloomguide?stage=generalMotherhood&category=moods");
+};
 
   const getMoodIcon = (label: string) => {
     return moodOptions.find(mood => mood.label === label)?.icon || <Meh className="w-5 h-5" />;

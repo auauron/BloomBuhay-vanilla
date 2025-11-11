@@ -1,11 +1,14 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import "../index.css";
 import Header from "../components/ui/Header";
 import Sidebar from "../components/ui/Sidebar";
 import { Search } from "lucide-react";
 import { Article, ArticleSection } from "../types/guide";
-import articlesData from '../data/articles.json';
 import ArticleModal from '../components/ArticleModal';
+import { BookOpen } from "lucide-react";
+import { pregnant, postpartum, earlyChildCare, generalMotherhood } from '../data';
+import { useSearchParams } from "react-router-dom";
+
 
 // === GRADIENT SEARCH BAR COMPONENT ===
 const GradientSearchBar = ({ 
@@ -65,14 +68,10 @@ const GradientSearchBar = ({
 
 // === ARTICLE CARD COMPONENT ===
 const ArticleCard = ({ 
-  title, 
-  image, 
-  category, 
+  article,
   onClick 
 }: { 
-  title: string; 
-  image: string; 
-  category?: string;
+  article: Article;
   onClick: () => void;
 }) => (
   <div 
@@ -81,19 +80,19 @@ const ArticleCard = ({
   >
     <div className="relative overflow-hidden">
       <img 
-        src={image} 
-        alt={title} 
+        src={article.image} 
+        alt={article.title} 
         className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110" 
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       
-      {category && (
+      {article.category && (
         <div className="absolute top-3 left-3">
           <span 
             className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg"
-            style={{textShadow: '1px 1px 1px black'}}
+            style={{textShadow: '0.5px 1px 0.5px black'}}
           >
-            {category}
+            {article.category}
           </span>
         </div>
       )}
@@ -101,23 +100,22 @@ const ArticleCard = ({
     
     <div className="p-6 flex flex-col flex-grow">
       <h3 className="text-xl font-bold text-gray-800 leading-tight mb-4 line-clamp-2 group-hover:text-bloomPink transition-colors flex-grow">
-        {title}
+        {article.title}
       </h3>
       
       <div className="flex justify-end mt-auto pt-4">
         <button 
           onClick={(e) => {
             e.stopPropagation();
-            const article = articlesData.articles.find(a => a.title === title);
-            if (article?.externalLink) {
+            if (article.externalLink) {
               window.open(article.externalLink, '_blank');
             }
-      }}
-      className="bg-gradient-to-r from-bloomPink via-bloomPink/90 to-bloomYellow text-white rounded-full hover:shadow-lg transform group-hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-lg"
->
+          }}
+          className="bg-bloomPink text-white rounded-full hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow transform group-hover:scale-105 transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl"
+        >
           <span 
             className="text-sm font-medium text-white px-4 py-2"
-            style={{textShadow: '0.5px 0.5px 1px black'}}
+            style={{textShadow: '0.5px 0.5px 0.5px black'}}
           >
             Read more
           </span>
@@ -136,85 +134,130 @@ const ArticleCard = ({
   </div>
 );
 
-// === FILTER BUTTONS COMPONENT ===
-const FilterButtons = ({ 
-  activeFilter, 
-  setActiveFilter, 
+// === MAIN STAGE FILTER BUTTONS ===
+const StageFilterButtons = ({ 
+  activeStage, 
+  setActiveStage,
+  setActiveCategory,
   searchQuery,
-  maternalTips,
-  motherCare, 
-  babyCare 
+  stageCounts
 }: {
-  activeFilter: string;
-  setActiveFilter: (filter: string) => void;
+  activeStage: string;
+  setActiveStage: (stage: string) => void;
+  setActiveCategory: (category: string) => void;
   searchQuery: string;
-  maternalTips: Article[];
-  motherCare: Article[];
-  babyCare: Article[];
+  stageCounts: { [key: string]: number };
 }) => {
-  // Helper function to filter articles by search query
-  const filterArticlesBySearch = (articles: Article[]): Article[] => {
-    if (!searchQuery.trim()) return articles;
-    
-    return articles.filter(article =>
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.category.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  };
-
-  // Calculate counts based on current search results
-  const getFilterCount = (filterKey: string) => {
-    if (!searchQuery.trim()) {
-      // No search, use original counts
-      switch (filterKey) {
-        case "maternal": return maternalTips.length;
-        case "mother": return motherCare.length;
-        case "baby": return babyCare.length;
-        case "all": return maternalTips.length + motherCare.length + babyCare.length;
-        default: return 0;
-      }
-    } else {
-      // With search, count filtered results
-      const maternalFiltered = filterArticlesBySearch(maternalTips);
-      const motherFiltered = filterArticlesBySearch(motherCare);
-      const babyFiltered = filterArticlesBySearch(babyCare);
-      
-      switch (filterKey) {
-        case "maternal": return maternalFiltered.length;
-        case "mother": return motherFiltered.length;
-        case "baby": return babyFiltered.length;
-        case "all": return maternalFiltered.length + motherFiltered.length + babyFiltered.length;
-        default: return 0;
-      }
-    }
-  };
-
-  const filters = [
-    { key: "all", label: "All Articles", count: getFilterCount("all") },
-    { key: "maternal", label: "Maternal Tips", count: getFilterCount("maternal") },
-    { key: "mother", label: "Mother Care", count: getFilterCount("mother") },
-    { key: "baby", label: "Baby Care", count: getFilterCount("baby") },
+  const stages = [
+    { key: "all", label: "All Articles", count: stageCounts.all || 0 },
+    { key: "generalMotherhood", label: "General Motherhood", count: stageCounts.generalMotherhood || 0 },
+    { key: "pregnant", label: "Pregnancy", count: stageCounts.pregnant || 0 },
+    { key: "postpartum", label: "Postpartum", count: stageCounts.postpartum || 0 },
+    { key: "earlyChildcare", label: "Early Childcare", count: stageCounts.earlyChildcare || 0 },
   ];
 
   return (
     <div className="flex flex-wrap gap-3 px-6 pb-4">
-      {filters.map((filter) => (
+      {stages.map((stage) => (
         <button
-          key={filter.key}
-          onClick={() => setActiveFilter(filter.key)}
+          key={stage.key}
+          onClick={() => {
+            setActiveStage(stage.key);
+            setActiveCategory("all"); // Reset category when stage changes
+          }}
           className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300 ${
-            activeFilter === filter.key
+            activeStage === stage.key
               ? "bg-bloomPink text-white border-transparent shadow-lg"
               : "bg-white text-gray-600 border-bloomPink/30 hover:border-bloomPink hover:shadow-md"
           }`}
         >
-          <span className="font-medium">{filter.label}</span>
+          <span className="font-medium">{stage.label}</span>
           <span className={`text-xs px-2 py-1 rounded-full ${
-            activeFilter === filter.key 
+            activeStage === stage.key 
               ? "bg-white/20 text-white" 
               : "bg-bloomPink/10 text-bloomPink"
           }`}>
-            {filter.count}
+            {stage.count}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+};
+
+// === TRIMESTER/CATEGORY FILTER BUTTONS ===
+const CategoryFilterButtons = ({ 
+  activeStage,
+  activeCategory, 
+  setActiveCategory,
+  searchQuery,
+  categoryCounts
+}: {
+  activeStage: string;
+  activeCategory: string;
+  setActiveCategory: (category: string) => void;
+  searchQuery: string;
+  categoryCounts: { [key: string]: number };
+}) => {
+  // Define categories for each stage
+  const stageCategories = {
+    generalMotherhood: [
+      { key: "all", label: "All General", count: categoryCounts.all || 0 },
+      { key: "wellness", label: "Must Reads", count: categoryCounts.wellness || 0 },
+      { key: "moods", label: "Moods & Emotions", count: categoryCounts.moods || 0 },
+      { key: "symptoms", label: "Common Symptoms", count: categoryCounts.symptoms || 0 },
+      { key: "tips", label: "Motherhood Tips", count: categoryCounts.tips || 0 },
+      { key: "relationships", label: "Relationships", count: categoryCounts.relationships || 0 }
+    ],
+    pregnant: [
+      { key: "all", label: "All Pregnancy", count: categoryCounts.all || 0 },
+      { key: "first-trimester", label: "First Trimester", count: categoryCounts["first-trimester"] || 0 },
+      { key: "second-trimester", label: "Second Trimester", count: categoryCounts["second-trimester"] || 0 },
+      { key: "third-trimester", label: "Third Trimester", count: categoryCounts["third-trimester"] || 0 },
+      { key: "nutrition", label: "Nutrition", count: categoryCounts.nutrition || 0 },
+      { key: "fitness", label: "Fitness", count: categoryCounts.fitness || 0 },
+      { key: "symptoms", label: "Symptoms", count: categoryCounts.symptoms || 0 }
+    ],
+    postpartum: [
+      { key: "all", label: "All Postpartum", count: categoryCounts.all || 0 },
+      { key: "recovery", label: "Physical Recovery", count: categoryCounts.recovery || 0 },
+      { key: "mental-health", label: "Mental Health", count: categoryCounts["mental-health"] || 0 },
+      { key: "breastfeeding", label: "Breastfeeding", count: categoryCounts.breastfeeding || 0 },
+      { key: "self-care", label: "Self Care", count: categoryCounts["self-care"] || 0 }
+    ],
+    earlyChildcare: [
+      { key: "all", label: "All Early Childcare", count: categoryCounts.all || 0 },
+      { key: "newborn-care", label: "Newborn Care", count: categoryCounts["newborn-care"] || 0 },
+      { key: "feeding", label: "Feeding", count: categoryCounts.feeding || 0 },
+      { key: "sleep", label: "Sleep", count: categoryCounts.sleep || 0 },
+      { key: "development", label: "Development", count: categoryCounts.development || 0 }
+    ]
+  };
+
+  // Don't show category filters for "all" stage
+  if (activeStage === "all") return null;
+
+  const categories = stageCategories[activeStage as keyof typeof stageCategories] || [];
+
+  return (
+    <div className="flex flex-wrap gap-2 px-6 pb-4 border-b border-gray-200">
+      {categories.map((category) => (
+        <button
+          key={category.key}
+          onClick={() => setActiveCategory(category.key)}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-300 text-sm ${
+            activeCategory === category.key
+              ? "bg-bloomPink/20 text-bloomPink border-bloomPink"
+              : "bg-white text-gray-600 border-gray-300 hover:border-bloomPink"
+          }`}
+        >
+          <span>{category.label}</span>
+          <span className={`text-xs px-1.5 py-0.5 rounded-full ${
+            activeCategory === category.key 
+              ? "bg-bloomPink text-white" 
+              : "bg-gray-200 text-gray-600"
+          }`}>
+            {category.count}
           </span>
         </button>
       ))}
@@ -225,10 +268,89 @@ const FilterButtons = ({
 // === MAIN COMPONENT ===
 export default function BloomGuide() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeStage, setActiveStage] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedArticle, setSelectedArticle] = useState<any>(null);
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // Add URL parameter handling
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Handle URL parameters on component mount and when searchParams change
+  useEffect(() => {
+    const stage = searchParams.get('stage');
+    const category = searchParams.get('category');
+    
+    if (stage) {
+      setActiveStage(stage);
+    }
+    if (category) {
+      setActiveCategory(category);
+    }
+  }, [searchParams]);
+
+  
+  // Update URL when filters change (optional)
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (activeStage !== "all") {
+      params.set('stage', activeStage);
+    }
+    if (activeCategory !== "all") {
+      params.set('category', activeCategory);
+    }
+    setSearchParams(params);
+  }, [activeStage, activeCategory, setSearchParams]);
+
+
+  // Get all articles using useMemo for performance
+  const allArticles = useMemo(() => {
+    const pregnantArticles = [
+      ...pregnant.maternalTips.articles,
+      ...pregnant.nutrition.articles,
+      ...pregnant.symptoms.articles,
+      ...pregnant.fitness.articles,
+      ...pregnant.development.articles,
+      ...pregnant.commonConcerns.articles,
+      ...pregnant.medicalResearch.articles,
+      ...pregnant.secondTrimester.articles
+    ];
+
+    const postpartumArticles = [
+      ...postpartum.mentalHealth.articles,
+      ...postpartum.recovery.articles,
+      ...postpartum.selfCare.articles,
+      ...postpartum.breastfeeding.articles,
+      ...postpartum.physicalChanges.articles,
+      ...postpartum.bf2.articles
+    ];
+
+    const earlyChildcareArticles = [
+      ...earlyChildCare.newbornCare.articles,
+      ...earlyChildCare.sleep.articles,
+      ...earlyChildCare.feeding.articles,
+      ...earlyChildCare.development.articles,
+      ...earlyChildCare.health.articles
+    ];
+
+    // Use actual generalMotherhood data
+    const generalMotherhoodArticles = [
+      ...generalMotherhood.moods.articles,
+      ...generalMotherhood.mustReads.articles,
+      ...generalMotherhood.symptoms.articles,
+      ...generalMotherhood.relationships.articles,
+      ...generalMotherhood.tips.articles
+    ];
+
+    return {
+      generalMotherhood: generalMotherhoodArticles,
+      pregnant: pregnantArticles,
+      postpartum: postpartumArticles,
+      earlyChildcare: earlyChildcareArticles,
+      all: [...generalMotherhoodArticles, ...pregnantArticles, ...postpartumArticles, ...earlyChildcareArticles]
+    };
+  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -238,157 +360,254 @@ export default function BloomGuide() {
     setIsSidebarOpen(false);
   };
 
-  // === DATA SECTION ===
-  const maternalTips: Article[] = [
-    {
-      title: "The Baby: Development at 5 Weeks",
-      image: "/assets/article1.webp",
-      category: "Pregnancy",
-      section: "maternal"
-    },
-    {
-      title: "Nutrition Tips for Early Pregnancy",
-      image: "/assets/article1.webp",
-      category: "Nutrition",
-      section: "maternal"
-    },
-    {
-      title: "Signs Your Body is Adjusting to Pregnancy",
-      image: "/assets/article1.webp",
-      category: "Health",
-      section: "maternal"
-    },
-    {
-      title: "Exercise During First Trimester",
-      image: "/assets/article1.webp",
-      category: "Fitness",
-      section: "maternal"
-    },
-    {
-      title: "Managing Morning Sickness",
-      image: "/assets/article1.webp",
-      category: "Health",
-      section: "maternal"
-    },
-  ];
-
-  const motherCare: Article[] = [
-    {
-      title: "Postpartum Self-Care Routine",
-      image: "/assets/article1.webp",
-      category: "Self-Care",
-      section: "mother"
-    },
-    {
-      title: "Caring for Yourself While Caring for Baby",
-      image: "/assets/article1.webp",
-      category: "Wellness",
-      section: "mother"
-    },
-    {
-      title: "Mental Health After Birth",
-      image: "/assets/article1.webp",
-      category: "Mental Health",
-      section: "mother"
-    },
-    {
-      title: "Returning to Exercise Postpartum",
-      image: "/assets/article1.webp",
-      category: "Fitness",
-      section: "mother"
-    },
-  ];
-
-  const babyCare: Article[] = [
-    {
-      title: "Newborn Care Essentials",
-      image: "/assets/article1.webp",
-      category: "Baby Care",
-      section: "baby"
-    },
-    {
-      title: "Understanding Baby's Sleep Patterns",
-      image: "/assets/article1.webp",
-      category: "Sleep",
-      section: "baby"
-    },
-    {
-      title: "Feeding Guide for Newborns",
-      image: "/assets/article1.webp",
-      category: "Feeding",
-      section: "baby"
-    },
-    {
-      title: "Baby Development Milestones",
-      image: "/assets/article1.webp",
-      category: "Development",
-      section: "baby"
-    },
-    {
-      title: "Common Newborn Health Concerns",
-      image: "/assets/article1.webp",
-      category: "Health",
-      section: "baby"
-    },
-  ];
-
-  const topMaternalTips = maternalTips.slice(0, 3);
-  const topMotherCare = motherCare.slice(0, 3);
-  const topBabyCare = babyCare.slice(0, 3);
-
   // Helper function to filter articles by search query
   const filterArticlesBySearch = (articles: Article[]): Article[] => {
     if (!searchQuery.trim()) return articles;
     
+    const query = searchQuery.toLowerCase();
     return articles.filter(article =>
-      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.category.toLowerCase().includes(searchQuery.toLowerCase())
+      article.title.toLowerCase().includes(query) ||
+      article.category.toLowerCase().includes(query) ||
+      (article.content?.headline && article.content.headline.toLowerCase().includes(query)) ||
+      (article.content?.intro && article.content.intro.toLowerCase().includes(query))
     );
   };
 
-  // Filter articles based on active filter and search query
-  const getFilteredArticles = (): ArticleSection => {
-    let baseArticles;
+  // Categorize general motherhood articles
+  const categorizeGeneralMotherhoodArticles = (articles: Article[]) => {
+    const categorized = {
+      "moods": articles.filter(article => 
+        article.category === "Moods" || 
+        article.title.toLowerCase().includes("mood") ||
+        article.title.toLowerCase().includes("emotional")
+      ),
+      "symptoms": articles.filter(article => 
+        article.category === "Symptoms" || 
+        article.title.toLowerCase().includes("symptom")
+      ),
+      "tips": articles.filter(article => 
+        article.category === "Tips" || 
+        article.title.toLowerCase().includes("tip") ||
+        article.title.toLowerCase().includes("advice")
+      ),
+      "wellness": articles.filter(article => 
+        article.category === "MustReads" || 
+        article.title.toLowerCase().includes("mustreads") ||
+        article.title.toLowerCase().includes("self-care") 
+      ),
+      "relationships": articles.filter(article => 
+        article.category === "Relationships" || 
+        article.title.toLowerCase().includes("relationship") ||
+        article.title.toLowerCase().includes("partner")
+      )
+    };
     
-    switch (activeFilter) {
-      case "maternal":
-        baseArticles = { maternal: maternalTips };
+    return categorized;
+  };
+
+  // Categorize pregnancy articles by trimester
+  const categorizePregnancyArticles = (articles: Article[]) => {
+    const categorized = {
+      "first-trimester": articles.filter(article => 
+        article.id === "baby-development-5-weeks" ||
+        article.id === "body-adjusting-pregnancy" ||
+        article.id === "managing-morning-sickness"
+      ),
+      "second-trimester": articles.filter(article => 
+        article.id === "pregnancy-second-trimester" ||
+        article.title.includes("Second Trimester")
+      ),
+      "third-trimester": articles.filter(article => 
+        article.id === "fetal-development-stages" ||
+        article.title.includes("Third Trimester")
+      ),
+      "nutrition": articles.filter(article => 
+        article.id === "nutrition-tips-early-pregnancy"
+      ),
+      "fitness": articles.filter(article => 
+        article.id === "exercise-first-trimester"
+      ),
+      "symptoms": articles.filter(article => 
+        article.id === "managing-morning-sickness"
+      )
+    };
+    
+    return categorized;
+  };
+
+  // Calculate stage counts for filter buttons
+  const stageCounts = useMemo(() => {
+    const generalCount = filterArticlesBySearch(allArticles.generalMotherhood).length;
+    const pregnantCount = filterArticlesBySearch(allArticles.pregnant).length;
+    const postpartumCount = filterArticlesBySearch(allArticles.postpartum).length;
+    const earlyChildcareCount = filterArticlesBySearch(allArticles.earlyChildcare).length;
+    
+    return {
+      all: generalCount + pregnantCount + postpartumCount + earlyChildcareCount,
+      generalMotherhood: generalCount,
+      pregnant: pregnantCount,
+      postpartum: postpartumCount,
+      earlyChildcare: earlyChildcareCount
+    };
+  }, [searchQuery, allArticles]);
+
+  // Calculate category counts
+  const categoryCounts = useMemo((): { [key: string]: number } => {
+    if (activeStage === "all") return {};
+    
+    const stageArticles = allArticles[activeStage as keyof typeof allArticles];
+    const filteredArticles = filterArticlesBySearch(stageArticles);
+    
+    if (activeStage === "generalMotherhood") {
+      const categorized = categorizeGeneralMotherhoodArticles(filteredArticles);
+      return {
+        all: filteredArticles.length,
+        "moods": categorized.moods?.length || 0,
+        "symptoms": categorized.symptoms?.length || 0,
+        "tips": categorized.tips?.length || 0,
+        "wellness": categorized.wellness?.length || 0,
+        "relationships": categorized.relationships?.length || 0
+      };
+    }
+    
+    if (activeStage === "pregnant") {
+      const categorized = categorizePregnancyArticles(filteredArticles);
+      return {
+        all: filteredArticles.length,
+        "first-trimester": categorized["first-trimester"]?.length || 0,
+        "second-trimester": categorized["second-trimester"]?.length || 0,
+        "third-trimester": categorized["third-trimester"]?.length || 0,
+        "nutrition": categorized.nutrition?.length || 0,
+        "fitness": categorized.fitness?.length || 0,
+        "symptoms": categorized.symptoms?.length || 0
+      };
+    }
+    
+    if (activeStage === "postpartum") {
+      return {
+        all: filteredArticles.length,
+        "recovery": filteredArticles.filter(a => a.category === "Fitness" || a.category === "Self-Care").length,
+        "mental-health": filteredArticles.filter(a => a.category === "Mental Health").length,
+        "breastfeeding": filteredArticles.filter(a => a.category === "Breastfeeding").length,
+        "self-care": filteredArticles.filter(a => a.category === "Wellness").length
+      };
+    }
+    
+    if (activeStage === "earlyChildcare") {
+      return {
+        all: filteredArticles.length,
+        "newborn-care": filteredArticles.filter(a => a.category === "Baby Care" || a.category === "Health").length,
+        "feeding": filteredArticles.filter(a => a.category === "Feeding").length,
+        "sleep": filteredArticles.filter(a => a.category === "Sleep").length,
+        "development": filteredArticles.filter(a => a.category === "Development").length
+      };
+    }
+    
+    return {};
+  }, [activeStage, searchQuery, allArticles]);
+
+  // Filter articles based on active stage, category and search query
+  const getFilteredArticles = (): ArticleSection => {
+    let articlesToFilter: Article[] = [];
+
+    // Get base articles based on active stage
+    switch (activeStage) {
+      case "generalMotherhood":
+        articlesToFilter = allArticles.generalMotherhood;
         break;
-      case "mother":
-        baseArticles = { mother: motherCare };
+      case "pregnant":
+        articlesToFilter = allArticles.pregnant;
         break;
-      case "baby":
-        baseArticles = { baby: babyCare };
+      case "postpartum":
+        articlesToFilter = allArticles.postpartum;
+        break;
+      case "earlyChildcare":
+        articlesToFilter = allArticles.earlyChildcare;
         break;
       default: // "all"
-        baseArticles = {
-          maternal: topMaternalTips,
-          mother: topMotherCare,
-          baby: topBabyCare
-        };
+        articlesToFilter = allArticles.all;
     }
 
-    // Apply search filtering to each section
-    const filteredSections: ArticleSection = {};
-    Object.entries(baseArticles).forEach(([section, articles]) => {
-      const filtered = filterArticlesBySearch(articles);
-      if (filtered.length > 0) {
-        filteredSections[section as keyof ArticleSection] = filtered;
+    // Apply category filtering for specific stages
+    if (activeStage === "generalMotherhood" && activeCategory !== "all") {
+      const categorized = categorizeGeneralMotherhoodArticles(articlesToFilter);
+      articlesToFilter = categorized[activeCategory as keyof typeof categorized] || [];
+    } else if (activeStage === "pregnant" && activeCategory !== "all") {
+      const categorized = categorizePregnancyArticles(articlesToFilter);
+      articlesToFilter = categorized[activeCategory as keyof typeof categorized] || [];
+    } else if (activeStage === "postpartum" && activeCategory !== "all") {
+      switch (activeCategory) {
+        case "recovery":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Fitness" || a.category === "Self-Care");
+          break;
+        case "mental-health":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Mental Health");
+          break;
+        case "breastfeeding":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Breastfeeding");
+          break;
+        case "self-care":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Wellness");
+          break;
       }
-    });
+    } else if (activeStage === "earlyChildcare" && activeCategory !== "all") {
+      switch (activeCategory) {
+        case "newborn-care":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Baby Care" || a.category === "Health");
+          break;
+        case "feeding":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Feeding");
+          break;
+        case "sleep":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Sleep");
+          break;
+        case "development":
+          articlesToFilter = articlesToFilter.filter(a => a.category === "Development");
+          break;
+      }
+    }
 
-    return filteredSections;
+    // Apply search filtering
+    const filteredArticles = filterArticlesBySearch(articlesToFilter);
+
+    // If showing "all", group by stage for display
+    if (activeStage === "all") {
+      const grouped: ArticleSection = {};
+      
+      filteredArticles.forEach(article => {
+        // Determine which stage this article belongs to
+        let stage = "";
+        if (allArticles.generalMotherhood.some(a => a.id === article.id)) {
+          stage = "generalMotherhood";
+        } else if (allArticles.pregnant.some(a => a.id === article.id)) {
+          stage = "pregnant";
+        } else if (allArticles.postpartum.some(a => a.id === article.id)) {
+          stage = "postpartum";
+        } else {
+          stage = "earlyChildcare";
+        }
+
+        if (!grouped[stage]) {
+          grouped[stage] = [];
+        }
+        grouped[stage].push(article);
+      });
+
+      return grouped;
+    } else {
+      // For specific stage filters, just return that stage
+      return { [activeStage]: filteredArticles };
+    }
   };
 
   // Use useMemo to prevent unnecessary recalculations
-  const filteredSections = useMemo(() => getFilteredArticles(), [activeFilter, searchQuery, maternalTips, motherCare, babyCare]);
+  const filteredSections = useMemo(() => getFilteredArticles(), [activeStage, activeCategory, searchQuery, allArticles]);
 
   // Check if search has no results
   const hasNoResults = Boolean(searchQuery && Object.keys(filteredSections).length === 0);
 
   // Handle article click
-  const handleArticleClick = (title: string) => {
-    const article = articlesData.articles.find(a => a.title === title);
+  const handleArticleClick = (article: Article) => {
     setSelectedArticle(article);
     setIsModalOpen(true);
   };
@@ -396,9 +615,10 @@ export default function BloomGuide() {
   // === SECTION TITLE HELPER ===
   const getSectionTitle = (section: string) => {
     const titles = {
-      maternal: "Maternal Tips",
-      mother: "Mother Care", 
-      baby: "Baby Care"
+      generalMotherhood: "General Motherhood",
+      pregnant: "Pregnancy Articles",
+      postpartum: "Postpartum Care", 
+      earlyChildcare: "Early Childcare"
     };
     return titles[section as keyof typeof titles] || section;
   };
@@ -406,7 +626,7 @@ export default function BloomGuide() {
   // === MAIN PAGE ===
   return (
     <div 
-      className="bg-pink-50 flex flex-col font-poppins relative"
+      className="bg-white flex flex-col font-poppins relative"
       style={{
         height: '100vh',
         overflow: 'hidden'
@@ -415,7 +635,7 @@ export default function BloomGuide() {
       <Header onMenuClick={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
-      {/* Main scrollable content area with FORCED scrolling */}
+      {/* Main scrollable content area */}
       <div 
         className={`flex-1 w-full ${isModalOpen ? 'blur-sm' : ''}`}
         style={{
@@ -426,26 +646,29 @@ export default function BloomGuide() {
           paddingTop: '20px'
         }}
       >
-        {/* Background decorative element */}
-        <div 
-          className="fixed top-20 right-10 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse pointer-events-none"
-          style={{
-            zIndex: 0
-          }}
-        />
-
+     
         {/* Content Container */}
         <div 
           className="relative z-10"
           style={{
-            minHeight: '1000px' // Force enough content for scrolling
+            minHeight: '1000px'
           }}
         >
-          {/* BLOOMGUIDE BAR */}
-          <div className="text-[#F875AA] text-center mt-5 px-6 py-2">
-            <div className="font-semibold text-3xl">BloomGuide</div>
-            <div className="text-lg font-rubik text-[#474747]">know more, care better.</div>
+          {/* BLOOMGUIDE HEADER WITH LOGO */}
+          <div className="text-center py-8 px-4">
+            <div className="inline-flex items-center gap-3 mb-4">
+              <div className="p-3 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-2xl shadow-lg">
+                <BookOpen className="w-8 h-8 text-white" />
+              </div>
+              <h1 className="text-4xl font-bold bg-clip-text text-bloomPink">
+                BloomGuide
+              </h1>
+            </div>
+            <p className="text-bloomBlack font-rubik text-lg font-light max-w-2xl mx-auto">
+              Know more, care better. <br></br>Wisdom for your motherhood journey.
+            </p>
           </div>
+
 
           {/* SEARCH BAR */}
           <div className="w-full px-6 py-4">
@@ -456,14 +679,22 @@ export default function BloomGuide() {
             />
           </div>
 
-          {/* FILTER BUTTONS */}
-          <FilterButtons 
-            activeFilter={activeFilter}
-            setActiveFilter={setActiveFilter}
+          {/* STAGE FILTER BUTTONS */}
+          <StageFilterButtons 
+            activeStage={activeStage}
+            setActiveStage={setActiveStage}
+            setActiveCategory={setActiveCategory}
             searchQuery={searchQuery}
-            maternalTips={maternalTips}
-            motherCare={motherCare}
-            babyCare={babyCare}
+            stageCounts={stageCounts}
+          />
+
+          {/* CATEGORY FILTER BUTTONS */}
+          <CategoryFilterButtons 
+            activeStage={activeStage}
+            activeCategory={activeCategory}
+            setActiveCategory={setActiveCategory}
+            searchQuery={searchQuery}
+            categoryCounts={categoryCounts}
           />
 
           {/* ARTICLES SECTIONS */}
@@ -474,22 +705,23 @@ export default function BloomGuide() {
                   <h2 className="text-3xl font-bold text-bloomPink">
                     {getSectionTitle(section)}
                   </h2>
+                  <span className="bg-bloomPink/10 text-bloomPink px-3 py-1 rounded-full text-sm font-medium">
+                    {articles.length} {articles.length === 1 ? 'article' : 'articles'}
+                  </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {articles.map((article, i) => (
                     <ArticleCard 
-                      key={i} 
-                      title={article.title} 
-                      image={article.image} 
-                      category={article.category}
-                      onClick={() => handleArticleClick(article.title)}
+                      key={`${article.id}-${i}`} 
+                      article={article}
+                      onClick={() => handleArticleClick(article)}
                     />
                   ))}
                 </div>
               </section>
             ))}
 
-            {/* Show message if no articles found for a specific filter */}
+            {/* Show message if no articles found */}
             {Object.keys(filteredSections).length === 0 && (
               <div className="text-center py-12 px-8">
                 <div className="text-gray-400 text-6xl mb-4">

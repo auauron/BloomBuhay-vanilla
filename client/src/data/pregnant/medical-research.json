@@ -1,0 +1,58 @@
+{
+  "articles": [
+    {
+      "id": "medication-research-pregnancy",
+      "title": "Medication Safety in Pregnancy",
+      "image": "/assets/pregnancyArticle/pr7.png",
+      "category": "Health",
+      "section": "maternal",
+      "externalLink": "https://www.sciencedirect.com/science/article/pii/S0002937821004579",
+      "content": {
+        "headline": "Understanding Medication Research and Safety During Pregnancy",
+        "intro": "Pregnant and lactating women have historically been excluded from clinical drug research, leading to most medications being used 'off-label' during pregnancy. Recent changes aim to improve safety data for medications used during pregnancy and lactation.",
+        "sections": [
+          {
+            "title": "The Challenge of Medication Use in Pregnancy",
+            "content": "Current landscape of medication safety during pregnancy:",
+            "points": [
+              "40-60% of pregnant women take 1 or more prescription medications",
+              "Over 90% of medications lack appropriate labeling for pregnancy use",
+              "Most medications are used 'off-label' during pregnancy",
+              "Pregnant women were historically excluded from clinical trials"
+            ]
+          },
+          {
+            "title": "Historical Context and Changes",
+            "content": "Evolution of medication safety research in pregnancy:",
+            "points": [
+              "1977 FDA guidelines prevented pregnant women from clinical trials",
+              "1993 NIH Revitalization Act required inclusion of women in research",
+              "Recent removal of 'vulnerable' classification for pregnant women",
+              "Increased focus on preexisting conditions in pregnancy"
+            ]
+          },
+          {
+            "title": "Current Research Initiatives",
+            "content": "Efforts to improve medication safety data:",
+            "points": [
+              "Obstetric-Fetal Pharmacology Research Centers established",
+              "Studying pharmacokinetics of common pregnancy medications",
+              "Research on diabetes, hypertension, and infection treatments",
+              "Focus on individualized dosing during pregnancy"
+            ]
+          },
+          {
+            "title": "Important Considerations",
+            "content": "What every pregnant woman should know about medications:",
+            "points": [
+              "Always consult your provider before taking any medication",
+              "Discuss preexisting conditions and necessary medications early",
+              "Understand that medication needs may change during pregnancy",
+              "Ask about latest research on specific medications you need"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

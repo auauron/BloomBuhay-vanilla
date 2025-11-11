@@ -1,0 +1,51 @@
+{
+  "articles": [
+    {
+      "id": "feeding-guide-newborns",
+      "title": "Feeding Guide for Newborns",
+      "image": "/assets/earlyChildcareArticle/eCC4.png",
+      "category": "Feeding",
+      "section": "baby",
+      "externalLink": "https://link.springer.com/article/10.1186/s12887-020-1982-9",
+      "content": {
+        "headline": "Newborn Feeding Guidelines: Preventing Early Overfeeding and Future Obesity",
+        "intro": "Groundbreaking research reveals that overfeeding during the first day of life can significantly increase the risk of childhood obesity.",
+        "sections": [
+          {
+            "title": "Critical First Day Feeding Research",
+            "content": "A study of 1,106 formula-fed infants found startling connections:",
+            "points": [
+              "93% of newborns were overfed at least once on their first day",
+              "71% were overfed 3 or more times during their first 7 feeds",
+              "Overfeeding 5+ times increased obesity risk 5x at age 4",
+              "Consistent overfeeding all 7 feeds increased risk 7x at age 4",
+              "Early metabolic programming may establish lifelong patterns"
+            ]
+          },
+          {
+            "title": "Appropriate Feeding Volumes by Weight",
+            "content": "Follow these evidence-based guidelines for newborn feeding amounts:",
+            "points": [
+              "Avoid feeds greater than 30ml in single sessions initially",
+              "Start with 15-20ml per feeding for average weight newborns",
+              "Adjust amounts based on baby's weight and hunger cues",
+              "Feed every 2-3 hours or 8-12 times in 24 hours",
+              "Increase volume gradually as baby grows and demands"
+            ]
+          },
+          {
+            "title": "Recognizing Hunger and Fullness Cues",
+            "content": "Learn to read your baby's signals to prevent overfeeding:",
+            "points": [
+              "Early hunger signs: smacking lips, rooting, hand-to-mouth movements",
+              "Active hunger signs: crying, agitated movements, searching for nipple",
+              "Fullness signals: slowing sucking, turning away, relaxed hands",
+              "Stop feeding when baby shows satisfaction cues",
+              "Avoid using feeding as only comfort method"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

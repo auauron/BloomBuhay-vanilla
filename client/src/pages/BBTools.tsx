@@ -10,13 +10,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPersonPregnant } from '@fortawesome/free-solid-svg-icons'
 import { faPersonBreastfeeding } from '@fortawesome/free-solid-svg-icons'
 import { faChild } from '@fortawesome/free-solid-svg-icons'
+import { bbtoolsService } from "../services/BBToolsService";
 
 export default function BBTools() {
   const [activeStage, setActiveStage] = useState("pregnant");
   const [userStage, setUserStage] = useState("pregnant");
 
   useEffect(() => {
-    // Simulate fetching user stage from database
+    async function load() {
+      const res = await bbtoolsService.getAll();
+      if (res.success) {
+        // set state from res.data.metrics / feedings / sleeps / growths
+      }
+    }
+    load();
   }, []);
 
   const stages = [
@@ -59,46 +66,34 @@ export default function BBTools() {
             </h1>
           </div>
           <p className="text-bloomBlack font-rubik text-lg font-light max-w-2xl mx-auto">
-            Your baby’s world, beautifully tracked and tenderly cared for.
+            Your baby's world, beautifully tracked and tenderly cared for.
           </p>
         </div>
 
         {/* Stage Selection */}
         <div className="flex justify-center mb-8 px-4">
-          <div className="bg-white rounded-2xl shadow-lg border border-pink-100 p-2">
-            <div className="flex gap-2">
+          <div className="bg-white rounded-2xl shadow-lg border border-pink-100 p-2 max-w-xs sm:max-w-lg md:max-w-none">
+            <div className="flex flex-col sm:flex-row gap-2">
               {stages.map((stage) => (
                 <button
                   key={stage.id}
                   onClick={() => setActiveStage(stage.id)}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 ${
+                  className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl transition-all duration-300 w-full sm:w-auto ${
                     activeStage === stage.id
                       ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow-lg"
                       : "text-gray-600 hover:bg-gray-50"
                   }`}
                 >
                   {stage.icon}
-                  <span className="font-medium">{stage.label}</span>
+                  <span className="font-medium text-sm sm:text-base">{stage.label}</span>
                 </button>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Current Stage Indicator
-        <div className="text-center mb-8 px-4">
-          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 border border-pink-200">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm text-gray-600">
-              Currently viewing: <span className="font-semibold text-bloomPink">
-                {stages.find(s => s.id === activeStage)?.label}
-              </span>
-            </span>
-          </div>
-        </div> */}
-
         {/* Tools Container */}
-    <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-pink-100 p-6 mb-8 max-w-7xl w-[90%] mx-auto">
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-pink-100 p-6 mb-8 max-w-7xl w-[90%] mx-auto">
           {activeStage === "pregnant" && <PregnantTools />}
           {activeStage === "postpartum" && <PostpartumTools />}
           {activeStage === "childcare" && <EarlyChildcareTools />}

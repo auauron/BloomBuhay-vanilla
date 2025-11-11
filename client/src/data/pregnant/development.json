@@ -1,0 +1,68 @@
+{
+  "articles": [
+    {
+      "id": "fetal-development-stages",
+      "title": "Fetal Development Stages",
+      "image": "/assets/pregnancyArticle/pr6.png",
+      "category": "Development",
+      "section": "maternal",
+      "externalLink": "https://my.clevelandclinic.org/health/articles/7247-fetal-development-stages-of-growth",
+      "content": {
+        "headline": "Comprehensive Guide to Fetal Development from Conception to Birth",
+        "intro": "Fetal development is an orderly and intricate process that begins before you even know you're pregnant and ends with the birth of your baby. There are three main stages of fetal development: germinal, embryonic and fetal.",
+        "sections": [
+          {
+            "title": "The Three Stages of Fetal Development",
+            "content": "Understanding the progression from conception to birth:",
+            "points": [
+              "Germinal Stage: Shortest stage beginning at conception, zygote divides and becomes blastocyst",
+              "Embryonic Stage: Weeks 3-8, embryo develops distinct human characteristics and major organs",
+              "Fetal Stage: Week 9 to birth, fetus grows and matures all body systems and features"
+            ]
+          },
+          {
+            "title": "First Trimester Development (Weeks 1-12)",
+            "content": "The most critical period for organ formation:",
+            "points": [
+              "Week 5: Neural tube forms, tiny heart begins pulsing",
+              "Week 6: Arm and leg buds develop, blood circulation begins",
+              "Week 8: All major organs and body systems developing",
+              "Week 12: Most critical development complete, risk of miscarriage decreases"
+            ]
+          },
+          {
+            "title": "Second Trimester Development (Weeks 13-26)",
+            "content": "Rapid growth and the beginning of movement:",
+            "points": [
+              "Week 16: Can hear sounds, fingerprints begin forming",
+              "Week 20: You may feel baby's first movements (quickening)",
+              "Week 24: Lungs developing, skin still translucent",
+              "Baby practices breathing and develops sleep-wake cycles"
+            ]
+          },
+          {
+            "title": "Third Trimester Development (Weeks 27-40)",
+            "content": "Final preparation for birth:",
+            "points": [
+              "Week 28: Eyes can open and blink, lungs producing surfactant",
+              "Week 32: Most organs well-formed except lungs and brain",
+              "Week 37: Considered full-term, baby gains 0.5 pounds weekly",
+              "Week 40: Ready for birth, average 7-9 pounds"
+            ]
+          },
+          {
+            "title": "Key Developmental Milestones",
+            "content": "Important markers in your baby's growth journey:",
+            "points": [
+              "Most critical development occurs in first 13 weeks",
+              "Baby's sex determined around week 9",
+              "Rapid brain development in third trimester",
+              "Vernix and lanugo protect skin in womb",
+              "Bones harden but skull remains soft for birth"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
