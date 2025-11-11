@@ -183,9 +183,6 @@ export default function Dashboard() {
               Welcome to your recovery journey
             </h1>
             <p className="text-lg font-semibold mb-6">Tips and self-care for the first weeks</p>
-
-            {/* replaced the static p tag with the RandomTip component */}
-            <PostpartumTip className="text-white/90 text-xl absolute bottom-8 font-rubik font-light" />
           </>
         );
       case "childcare":
@@ -279,11 +276,10 @@ export default function Dashboard() {
                 </ul>
               </div>
 
+              {/* UPDATED TIPS SECTION WITH ROTATING TIPS */}
               <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-6 rounded-[20px] shadow-md">
                 <h3 className="text-2xl mb-3 text-white font-bold">Tips</h3>
-                <p className="text-sm text-[#474747] font-rubik">
-                  Drink plenty of water 💧 and take short naps when you feel tired.
-                </p>
+                <PostpartumTip className="text-sm text-[#474747] font-rubik" />
               </div>
             </div>
           </div>
