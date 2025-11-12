@@ -6,6 +6,8 @@ import Sidebar from "../components/ui/Sidebar";
 import { authService } from "../services/authService";
 import { motion } from "framer-motion";
 import PostpartumTip from "../components/ui/postpartumTips";
+import PregnancyTips from "../components/ui/pregnancyTips"; 
+import EarlyChildcareTips from "../components/ui/earlyChildcareTips"; 
 
 
 const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
@@ -275,11 +277,23 @@ export default function Dashboard() {
                   </li>
                 </ul>
               </div>
-
-              {/* UPDATED TIPS SECTION WITH ROTATING TIPS */}
+              {/* UPDATED TIPS SECTION WITH STAGE-SPECIFIC ROTATING TIPS */}
               <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-6 rounded-[20px] shadow-md">
                 <h3 className="text-2xl mb-3 text-white font-bold">Tips</h3>
-                <PostpartumTip className="text-sm text-[#474747] font-rubik" />
+                {canonicalStageKey === "pregnant" && (
+                  <PregnancyTips className="text-sm text-[#474747] font-rubik" />
+                )}
+                {canonicalStageKey === "postpartum" && (
+                  <PostpartumTip className="text-sm text-[#474747] font-rubik" />
+                )}
+                {canonicalStageKey === "childcare" && (
+                  <EarlyChildcareTips className="text-sm text-[#474747] font-rubik" />
+                )}
+                {!canonicalStageKey && (
+                  <p className="text-sm text-[#474747] font-rubik">
+                    Complete your profile to get personalized tips for your stage.
+                  </p>
+                )}
               </div>
             </div>
           </div>
