@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Plus,
   HeartHandshake,
@@ -14,12 +14,16 @@ import {
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "../../index.css";
+import { healthtrackerService, HealthSymptom } from "../../services/healthtrackerService";
 
-interface Symptom {
+interface SymptomLocal {
+  id?: number;
   symptom: string;
   time: string;
-  intensity: "Low" | "Medium" | "High";
+  intensity: "Low" | "Medium" | "High" | string;
   resolved: boolean;
+  notes?: string;
+  rawCreatedAt?: string;
 }
 
 interface FormState {
@@ -27,28 +31,63 @@ interface FormState {
   intensity: "Low" | "Medium" | "High";
   date: string;
   time: string;
+  notes?: string;
 }
 
 const SymptomsList: React.FC = () => {
   const navigate = useNavigate();
 
-  const [symptoms, setSymptoms] = useState<Symptom[]>([
-    { symptom: "Morning Sickness", time: "Today, 8:30 AM", intensity: "High", resolved: false },
-    { symptom: "Fatigue", time: "Yesterday, 3:00 PM", intensity: "Medium", resolved: false },
-    { symptom: "Back Pain", time: "Nov 12, 7:00 PM", intensity: "Medium", resolved: true },
-    { symptom: "Food Cravings", time: "Nov 11, 2:00 PM", intensity: "Low", resolved: false },
+  const [symptoms, setSymptoms] = useState<SymptomLocal[]>([
+    // you can keep sample items or start empty; we'll fetch real ones on mount
   ]);
+
+  const [loading, setLoading] = useState<boolean>(true);
 
   const [formState, setFormState] = useState<FormState>({
     symptom: "",
     intensity: "Low",
     date: new Date().toISOString().split("T")[0],
     time: new Date().toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" }),
+    notes: "",
   });
 
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      setLoading(true);
+      try {
+        const res = await healthtrackerService.getAll();
+        if (!mounted) return;
+        if (res.success && res.data && res.data.symptoms) {
+          // map incoming to local shape if necessary
+          const mapped: SymptomLocal[] = (res.data.symptoms as any[]).map((s) => ({
+            id: s.id,
+            symptom: s.symptom,
+            time: s.time,
+            intensity: s.intensity ?? "Low",
+            resolved: !!s.resolved,
+            notes: s.notes,
+            rawCreatedAt: s.rawCreatedAt,
+          }));
+          setSymptoms(mapped);
+        } else {
+          setSymptoms([]); // fallback
+        }
+      } catch (err) {
+        console.error("Failed to fetch symptoms:", err);
+        setSymptoms([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const formatDisplayDate = (dateString: string, timeString: string) => {
     const date = new Date(dateString);
@@ -67,41 +106,168 @@ const SymptomsList: React.FC = () => {
       intensity: "Low",
       date: new Date().toISOString().split("T")[0],
       time: new Date().toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" }),
+      notes: "",
     });
   };
 
-  // ------------------- CRUD -------------------
-  const addSymptom = () => {
-    const time = formatDisplayDate(formState.date, formState.time);
-    setSymptoms([{ ...formState, time, resolved: false }, ...symptoms]);
-    resetFormState();
-    setShowAddModal(false);
-  };
-
-  const updateSymptom = () => {
-    if (editingIndex === null) return;
-    const updated = [...symptoms];
-    updated[editingIndex] = {
-      ...formState,
-      time: formatDisplayDate(formState.date, formState.time),
-      resolved: updated[editingIndex].resolved,
+  // create symptom via API
+  const addSymptom = async () => {
+    const payload = {
+      symptom: formState.symptom,
+      intensity: formState.intensity,
+      date: formState.date,
+      time: formState.time,
+      notes: formState.notes,
+      resolved: false,
     };
-    setSymptoms(updated);
+
+    try {
+      const res = await healthtrackerService.addSymptom(payload);
+      if (res.success && res.data) {
+        // server returns mapped symptom object
+        const created = res.data as any;
+        const local: SymptomLocal = {
+          id: created.id,
+          symptom: created.symptom,
+          time: created.time,
+          intensity: created.intensity ?? "Low",
+          resolved: !!created.resolved,
+          notes: created.notes,
+          rawCreatedAt: created.rawCreatedAt,
+        };
+        setSymptoms((prev) => [local, ...prev]);
+      } else {
+        // fallback: optimistic local add if server fails
+        const time = formatDisplayDate(formState.date, formState.time);
+        setSymptoms((prev) => [{ symptom: formState.symptom, time, intensity: formState.intensity, resolved: false, notes: formState.notes }, ...prev]);
+        console.error("Add symptom failed:", res.error);
+      }
+    } catch (err) {
+      console.error("Add symptom exception:", err);
+    } finally {
+      resetFormState();
+      setShowAddModal(false);
+    }
+  };
+
+  // update symptom via API
+  const updateSymptom = async () => {
+    if (editingIndex === null) return;
+    const target = symptoms[editingIndex];
+    if (!target || !target.id) {
+      // if no id, just update locally
+      const updated = [...symptoms];
+      updated[editingIndex] = {
+        ...updated[editingIndex],
+        ...formState,
+        time: formatDisplayDate(formState.date, formState.time),
+      };
+      setSymptoms(updated);
+      setEditingIndex(null);
+      resetFormState();
+      setShowEditModal(false);
+      return;
+    }
+
+    const payload: any = {
+      symptom: formState.symptom,
+      intensity: formState.intensity,
+      date: formState.date,
+      time: formState.time,
+      notes: formState.notes,
+    };
+
+    try {
+      const res = await healthtrackerService.updateSymptom(target.id, payload);
+      if (res.success && res.data) {
+        const updatedFromServer = res.data as any;
+        const updatedLocal: SymptomLocal = {
+          id: updatedFromServer.id,
+          symptom: updatedFromServer.symptom,
+          time: updatedFromServer.time,
+          intensity: updatedFromServer.intensity,
+          resolved: !!updatedFromServer.resolved,
+          notes: updatedFromServer.notes,
+          rawCreatedAt: updatedFromServer.rawCreatedAt,
+        };
+        setSymptoms((prev) => prev.map((s) => (s.id === updatedLocal.id ? updatedLocal : s)));
+      } else {
+        // fallback local update
+        const updated = [...symptoms];
+        updated[editingIndex] = {
+          ...updated[editingIndex],
+          symptom: formState.symptom,
+          intensity: formState.intensity,
+          time: formatDisplayDate(formState.date, formState.time),
+          notes: formState.notes,
+        };
+        setSymptoms(updated);
+        console.error("Update symptom failed:", res.error);
+      }
+    } catch (err) {
+      console.error("Update symptom exception:", err);
+    } finally {
+      setEditingIndex(null);
+      resetFormState();
+      setShowEditModal(false);
+    }
+  };
+
+  // delete symptom via API
+  const deleteSymptom = async (index: number) => {
+    const target = symptoms[index];
+    if (!target) return;
+    if (target.id) {
+      try {
+        const res = await healthtrackerService.deleteSymptom(target.id);
+        if (res.success) {
+          setSymptoms((prev) => prev.filter((_, i) => i !== index));
+        } else {
+          console.error("Delete symptom failed:", res.error);
+        }
+      } catch (err) {
+        console.error("Delete symptom exception:", err);
+      }
+    } else {
+      // local-only item, just remove
+      setSymptoms((prev) => prev.filter((_, i) => i !== index));
+    }
     setEditingIndex(null);
-    resetFormState();
     setShowEditModal(false);
   };
 
-  const deleteSymptom = (index: number) => {
-    setSymptoms(symptoms.filter((_, i) => i !== index));
-    setEditingIndex(null);
-    setShowEditModal(false);
-  };
-
-  const toggleResolved = (index: number) => {
+  // toggle resolved state (optimistic update + API call)
+  const toggleResolved = async (index: number) => {
     const updated = [...symptoms];
-    updated[index].resolved = !updated[index].resolved;
+    const item = updated[index];
+    updated[index] = { ...item, resolved: !item.resolved };
     setSymptoms(updated);
+
+    if (item.id) {
+      try {
+        const res = await healthtrackerService.updateSymptom(item.id, { resolved: updated[index].resolved });
+        if (!res.success) {
+          console.error("Toggle resolved failed:", res.error);
+          // revert
+          setSymptoms((prev) => prev.map((s, i) => (i === index ? item : s)));
+        } else if (res.data) {
+          // sync with server response
+          const fromServer = res.data as any;
+          setSymptoms((prev) => prev.map((s) => (s.id === fromServer.id ? {
+            id: fromServer.id,
+            symptom: fromServer.symptom,
+            time: fromServer.time,
+            intensity: fromServer.intensity,
+            resolved: !!fromServer.resolved,
+            notes: fromServer.notes,
+          } : s)));
+        }
+      } catch (err) {
+        console.error("Toggle resolved exception:", err);
+        // revert
+        setSymptoms((prev) => prev.map((s, i) => (i === index ? item : s)));
+      }
+    }
   };
 
   const openAddModal = () => {
@@ -113,9 +279,10 @@ const SymptomsList: React.FC = () => {
     const symptom = symptoms[index];
     setFormState({
       symptom: symptom.symptom,
-      intensity: symptom.intensity,
-      date: new Date().toISOString().split("T")[0],
-      time: symptom.time.split(", ")[1] || new Date().toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" }),
+      intensity: (symptom.intensity as any) ?? "Low",
+      date: symptom.rawCreatedAt ? new Date(symptom.rawCreatedAt).toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
+      time: symptom.rawCreatedAt ? new Date(symptom.rawCreatedAt).toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" }) : new Date().toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" }),
+      notes: symptom.notes ?? "",
     });
     setEditingIndex(index);
     setShowEditModal(true);
@@ -174,6 +341,13 @@ const SymptomsList: React.FC = () => {
           />
         </div>
       </div>
+
+      <textarea
+        placeholder="Notes (optional)"
+        value={formState.notes}
+        onChange={(e) => setFormState({ ...formState, notes: e.target.value })}
+        className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-bloomPink focus:border-bloomPink placeholder-gray-500"
+      />
     </div>
   );
 
@@ -233,60 +407,64 @@ const SymptomsList: React.FC = () => {
 
         {/* Symptom List */}
         <div className="space-y-3 mb-6 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-white/50 scrollbar-track-transparent hover:scrollbar-thumb-white/50">
-          {symptoms
-            .sort((a, b) => Number(a.resolved) - Number(b.resolved))
-            .map((item, idx) => (
-              <div
-                key={idx}
-                className={`flex justify-between items-center p-4 rounded-xl transition-all duration-200 ${
-                  item.resolved
-                    ? "bg-gray-900/10 border border-white/20"
-                    : "bg-white border border-white/30 hover:bg-white/25 hover:border-white/40"
-                } shadow-sm`}
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className={`font-semibold text-lg ${item.resolved ? "text-white/60 line-through" : "text-gray-600"}`}>
-                      {item.symptom}
-                    </span>
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        item.intensity === "High"
-                          ? "bg-red-400/90 text-white"
-                          : item.intensity === "Medium"
-                          ? "bg-yellow-400/90 text-white"
-                          : "bg-green-400/90 text-white"
-                      }`}
-                    >
-                      {item.intensity}
-                    </span>
+          {loading ? (
+            <div className="text-white/80">Loading...</div>
+          ) : (
+            [...symptoms]
+              .sort((a, b) => Number(a.resolved) - Number(b.resolved))
+              .map((item, idx) => (
+                <div
+                  key={item.id ?? `${item.symptom}-${item.time}-${idx}`}
+                  className={`flex justify-between items-center p-4 rounded-xl transition-all duration-200 ${
+                    item.resolved
+                      ? "bg-gray-900/10 border border-white/20"
+                      : "bg-white border border-white/30 hover:bg-white/25 hover:border-white/40"
+                  } shadow-sm`}
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-1">
+                      <span className={`font-semibold text-lg ${item.resolved ? "text-white/60 line-through" : "text-gray-600"}`}>
+                        {item.symptom}
+                      </span>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          item.intensity === "High"
+                            ? "bg-red-400/90 text-white"
+                            : item.intensity === "Medium"
+                            ? "bg-yellow-400/90 text-white"
+                            : "bg-green-400/90 text-white"
+                        }`}
+                      >
+                        {item.intensity}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1 text-sm text-gray-600">
+                      <Clock size={14} />
+                      <span>{item.time}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1 text-sm text-gray-600">
-                    <Clock size={14} />
-                    <span>{item.time}</span>
-                  </div>
-                </div>
 
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => openEditModal(idx)}
-                    className="p-2 rounded-xl transition-colors duration-200 text-bloomBlack hover:text-bloomPink"
-                    title="Edit symptom"
-                  >
-                    <Edit3 size={16} />
-                  </button>
-                  <button
-                    onClick={() => toggleResolved(idx)}
-                    className={`p-2 rounded-lg transition-colors ${
-                      item.resolved ? "bg-green-500/90 hover:bg-green-600 text-white" : "bg-red-500/90 hover:bg-green-300 text-white"
-                    }`}
-                    title={item.resolved ? "Mark as unresolved" : "Mark as resolved"}
-                  >
-                    {item.resolved ? <ThumbsUp size={16} /> : <ThumbsDown size={16} />}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => openEditModal(idx)}
+                      className="p-2 rounded-xl transition-colors duration-200 text-bloomBlack hover:text-bloomPink"
+                      title="Edit symptom"
+                    >
+                      <Edit3 size={16} />
+                    </button>
+                    <button
+                      onClick={() => toggleResolved(idx)}
+                      className={`p-2 rounded-lg transition-colors ${
+                        item.resolved ? "bg-green-500/90 hover:bg-green-600 text-white" : "bg-red-500/90 hover:bg-green-300 text-white"
+                      }`}
+                      title={item.resolved ? "Mark as unresolved" : "Mark as resolved"}
+                    >
+                      {item.resolved ? <ThumbsUp size={16} /> : <ThumbsDown size={16} />}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+          )}
         </div>
 
         {/* Add Symptom Button */}

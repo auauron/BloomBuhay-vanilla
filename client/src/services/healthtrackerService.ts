@@ -26,11 +26,12 @@ export interface HealthMood {
 
 export interface HealthSymptom {
   id: number;
-  userId?: number;
-  name: string;
-  severity?: number;
+  symptom: string;        // frontend mapped name
+  intensity?: "Low" | "Medium" | "High" | string;
   notes?: string;
-  createdAt?: string;
+  resolved?: boolean;
+  rawCreatedAt?: string;
+  time?: string; // display time string
 }
 
 export interface GetHealthResponse {
@@ -142,32 +143,32 @@ export const healthtrackerService = {
       return { success: false, error: "Failed to delete metric" };
     }
   },
-  
-  async addMood(data: { mood: string; notes?: string }): Promise<GenericResponse> {
+
+  /* ---------- Symptom helpers ---------- */
+
+  // Frontend should call this with the frontend shape if possible.
+  async addSymptom(data: {
+    symptom: string;
+    intensity?: "Low" | "Medium" | "High" | string;
+    date?: string; // YYYY-MM-DD
+    time?: string; // HH:MM or "hh:mm AM/PM"
+    resolved?: boolean;
+    notes?: string;
+  }): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
       if (!token) return { success: false, error: "Not authenticated" };
 
-      const res = await fetch(`${API_URL}/moods`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data),
-      });
-
-      return await res.json();
-    } catch (error) {
-      console.error("Add mood error:", error);
-      return { success: false, error: "Failed to add mood" };
-    }
-  },
-
-  async addSymptom(data: { name: string; severity?: number; notes?: string }): Promise<GenericResponse> {
-    try {
-      const token = authService.getToken();
-      if (!token) return { success: false, error: "Not authenticated" };
+      // Map to server-friendly payload (server accepts both shapes)
+      const payload: any = {
+        // server accepts 'symptom' or legacy 'name'
+        symptom: data.symptom,
+        intensity: data.intensity,
+        date: data.date,
+        time: data.time,
+        resolved: data.resolved,
+        notes: data.notes,
+      };
 
       const res = await fetch(`${API_URL}/symptoms`, {
         method: "POST",
@@ -175,13 +176,61 @@ export const healthtrackerService = {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       return await res.json();
     } catch (error) {
       console.error("Add symptom error:", error);
       return { success: false, error: "Failed to add symptom" };
+    }
+  },
+
+  async updateSymptom(symptomId: string | number, data: {
+    symptom?: string;
+    intensity?: "Low" | "Medium" | "High" | string;
+    date?: string;
+    time?: string;
+    resolved?: boolean;
+    notes?: string;
+  }): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/symptoms/${symptomId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Update symptom error:", error);
+      return { success: false, error: "Failed to update symptom" };
+    }
+  },
+
+  async deleteSymptom(symptomId: string | number): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/symptoms/${symptomId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Delete symptom error:", error);
+      return { success: false, error: "Failed to delete symptom" };
     }
   },
 };
