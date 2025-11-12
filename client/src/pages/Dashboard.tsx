@@ -217,7 +217,7 @@ export default function Dashboard() {
             <p className="text-2xl font-semibold mb-6">pregnant.</p>
             <p className="text-white/90 text-xl absolute bottom-8 font-rubik font-light">
               Your baby is as big as a{" "}
-              <span className="font-bold">tomato!</span>
+              <span className="font-bold">{fruit.name}!</span>
             </p>
           </>
         );
