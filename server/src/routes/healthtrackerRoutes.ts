@@ -73,6 +73,7 @@ router.get("/", authenticateToken, async (req: AuthRequest, res: Response): Prom
     let symptomsRaw: HealthSymptom[] = [];
     try {
       symptomsRaw = await db.healthSymptom.findMany({
+      symptoms = await db.healthSymptom.findMany({
         where: { motherId },
         orderBy: [{ createdAt: "desc" }],
         take: 50,
@@ -106,6 +107,7 @@ router.get("/", authenticateToken, async (req: AuthRequest, res: Response): Prom
 /**
  * Create a new health metric
  */
+// Create a new health metric
 router.post("/metrics", authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const motherId = req.userId!;
@@ -125,6 +127,7 @@ router.post("/metrics", authenticateToken, async (req: AuthRequest, res: Respons
 /**
  * Create a new mood
  */
+// Create a new mood
 router.post("/moods", authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const motherId = req.userId!;
@@ -320,4 +323,21 @@ router.delete("/symptoms/:id", authenticateToken, async (req: AuthRequest, res: 
   }
 });
 
+export default router;
+// Create a new symptom
+router.post("/symptoms", authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const motherId = req.userId!;
+    const { name, severity, notes } = req.body;
+
+    const symptom = await db.healthSymptom.create({
+      data: { motherId, name, severity, notes },
+    });
+
+    res.status(201).json({ success: true, data: symptom });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: "Failed to add symptom" });
+  }
+});
 export default router;
