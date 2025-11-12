@@ -172,9 +172,11 @@ model HealthSymptom {
   mother    User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
   motherId    Int
   name      String
-  severity  Int?
+  severity  String   @default("low")
   notes     String?
+  resolved  Boolean  @default(false)
   createdAt DateTime @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([motherId], name:"idx_health_symptoms_mother_id")
   @@map("health_symptoms")
