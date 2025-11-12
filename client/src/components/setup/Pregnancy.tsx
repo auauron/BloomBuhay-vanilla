@@ -97,7 +97,7 @@ export default function Pregnancy({
 
     // convert weeksPregnant value to number if present
     const weeksPregnantNum =
-      value !== "" && !Number.isNaN(Number(value)) ? Number(value) : null;
+      selectedOption === "option1" && value !== "" ? Number(value) : null; // null if "I don't know"
 
     // lmpDate should be a proper ISO date string or null (we're reading selectedDate)
     const lmpDate = selectedDate || null;
