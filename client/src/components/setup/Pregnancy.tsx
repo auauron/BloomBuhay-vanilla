@@ -32,6 +32,7 @@ export default function Pregnancy({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedGender, setSelectedGender] = useState("");
   const [weekError, setWeekError] = useState("");
+  const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -73,7 +74,13 @@ export default function Pregnancy({
     setSelectedOption(e.target.value);
   };
 
-  const handleNext = () => {
+  const weeksOrLmpFilled =
+    (selectedOption === "option1" && value !== "") ||
+    (selectedOption === "option2" && selectedDate !== "") ||
+    value !== "" ||
+    selectedDate !== "";
+
+  const handleNext = async () => {
     // basic validation: require selectedGender (matches existing logic)
     if (!selectedGender) return;
 
@@ -96,13 +103,49 @@ export default function Pregnancy({
     const lmpDate = selectedDate || null;
 
     // Build canonical payload expected by server
-    onComplete?.({
-      stage: "pregnant", // canonical key
+    const payload = {
+      stage: "pregnant",
       weeksPregnant: weeksPregnantNum,
-      lmpDate: lmpDate,
+      lmpDate,
       babyName: inputValue || null,
       babyGender: babyGenderNormalized,
-    });
+    };
+
+    console.log("Payload sent to backend:", payload);
+
+    try {
+      // save to backend
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        const res = await fetch(`${API_BASE}/api/mother-profiles`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+          const msg = await res.text();
+          console.error("Failed to save pregnancy data:", msg);
+        } else {
+          console.log("Pregnancy data saved successfully");
+        }
+      }
+
+      //  cache locally so Dashboard can show it immediately
+      localStorage.setItem("lastStage", "pregnant");
+      if (weeksPregnantNum !== null)
+        localStorage.setItem("lastWeeksPregnant", String(weeksPregnantNum));
+      if (lmpDate) localStorage.setItem("lastLmpDate", lmpDate);
+    } catch (err) {
+      console.error("Error saving pregnancy profile:", err);
+    }
+
+    // notify parent (if any navigation logic uses onComplete)
+    onComplete?.(payload);
   };
 
   return (
@@ -261,12 +304,7 @@ export default function Pregnancy({
                   <div className="ml-4 ">
                     <NextButton
                       onComplete={handleNext}
-                      isReady={(() => {
-                        if (!inputValue || !selectedGender) return false;
-                        if (selectedOption === "option1") return value !== "";
-                        if (selectedOption === "option2") return !!selectedDate;
-                        return false;
-                      })()}
+                      isReady={selectedGender !== "" && weeksOrLmpFilled}
                     />
                   </div>
                 </div>

@@ -88,7 +88,7 @@ export default function MainSetup() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            stage: stageLabels[selectedStage || ""] || selectedStage,
+            stage: stageData?.stage || selectedStage,
             weeksPregnant: stageData?.weeksPregnant ?? null,
             lmpDate: stageData?.lmpDate ?? null,
             babyName: stageData?.babyName ?? null,
@@ -144,7 +144,12 @@ export default function MainSetup() {
         weeksPregnant: stageData?.weeksPregnant,
         weeksAfterBirth: stageData?.weeksAfterBirth,
         babyName: stageData?.babyName,
-        babyGender: stageData?.babyGender === "male" ? "Boy" : stageData?.babyGender === "female" ? "Girl" : "Unknown",
+        babyGender:
+          stageData?.babyGender === "male"
+            ? "Boy"
+            : stageData?.babyGender === "female"
+            ? "Girl"
+            : "Unknown",
         babyAgeMonths: stageData?.babyAgeMonths,
       },
     });
