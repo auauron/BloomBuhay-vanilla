@@ -8,11 +8,14 @@ import { motion } from "framer-motion";
 import PostpartumTip from "../components/ui/postpartumTips";
 import PregnancyTips from "../components/ui/pregnancyTips"; 
 import EarlyChildcareTips from "../components/ui/earlyChildcareTips"; 
+import { Info, BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 
 const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
 
 export default function Dashboard() {
+  const navigate = useNavigate(); // NEW LINE 1113
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
@@ -277,9 +280,25 @@ export default function Dashboard() {
                   </li>
                 </ul>
               </div>
-              {/* UPDATED TIPS SECTION WITH STAGE-SPECIFIC ROTATING TIPS */}
-              <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-6 rounded-[20px] shadow-md">
-                <h3 className="text-2xl mb-3 text-white font-bold">Tips</h3>
+              {/* STAGE-SPECIFIC TIPS SECTION WITH LEARN MORE ICON */}
+              <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-6 rounded-[20px] shadow-md relative">
+                {/* Learn More Icon with Square Background */}
+                <button
+                  onClick={() => {
+                    let stage = "all";
+                    if (canonicalStageKey === "pregnant") stage = "pregnant";
+                    if (canonicalStageKey === "postpartum") stage = "postpartum"; 
+                    if (canonicalStageKey === "childcare") stage = "earlyChildcare";
+                    
+                    navigate(`/bloomguide?stage=${stage}`);
+                  }}
+                  className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 p-2 rounded-lg transition-all duration-200 group"
+                  title="Learn more about this stage"
+                >
+                  <Info className="w-5 h-5 text-white group-hover:scale-110 transition-transform duration-200" />
+                </button>
+                
+                <h3 className="text-2xl mb-3 text-white font-bold pr-12">Tips</h3>
                 {canonicalStageKey === "pregnant" && (
                   <PregnancyTips className="text-sm text-[#474747] font-rubik" />
                 )}
