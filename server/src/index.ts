@@ -7,6 +7,9 @@ import userRoutes from "./routes/userRoutes";
 import motherProfilesRoutes from "./routes/motherProfiles"; 
 import plannerRoutes from "./routes/plannerRoutes"
 import aiRoutes from "./routes/aiRoutes";
+import journalRoutes from "./routes/journalRoutes"
+import healthtrackerRoutes from "./routes/healthtrackerRoutes"
+import BBToolsRoutes from "./routes/BBToolsRoutes"
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,6 +31,10 @@ app.use("/api/auth", authRoutes)
 .use("/api/users", userRoutes)
 .use("/api/mother-profiles", motherProfilesRoutes) 
 .use("/api/planner", plannerRoutes);
+.use("/api/planner", plannerRoutes)
+.use("/api/journal", journalRoutes)
+.use("/api/healthtracker", healthtrackerRoutes)
+.use("/api/bbtools", BBToolsRoutes)
 
 app.get("/", (req, res) => {
   res.json({
