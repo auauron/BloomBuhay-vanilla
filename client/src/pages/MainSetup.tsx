@@ -79,6 +79,19 @@ export default function MainSetup() {
       childcare: "Early Childcare",
     };
 
+    let serverBody: any = null;
+
+    const computeWeeksFromLmp = (lmp?: string | null): number | null => {
+      if (!lmp) return null;
+      const d = new Date(lmp);
+      if (isNaN(d.getTime())) return null;
+      const now = new Date();
+      const msPerDay = 1000 * 60 * 60 * 24;
+      const diffDays = Math.floor((now.getTime() - d.getTime()) / msPerDay);
+      if (diffDays < 0) return null; // LMP in the future — ignore
+      return Math.floor(diffDays / 7);
+    };
+
     if (token) {
       try {
         const resp = await fetch("http://localhost:3000/api/mother-profiles", {
@@ -88,13 +101,15 @@ export default function MainSetup() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            stage: stageLabels[selectedStage || ""] || selectedStage,
+            stage: stageData?.stage || selectedStage,
             weeksPregnant: stageData?.weeksPregnant ?? null,
             lmpDate: stageData?.lmpDate ?? null,
             babyName: stageData?.babyName ?? null,
             babyGender: stageData?.babyGender ?? null,
           }),
         });
+
+        serverBody = await resp.json().catch(() => null);
 
         console.log(
           "POST /api/mother-profiles status:",
@@ -104,7 +119,6 @@ export default function MainSetup() {
         );
 
         // try to read JSON body (defensive)
-        const serverBody = await resp.json().catch(() => null);
         console.log("POST /api/mother-profiles body:", serverBody);
 
         // if server returned a canonical stage, prefer and persist it
@@ -135,16 +149,25 @@ export default function MainSetup() {
       );
     }
 
+    // Use backend value if available, otherwise compute locally
+    const weeksPregnant =
+      serverBody?.weeksPregnant ?? computeWeeksFromLmp(stageData?.lmpDate);
+
     // Navigate to setup summary with all collected data
     navigate("/setup/summary", {
       state: {
         fullName,
         email,
         motherhoodStage: stageLabels[selectedStage || ""] || selectedStage,
-        weeksPregnant: stageData?.weeksPregnant,
+        weeksPregnant: serverBody?.weeksPregnant ?? null,
         weeksAfterBirth: stageData?.weeksAfterBirth,
         babyName: stageData?.babyName,
-        babyGender: stageData?.babyGender === "male" ? "Boy" : stageData?.babyGender === "female" ? "Girl" : "Unknown",
+        babyGender:
+          stageData?.babyGender === "male"
+            ? "Boy"
+            : stageData?.babyGender === "female"
+            ? "Girl"
+            : "Unknown",
         babyAgeMonths: stageData?.babyAgeMonths,
       },
     });

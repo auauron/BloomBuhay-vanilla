@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import Header from "../components/ui/Header";
 import Sidebar from "../components/ui/Sidebar";
 import PhotoAlbums from "../components/journal/PhotoAlbums";
@@ -8,6 +8,7 @@ import AddNoteModal from "../components/journal/AddNoteModal";
 import { Camera, Search, BookImage, NotebookPen, Plus } from "lucide-react";
 import { Note, Album, Photo } from "../components/journal/types";
 import { motion } from "framer-motion";
+import { journalService } from "../services/journalService";
 
 // Memoized Search Bar Component to prevent unnecessary re-renders
 const GradientSearchBar = React.memo(({ 
@@ -243,8 +244,36 @@ export default function Journal() {
     },
   ], []);
 
-  const [albums, setAlbums] = useState<Album[]>(initialAlbums);
-  const [notes, setNotes] = useState<Note[]>(initialNotes);
+  const [albums, setAlbums] = useState<Album[]>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch data from backend on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const [albumsResponse, notesResponse] = await Promise.all([
+          journalService.getAlbums(),
+          journalService.getNotes(),
+        ]);
+
+        if (albumsResponse.success && albumsResponse.data) {
+          setAlbums(albumsResponse.data);
+        }
+
+        if (notesResponse.success && notesResponse.data) {
+          setNotes(notesResponse.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch journal data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Optimized search with debouncing-like behavior using useMemo
   const filteredAlbums = useMemo(() => {
@@ -285,15 +314,15 @@ export default function Journal() {
       coverPhoto = await fileToBase64(albumData.coverPhoto);
     }
 
-    const newAlbum: Album = {
-      ...albumData,
-      id: Date.now().toString(),
+    const response = await journalService.createAlbum({
+      title: albumData.title,
       coverPhoto,
-      photos: [],
-      createdAt: new Date().toISOString(),
-      lastUpdated: new Date().toISOString()
-    };
-    setAlbums(prev => [newAlbum, ...prev]);
+      description: albumData.description,
+    });
+
+    if (response.success && response.data) {
+      setAlbums(prev => [response.data!, ...prev]);
+    }
   }, [fileToBase64]);
 
   const addNote = useCallback(async (noteData: any) => {
@@ -303,89 +332,115 @@ export default function Journal() {
       photo = await fileToBase64(noteData.photo);
     }
 
-    const newNote: Note = {
-      ...noteData,
-      id: Date.now().toString(),
+    const response = await journalService.createNote({
+      title: noteData.title,
+      content: noteData.content,
       photo,
-      createdAt: new Date().toISOString(),
-      lastUpdated: new Date().toISOString()
-    };
-    setNotes(prev => [newNote, ...prev]);
+      tags: noteData.tags,
+      mood: noteData.mood,
+    });
+
+    if (response.success && response.data) {
+      setNotes(prev => [response.data!, ...prev]);
+    }
   }, [fileToBase64]);
 
   const updateNote = useCallback(async (updatedNote: Note) => {
-    setNotes(prev => prev.map(note => 
-      note.id === updatedNote.id 
-        ? { ...updatedNote, lastUpdated: new Date().toISOString() }
-        : note
-    ));
+    const response = await journalService.updateNote(updatedNote.id, {
+      title: updatedNote.title,
+      content: updatedNote.content,
+      photo: updatedNote.photo,
+      tags: updatedNote.tags,
+      mood: updatedNote.mood,
+    });
+
+    if (response.success && response.data) {
+      setNotes(prev => prev.map(note => 
+        note.id === updatedNote.id ? response.data! : note
+      ));
+    }
   }, []);
 
-  const deleteNote = useCallback((id: string) => {
-    setNotes(prev => prev.filter(note => note.id !== id));
+  const deleteNote = useCallback(async (id: string) => {
+    const response = await journalService.deleteNote(id);
+    if (response.success) {
+      setNotes(prev => prev.filter(note => note.id !== id));
+    }
   }, []);
 
-  const updateAlbum = useCallback((updatedAlbum: Album) => {
-    setAlbums(prev => prev.map(album => 
-      album.id === updatedAlbum.id 
-        ? { ...updatedAlbum, lastUpdated: new Date().toISOString() }
-        : album
-    ));
+  const updateAlbum = useCallback(async (updatedAlbum: Album) => {
+    const response = await journalService.updateAlbum(updatedAlbum.id, {
+      title: updatedAlbum.title,
+      coverPhoto: updatedAlbum.coverPhoto,
+      description: updatedAlbum.description,
+    });
+
+    if (response.success && response.data) {
+      setAlbums(prev => prev.map(album => 
+        album.id === updatedAlbum.id ? response.data! : album
+      ));
+    }
   }, []);
 
-  const deleteAlbum = useCallback((id: string) => {
-    setAlbums(prev => prev.filter(album => album.id !== id));
+  const deleteAlbum = useCallback(async (id: string) => {
+    const response = await journalService.deleteAlbum(id);
+    if (response.success) {
+      setAlbums(prev => prev.filter(album => album.id !== id));
+    }
   }, []);
 
   const addPhotosToAlbum = useCallback(async (albumId: string, photoFiles: File[]) => {
-    const newPhotos: Photo[] = await Promise.all(
+    const photosData = await Promise.all(
       photoFiles.map(async (file) => ({
-        id: `${albumId}-${Date.now()}-${Math.random()}`,
-        file: await fileToBase64(file),
+        fileUrl: await fileToBase64(file),
         name: file.name.split('.')[0],
         notes: "",
-        createdAt: new Date().toISOString(),
-        uploadedAt: new Date().toISOString()
       }))
     );
 
-    setAlbums(prev => prev.map(album => 
-      album.id === albumId 
-        ? { 
-            ...album, 
-            photos: [...album.photos, ...newPhotos],
-            lastUpdated: new Date().toISOString()
-          }
-        : album
-    ));
+    const response = await journalService.addPhotosToAlbum(albumId, photosData);
+
+    if (response.success && response.data) {
+      setAlbums(prev => prev.map(album => 
+        album.id === albumId ? response.data! : album
+      ));
+    }
   }, [fileToBase64]);
 
-  const updatePhotoInAlbum = useCallback((albumId: string, updatedPhoto: Photo) => {
-    setAlbums(prev => prev.map(album => 
-      album.id === albumId 
-        ? {
-            ...album,
-            photos: album.photos.map(photo =>
-              photo.id === updatedPhoto.id ? updatedPhoto : photo
-            ),
-            lastUpdated: new Date().toISOString()
-          }
-        : album
-    ));
+  const updatePhotoInAlbum = useCallback(async (albumId: string, updatedPhoto: Photo) => {
+    const response = await journalService.updatePhoto(updatedPhoto.id, {
+      name: updatedPhoto.name,
+      notes: updatedPhoto.notes,
+    });
+
+    if (response.success) {
+      setAlbums(prev => prev.map(album => 
+        album.id === albumId 
+          ? {
+              ...album,
+              photos: album.photos.map(photo =>
+                photo.id === updatedPhoto.id ? updatedPhoto : photo
+              ),
+            }
+          : album
+      ));
+    }
   }, []);
 
-  const deletePhotoFromAlbum = useCallback((albumId: string, photoId: string) => {
-    setAlbums(prev => prev.map(album => 
-      album.id === albumId 
-        ? {
-            ...album,
-            photos: album.photos.filter(photo => photo.id !== photoId),
-            lastUpdated: new Date().toISOString()
-          }
-        : album
-    ));
+  const deletePhotoFromAlbum = useCallback(async (albumId: string, photoId: string) => {
+    const response = await journalService.deletePhoto(photoId);
+    
+    if (response.success) {
+      setAlbums(prev => prev.map(album => 
+        album.id === albumId 
+          ? {
+              ...album,
+              photos: album.photos.filter(photo => photo.id !== photoId),
+            }
+          : album
+      ));
+    }
   }, []);
-
   // Memoized modal handlers
   const handleShowAddAlbum = useCallback(() => setShowAddAlbum(true), []);
   const handleShowAddNote = useCallback(() => setShowAddNote(true), []);
