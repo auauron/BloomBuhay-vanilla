@@ -36,11 +36,11 @@ model User {
   ToolsLog       ToolsLog[]
   JournalEntry   JournalEntry[]
   refreshTokens  RefreshToken[]
-  BabyMetric    BabyMetric[]
-  FeedingLog    FeedingLog[]
-  SleepLog      SleepLog[]
-  GrowthRecord  GrowthRecord[]
-  Albums        Album[]
+  BabyMetric     BabyMetric[]
+  FeedingLog     FeedingLog[]
+  SleepLog       SleepLog[]
+  GrowthRecord   GrowthRecord[]
+  Albums         Album[]
 
   @@map("user")
 }
@@ -133,6 +133,7 @@ model JournalEntry {
   mood        String?
   createdAt   DateTime @default(now()) @db.Timestamptz(6)
   lastUpdated DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
   @@index([motherId], name: "idx_journal_entries_mother_id")
   @@map("journal_entries")
 }
@@ -151,34 +152,34 @@ model HealthMetric {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([motherId], name:"idx_health_metrics_mother_id")
+  @@index([motherId], name: "idx_health_metrics_mother_id")
   @@map("(health_metrics)")
 }
 
 model HealthMood {
   id        Int      @id @default(autoincrement())
   mother    User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
-  motherId    Int
+  motherId  Int
   mood      String
   notes     String?
   createdAt DateTime @default(now())
-  
-  @@index([motherId], name:"idx_health_moods_mother_id")
+
+  @@index([motherId], name: "idx_health_moods_mother_id")
   @@map("health_moods")
 }
 
 model HealthSymptom {
   id        Int      @id @default(autoincrement())
   mother    User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
-  motherId    Int
+  motherId  Int
   name      String
   severity  String   @default("low")
   notes     String?
   resolved  Boolean  @default(false)
   createdAt DateTime @default(now())
-  updatedAt DateTime  @updatedAt
+  updatedAt DateTime @updatedAt
 
-  @@index([motherId], name:"idx_health_symptoms_mother_id")
+  @@index([motherId], name: "idx_health_symptoms_mother_id")
   @@map("health_symptoms")
 }
 
@@ -202,10 +203,10 @@ model FeedingLog {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int
   amount     Float?
-  method     String?    // e.g., "breast", "bottle"
+  method     String? // e.g., "breast", "bottle"
   notes      String?
-  occurredAt DateTime   @default(now())
-  createdAt  DateTime   @default(now())
+  occurredAt DateTime @default(now())
+  createdAt  DateTime @default(now())
 
   @@index([userId], name: "idx_feeding_logs_user_id")
   @@map("feeding_logs")
@@ -240,32 +241,32 @@ model GrowthRecord {
 }
 
 model Album {
-    id          Int      @id @default(autoincrement())
-    mother      User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
-    motherId    Int
-    title       String
-    coverPhoto  String?
-    description String?
-    createdAt   DateTime @default(now()) @db.Timestamptz(6)
-    lastUpdated DateTime @default(now()) @updatedAt @db.Timestamptz(6)
-    photos      Photo[]
+  id          Int      @id @default(autoincrement())
+  mother      User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
+  motherId    Int
+  title       String
+  coverPhoto  String?
+  description String?
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  lastUpdated DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  photos      Photo[]
 
-    @@index([motherId], name: "idx_albums_mother_id")
-    @@map("albums")
+  @@index([motherId], name: "idx_albums_mother_id")
+  @@map("albums")
 }
 
 model Photo {
-    id         Int      @id @default(autoincrement())
-    album      Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
-    albumId    Int
-    fileUrl    String
-    name       String?
-    notes      String?
-    createdAt  DateTime @default(now()) @db.Timestamptz(6)
-    uploadedAt DateTime @default(now()) @db.Timestamptz(6)
+  id         Int      @id @default(autoincrement())
+  album      Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  albumId    Int
+  fileUrl    String
+  name       String?
+  notes      String?
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
+  uploadedAt DateTime @default(now()) @db.Timestamptz(6)
 
-    @@index([albumId], name: "idx_photos_album_id")
-    @@map("photos")
+  @@index([albumId], name: "idx_photos_album_id")
+  @@map("photos")
 }
 
 model RefreshToken {
