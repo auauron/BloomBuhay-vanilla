@@ -8,6 +8,7 @@ export interface BloomDate {
 export interface BloomTime {
   hour: number;
   min: number;
+  sec: number;
 }
 
 export interface DateJumperProps {
