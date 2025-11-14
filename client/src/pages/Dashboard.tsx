@@ -31,11 +31,31 @@ export default function Dashboard() {
 
   // baby size fruits
   const babySizeFruits: { maxWeek: number; name: string; image: string }[] = [
-    { maxWeek: 4, name: "Poppy Seed", image: "assets/dashboardFruit/Poppy_seed.png" },
-    { maxWeek: 5, name: "Sesame Seed", image: "assets/dashboardFruit/Sesame.png" },
-    { maxWeek: 6, name: "Lentil Seed", image: "assets/dashboardFruit/Lentil.png" },
-    { maxWeek: 7, name: "Blueberry", image: "assets/dashboardFruit/Blueberry.png" },
-    { maxWeek: 8, name: "Raspberry", image: "assets/dashboardFruit/Poppy_seed.png" },
+    {
+      maxWeek: 4,
+      name: "Poppy Seed",
+      image: "assets/dashboardFruit/Poppy_seed.png",
+    },
+    {
+      maxWeek: 5,
+      name: "Sesame Seed",
+      image: "assets/dashboardFruit/Sesame.png",
+    },
+    {
+      maxWeek: 6,
+      name: "Lentil Seed",
+      image: "assets/dashboardFruit/Lentil.png",
+    },
+    {
+      maxWeek: 7,
+      name: "Blueberry",
+      image: "assets/dashboardFruit/Blueberry.png",
+    },
+    {
+      maxWeek: 8,
+      name: "Raspberry",
+      image: "assets/dashboardFruit/Poppy_seed.png",
+    },
     { maxWeek: 9, name: "Grape", image: "assets/dashboardFruit/Grape.png" },
     { maxWeek: 10, name: "Date", image: "assets/dashboardFruit/Dates.png" },
     { maxWeek: 11, name: "Lime", image: "assets/dashboardFruit/Lime.png" },
@@ -43,16 +63,48 @@ export default function Dashboard() {
     { maxWeek: 13, name: "Kiwi", image: "assets/dashboardFruit/Kiwi.png" },
     { maxWeek: 14, name: "Peach", image: "assets/dashboardFruit/Peach.png" },
     { maxWeek: 15, name: "Pear", image: "assets/dashboardFruit/Pear.png" },
-    { maxWeek: 16, name: "Avocado", image: "assets/dashboardFruit/Avocado.png" },
-    { maxWeek: 17, name: "Naval Orange", image: "assets/dashboardFruit/Naval_orange.png" },
-    { maxWeek: 18, name: "Pomegranate", image: "assets/dashboardFruit/Pomegranate.png" },
-    { maxWeek: 19, name: "Grapefruit", image: "assets/dashboardFruit/Grapefruit.png" },
+    {
+      maxWeek: 16,
+      name: "Avocado",
+      image: "assets/dashboardFruit/Avocado.png",
+    },
+    {
+      maxWeek: 17,
+      name: "Naval Orange",
+      image: "assets/dashboardFruit/Naval_orange.png",
+    },
+    {
+      maxWeek: 18,
+      name: "Pomegranate",
+      image: "assets/dashboardFruit/Pomegranate.png",
+    },
+    {
+      maxWeek: 19,
+      name: "Grapefruit",
+      image: "assets/dashboardFruit/Grapefruit.png",
+    },
     { maxWeek: 20, name: "Mango", image: "assets/dashboardFruit/Mango.png" },
-    { maxWeek: 21, name: "Rockmelon", image: "assets/dashboardFruit/Rockmelon.png" },
-    { maxWeek: 24, name: "Eggplant", image: "assets/dashboardFruit/Eggplant.png" },
+    {
+      maxWeek: 21,
+      name: "Rockmelon",
+      image: "assets/dashboardFruit/Rockmelon.png",
+    },
+    {
+      maxWeek: 24,
+      name: "Eggplant",
+      image: "assets/dashboardFruit/Eggplant.png",
+    },
     { maxWeek: 28, name: "Papaya", image: "assets/dashboardFruit/Papaya.png" },
-    { maxWeek: 36, name: "Honeydew", image: "assets/dashboardFruit/Honeydew.png" },
-    { maxWeek: 40, name: "Watermelon", image: "assets/dashboardFruit/Watermelon.png" },
+    {
+      maxWeek: 36,
+      name: "Honeydew",
+      image: "assets/dashboardFruit/Honeydew.png",
+    },
+    {
+      maxWeek: 40,
+      name: "Watermelon",
+      image: "assets/dashboardFruit/Watermelon.png",
+    },
   ];
 
   //helper to pick fruit
@@ -219,6 +271,15 @@ export default function Dashboard() {
               Your baby is as big as a{" "}
               <span className="font-bold">{fruit.name}!</span>
             </p>
+            <div className="absolute bottom-6 right-6 h-40 w-40 bg-white/80 rounded-full border-8 border-white flex items-center justify-center overflow-hidden">
+              {fruit && (
+                <img
+                  src={fruit.image}
+                  alt={fruit.name}
+                  className="h-full w-full object-contain"
+                />
+              )}
+            </div>
           </>
         );
       case "postpartum":
@@ -299,16 +360,6 @@ export default function Dashboard() {
           {/* Left Info Card */}
           <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-8 rounded-[20px] shadow-lg relative">
             {renderMainCard()}
-
-            <div className="absolute bottom-6 right-6 h-40 w-40 bg-white/80 rounded-full border-8 border-white flex items-center justify-center overflow-hidden">
-              {fruit && (
-                <img
-                  src={fruit.image}
-                  alt={fruit.name}
-                  className="h-full w-full object-contain"
-                />
-              )}
-            </div>
           </div>
 
           {/* Right Column */}
