@@ -6,44 +6,79 @@
       "image": "/assets/postpartumArticle/pp4.png",
       "category": "Wellness",
       "section": "mother",
-      "externalLink": "https://www.zerotothree.org/resource/caring-for-yourself-while-you-care-for-your-children/",
+      "externalLink": "https://www.ecommunity.com/healthminute/2019/care-yourself-while-caring-baby",
       "content": {
-        "headline": "Balancing Your Needs While Nurturing Your Baby",
-        "intro": "Caring for a newborn is demanding, but neglecting your own needs can lead to burnout. Finding balance between caring for your baby and yourself is crucial for sustainable parenting.",
+        "headline": "Self-Care While Caring for Your Baby: A Guide for New Parents",
+        "intro": "Caring for a newborn requires immense physical and emotional energy. While your baby's needs are priority, neglecting your own wellbeing can lead to burnout and affect your ability to provide quality care. Remember: taking care of yourself isn't selfish—it's essential for being the best parent you can be.",
         "sections": [
           {
-            "title": "Why Parent Self-Care Matters",
-            "content": "Taking care of yourself directly impacts your ability to care for your baby:",
+            "title": "The Importance of Parent Self-Care",
+            "content": "Your wellbeing directly impacts your parenting capacity and your baby's development:",
             "points": [
-              "Reduced stress helps you respond more patiently to your baby",
-              "Better physical health means more energy for parenting",
-              "Emotional regulation models healthy coping for your child",
-              "Prevents caregiver burnout and exhaustion",
-              "Maintains your identity beyond being a parent"
+              "Well-rested parents provide more attentive and responsive care",
+              "Managing stress helps prevent postpartum depression and anxiety",
+              "Self-care models healthy habits your child will learn from you",
+              "Physical health maintenance ensures you have energy for parenting demands",
+              "Emotional balance helps you handle challenging moments with patience"
             ]
           },
           {
-            "title": "Practical Self-Care Strategies",
-            "content": "Small, consistent practices can make a big difference in your wellbeing:",
+            "title": "Daily Self-Care Practices",
+            "content": "Incorporate these manageable self-care strategies into your daily routine:",
             "points": [
-              "Take micro-breaks - even 5 minutes of deep breathing helps",
-              "Ask for help with household tasks and baby care",
-              "Connect with friends who understand your experience",
-              "Practice saying 'no' to unnecessary commitments",
-              "Keep a list of quick self-care activities for busy days"
+              "Sleep when your baby sleeps - even short naps recharge your energy",
+              "Stay hydrated and eat regular, nutritious meals throughout the day",
+              "Take 10-15 minute breaks for personal time while baby is safe in crib",
+              "Shower daily and wear comfortable clothes that make you feel good",
+              "Get outside for fresh air and sunlight - even brief walks help mood",
+              "Practice deep breathing during stressful moments to regain calm"
             ]
           },
           {
-            "title": "Building a Support System",
+            "title": "Nutrition and Physical Health",
+            "content": "Your body needs proper fuel and care during the demanding postpartum period:",
             "points": [
-              "Identify trusted people who can provide practical help",
-              "Join parent groups for shared experiences and advice",
-              "Communicate your needs clearly to your partner",
-              "Consider professional support if feeling overwhelmed",
-              "Remember it's okay to not be perfect - good enough is great!"
+              "Keep healthy snacks and water bottles accessible throughout your home",
+              "Prepare simple, nutrient-dense meals in advance when possible",
+              "Gradually reintroduce gentle exercise as medically cleared",
+              "Attend your postpartum checkups and address any health concerns",
+              "Listen to your body's signals for rest and recovery needs"
+            ]
+          },
+          {
+            "title": "Emotional and Mental Wellbeing",
+            "content": "Protecting your mental health is crucial during this transition:",
+            "points": [
+              "Acknowledge and accept your feelings without judgment",
+              "Share your experiences with trusted friends or family members",
+              "Limit social media comparison and unrealistic expectations",
+              "Practice gratitude by noting small daily victories and joys",
+              "Seek professional support if experiencing persistent sadness or anxiety"
+            ]
+          },
+          {
+            "title": "Building Your Support Network",
+            "content": "You don't have to do everything alone - create a circle of support:",
+            "points": [
+              "Clearly communicate specific ways others can help you",
+              "Accept offers for meal preparation, errands, or baby care",
+              "Join local or online parent groups for community connection",
+              "Schedule regular check-ins with your partner about shared responsibilities",
+              "Identify backup caregivers for when you need extended breaks"
+            ]
+          },
+          {
+            "title": "Realistic Expectations and Boundaries",
+            "points": [
+              "Understand that 'perfect parenting' doesn't exist - aim for 'good enough'",
+              "Set boundaries with visitors and well-meaning advice when needed",
+              "Prioritize tasks and let non-essential chores wait when necessary",
+              "Celebrate small accomplishments each day, no matter how minor",
+              "Remember that asking for help is a sign of strength, not weakness"
             ]
           }
-        ]
+        ],
+        "source": "Sources: https://www.ecommunity.com/healthminute/2019/care-yourself-while-caring-baby and https://www.zerotothree.org/resource/caring-for-yourself-while-you-care-for-your-children/"
       }
     }
   ]
