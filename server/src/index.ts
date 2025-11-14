@@ -5,6 +5,7 @@ import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import motherProfilesRoutes from "./routes/motherProfiles"; 
 import plannerRoutes from "./routes/plannerRoutes"
+import journalRoutes from "./routes/journalRoutes"
 import healthtrackerRoutes from "./routes/healthtrackerRoutes"
 import BBToolsRoutes from "./routes/BBToolsRoutes"
 
@@ -28,6 +29,7 @@ app.use("/api/auth", authRoutes)
 .use("/api/users", userRoutes)
 .use("/api/mother-profiles", motherProfilesRoutes) 
 .use("/api/planner", plannerRoutes)
+.use("/api/journal", journalRoutes)
 .use("/api/healthtracker", healthtrackerRoutes)
 .use("/api/bbtools", BBToolsRoutes)
 

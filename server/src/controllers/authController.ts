@@ -35,7 +35,7 @@ const generateToken = (userId: number, email: string): string => {
     throw new Error("JWT_SECRET is not defined in environment variables");
   }
 
-  const jwtExpires = process.env.JWT_EXPIRES || "24h"; // e.g. "1h", "24h", "7d"
+  const jwtExpires = process.env.JWT_EXPIRES || "1h"; // e.g. "1h", "24h", "7d"
 
   return jwt.sign(
     { userId, email },
@@ -51,7 +51,7 @@ const generateRefreshToken = async (userId: number): Promise<string> => {
 
   // refresh token expiry in days (configurable)
   const expiresDays = parseInt(
-    process.env.REFRESH_TOKEN_EXPIRES_DAYS || "30",
+    process.env.REFRESH_TOKEN_EXPIRES_DAYS || "7",
     10
   );
   const expiresAt = new Date(Date.now() + expiresDays * 24 * 60 * 60 * 1000);
