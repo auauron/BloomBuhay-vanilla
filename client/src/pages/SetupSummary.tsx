@@ -20,23 +20,27 @@ export default function SetupSummary() {
   } = data;
 
   // Debug: Log the received data
-  console.log("SetupSummary received data:", { fullName, email, allData: data });
+  console.log("SetupSummary received data:", {
+    fullName,
+    email,
+    allData: data,
+  });
 
   const handleStart = () => {
     navigate("/dashboard");
   };
 
-const handleBack = () => {
-  if (motherhoodStage === "Pregnant") {
-    navigate("/setup/pregnancy", { state: data });
-  } else if (motherhoodStage === "Postpartum") {
-    navigate("/setup/postpartum", { state: data });
-  } else if (motherhoodStage === "Early Childcare") {
-    navigate("/setup/childbirth", { state: data });
-  } else {
-    navigate("/mainsetup", { state: {fullName, email} });
-  }
-};
+  const handleBack = () => {
+    if (motherhoodStage === "Pregnant") {
+      navigate("/setup/pregnancy", { state: data });
+    } else if (motherhoodStage === "Postpartum") {
+      navigate("/setup/postpartum", { state: data });
+    } else if (motherhoodStage === "Early Childcare") {
+      navigate("/setup/childbirth", { state: data });
+    } else {
+      navigate("/mainsetup", { state: { fullName, email } });
+    }
+  };
 
   const stageDetails = () => {
     if (motherhoodStage === "Pregnant") {
@@ -48,7 +52,11 @@ const handleBack = () => {
           </div>
           <div>
             <p className="font-semibold">Weeks Pregnant</p>
-            <p>{weeksPregnant || "—"} weeks</p>
+            <p>
+              {weeksPregnant !== null && weeksPregnant !== undefined
+                ? `${weeksPregnant} weeks`
+                : "—"}
+            </p>
           </div>
         </>
       );
