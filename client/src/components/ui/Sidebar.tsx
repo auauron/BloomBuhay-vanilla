@@ -1,5 +1,5 @@
 // src/components/Sidebar.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRightToLine,
@@ -13,6 +13,7 @@ import {
   BookImage,
   ScanHeart
 } from "lucide-react";
+import axios from "axios";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -20,6 +21,11 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const [user, setUser] = useState<{
+  fullName: string;
+  profilePic?: string;
+} | null>(null);
+
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -55,6 +61,30 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { icon: BookImage, label: "Journal", path: "/journal" },
   ];
 
+const [bloomStage, setBloomStage] = useState<string | null>(null);
+const [profile, setProfile] = useState<any>(null);
+
+useEffect(() => {
+  const token = localStorage.getItem("token");
+
+  if (!token) return;
+
+  axios
+    .get("http://localhost:3000/api/users/me", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((res: any) => {
+      setUser(res.data.user);
+      setProfile(res.data.profile);
+      setBloomStage(res.data.bloomStage);
+    })
+    .catch((err: any) => console.error("Failed to load user", err));
+}, []);
+
+
+
   return (
     <>
       {/* Overlay */}
@@ -76,7 +106,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <div className="flex justify-between items-start mb-3">
             <div className="ml-3 mt-2">
               <h2 className="text-xl font-bold text-[#474747]">Bloom stage:</h2>
-              <h2 className="text-xl font-bold text-white">Pregnant</h2>
+              <h2 className="text-xl font-bold text-white">  {bloomStage ?? "Not Set"} </h2>
             </div>
             <button
               onClick={onClose}
@@ -93,11 +123,20 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             onClick={() => handleNavigation("/userprofile")}
             className="w-full flex items-center space-x-3 p-1 hover:bg-white/10 rounded-lg transition-colors text-left"
           >
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full overflow-hidden bg-white/20 flex items-center justify-center">
+            {user?.profilePic ? (
+              <img
+                src={user.profilePic}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            ) : (
               <User size={24} />
-            </div>
+            )}
+          </div>
+
             <div>
-              <p className="font-semibold">Maria Clara</p>
+              <p className="font-semibold">  {user?.fullName || "Loading..."}</p>
               <p className="text-sm text-white/80">View and Edit Profile</p>
             </div>
           </Link>

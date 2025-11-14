@@ -31,6 +31,9 @@ router.get(
     try {
       const user = await db.user.findUnique({
         where: { id: req.userId },
+        include: {
+          MotherProfiles: true, // fetch profile
+        },
       });
 
       if (!user) {
@@ -41,9 +44,14 @@ router.get(
         return;
       }
 
+      const profile = user.MotherProfiles?.[0] || null;
+      const bloomStage = profile?.stage || "unknown";
+
       res.status(200).json({
         success: true,
         user: toUserResponse(user),
+        profile,
+        bloomStage,
       });
     } catch (error) {
       console.error("Get user profile error:", error);
@@ -54,6 +62,7 @@ router.get(
     }
   }
 );
+
 
 router.put(
   "/me",
