@@ -30,7 +30,6 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/auth", authRoutes)
 .use("/api/users", userRoutes)
 .use("/api/mother-profiles", motherProfilesRoutes) 
-.use("/api/planner", plannerRoutes);
 .use("/api/planner", plannerRoutes)
 .use("/api/journal", journalRoutes)
 .use("/api/healthtracker", healthtrackerRoutes)

@@ -1,10 +1,22 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+enum Stage {
+  pregnant
+  postpartum
+  childcare
+}
+
+enum BabyGender {
+  male
+  female
+  unknown
 }
 
 model User {
@@ -22,23 +34,20 @@ model User {
   HealthMoods    HealthMood[]
   HealthSymptoms HealthSymptom[]
   ToolsLog       ToolsLog[]
-  albums         albums[]
-  HealthLog      HealthLog[]
   JournalEntry   JournalEntry[]
-  MotherProfiles MotherProfiles[]
-  PlannerTask    PlannerTask[]
   refreshTokens  RefreshToken[]
-  BabyMetric    BabyMetric[]
-  FeedingLog    FeedingLog[]
-  SleepLog      SleepLog[]
-  GrowthRecord  GrowthRecord[]
-  Albums        Album[]
+  BabyMetric     BabyMetric[]
+  FeedingLog     FeedingLog[]
+  SleepLog       SleepLog[]
+  GrowthRecord   GrowthRecord[]
+  Albums         Album[]
 
   @@map("user")
 }
 
 model MotherProfiles {
   id              Int         @id @default(autoincrement())
+  mother          User        @relation(fields: [motherId], references: [id], onDelete: Cascade)
   motherId        Int
   babyName        String?
   lmpDate         DateTime?
@@ -48,29 +57,29 @@ model MotherProfiles {
   createdAt       DateTime    @default(now())
   stage           Stage
   babyGender      BabyGender?
-  mother          User        @relation(fields: [motherId], references: [id], onDelete: Cascade)
 
-  @@index([motherId], map: "idx_mother_profiles_user_id")
+  @@index([motherId], name: "idx_mother_profiles_user_id")
   @@map("mother_profiles")
 }
 
 model PlannerTask {
   id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
   title       String
   description String
   date        DateTime @db.Date
   isCompleted Boolean  @default(false)
   createdAt   DateTime @default(now()) @db.Timestamptz(6)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId], map: "idx_planner_task_user_id")
-  @@index([date], map: "idx_planner_task_date")
+  @@index([userId], name: "idx_planner_task_user_id")
+  @@index([date], name: "idx_planner_task_date")
   @@map("planner_task")
 }
 
 model HealthLog {
   id            Int      @id @default(autoincrement())
+  mother        User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
   motherId      Int
   date          DateTime @db.Date
   weight        Float?
@@ -82,22 +91,21 @@ model HealthLog {
   symptoms      String?
   notes         String?
   createdAt     DateTime @db.Date
-  mother        User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
 
-  @@index([motherId, date], map: "idx_health_logs_mother_date")
+  @@index([motherId, date], name: "idx_health_logs_mother_date")
   @@map("health_logs")
 }
 
 model ToolsLog {
   id        Int      @id @default(autoincrement())
+  mother    User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
   motherId  Int
   type      String
   data      Json?
   createdAt DateTime @default(now()) @db.Timestamptz(6)
-  mother    User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
 
-  @@index([motherId], map: "idx_tools_logs_mother_id")
-  @@index([type], map: "idx_tools_logs_type")
+  @@index([motherId], name: "idx_tools_logs_mother_id")
+  @@index([type], name: "idx_tools_logs_type")
 }
 
 model Article {
@@ -110,7 +118,7 @@ model Article {
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @default(now()) @db.Timestamptz(6)
 
-  @@index([category], map: "idx_articles_category")
+  @@index([category], name: "idx_articles_category")
   @@map("articles")
 }
 
@@ -121,31 +129,11 @@ model JournalEntry {
   title       String
   content     String
   photoUrl    String?
-  createdAt   DateTime @default(now()) @db.Timestamptz(6)
-  lastUpdated DateTime @default(now()) @db.Timestamptz(6)
-  mood        String?
-  tags        String[] @default([])
-  mother      User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
-
-  @@index([motherId], map: "idx_journal_entries_mother_id")
-  @@map("journal_entries")
-}
-
-model RefreshToken {
-  id        Int      @id @default(autoincrement())
-  token     String   @unique
-  userId    Int
-  expiresAt DateTime
-  revoked   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId], map: "idx_refresh_tokens_user_id")
-  @@map("refresh_tokens")
   tags        String[] @default([])
   mood        String?
   createdAt   DateTime @default(now()) @db.Timestamptz(6)
   lastUpdated DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+
   @@index([motherId], name: "idx_journal_entries_mother_id")
   @@map("journal_entries")
 }
@@ -164,101 +152,121 @@ model HealthMetric {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([motherId], name:"idx_health_metrics_mother_id")
+  @@index([motherId], name: "idx_health_metrics_mother_id")
   @@map("(health_metrics)")
 }
 
 model HealthMood {
   id        Int      @id @default(autoincrement())
   mother    User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
-  motherId    Int
+  motherId  Int
   mood      String
   notes     String?
   createdAt DateTime @default(now())
-  
-  @@index([motherId], name:"idx_health_moods_mother_id")
+
+  @@index([motherId], name: "idx_health_moods_mother_id")
   @@map("health_moods")
 }
 
 model HealthSymptom {
   id        Int      @id @default(autoincrement())
   mother    User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
-  motherId    Int
+  motherId  Int
   name      String
   severity  String   @default("low")
   notes     String?
   resolved  Boolean  @default(false)
   createdAt DateTime @default(now())
-  updatedAt DateTime  @updatedAt
+  updatedAt DateTime @updatedAt
 
-  @@index([motherId], name:"idx_health_symptoms_mother_id")
+  @@index([motherId], name: "idx_health_symptoms_mother_id")
   @@map("health_symptoms")
 }
 
-model albums {
+model BabyMetric {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  title     String
+  value     String
+  unit      String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId], name: "idx_baby_metrics_user_id")
+  @@map("baby_metrics")
+}
+
+model FeedingLog {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+  amount     Float?
+  method     String? // e.g., "breast", "bottle"
+  notes      String?
+  occurredAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([userId], name: "idx_feeding_logs_user_id")
+  @@map("feeding_logs")
+}
+
+model SleepLog {
+  id        Int       @id @default(autoincrement())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  startAt   DateTime
+  endAt     DateTime?
+  notes     String?
+  createdAt DateTime  @default(now())
+
+  @@index([userId], name: "idx_sleep_logs_user_id")
+  @@index([startAt], name: "idx_sleep_logs_start_at")
+  @@map("sleep_logs")
+}
+
+model GrowthRecord {
+  id                Int      @id @default(autoincrement())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            Int
+  weight            Float?
+  height            Float?
+  headCircumference Float?
+  notes             String?
+  createdAt         DateTime @default(now())
+
+  @@index([userId], name: "idx_growth_records_user_id")
+  @@map("growth_records")
+}
+
+model Album {
   id          Int      @id @default(autoincrement())
+  mother      User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
   motherId    Int
   title       String
   coverPhoto  String?
   description String?
   createdAt   DateTime @default(now()) @db.Timestamptz(6)
-  lastUpdated DateTime @default(now()) @db.Timestamptz(6)
-  user        User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
-  photos      photos[]
+  lastUpdated DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  photos      Photo[]
 
-  @@index([motherId], map: "idx_albums_mother_id")
+  @@index([motherId], name: "idx_albums_mother_id")
+  @@map("albums")
 }
 
-model photos {
+model Photo {
   id         Int      @id @default(autoincrement())
+  album      Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
   albumId    Int
   fileUrl    String
   name       String?
   notes      String?
   createdAt  DateTime @default(now()) @db.Timestamptz(6)
   uploadedAt DateTime @default(now()) @db.Timestamptz(6)
-  albums     albums   @relation(fields: [albumId], references: [id], onDelete: Cascade)
 
-  @@index([albumId], map: "idx_photos_album_id")
-}
-
-enum Stage {
-  pregnant
-  postpartum
-  childcare
-}
-
-enum BabyGender {
-  male
-  female
-  unknown
-model Album {
-    id          Int      @id @default(autoincrement())
-    mother      User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
-    motherId    Int
-    title       String
-    coverPhoto  String?
-    description String?
-    createdAt   DateTime @default(now()) @db.Timestamptz(6)
-    lastUpdated DateTime @default(now()) @updatedAt @db.Timestamptz(6)
-    photos      Photo[]
-
-    @@index([motherId], name: "idx_albums_mother_id")
-    @@map("albums")
-}
-
-model Photo {
-    id         Int      @id @default(autoincrement())
-    album      Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
-    albumId    Int
-    fileUrl    String
-    name       String?
-    notes      String?
-    createdAt  DateTime @default(now()) @db.Timestamptz(6)
-    uploadedAt DateTime @default(now()) @db.Timestamptz(6)
-
-    @@index([albumId], name: "idx_photos_album_id")
-    @@map("photos")
+  @@index([albumId], name: "idx_photos_album_id")
+  @@map("photos")
 }
 
 model RefreshToken {
