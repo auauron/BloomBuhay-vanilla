@@ -207,6 +207,7 @@ model FeedingLog {
   notes      String?
   occurredAt DateTime @default(now())
   createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@index([userId], name: "idx_feeding_logs_user_id")
   @@map("feeding_logs")
@@ -220,6 +221,7 @@ model SleepLog {
   endAt     DateTime?
   notes     String?
   createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([userId], name: "idx_sleep_logs_user_id")
   @@index([startAt], name: "idx_sleep_logs_start_at")
@@ -234,7 +236,8 @@ model GrowthRecord {
   height            Float?
   headCircumference Float?
   notes             String?
-  createdAt         DateTime @default(now())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   @@index([userId], name: "idx_growth_records_user_id")
   @@map("growth_records")
