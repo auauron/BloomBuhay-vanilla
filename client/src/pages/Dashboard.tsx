@@ -47,12 +47,12 @@ export default function Dashboard() {
     { maxWeek: 17, name: "Naval Orange", image: "assets/dashboardFruit/Naval_orange.png" },
     { maxWeek: 18, name: "Pomegranate", image: "assets/dashboardFruit/Pomegranate.png" },
     { maxWeek: 19, name: "Grapefruit", image: "assets/dashboardFruit/Grapefruit.png" },
-    { maxWeek: 20, name: "", image: "assets/dashboardFruit/Mango.png" },
+    { maxWeek: 20, name: "Mango", image: "assets/dashboardFruit/Mango.png" },
     { maxWeek: 21, name: "Rockmelon", image: "assets/dashboardFruit/Rockmelon.png" },
     { maxWeek: 24, name: "Eggplant", image: "assets/dashboardFruit/Eggplant.png" },
     { maxWeek: 28, name: "Papaya", image: "assets/dashboardFruit/Papaya.png" },
     { maxWeek: 36, name: "Honeydew", image: "assets/dashboardFruit/Honeydew.png" },
-    { maxWeek: 40, name: "Peach", image: "assets/dashboardFruit/Watermelon.png" },
+    { maxWeek: 40, name: "Watermelon", image: "assets/dashboardFruit/Watermelon.png" },
   ];
 
   //helper to pick fruit
