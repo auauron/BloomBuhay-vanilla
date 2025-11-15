@@ -4,6 +4,8 @@ import InputField from "../ui/inputField";
 import SetupHeader from "../ui/SetupHeader";
 import NextButton from "../ui/NextButton";
 
+const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
+
 interface PostpartumProps {
   onComplete?: (data: Record<string, any>) => void;
   fullName?: string;
@@ -41,7 +43,7 @@ export default function Postpartum({
     setValue(e.target.value);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     // basic validation — require a selected gender (keeps current behavior)
     if (!selectedGender) return;
 
@@ -67,6 +69,23 @@ export default function Postpartum({
       babyGender: babyGenderNormalized,
       trackRecovery: selectedOption === "option1" ? true : false,
     };
+
+    try {
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        await fetch(`${API_BASE}/api/mother-profiles`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(stageData),
+        });
+      }
+    } catch (err) {
+      console.error("Failed to save postpartum data:", err);
+    }
 
     onComplete?.(stageData);
   };
