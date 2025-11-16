@@ -103,7 +103,7 @@ export default function PremiumPage(): ReactElement {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
+    <div className="min-h-screen bg-bloomWhite">
       <Header onMenuClick={toggleSidebar} />
 
       {/* Sidebar controlled by state */}
