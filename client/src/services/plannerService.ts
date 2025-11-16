@@ -2,19 +2,35 @@ import { authService } from "./authService";
 
 const API_URL = "http://localhost:3000/api/planner";
 
-export interface PlannerTask {
-    id: number;
-    userId: number;
-    title: string;
-    description: string,
-    date: string;
-    isCompleted: boolean,
-    createdAt: string;
+export interface BloomDate {
+  day: number;
+  date: number
+  month: number;
+  year: number;
+};
+
+export interface BloomTime {
+  hour: number;
+  min: number;
+  sec: number;
 }
+
+export interface Task {
+  id: string
+  task: string | null;
+  description: string | null;
+  isCompleted: boolean;
+  startDate: BloomDate;
+  endDate?: BloomDate;
+  days?: number[];
+  interval?: number;
+  time?: BloomTime;
+  dateCreated?: string;
+};
 
 export interface GetTasksResponse {
     success: boolean;
-    data?: PlannerTask[],
+    data?: Task[],
     error?: string;
 }
 
@@ -26,7 +42,7 @@ export interface CreateTaskRequest {
 
 export interface CreateTaskResponse {
     success: boolean,
-    data?: PlannerTask;
+    data?: Task;
     error?: string;
 }
 
@@ -36,7 +52,7 @@ export interface UpdateTaskRequest {
 
 export interface UpdateTaskResponse {
     success: boolean,
-    data?: PlannerTask;
+    data?: Task;
     error?: string;
 }
 
@@ -101,7 +117,7 @@ export const plannerService = {
             }
         },
 
-        async updateTask(taskId: number, data: UpdateTaskRequest): Promise<UpdateTaskResponse> {
+        async updateTask(taskId: string, data: UpdateTaskRequest): Promise<UpdateTaskResponse> {
             try {
                 const token = authService.getToken();
                 if (!token) {
@@ -125,7 +141,7 @@ export const plannerService = {
             }
         },
 
-        async deleteTask(taskId: number): Promise<DeleteTaskResponse>{
+        async deleteTask(taskId: string): Promise<DeleteTaskResponse>{
             try {
                 const token = authService.getToken();
                 if (!token) {

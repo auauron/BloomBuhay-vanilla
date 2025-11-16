@@ -18,31 +18,34 @@ export interface DateJumperProps {
 }
 
 export interface CalendarState {
-  selectedDate: BloomDate | null;
-  selectedMonth: number;
-  selectedYear: number;
-  viewMode: "month" | "year";
+  selectedDate: (date: string | null) => void;
+  selectMode: boolean;
+}
+
+export interface ToDoListState {
+  selectedMode: () => void;
+  selectedDate: string | null
 }
 
 export interface Task {
   id: string
   task: string | null;
-  description: string | null;
+  description?: string | null;
   isCompleted: boolean;
   startDate: BloomDate;
   endDate?: BloomDate;
   days?: number[];
   interval?: number;
   time?: BloomTime;
+  dateCreated?: string;
 };
 
 export interface AddTaskModalProps {
   onClose: () => void;
   onCancel: () => void;
   onAdd: (task: Task) => void;
-  startDate: BloomDate;
-  endDate?: BloomDate;
-  isEditing?: boolean;
+  selectDate: string | null;
+  selectMode: () => void;
 }
 
 
@@ -53,10 +56,10 @@ export type TodoMode =
   | "addTask"
   | "editTask";
 
-export interface TodoListState {
+export interface TodoListProcess {
   mode: TodoMode;
   selectedTaskId?: string;
-  selectedDate?: BloomDate;
+  selectedDate?: string;
   tasks: Task[];
 }
 

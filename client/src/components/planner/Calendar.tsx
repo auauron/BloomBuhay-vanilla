@@ -2,10 +2,10 @@ import React, { useState, useMemo } from "react";
 import { ChevronsLeft, ChevronsRight, Calendar } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import DateJumper from "./modal/DateJumper";
-import { BloomDate } from "../../types/plan";
-import { createCalendar, translateBloomdate, isLeapYear, getDayOfWeek, getNow } from "./PlannerFuntions";
+import { BloomDate, CalendarState } from "../../types/plan";
+import { createCalendar, translateBloomdate, getNow } from "./PlannerFuntions";
 
-export default function CalendarView() {
+export default function CalendarView( { selectedDate, selectMode } : CalendarState ) {
   const now: BloomDate = getNow()
   const [selectedDay, setSelectedDay] = useState<string | null>(translateBloomdate(now));
   const [month, setMonth] = useState(now.month);
@@ -15,7 +15,8 @@ export default function CalendarView() {
   const daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"];
 
   const handleSelect = (id: string) => {
-    setSelectedDay((prev) => (prev === id ? null : id));
+    setSelectedDay((prev) => (prev === id) ? null : id);
+    if (selectMode) selectedDate(selectedDay);
   };
 
   const calendar = useMemo(() => createCalendar(month, year), [month, year]);

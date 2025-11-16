@@ -6,9 +6,12 @@ import CalendarView from "../components/planner/Calendar";
 import ToDoList from "../components/planner/ToDoList";
 import { motion } from "framer-motion";
 import { Calendar } from "lucide-react";
+import { translateBloomdate } from "../components/planner/PlannerFuntions";
 
 export default function Planner() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [selectedDay, setSelectedDay] = useState<string | null>("")
+  const [isSelectingDay, toggleSelectingDay] = useState(false)
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => setIsSidebarOpen(false);
@@ -38,12 +41,18 @@ export default function Planner() {
           <div className="grid grid-cols-1 md:grid-cols-[59%_39%] gap-[2%] max-w-7xl mx-auto w-full">
             {/* Calendar Section */}
             <div className="rounded-[22px] shadow-md bg-bloomPink p-[2px]">
-              <CalendarView />
+              <CalendarView
+              selectedDate={(date) => setSelectedDay((date !== null) ? date : null)}
+              selectMode={isSelectingDay}
+              />
             </div>
 
             {/* To-Do List Section */}
             <div className="rounded-[22px] shadow-md bg-bloomPink p-[2px]">
-              <ToDoList />
+              <ToDoList
+              selectedDate={selectedDay}
+              selectedMode={() => toggleSelectingDay(!isSelectingDay)}
+              />
             </div>
           </div>
         </div>

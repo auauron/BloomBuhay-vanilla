@@ -4,32 +4,37 @@ import { X, ChevronRight, ChevronUp, ChevronDown, Target } from "lucide-react";
 import { Task, BloomDate, AddTaskModalProps, BloomTime } from "../../../types/plan";
 import { getFullDate, getNow, getTime, taskID, translateBloomdate } from "../PlannerFuntions";
 
-export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
+export default function AddTaskModal({ onClose, onCancel, onAdd, selectDate, selectMode } : AddTaskModalProps) {
 
   const now: BloomDate = getNow()
   const nowTime: BloomTime = getTime()
-  const today: string = getFullDate(getNow())
-  
-  const [form, setForm] = useState<Task>({
-    id: taskID( now, nowTime),
-    task: "Task",
-    description: null,
-    isCompleted: false,
-    startDate: now
-  });
+  const selectedMonth = (selectDate) ? selectDate : now
 
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
-  const [editing, setIsEditing] = useState(false)
   const [isSingleDate, setSingleDate] = useState(true);
   const [isWholeDay, setWholeDay] = useState(true);
-  const [dateStart, setDateStart] = useState(today)
-  const [dateEnd, setDateEnd] = useState(today)
-  const [weekly, setWeekly] = useState<string[]>([])
+  const [dateStart, setDateStart] = useState(now)
+  const [dateEnd, setDateEnd] = useState(now)
+  const [days, setDays] = useState<number[]>([])
   const [interval, setInterval] = useState(0)
   const [timeHr, setTimeHr] = useState(6)
   const [timeMin, setTimeMin] = useState(0)
   const [clock, setClock] = useState("AM")
+
+    
+  const [form, setForm] = useState<Task>({
+    id: taskID(now, nowTime),
+    task: title,
+    description: description,
+    isCompleted: false,
+    startDate: dateStart,
+    endDate: dateEnd,
+    days: days,
+    interval: interval,
+    time: { hour: timeHr, min: timeMin, sec: 0 } as BloomTime
+
+  });
 
   const [isSelectingDate, setIsSelectingDate] = useState(false)
   const [selectedDay, setSelectedDay] = useState(now)
@@ -46,19 +51,26 @@ export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
     onClose();
   }
 
-  // const handleCancel = () => {
-  //   onCancel();
-  // }
+  const handleCancel = () => {
+    setForm({
+    id: taskID( now, nowTime),
+    task: "Task",
+    description: null,
+    isCompleted: false,
+    startDate: now
+    })
+    onClose();
+  }
 
-  // const handleAdd = () => {
-  //   onAdd(form)
-  // }
+  const handleAdd = () => {
+    onAdd(form)
+  }
 
   const handelStartDate = () => {
     
   }
 
-  const handleTimeMin = (val: number) => {
+  const handleSelectDate = () => {
   }
 
   const handleChangeClock = () => {
@@ -132,11 +144,11 @@ export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
                         <button 
                         className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105"
                         >
-                          {dateStart}
+                          {getFullDate(dateStart)}
                         </button>
                         <ChevronRight className="text-bloomPink" />
                         <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
-                          {dateEnd}
+                          {getFullDate(dateEnd)}
                         </button>
                       </motion.div>
                       : 
@@ -149,7 +161,7 @@ export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
                       className="flex items-center justify-center"
                       >
                         <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
-                            {dateStart}
+                            {getFullDate(dateStart)}
                           </button>
                       </motion.div>
                     )}
@@ -199,19 +211,19 @@ export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
                         <span className="font-bold text-bloomBlack">Everyday</span>
                       </div>
 
-                      <div className="flex justify-evenly w-full gap-2 mb-2">
+                      <div className="flex justify-evenly w-full gap-2 mb-2 cursor-pointer">
                         {["Su", "M", "Tu", "W", "Th", "F", "Sa"].map((day, i) => (
                           <div
                             key={i}
                             className={`w-[32px] h-[32px] flex items-center justify-center rounded-full text-sm font-bold ${
-                              weekly.includes(day)
+                              days.includes(i)
                                 ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow scale-105"
                                 : "border border-bloomPink text-bloomPink hover:bg-bloomYellow/50 hover:scale-105"
                             }`}
                             onClick={() => {
-                              (!weekly.includes(day))
-                              ? setWeekly(weekly.concat(day))
-                              : setWeekly(weekly.filter((x) => x !== day))
+                              (!days.includes(i))
+                              ? setDays(days.concat(i))
+                              : setDays(days.filter((x) => x !== i))
                             }}
                           >
                             {day}
@@ -334,12 +346,18 @@ export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
             <div className="w-full">
               {/* Buttons */}
               <div className="flex justify-between gap-4">
-                <button className="w-32 py-2 rounded-full border border-bloomPink text-bloomPink font-bold hover:bg-pink-50 transition">
+                <motion.button
+                className="w-32 py-2 rounded-full border border-bloomPink text-bloomPink font-bold hover:bg-pink-50 transition"
+                onClick={handleCancel}
+                >
                   Cancel
-                </button>
-                <button className="w-32 py-2 rounded-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-bold shadow hover:opacity-90 transition">
+                </motion.button>
+                <motion.button
+                className="w-32 py-2 rounded-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-bold shadow hover:opacity-90 transition"
+                onClick={handleAdd}
+                >
                   Add
-                </button>
+                </motion.button>
               </div>
             </div>
           </div>

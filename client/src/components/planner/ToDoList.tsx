@@ -3,21 +3,17 @@ import { motion } from "framer-motion";
 import { PlusCircle, Trash2 } from "lucide-react";
 import { plannerService } from "../../services/plannerService";
 import AddTaskModal from "./modal/AddTask";
+import { Task, BloomDate, BloomTime, ToDoListState } from "../../types/plan";
+import { getNow, translateBloomdate } from "./PlannerFuntions";
 
-type Task = {
-  id: number;
-  title: string;
-  completed: boolean;
-  createdAt: string;
-  date: string;
-};
-
-export default function ToDoList() {
+export default function ToDoList({ selectedMode, selectedDate }: ToDoListState) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false)
+
+  const now = translateBloomdate(getNow())
 
   // Fetch tasks on component mount
   useEffect(() => {
@@ -34,10 +30,15 @@ export default function ToDoList() {
         // Transform API data to component format
         const transformedTasks = response.data.map((task) => ({
           id: task.id,
-          title: task.title,
-          completed: task.isCompleted,
-          createdAt: new Date(task.createdAt).toLocaleString(),
-          date: task.date,
+          task: task.task,
+          description: task.description,
+          isCompleted: task.isCompleted,
+          startDate: task.startDate,
+          endDate: task.endDate,
+          days: task.days,
+          interval: task.interval,
+          time: task.time,
+          dateCreated: task.dateCreated
         }));
         setTasks(transformedTasks);
       } else {
@@ -65,10 +66,15 @@ export default function ToDoList() {
       if (response.success && response.data) {
         const newTask: Task = {
           id: response.data.id,
-          title: response.data.title,
-          completed: response.data.isCompleted,
-          createdAt: new Date(response.data.createdAt).toLocaleString(),
-          date: response.data.date,
+          task: response.data.task,
+          description: response.data.description,
+          isCompleted: response.data.isCompleted,
+          startDate: response.data.startDate,
+          endDate: response.data.endDate,
+          days: response.data.days,
+          interval: response.data.interval,
+          time: response.data.time,
+          dateCreated: response.data.dateCreated
         };
         setTasks((prev) => [newTask, ...prev]);
         setNewTaskTitle("");
@@ -82,7 +88,7 @@ export default function ToDoList() {
   }
 
   // Delete task
-  async function handleDeleteTask(id: number) {
+  async function handleDeleteTask(id: string) {
     try {
       const response = await plannerService.deleteTask(id);
       
@@ -98,19 +104,19 @@ export default function ToDoList() {
   }
 
   // Toggle checkbox
-  async function handleToggleTask(id: number) {
+  async function handleToggleTask(id: string) {
     const task = tasks.find((t) => t.id === id);
     if (!task) return;
 
     try {
       const response = await plannerService.updateTask(id, {
-        isCompleted: !task.completed,
+        isCompleted: !task.isCompleted,
       });
 
       if (response.success) {
         setTasks((prev) =>
           prev.map((t) =>
-            t.id === id ? { ...t, completed: !t.completed } : t
+            t.id === id ? { ...t, completed: !t.isCompleted } : t
           )
         );
       } else {
@@ -167,23 +173,23 @@ export default function ToDoList() {
                   <div className="flex items-center gap-3">
                     <input
                       type="checkbox"
-                      checked={task.completed}
+                      checked={task.isCompleted}
                       onChange={() => handleToggleTask(task.id)}
                       className="w-5 h-5 accent-bloomPink cursor-pointer"
                     />
                     <span
                       className={`text-lg ${
-                        task.completed
+                        task.isCompleted
                           ? "line-through text-gray-400"
                           : "text-gray-800"
                       }`}
                     >
-                      {task.title}
+                      {task.task}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-3 text-sm text-gray-500">
-                    <span>{task.createdAt}</span>
+                    <span>{task.dateCreated}</span>
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
@@ -213,7 +219,13 @@ export default function ToDoList() {
         </div>
         </motion.div>
     ) : (
-      <AddTaskModal onClose = {() => setIsAdding(!isAdding)} />
+      <AddTaskModal
+      onClose = {() => setIsAdding(!isAdding)}
+      onCancel={() => setIsAdding(!isAdding)}
+      onAdd={(task) => setTasks(tasks.concat(task))}
+      selectDate={selectedDate}
+      selectMode={selectedMode}
+      />
     )
   );
 }
