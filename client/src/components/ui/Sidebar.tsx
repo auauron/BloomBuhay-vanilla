@@ -235,7 +235,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             onClick={() => handleNavigation("/userprofile")}
             className="w-full flex items-center space-x-3 p-1 hover:bg-white/10 rounded-lg transition-colors text-left"
           >
-            <div className="w-12 h-12 rounded-full overflow-hidden bg-white/20 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full border-2 border-white/10 overflow-hidden bg-white/20 flex items-center justify-center">
               {user?.profilePic ? (
                 <img
                   src={user.profilePic}
