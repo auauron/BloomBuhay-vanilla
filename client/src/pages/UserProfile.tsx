@@ -6,6 +6,7 @@ import Sidebar from "../components/ui/Sidebar";
 import InputField from "../components/ui/inputField";
 import { Edit, LogOut } from "lucide-react";
 import { userService } from "../services/userService";
+import { babyService } from "../services/babyService";
 import { authService } from "../services/authService";
 
 export default function UserProfile() {
@@ -20,17 +21,19 @@ export default function UserProfile() {
   const [deletePassword, setDeletePassword] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [babyData, setBabyData] = useState<{
+    motherhoodStage: string;
+    babyName: string;
+    gender: string;
+  } | null>(null);
+  const [babyLoading, setBabyLoading] = useState(true);
+  const [babyError, setBabyError] = useState<string | null>(null);
 
   // User profile data
   const [userData, setUserData] = useState<{
     fullName: string;
     email: string;
     profilePic?: string;
-
-    // baby / motherhood data
-    stage?: string;
-    babyName?: string;
-    babyGender?: string;
   } | null>(null);
 
   // Form state for editing
@@ -55,15 +58,9 @@ export default function UserProfile() {
       setLoading(true);
       setError(null);
 
-      let userProfileData = null;
       const result = await userService.getProfile();
 
       if (result.success && result.user) {
-        userProfileData = {
-          fullName: result.user.fullName,
-          email: result.user.email,
-          profilePic: result.user.profilePic,
-        };
         setUserData({
           fullName: result.user.fullName,
           email: result.user.email,
@@ -74,7 +71,7 @@ export default function UserProfile() {
         setProfilePic(result.user.profilePic || "");
       } else {
         setError(result.error || "Failed to load profile");
-        // If not authenticated, try to get from localStorage
+        // Fallback to localStorage if needed
         const storedUser = authService.getUser();
         if (storedUser) {
           setUserData({
@@ -87,25 +84,6 @@ export default function UserProfile() {
           setProfilePic(storedUser.profilePic || "");
         }
       }
-      
-      const stage = localStorage.getItem("lastStage") || undefined;
-      const babyName = localStorage.getItem("babyName") || undefined;
-      const babyGender = localStorage.getItem("babyGender") || undefined;
-
-      // merge baby data into userData
-      if (userProfileData) {
-        setUserData({
-          ...userProfileData,
-          stage,
-          babyName,
-          babyGender,
-        });
-        setFullName(userProfileData.fullName);
-        setEmail(userProfileData.email);
-        setProfilePic(userProfileData.profilePic || "");
-      } else {
-        setError(result.error || "Failed to load profile");
-      }
 
       setLoading(false);
     };
@@ -113,26 +91,20 @@ export default function UserProfile() {
     fetchProfile();
   }, []);
 
-  const stageMap: Record<string, string> = {
-    pregnant: "Pregnancy",
-    postpartum: "Postpartum",
-    childcare: "Childcare",
-  };
-  // Pull baby data
+  // fetch baby data from backend
   useEffect(() => {
-    const stage = localStorage.getItem("lastStage");
-    const babyName = localStorage.getItem("babyName");
-    const babyGender = localStorage.getItem("babyGender");
-
-    setUserData((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        stage: stage || prev.stage,
-        babyName: babyName || prev.babyName,
-        babyGender: babyGender || prev.babyGender,
-      };
-    });
+    const fetchBabyDetails = async () => {
+      setBabyLoading(true);
+      setBabyError(null);
+      const result = await babyService.getBabyDetails();
+      if (result.success && result.baby) {
+        setBabyData(result.baby);
+      } else {
+        setBabyError(result.error || "Failed to load baby details");
+      }
+      setBabyLoading(false);
+    };
+    fetchBabyDetails();
   }, []);
 
   const toggleSidebar = () => {
@@ -371,42 +343,44 @@ export default function UserProfile() {
             </div>
 
             {/* Baby profile */}
-            <div className="bg-white rounded-2xl p-6 shadow-md space-y-4">
-              {userData?.stage || userData?.babyName || userData?.babyGender ? (
-                <>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">
-                      Motherhood Stage
-                    </label>
-                    <p className="text-gray-800 text-lg capitalize">
-                      {userData.stage || "Not Set"}
-                    </p>
-                  </div>
-
-                  <div className="border-t border-gray-200 pt-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">
-                      Baby's Name
-                    </label>
-                    <p className="text-gray-800 text-lg">
-                      {userData.babyName || "Not Set"}
-                    </p>
-                  </div>
-
-                  <div className="border-t border-gray-200 pt-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">
-                      Baby's Gender
-                    </label>
-                    <p className="text-gray-800 text-lg capitalize">
-                      {userData.babyGender || "Not Set"}
-                    </p>
-                  </div>
-                </>
-              ) : (
+            {babyLoading ? (
+              <div className="bg-white rounded-2xl p-6 shadow-md text-center">
+                <p className="text-gray-600">Loading baby details...</p>
+              </div>
+            ) : babyError ? (
+              <div className="bg-white rounded-2xl p-6 shadow-md text-center">
+                <p className="text-red-600">{babyError}</p>
+              </div>
+            ) : babyData ? (
+              <div className="bg-white rounded-2xl p-6 shadow-md space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Motherhood Stage
+                  </label>
+                  <p className="text-gray-800 text-lg">
+                    {babyData.motherhoodStage}
+                  </p>
+                </div>
+                <div className="border-t border-gray-200 pt-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Baby's Name
+                  </label>
+                  <p className="text-gray-800 text-lg">{babyData.babyName}</p>
+                </div>
+                <div className="border-t border-gray-200 pt-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Gender
+                  </label>
+                  <p className="text-gray-800 text-lg">{babyData.gender}</p>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl p-6 shadow-md text-center">
                 <p className="text-gray-500">
-                  You haven't added baby details yet.
+                  No baby details found. Please complete signup.
                 </p>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
