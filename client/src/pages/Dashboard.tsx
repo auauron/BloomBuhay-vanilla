@@ -10,11 +10,12 @@ import PregnancyTips from "../components/ui/pregnancyTips";
 import EarlyChildcareTips from "../components/ui/earlyChildcareTips"; 
 import { Info, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import messages from '../components/motivations/messages.json';
 
 const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
 
 export default function Dashboard() {
-  const navigate = useNavigate(); // NEW LINE 1113
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
@@ -33,6 +34,7 @@ export default function Dashboard() {
 
   const [userName, setUserName] = useState<string | null>(null);
   const [weeksPregnant, setWeeksPregnant] = useState<number | null>(null);
+  const [motivationalMessage, setMotivationalMessage] = useState("");
 
   // baby size fruits
   const babySizeFruits: { maxWeek: number; name: string; image: string }[] = [
@@ -133,6 +135,23 @@ export default function Dashboard() {
       default:
         return null;
     }
+  };
+
+  // Function to get random motivational message
+  const getRandomMotivationalMessage = (stage: string | null) => {
+    let messagePool: string[] = [];
+    
+    // Add stage-specific messages if available
+    if (stage && messages[stage as keyof typeof messages]) {
+      messagePool = [...messages[stage as keyof typeof messages]];
+    }
+    
+    // Always include general messages as fallback
+    messagePool = [...messagePool, ...messages.general];
+    
+    // Select random message
+    const randomIndex = Math.floor(Math.random() * messagePool.length);
+    return messagePool[randomIndex];
   };
 
   useEffect(() => {
@@ -238,7 +257,7 @@ export default function Dashboard() {
     };
   }, []);
 
-  // fallback to optimistic cache if DB hasn't provided anything
+    // fallback to optimistic cache if DB hasn't provided anything
   const cachedStage = localStorage.getItem("lastStage"); // cached canonical key
   const cachedWeeks = Number(localStorage.getItem("lastWeeksPregnant") ?? NaN);
   const effectiveWeeks =
@@ -251,6 +270,11 @@ export default function Dashboard() {
   // readable label for UI
   const stageLabel = enumToUi(canonicalStageKey);
 
+  // Update motivational message when stage changes
+  useEffect(() => {
+    setMotivationalMessage(getRandomMotivationalMessage(canonicalStageKey));
+  }, [canonicalStageKey]);
+
   // show skeleton UI while loading
   const isLoading = loadingStage;
 
@@ -261,6 +285,8 @@ export default function Dashboard() {
   const closeSidebar = () => {
     setIsSidebarOpen(false);
   };
+
+  const fruit = getFruitByWeek(effectiveWeeks);
 
   const renderMainCard = () => {
     switch (canonicalStageKey) {
@@ -274,7 +300,7 @@ export default function Dashboard() {
             <p className="text-2xl font-semibold mb-6">pregnant.</p>
             <p className="text-white/90 text-xl absolute bottom-8 font-rubik font-light">
               Your baby is as big as a{" "}
-              <span className="font-bold">{fruit.name}!</span>
+              <span className="font-bold">{fruit?.name}!</span>
             </p>
             <div className="absolute bottom-6 right-6 h-40 w-40 bg-white/80 rounded-full border-8 border-white flex items-center justify-center overflow-hidden">
               {fruit && (
@@ -322,7 +348,7 @@ export default function Dashboard() {
           <>
             <h3 className="text-2xl font-bold mb-2">Welcome</h3>
             <h1 className="text-3xl font-extrabold leading-tight text-[#474747]">
-              Let’s get you set up
+              Let's get you set up
             </h1>
             <p className="text-lg font-semibold mb-6">
               Complete your setup to get personalized tips
@@ -334,7 +360,6 @@ export default function Dashboard() {
         );
     }
   };
-  const fruit = getFruitByWeek(effectiveWeeks);
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
@@ -343,24 +368,25 @@ export default function Dashboard() {
         <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
         {/* Greeting */}
-        <div className="flex flex-col items-center text-center mt-8 px-4">
+        <div className="flex flex-col items-center text-center mt-8 px-3">
           <h2 className="text-4xl font-bold text-bloomPink">
-            Hello,{" "}
-            {isLoading ? "Mama!" : userName ? `Mama ${userName}` : "Mama!"}
-            {stageLabel && (
-              <span className="text-lg font-medium text-[#474747] ml-3">
-                — {stageLabel}
-              </span>
-            )}
+            Hello, {isLoading ? "Mama!" : userName ? `Mama ${userName}` : "Mama!"}
           </h2>
-          <p className="text-[#474747] font-rubik mt-2 mb-[-5px] font-light text-lg">
-            “One day at a time, one heartbeat at a time — you are growing a
-            miracle.”
+          
+          {stageLabel && (
+            <div className="mt-3">
+              <span className="text-xl font-sm font-rubik font-normal text-bloomBlack">
+                Bloom stage: <span className="text-bloomPink"> {stageLabel} </span>
+              </span>
+            </div>
+          )}
+          
+          <p className="text-bloomBlack text-center font-rubik mt-4 mb-[-5px] font-light text-lg max-w-2xl">
+            "{motivationalMessage}"
           </p>
         </div>
 
         {/* Dashboard Layout */}
-
         <div className="grid grid-cols-1 md:grid-cols-[550px_1fr] gap-6 p-8 max-w-6xl mx-auto w-full">
           {/* Left Info Card */}
           <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-8 rounded-[20px] shadow-lg relative">
@@ -382,11 +408,11 @@ export default function Dashboard() {
               <p className="mt-2 text-lg text-center text-[#DE085F] font-bold">
                 17% complete
               </p>
-              <p className="mt-2 text-lg text-[#474747] font-rubik font-light">
+              <p className="mt-2 text-lg text-bloomBlackfont-rubik font-light">
                 <span className="font-bold">Remaining:</span> 83% (33 weeks, 2
                 days)
               </p>
-              <p className="mt-2 text-lg text-[#474747] font-rubik font-light">
+              <p className="mt-2 text-lg text-bloomBlackfont-rubik font-light">
                 <span className="font-bold">Due Date:</span> January 15, 2024
               </p>
             </div>
@@ -426,16 +452,16 @@ export default function Dashboard() {
                 
                 <h3 className="text-2xl mb-3 text-white font-bold pr-12">Tips</h3>
                 {canonicalStageKey === "pregnant" && (
-                  <PregnancyTips className="text-sm text-[#474747] font-rubik" />
+                  <PregnancyTips className="text-sm text-bloomBlackfont-rubik" />
                 )}
                 {canonicalStageKey === "postpartum" && (
-                  <PostpartumTip className="text-sm text-[#474747] font-rubik" />
+                  <PostpartumTip className="text-sm text-bloomBlackfont-rubik" />
                 )}
                 {canonicalStageKey === "childcare" && (
-                  <EarlyChildcareTips className="text-sm text-[#474747] font-rubik" />
+                  <EarlyChildcareTips className="text-sm text-bloomBlackfont-rubik" />
                 )}
                 {!canonicalStageKey && (
-                  <p className="text-sm text-[#474747] font-rubik">
+                  <p className="text-sm text-bloomBlackfont-rubik">
                     Complete your profile to get personalized tips for your stage.
                   </p>
                 )}
