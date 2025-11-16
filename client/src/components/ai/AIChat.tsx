@@ -12,20 +12,7 @@ interface Message {
 
 export default function AIChat() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      content: 'Hello',
-      isUser: true,
-      timestamp: new Date(Date.now() - 60000), // 1 minute ago
-    },
-    {
-      id: '2',
-      content: 'AI features are currently unavailable. Please try again later.',
-      isUser: false,
-      timestamp: new Date(),
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
