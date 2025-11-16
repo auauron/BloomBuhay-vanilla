@@ -488,7 +488,7 @@ const getRemainingTime = (): string => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <div className="min-h-screen bg-pink-50 flex flex-col font-poppins overflow-y-auto autoscroll">
+      <div className="min-h-screen bg-bloomWhite flex flex-col font-poppins overflow-y-auto autoscroll">
         <Header onMenuClick={toggleSidebar} />
         <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 

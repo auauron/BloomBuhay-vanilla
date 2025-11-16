@@ -27,7 +27,7 @@ const GradientSearchBar = ({
     <div
       className={`w-full rounded-full p-[2px] transition-all duration-300 ${
         focused
-          ? "bg-white shadow-[0_0_12px_rgba(248,117,170,0.4)]"
+          ? "bg-bloomWhite shadow-[0_0_12px_rgba(248,117,170,0.4)]"
           : "bg-gradient-to-r from-bloomPink to-bloomYellow"
       }`}
     >
