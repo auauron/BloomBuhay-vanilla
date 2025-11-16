@@ -493,9 +493,9 @@ const getRemainingTime = (): string => {
         <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
         {/* Greeting */}
-        <div className="flex flex-col items-center text-center mt-4 md:mt-8 px-4 md:px-3">
-          <h2 className="text-2xl md:text-4xl font-bold text-bloomPink">
-            Hello, {isLoading ? "Mama!" : userName ? `Mama ${userName}` : "Mama!"}
+        <div className="flex flex-col items-center text-center mt-8 px-3">
+          <h2 className="text-4xl font-bold text-bloomPink">
+            Hello, {isLoading ? "Mama!" : userName ? `Mama ${userName.charAt(0).toUpperCase() + userName.slice(1)}!` : "Mama!"}
           </h2>
           
           {stageLabel && (
