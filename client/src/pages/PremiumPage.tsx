@@ -24,6 +24,9 @@ export default function PremiumPage(): ReactElement {
         "Health Tracker — Weight & Mood only",
         "BB's Tools — Due Date Calculator only",
         "Journal — Notes and 5 photos only",
+        "Baby Profile — 1 profile only",
+        "Bloom AI — Not available",
+
       ],
       cta: "Return to Basic",
       variant: "basic",
@@ -43,6 +46,9 @@ export default function PremiumPage(): ReactElement {
         "Health Tracker — Weight, BMI, Mood, Heart rate only",
         "BB's Tools — All pregnant tools + Feeding log only",
         "Journal — Notes + 2 unlimited Photo Albums",
+        "Baby Profile — 1 profile only",
+        "Bloom AI — 10 chats per day only"
+
       ],
       cta: "You're Currently Using",
       variant: "advanced",
@@ -62,6 +68,8 @@ export default function PremiumPage(): ReactElement {
         "Health Tracker — All Health, Mood, and Symptom Logs",
         "BB's Tools — All tools for the baby",
         "Journal — Unlimited Notes + Photo Album",
+        "Baby Profile — Up to 10 profiles",
+        "Bloom AI — Unlimited chats"
       ],
       cta: "Choose Premium",
       variant: "premium",
