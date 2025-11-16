@@ -361,6 +361,131 @@ export default function Dashboard() {
     }
   };
 
+// Calculate progress percentage based on stage and weeks
+const getProgressPercentage = (): string => {
+  if (!canonicalStageKey || !effectiveWeeks) return "0%";
+  
+  switch (canonicalStageKey) {
+    case "pregnant":
+      // Pregnancy is 40 weeks total
+      const pregnancyProgress = Math.min(Math.round((effectiveWeeks / 40) * 100), 100);
+      return `${pregnancyProgress}%`;
+    
+    case "postpartum":
+      // Postpartum first 12 weeks are the main recovery period
+      const postpartumWeeks = effectiveWeeks || 0;
+      const postpartumProgress = Math.min(Math.round((postpartumWeeks / 12) * 100), 100);
+      return `${postpartumProgress}%`;
+    
+    case "childcare":
+      // Early childcare first 52 weeks (1 year)
+      const childcareWeeks = effectiveWeeks || 0;
+      const childcareProgress = Math.min(Math.round((childcareWeeks / 52) * 100), 100);
+      return `${childcareProgress}%`;
+    
+    default:
+      return "0%";
+  }
+};
+
+// Calculate remaining percentage
+const getRemainingPercentage = (): string => {
+  const progress = getProgressPercentage();
+  const progressNum = parseInt(progress) || 0;
+  return `${100 - progressNum}%`;
+};
+
+// Calculate remaining time based on stage
+const getRemainingTime = (): string => {
+  if (!canonicalStageKey || !effectiveWeeks) return "Not set";
+  
+  switch (canonicalStageKey) {
+    case "pregnant":
+      const weeksLeft = 40 - (effectiveWeeks || 0);
+      const daysLeft = weeksLeft * 7;
+      return weeksLeft > 0 ? `${weeksLeft} weeks, ${daysLeft % 7} days` : "Any day now!";
+    
+    case "postpartum":
+      const postpartumWeeksLeft = 12 - (effectiveWeeks || 0);
+      return postpartumWeeksLeft > 0 ? `${postpartumWeeksLeft} weeks` : "Recovery milestone reached!";
+    
+    case "childcare":
+      const childcareWeeksLeft = 52 - (effectiveWeeks || 0);
+      return childcareWeeksLeft > 0 ? `${childcareWeeksLeft} weeks` : "First year complete!";
+    
+    default:
+      return "Complete your profile";
+  }
+};
+
+    // Calculate due date or milestone date
+    const getDueDate = (): string => {
+      if (!canonicalStageKey) return "Complete your profile";
+      
+      // If we have a start date from the profile, calculate from there
+      // For now, using example calculation based on current date
+      const today = new Date();
+      
+      switch (canonicalStageKey) {
+        case "pregnant":
+          if (effectiveWeeks) {
+            const dueDate = new Date(today);
+            dueDate.setDate(today.getDate() + ((40 - effectiveWeeks) * 7));
+            return dueDate.toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            });
+          }
+          return "Not set";
+        
+        case "postpartum":
+          if (effectiveWeeks) {
+            const recoveryEndDate = new Date(today);
+            recoveryEndDate.setDate(today.getDate() + ((12 - effectiveWeeks) * 7));
+            return `Recovery: ${recoveryEndDate.toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric' 
+            })}`;
+          }
+          return "Postpartum journey";
+        
+        case "childcare":
+          if (effectiveWeeks) {
+            const firstYearDate = new Date(today);
+            firstYearDate.setDate(today.getDate() + ((52 - effectiveWeeks) * 7));
+            return `First year: ${firstYearDate.toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric' 
+            })}`;
+          }
+          return "Baby's first year";
+        
+        default:
+          return "Complete your profile";
+      }
+    };
+
+  const getProgressWidthClass = (): string => {
+  if (isLoading) return "w-0";
+  
+  const percentage = parseInt(getProgressPercentage());
+      if (percentage >= 95) return "w-full";
+      if (percentage >= 90) return "w-11/12";
+      if (percentage >= 85) return "w-10/12";
+      if (percentage >= 80) return "w-9/12";
+      if (percentage >= 75) return "w-8/12";
+      if (percentage >= 70) return "w-7/12";
+      if (percentage >= 60) return "w-6/12";
+      if (percentage >= 50) return "w-5/12";
+      if (percentage >= 40) return "w-4/12";
+      if (percentage >= 30) return "w-3/12";
+      if (percentage >= 20) return "w-2/12";
+      if (percentage >= 10) return "w-1/12";
+      return "w-0";
+    };
+
+
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <div className="min-h-screen bg-pink-50 flex flex-col font-poppins">
@@ -393,33 +518,35 @@ export default function Dashboard() {
             {renderMainCard()}
           </div>
 
-          {/* Right Column */}
-          <div className="flex flex-col gap-6">
-            {/* Progress */}
-            <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-6 rounded-[20px] shadow-md font-semibold">
-              <h3 className="text-2xl mb-2 text-white font-bold">Progress</h3>
-              <div className="w-full bg-white/60 rounded-full h-5 mt-3 overflow-hidden">
-                <div
-                  className={`bg-[#DE085F] h-full ${
-                    isLoading ? "w-0" : "w-1/3"
-                  } rounded-full`}
-                ></div>
-              </div>
-              <p className="mt-2 text-lg text-center text-[#DE085F] font-bold">
-                17% complete
-              </p>
-              <p className="mt-2 text-lg text-bloomBlackfont-rubik font-light">
-                <span className="font-bold">Remaining:</span> 83% (33 weeks, 2
-                days)
-              </p>
-              <p className="mt-2 text-lg text-bloomBlackfont-rubik font-light">
-                <span className="font-bold">Due Date:</span> January 15, 2024
-              </p>
+        {/* Right Column */}
+        <div className="flex flex-col gap-6">
+          {/* Progress */}
+          <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-6 rounded-[20px] shadow-md font-semibold">
+            <h3 className="text-2xl mb-2 text-white font-bold">Progress</h3>
+            <div className="w-full bg-white/60 rounded-full h-5 mt-3 overflow-hidden">
+            <div
+              className={`bg-[#DE085F] h-full rounded-full transition-all duration-500 ${getProgressWidthClass()}`}
+            ></div>
+              <div
+                className={`bg-[#DE085F] h-full ${
+                  isLoading ? "w-0" : getProgressPercentage()
+                } rounded-full transition-all duration-500`}
+              ></div>
             </div>
+            <p className="mt-2 text-lg text-center text-[#DE085F] font-bold">
+              {isLoading ? "Loading..." : `${getProgressPercentage()} complete`}
+            </p>
+            <p className="mt-2 text-lg text-bloomBlack font-rubik font-light">
+              <span className="font-bold">Remaining:</span> {isLoading ? "..." : `${getRemainingPercentage()} (${getRemainingTime()})`}
+            </p>
+            <p className="mt-2 text-lg text-bloomBlack font-rubik font-light">
+              <span className="font-bold">Due Date:</span> {isLoading ? "..." : getDueDate()}
+            </p>
+          </div>
 
             {/* To-do + Tips side by side */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] p-6 rounded-[20px] shadow-md">
+              <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow p-6 rounded-[20px] shadow-md">
                 <h3 className="text-2xl mb-3 text-white font-bold">To do</h3>
                 <ul className="space-y-2 text-sm text-[#474747]">
                   <li className="font-rubik">
@@ -433,7 +560,7 @@ export default function Dashboard() {
                 </ul>
               </div>
               {/* STAGE-SPECIFIC TIPS SECTION WITH LEARN MORE ICON */}
-              <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-6 rounded-[20px] shadow-md relative">
+              <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-pink-800 p-6 rounded-[20px] shadow-md relative">
                 {/* Learn More Icon with Square Background */}
                 <button
                   onClick={() => {
