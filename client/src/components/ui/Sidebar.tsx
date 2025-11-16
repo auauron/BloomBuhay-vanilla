@@ -208,10 +208,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       {/* Sidebar */}
       <div
-        className={`fixed left-0 top-0 h-full w-80 bg-white shadow-xl z-50 overflow-y-auto transition-transform duration-500 ease-out ${
+        className={`fixed left-0 top-0 h-full w-64 lg:w-60 bg-white shadow-xl z-50 overflow-y-auto transition-transform duration-500 ease-out ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
+
         {/* Header */}
         <div className="bg-[#F875AA] text-white p-3">
           <div className="flex justify-between items-start mb-3">
@@ -256,16 +257,16 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         {/* Navigation Menu */}
-        <div className="p-6 pb-48">
+        <div className="p-4 py-4 pb-30">
           <nav className="space-y-2">
             {menuItems.map((item, index) => (
               <button
                 key={index}
                 onClick={() => handleNavigation(item.path)}
-                className="w-full flex items-center space-x-3 p-3 text-gray-700 hover:bg-pink-50 rounded-lg transition-colors duration-300"
+                className="w-full flex items-center space-x-3 px-3 py-2 text-gray-700 hover:bg-pink-50 rounded-lg transition-colors duration-300"
               >
-                <item.icon size={20} />
-                <span className="font-medium">{item.label}</span>
+                <item.icon size={18} />
+                <span className="font-medium text-sm">{item.label}</span>
               </button>
             ))}
           </nav>
@@ -276,11 +277,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* Premium Banner */}
           <button
             onClick={() => handleNavigation("/premium")}
-            className="p-1 bg-gradient-to-r from-[#F875AA] to-[#F4C69D] rounded-lg text-white w-full hover:from-[#F9649C] hover:to-[#F3B287] transition-colors block"
+            className="p-1.5 bg-gradient-to-r from-[#F875AA] to-[#F4C69D] rounded-lg text-white w-full hover:from-[#F9649C] hover:to-[#F3B287] transition-colors block"
           >
             <div className="flex items-center space-x-2 mb-2 ml-2">
               <Crown size={20} />
-              <span className="font-bold">Get BB Premium!</span>
+              <span className="font-bold text-sm">Get BB Premium!</span>
             </div>
             <p className="text-sm text-white/90 text-left ml-2">
               Bloom Even Better.
@@ -290,14 +291,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* Logout Button */}
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-3 p-2 w-full mt-3 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors duration-300"
+            className="flex items-center space-x-1 p-2 w-full mt-3 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors duration-300"
           >
             <LogOut size={20} color="#7a7a7a" />
-            <span className="text-gray-500">Log Out</span>
+            <span className="text-gray-500 text-sm">Log Out</span>
           </button>
 
           {/* Footer */}
-          <div className="mt-6 pt-4 border-t border-gray-200">
+          <div className="mt-4 pt-4 border-t border-gray-200">
             <p className="text-center text-gray-500 text-xs">
               © 2025 BloomBuhay by Mixed Berries Productions. All rights
               reserved.
