@@ -4,36 +4,39 @@ import cors from "cors";
 import "dotenv/config";
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
-import motherProfilesRoutes from "./routes/motherProfiles"; 
-import plannerRoutes from "./routes/plannerRoutes"
+import motherProfilesRoutes from "./routes/motherProfiles";
+import plannerRoutes from "./routes/plannerRoutes";
 import aiRoutes from "./routes/aiRoutes";
-import journalRoutes from "./routes/journalRoutes"
-import healthtrackerRoutes from "./routes/healthtrackerRoutes"
-import BBToolsRoutes from "./routes/BBToolsRoutes"
+import journalRoutes from "./routes/journalRoutes";
+import healthtrackerRoutes from "./routes/healthtrackerRoutes";
+import BBToolsRoutes from "./routes/BBToolsRoutes";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Enhanced CORS configuration
-app.use(cors({
-  origin: ["http://localhost:5173", "http://127.0.0.1:5173"], // Your Vite dev server
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  })
+);
 
-app.use(express.urlencoded({ extended: true, limit: "10mb" }))
-app.use(express.json({ limit: "10mb" }))
-app.use("/api/ai", aiRoutes);
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.json({ limit: "10mb" }));
 
 // Other API routes
-app.use("/api/auth", authRoutes)
-.use("/api/users", userRoutes)
-.use("/api/mother-profiles", motherProfilesRoutes) 
-.use("/api/planner", plannerRoutes)
-.use("/api/journal", journalRoutes)
-.use("/api/healthtracker", healthtrackerRoutes)
-.use("/api/bbtools", BBToolsRoutes)
+app
+  .use("/api/auth", authRoutes)
+  .use("/api/users", userRoutes)
+  .use("/api/mother-profiles", motherProfilesRoutes)
+  .use("/api/planner", plannerRoutes)
+  .use("/api/journal", journalRoutes)
+  .use("/api/healthtracker", healthtrackerRoutes)
+  .use("/api/bbtools", BBToolsRoutes)
+  .use("/api/ai", aiRoutes);
 
 app.get("/", (req, res) => {
   res.json({
