@@ -4,12 +4,20 @@ export function getNow (): BloomDate {
   return { day: new Date().getDay(), date: new Date().getDate(), month: new Date().getMonth(), year: new Date().getFullYear() }
 };
 
+export function getTime (): BloomTime {
+  return { hour: new Date().getHours(), min: new Date().getMinutes(), sec: new Date().getSeconds() }
+}
+
 export function translateBloomdate ( date: BloomDate ): string {
   return `${date.day}/${date.date}/${date.month}/${date.year}`
 };
 
 export function getFullDate ( date: BloomDate ) : string {
   return `${date.date}/${date.month}/${date.year}`
+}
+
+export function taskID ( date: BloomDate, time: BloomTime ): string {
+  return `${date.date}/${date.month}/${date.year}/${time.hour}/${time.min}/${time.sec}`
 }
 
 export function createCalendar ( month: number, year: number ): BloomDate[] {

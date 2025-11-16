@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  ArrowRightToLine,
+  ArrowLeftToLine,
   Home,
   BookOpen,
   Calendar,
@@ -14,6 +14,7 @@ import {
   ScanHeart
 } from "lucide-react";
 import { authService } from "../../services/authService";
+
 
 interface SidebarProps {
   isOpen: boolean;
@@ -224,7 +225,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               onClick={onClose}
               className="text-white hover:bg-white/10 rounded-lg transition-colors w-10 h-10 flex items-center justify-center"
             >
-              <ArrowRightToLine size={24} />
+              <ArrowLeftToLine size={24} />
             </button>
           </div>
           <div className="w-full h-px bg-white/30 mb-2"></div>
