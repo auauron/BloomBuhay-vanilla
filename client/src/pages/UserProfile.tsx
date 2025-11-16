@@ -96,6 +96,7 @@ export default function UserProfile() {
     const fetchBabyDetails = async () => {
       setBabyLoading(true);
       setBabyError(null);
+      
       const result = await babyService.getBabyDetails();
       if (result.success && result.baby) {
         setBabyData(result.baby);

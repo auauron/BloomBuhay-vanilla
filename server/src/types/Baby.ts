@@ -1,13 +1,11 @@
-// backend/types/Baby.ts
 export interface Baby {
   id: number;
-  userId: number; // Links to User table
+  userId: number; 
   stage: 'pregnant' | 'postpartum' | 'childcare';
   babyName: string;
   babyGender: 'male' | 'female' | 'unknown';
-  weeksPregnant?: number; // Optional for pregnancy
-  lmpDate?: Date; // Optional for pregnancy
-  createdAt: Date;
+  weeksPregnant?: number; 
+  lmpDate?: Date; 
   updatedAt: Date;
 }
 
@@ -16,7 +14,7 @@ export interface BabySignupRequest {
   babyName: string;
   babyGender: 'male' | 'female' | 'unknown';
   weeksPregnant?: number;
-  lmpDate?: string; // ISO string for dates
+  lmpDate?: string; 
 }
 
 export interface BabyResponse {

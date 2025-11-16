@@ -1,16 +1,14 @@
-// backend/controllers/babyController.ts
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client'; // Assuming Prisma
-import { BabySignupRequest, MotherProfileResponse } from '../types/Baby';
+import { PrismaClient } from '@prisma/client'; 
+import { BabySignupRequest } from '../types/Baby';
 
 const prisma = new PrismaClient();
 
 export const createBaby = async (req: Request, res: Response): Promise<void> => {
   try {
     const { stage, babyName, babyGender, weeksPregnant, lmpDate }: BabySignupRequest = req.body;
-    const motherId = (req as any).user.id; // Assumes auth middleware sets req.user with user ID
+    const motherId = (req as any).user.id; 
 
-    // Optional: Check if a profile already exists (prevents duplicates)
     const existingProfile = await prisma.motherProfiles.findFirst({
       where: { motherId },
     });
@@ -21,13 +19,12 @@ export const createBaby = async (req: Request, res: Response): Promise<void> => 
 
     const motherProfile = await prisma.motherProfiles.create({
       data: {
-        motherId,  // Changed from userId to motherId
+        motherId,  
         stage,
         babyName,
         babyGender,
         weeksPregnant,
-        lmpDate: lmpDate ? new Date(lmpDate) : undefined,  // Fixed syntax error
-        // Optional: Add weeksPostpartum or babyAgeMonths if needed based on stage
+        lmpDate: lmpDate ? new Date(lmpDate) : undefined,
       },
     });
 

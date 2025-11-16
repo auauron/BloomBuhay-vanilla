@@ -97,9 +97,9 @@ router.get("/me", authenticateToken, async (req: AuthRequest, res) => {
       orderBy: { createdAt: "desc" },
     });
 
-    if (!profile) return res.status(404).json({ message: "No profile found" });
+    if (!profile) return res.status(404).json({ success: false, error: "No profile found" });
 
-    return res.json(profile);
+    return res.json({success: true, data: profile});
   } catch (err) {
     console.error("GET /api/mother-profiles/me error:", err);
     return res.status(500).json({ error: "Internal server error" });
