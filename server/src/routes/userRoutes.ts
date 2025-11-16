@@ -36,7 +36,7 @@ router.get(
         },
       });
 
-      if (!user) {
+      if (!user) {  
         res.status(404).json({
           success: false,
           error: "User not found",

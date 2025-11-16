@@ -13,7 +13,7 @@ import {
   BookImage,
   ScanHeart
 } from "lucide-react";
-import axios from "axios";
+import { authService } from "../../services/authService";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -22,12 +22,146 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [user, setUser] = useState<{
-  fullName: string;
-  profilePic?: string;
-} | null>(null);
+    fullName: string;
+    profilePic?: string;
+  } | null>(null);
 
+  const [bloomStage, setBloomStage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
+
+  // Helper: map canonical enum -> UI label
+  const enumToUi = (val: string | null | undefined): string | null => {
+    switch (val) {
+      case "pregnant":
+        return "Pregnant";
+      case "postpartum":
+        return "Postpartum";
+      case "childcare":
+        return "Early Childcare";
+      default:
+        return null;
+    }
+  };
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchUserData = async () => {
+      setLoading(true);
+
+      try {
+        const token = authService.getToken() ?? localStorage.getItem("token");
+        if (!token) {
+          if (mounted) setLoading(false);
+          return;
+        }
+
+        // Fetch user info
+        try {
+          const userRes = await fetch(`${API_BASE}/api/users/me`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (userRes.ok) {
+            const userJson = await userRes.json();
+            console.log("User API response:", userJson); // Debug log
+            
+            // Handle different possible response structures
+            const userData = userJson.user || userJson;
+            
+            const name = userData.fullName || userData.name || "User";
+            const profilePic = userData.profilePic || userData.profilePicture || userData.avatar;
+            
+            if (mounted) {
+              setUser({ 
+                fullName: name,
+                profilePic: profilePic
+              });
+            }
+          } else {
+            console.warn("Could not fetch user info:", userRes.status);
+            // Set default user if fetch fails but we have a token
+            if (mounted) {
+              setUser({ fullName: "User" });
+            }
+          }
+        } catch (err) {
+          console.error("Failed to fetch user:", err);
+          if (mounted) {
+            setUser({ fullName: "User" });
+          }
+        }
+
+        // Fetch mother profile for bloom stage
+        try {
+          const profRes = await fetch(`${API_BASE}/api/mother-profiles/me`, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (profRes.status === 401) {
+            console.warn("Unauthorized when fetching mother profile");
+            return;
+          }
+
+          if (profRes.status === 404) {
+            // no profile yet
+            if (mounted) {
+              setBloomStage(null);
+            }
+          } else if (!profRes.ok) {
+            const text = await profRes.text().catch(() => null);
+            console.error("Failed to fetch mother profile:", profRes.status, text);
+          } else {
+            const profile = await profRes.json();
+            console.log("Mother profile API response:", profile); // Debug log
+            
+            // profile.stage is enum 'pregnant'|'postpartum'|'childcare' (canonical)
+            if (mounted) {
+              const stage = profile.stage || profile.motherhoodStage || null;
+              setBloomStage(stage);
+
+              // update optimistic cache using canonical key
+              try {
+                if (stage) localStorage.setItem("lastStage", String(stage));
+              } catch (e) {
+                // ignore localStorage errors
+              }
+            }
+          }
+        } catch (err) {
+          console.error("Failed to fetch mother profile:", err);
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    fetchUserData();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Fallback to optimistic cache if DB hasn't provided anything
+  const cachedStage = localStorage.getItem("lastStage"); // cached canonical key
+  
+  // Final stage selection order (canonical key): db -> cached -> null
+  const canonicalStageKey = bloomStage ?? (cachedStage || null);
+  
+  // Readable label for UI
+  const stageLabel = enumToUi(canonicalStageKey);
 
   const handleNavigation = (path: string) => {
     onClose();
@@ -61,30 +195,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { icon: BookImage, label: "Journal", path: "/journal" },
   ];
 
-const [bloomStage, setBloomStage] = useState<string | null>(null);
-const [profile, setProfile] = useState<any>(null);
-
-useEffect(() => {
-  const token = localStorage.getItem("token");
-
-  if (!token) return;
-
-  axios
-    .get("http://localhost:3000/api/users/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((res: any) => {
-      setUser(res.data.user);
-      setProfile(res.data.profile);
-      setBloomStage(res.data.bloomStage);
-    })
-    .catch((err: any) => console.error("Failed to load user", err));
-}, []);
-
-
-
   return (
     <>
       {/* Overlay */}
@@ -106,7 +216,9 @@ useEffect(() => {
           <div className="flex justify-between items-start mb-3">
             <div className="ml-3 mt-2">
               <h2 className="text-xl font-bold text-[#474747]">Bloom stage:</h2>
-              <h2 className="text-xl font-bold text-white">  {bloomStage ?? "Not Set"} </h2>
+              <h2 className="text-xl font-bold text-white">
+                {loading ? "Loading..." : stageLabel ?? "Not Set"}
+              </h2>
             </div>
             <button
               onClick={onClose}
@@ -123,20 +235,20 @@ useEffect(() => {
             onClick={() => handleNavigation("/userprofile")}
             className="w-full flex items-center space-x-3 p-1 hover:bg-white/10 rounded-lg transition-colors text-left"
           >
-          <div className="w-12 h-12 rounded-full overflow-hidden bg-white/20 flex items-center justify-center">
-            {user?.profilePic ? (
-              <img
-                src={user.profilePic}
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <User size={24} />
-            )}
-          </div>
+            <div className="w-12 h-12 rounded-full overflow-hidden bg-white/20 flex items-center justify-center">
+              {user?.profilePic ? (
+                <img
+                  src={user.profilePic}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User size={24} />
+              )}
+            </div>
 
             <div>
-              <p className="font-semibold">  {user?.fullName || "Loading..."}</p>
+              <p className="font-semibold">{user?.fullName || "Loading..."}</p>
               <p className="text-sm text-white/80">View and Edit Profile</p>
             </div>
           </Link>
