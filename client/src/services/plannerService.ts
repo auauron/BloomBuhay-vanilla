@@ -16,7 +16,7 @@ export interface BloomTime {
 }
 
 export interface Task {
-  id: string
+  id: number;
   task: string | null;
   description: string | null;
   isCompleted: boolean;
@@ -30,18 +30,20 @@ export interface Task {
 
 export interface GetTasksResponse {
     success: boolean;
-    data?: Task[],
+    data?: Task[];
     error?: string;
 }
 
 export interface CreateTaskRequest {
+    id: number;
     title: string,
-    description?: string;
-    date: string;
+    description: string | null;
+    isCompleted: boolean;
+    startDate: BloomDate;
 }
 
 export interface CreateTaskResponse {
-    success: boolean,
+    success: boolean;
     data?: Task;
     error?: string;
 }
@@ -51,14 +53,14 @@ export interface UpdateTaskRequest {
 }
 
 export interface UpdateTaskResponse {
-    success: boolean,
+    success: boolean;
     data?: Task;
     error?: string;
 }
 
 export interface DeleteTaskResponse {
-    success: boolean,
-    message?: string,
+    success: boolean;
+    message?: string;
     error?: string;
 }
 

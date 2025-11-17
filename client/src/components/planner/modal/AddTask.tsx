@@ -70,8 +70,6 @@ export default function AddTaskModal({ onClose, onCancel, onAdd, selectDate, sel
     
   }
 
-  const handleSelectDate = () => {
-  }
 
   const handleChangeClock = () => {
     (clock === "AM")

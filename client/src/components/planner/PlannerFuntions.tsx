@@ -1,3 +1,4 @@
+import { number } from "framer-motion";
 import { BloomDate, BloomTime } from "../../types/plan";
 
 export function getNow (): BloomDate {
@@ -21,8 +22,8 @@ export function getFullDate ( date: BloomDate ) : string {
   return `${date.date}/${date.month}/${date.year}`
 }
 
-export function taskID ( date: BloomDate, time: BloomTime ): string {
-  return `${date.date}/${date.month}/${date.year}/${time.hour}/${time.min}/${time.sec}`
+export function taskID ( date: BloomDate, time: BloomTime ): number {
+  return Number(`${date.date}${date.month}${date.year}/${time.hour}${time.min}${time.sec}`)
 }
 
 export function createCalendar ( month: number, year: number ): BloomDate[] {

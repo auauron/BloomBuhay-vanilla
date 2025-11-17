@@ -4,7 +4,7 @@ import { PlusCircle, Trash2 } from "lucide-react";
 import { plannerService } from "../../services/plannerService";
 import AddTaskModal from "./modal/AddTask";
 import { Task, BloomDate, BloomTime, ToDoListState } from "../../types/plan";
-import { getNow, translateBloomdate } from "./PlannerFuntions";
+import { getFullDate, getNow, getTime, taskID, translateBloomdate } from "./PlannerFuntions";
 
 export default function ToDoList({ selectedMode, selectedDate }: ToDoListState) {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -58,9 +58,11 @@ export default function ToDoList({ selectedMode, selectedDate }: ToDoListState) 
 
     try {
       const response = await plannerService.createTask({
-        title: newTaskTitle.trim(),
-        description: "",
-        date: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+        id: taskID(getNow(), getTime()),
+        title: newTaskTitle,
+        description: null,
+        isCompleted: false,
+        startDate: (selectedDate === null) ? getNow() : selectedDate
       });
 
       if (response.success && response.data) {
@@ -222,9 +224,12 @@ export default function ToDoList({ selectedMode, selectedDate }: ToDoListState) 
       <AddTaskModal
       onClose = {() => setIsAdding(!isAdding)}
       onCancel={() => setIsAdding(!isAdding)}
-      onAdd={(task) => setTasks(tasks.concat(task))}
+      onAdd={(task) => {
+        setTasks(tasks.concat(task))
+        setIsAdding(!isAdding)
+      }}
       selectDate={selectedDate}
-      selectMode={selectedMode}
+      selectMode={() => selectedMode()}
       />
     )
   );

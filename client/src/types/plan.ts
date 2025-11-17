@@ -18,13 +18,13 @@ export interface DateJumperProps {
 }
 
 export interface CalendarState {
-  selectedDate: (date: string | null) => void;
+  selectedDate: (date: BloomDate | null) => void;
   selectMode: boolean;
 }
 
 export interface ToDoListState {
   selectedMode: () => void;
-  selectedDate: string | null
+  selectedDate: BloomDate | null
 }
 
 export interface Task {
@@ -44,7 +44,7 @@ export interface AddTaskModalProps {
   onClose: () => void;
   onCancel: () => void;
   onAdd: (task: Task) => void;
-  selectDate: string | null;
+  selectDate: BloomDate | null;
   selectMode: () => void;
 }
 

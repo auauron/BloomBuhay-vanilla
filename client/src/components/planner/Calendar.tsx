@@ -3,24 +3,31 @@ import { ChevronsLeft, ChevronsRight, Calendar } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import DateJumper from "./modal/DateJumper";
 import { BloomDate, CalendarState } from "../../types/plan";
-import { createCalendar, translateBloomdate, getNow } from "./PlannerFuntions";
+import { createCalendar, translateBloomdate, getNow, translateDateStringToBloomDate, taskID } from "./PlannerFuntions";
 
 export default function CalendarView( { selectedDate, selectMode } : CalendarState ) {
   const now: BloomDate = getNow()
-  const [selectedDay, setSelectedDay] = useState<string | null>(translateBloomdate(now));
+  const today: string = translateBloomdate(now)
+  const [selectedDay, setSelectedDay] = useState<string | null>(today);
   const [month, setMonth] = useState(now.month);
   const [year, setYear] = useState(now.year);
   const [showPicker, setShowPicker] = useState(false);
-
+ 
   const daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"];
 
   const handleSelect = (id: string) => {
     setSelectedDay((prev) => (prev === id) ? null : id);
-    if (selectMode) selectedDate(selectedDay);
+    if (selectMode) (selectedDay) ? selectedDate(translateDateStringToBloomDate(selectedDay)) : selectedDate(null)
   };
 
   const calendar = useMemo(() => createCalendar(month, year), [month, year]);
-  const today: string = translateBloomdate(now);
+   
+  if (selectMode) {
+    setSelectedDay(today)
+    setMonth(now.month)
+    setYear(now.year)
+  }
+
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
@@ -85,10 +92,10 @@ export default function CalendarView( { selectedDate, selectMode } : CalendarSta
               ))}
 
               {calendar.map((date) => {
-                const id = translateBloomdate(date);
+                const id = translateBloomdate(date)
                 const isCurrentMonth = date.month === month;
                 const isToday = id === today;
-                const isSelected = id === selectedDay;
+                const isSelected = id == selectedDay;
 
                 return (
                   <div
