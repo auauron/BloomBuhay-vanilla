@@ -10,7 +10,7 @@ export default function Landing() {
   };
 
   return (
-    <div className="landing-container flex items-center justify-center">
+    <div className="landing-container flex items-center justify-center bg-bloomWhite">
       <div className="content">
         <img src="/assets/logo_white.png" className="logo object-contain pb-8" />
         <h1 className="title text-5xl font-bold font-poppins">

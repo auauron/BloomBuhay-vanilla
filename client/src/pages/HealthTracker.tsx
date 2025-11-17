@@ -144,7 +144,7 @@ export default function HealthTracker() {
   };
 
   return (
-    <div className="flex flex-col h-screen font-poppins bg-gradient-to-br from-pink-50 via-white to-rose-50">
+    <div className="flex flex-col h-screen font-poppins bg-bloomWhite">
       <Header onMenuClick={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
