@@ -28,6 +28,11 @@ export default function UserProfile() {
   } | null>(null);
   const [babyLoading, setBabyLoading] = useState(true);
   const [babyError, setBabyError] = useState<string | null>(null);
+  const [showBabyEditModal, setShowBabyEditModal] = useState(false);
+
+  const handleEditBabyClick = () => {
+    setShowBabyEditModal(true);
+  };
 
   // User profile data
   const [userData, setUserData] = useState<{
@@ -96,7 +101,7 @@ export default function UserProfile() {
     const fetchBabyDetails = async () => {
       setBabyLoading(true);
       setBabyError(null);
-      
+
       const result = await babyService.getBabyDetails();
       if (result.success && result.baby) {
         setBabyData(result.baby);
@@ -233,6 +238,26 @@ export default function UserProfile() {
     setDeleting(false);
   };
 
+  const handleSaveBaby = async () => {
+    if (!babyData) return;
+    setSaving(true);
+    setError(null);
+
+    const result = await babyService.updateBabyDetails(babyData);
+
+    if (result.success) {
+      setShowBabyEditModal(false);
+    } else {
+      setError(result.error || "Failed to update baby details");
+    }
+
+    setSaving(false);
+  };
+
+  const handleBabyCancel = () => {
+    setShowBabyEditModal(false);
+  };
+
   return (
     <div className="min-h-screen bg-pink-50 flex flex-col font-poppins">
       <Header onMenuClick={toggleSidebar} />
@@ -332,10 +357,10 @@ export default function UserProfile() {
           <div className="flex flex-col gap-3 max-w-lg mx-auto">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-3xl font-bold text-bloomBlack">
-                Baby's Profile
+                BB's Profile
               </h1>
               <button
-                onClick={handleEditClick}
+                onClick={handleEditBabyClick}
                 className="flex items-center gap-2 bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-2xl hover:from-[#F9649C] hover:to-[#F3D087] transition-all duration-300 shadow-md"
               >
                 <Edit size={18} />
@@ -377,14 +402,81 @@ export default function UserProfile() {
               </div>
             ) : (
               <div className="bg-white rounded-2xl p-6 shadow-md text-center">
-                <p className="text-gray-500">
-                  No baby details found. Please complete signup.
-                </p>
+                <p className="text-gray-500">No baby details found.</p>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Edit baby profile modal */}
+      {showBabyEditModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-5- flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-lg w-full mx-auto shadow-xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">
+              Edit BB's Profile
+            </h3>
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
+            <InputField
+              label="Motherhood Stage"
+              type="text"
+              value={babyData?.motherhoodStage || ""}
+              placeholder="Enter Motherhood stage"
+              onChange={(value) =>
+                setBabyData((prev) =>
+                  prev ? { ...prev, motherhoodStage: value } : null
+                )
+              }
+            />
+
+            <InputField
+              label="Baby Name"
+              type="text"
+              value={babyData?.babyName || ""}
+              placeholder="Enter your baby's name"
+              onChange={(value) =>
+                setBabyData((prev) =>
+                  prev ? { ...prev, babyName: value } : prev
+                )
+              }
+            />
+
+            <InputField
+              label="Gender"
+              type="text"
+              value={babyData?.gender || ""}
+              placeholder="Enter Baby's Gender"
+              onChange={(value) =>
+                setBabyData((prev) =>
+                  prev ? { ...prev, gender: value } : prev
+                )
+              }
+            />
+
+            <div className="flex justify-center gap-8 mt-4">
+              <button
+                onClick={handleBabyCancel}
+                disabled={saving}
+                className="bg-white text-bloomPink border border-bloomPink px-4 py-2 rounded-2xl hover:bg-bloomPink hover:text-white transition-all duration-300 shadow-md w-40 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveBaby}
+                disabled={saving}
+                className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-2xl hover:from-[#F9649C] hover:to-[#F3D087] transition-all duration-300 shadow-md w-40 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Edit Profile Modal */}
       {showEditModal && (
@@ -479,7 +571,6 @@ export default function UserProfile() {
           </div>
         </div>
       )}
-
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
