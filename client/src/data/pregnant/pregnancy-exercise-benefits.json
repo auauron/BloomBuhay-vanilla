@@ -1,0 +1,56 @@
+{
+  "articles": [
+    {
+      "id": "pregnancy-exercise-benefits",
+      "title": "Benefits of Exercise During Pregnancy",
+      "image": "/assets/pregnancyArticle/pr18.png",
+      "category": "Fitness",
+      "section": "maternal",
+      "externalLink": "https://www.nhs.uk/pregnancy/keeping-well/exercise/",
+      "content": {
+        "headline": "How Exercise Benefits You and Your Baby",
+        "intro": "Regular physical activity during pregnancy offers numerous health advantages for both mother and baby. From reducing pregnancy discomforts to preparing your body for labor, exercise plays a crucial role in supporting a healthy pregnancy journey.",
+        "sections": [
+          {
+            "title": "Maternal Benefits of Exercise",
+            "content": "Exercise supports your physical and mental wellbeing throughout pregnancy:",
+            "points": [
+              "Reduces back pain and improves posture",
+              "Helps prevent gestational diabetes and pregnancy-induced hypertension",
+              "Manages weight gain within healthy ranges",
+              "Improves sleep quality and reduces insomnia",
+              "Boosts mood and reduces pregnancy-related anxiety",
+              "Increases energy levels and reduces fatigue",
+              "Prepares muscles for labor and delivery",
+              "Promotes faster postpartum recovery"
+            ]
+          },
+          {
+            "title": "Benefits for Your Baby",
+            "content": "Your activity level positively impacts your baby's development:",
+            "points": [
+              "Promotes healthy placental development and function",
+              "May contribute to healthier birth weights",
+              "Supports optimal fetal growth patterns",
+              "Can lead to better stress tolerance in newborns",
+              "May enhance neurodevelopmental outcomes",
+              "Creates healthy patterns that can continue postpartum"
+            ]
+          },
+          {
+            "title": "Safe Exercise Practices",
+            "points": [
+              "Aim for at least 150 minutes of moderate activity weekly",
+              "Include both cardiovascular and strength training exercises",
+              "Stay hydrated and avoid overheating during workouts",
+              "Wear supportive footwear and comfortable clothing",
+              "Listen to your body and adjust intensity as needed",
+              "Consult your healthcare provider before starting new activities"
+            ]
+          }
+        ],
+        "source": "Sources: https://www.nhs.uk/pregnancy/keeping-well/exercise/, https://www.betterhealth.vic.gov.au/health/healthyliving/pregnancy-and-exercise"
+      }
+    }
+  ]
+}

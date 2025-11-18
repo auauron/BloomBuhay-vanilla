@@ -1,0 +1,64 @@
+{
+  "articles": [
+    {
+      "id": "pregnancy-symptoms-confirmation",
+      "title": "Understanding and Confirming Pregnancy Symptoms",
+      "image": "/assets/pregnancyArticle/pr10.png",
+      "category": "Symptoms",
+      "section": "maternal",
+      "externalLink": "https://standupgirl.com/preg-symptoms/",
+      "content": {
+        "headline": "From Symptoms to Confirmation: Your Pregnancy Journey",
+        "intro": "Experiencing potential pregnancy symptoms can be both exciting and nerve-wracking. Understanding what these signs mean and how to confirm pregnancy accurately is crucial for taking the next steps in your healthcare journey. Remember, many early pregnancy symptoms can also be caused by other factors.",
+        "sections": [
+          {
+            "title": "Reliable vs. Less Reliable Signs",
+            "content": "Some symptoms are more reliable indicators of pregnancy than others:",
+            "points": [
+              "Most reliable: Missed period, positive pregnancy test, confirmed by healthcare provider",
+              "Common but variable: Nausea, breast tenderness, fatigue, frequent urination",
+              "Less reliable: Food cravings, mood swings, spotting, mild cramping",
+              "Important: Symptoms alone cannot confirm pregnancy - testing is essential"
+            ]
+          },
+          {
+            "title": "Symptoms That Might Surprise You",
+            "content": "Some lesser-known early pregnancy signs include:",
+            "points": [
+              "Metallic taste in mouth (dysgeusia)",
+              "Heightened sense of smell",
+              "Dizziness or lightheadedness",
+              "Increased vaginal discharge",
+              "Headaches due to hormonal changes",
+              "Basal body temperature staying elevated",
+              "Visible veins on breasts and abdomen"
+            ]
+          },
+          {
+            "title": "Next Steps After Symptom Recognition",
+            "content": "If you're experiencing potential pregnancy symptoms:",
+            "points": [
+              "Take a home pregnancy test after missed period",
+              "Schedule an appointment with your healthcare provider",
+              "Begin taking prenatal vitamins with folic acid",
+              "Avoid alcohol, smoking, and unnecessary medications",
+              "Start tracking your symptoms and menstrual dates",
+              "Consider your healthcare options and support systems"
+            ]
+          },
+          {
+            "title": "When Symptoms Might Indicate Other Conditions",
+            "points": [
+              "Many early pregnancy symptoms can mimic PMS or other health issues",
+              "Stress, illness, or hormonal imbalances can cause similar symptoms",
+              "Only pregnancy testing can provide definitive confirmation",
+              "Consult healthcare provider for persistent or concerning symptoms",
+              "Track your cycle regularly for better symptom understanding"
+            ]
+          }
+        ],
+        "source": "Sources: https://standupgirl.com/preg-symptoms/, https://www.betterhealth.vic.gov.au/health/healthyliving/pregnancy-signs-and-symptoms, https://www.hopkinsmedicine.org/health/wellness-and-prevention/10-early-signs-of-pregnancy"
+      }
+    }
+  ]
+}

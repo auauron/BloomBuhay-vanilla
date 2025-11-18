@@ -1,0 +1,54 @@
+{
+  "articles": [
+    {
+      "id": "early-nutrition-foundations",
+      "title": "Building Healthy Nutrition Foundations in Early Childhood",
+      "image": "/assets/earlyChildcareArticle/eCC7.png",
+      "category": "Feeding",
+      "section": "baby",
+      "externalLink": "https://www.cdc.gov/nutrition/features/good-nutrition-starts-early.html",
+      "content": {
+        "headline": "Establishing Lifelong Healthy Eating Habits",
+        "intro": "The early years of life are critical for establishing eating patterns that can last a lifetime. Proper nutrition during infancy and toddlerhood supports rapid growth and development while laying the foundation for future health and wellbeing.",
+        "sections": [
+          {
+            "title": "Key Nutritional Priorities 0-2 Years",
+            "content": "Focus on these essential nutritional elements:",
+            "points": [
+              "Breast milk or formula provides complete nutrition first 6 months",
+              "Iron-rich foods prevent anemia and support brain development",
+              "Zinc supports immune function and growth",
+              "Healthy fats crucial for brain development and energy",
+              "Vitamin D for bone health and immune support",
+              "Variety of fruits and vegetables for vitamins and fiber"
+            ]
+          },
+          {
+            "title": "Developing Positive Feeding Relationships",
+            "content": "Create healthy feeding dynamics from the start:",
+            "points": [
+              "Practice responsive feeding - watch for hunger and fullness cues",
+              "Offer appropriate textures for developmental stage",
+              "Create pleasant, distraction-free eating environments",
+              "Model healthy eating behaviors as a family",
+              "Introduce new foods multiple times - acceptance takes repetition",
+              "Avoid using food as reward or punishment"
+            ]
+          },
+          {
+            "title": "Transitioning Through Feeding Stages",
+            "points": [
+              "0-6 months: Exclusive breastfeeding or formula feeding",
+              "6-8 months: Smooth purées, iron-fortified cereals",
+              "8-10 months: Mashed foods, soft finger foods",
+              "10-12 months: Chopped family foods, self-feeding practice",
+              "12-24 months: Diverse family meals, cup drinking practice",
+              "24+ months: Independent eating, established meal routines"
+            ]
+          }
+        ],
+        "source": "Source: https://www.cdc.gov/nutrition/features/good-nutrition-starts-early.html"
+      }
+    }
+  ]
+}

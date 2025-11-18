@@ -1,0 +1,54 @@
+{
+  "articles": [
+    {
+      "id": "stress-free-childcare-sleep",
+      "title": "Creating Stress-Free Sleep Routines in Childcare",
+      "image": "/assets/earlyChildcareArticle/eCC10.png",
+      "category": "Sleep",
+      "section": "baby",
+      "externalLink": "https://www.theempowerededucatoronline.com/2021/08/stress-free-childcare-sleep-rest-routines.html/",
+      "content": {
+        "headline": "Peaceful Sleep Routines for Childcare Settings",
+        "intro": "Establishing calm, consistent sleep routines in childcare environments benefits both children and educators. Well-planned rest periods support children's developmental needs while creating manageable workflows for caregivers.",
+        "sections": [
+          {
+            "title": "Elements of Effective Sleep Routines",
+            "content": "Create restful environments with these key components:",
+            "points": [
+              "Consistent pre-sleep rituals (story, quiet music, dim lights)",
+              "Comfortable, safe sleeping arrangements for each child",
+              "Individualized approaches based on children's needs and ages",
+              "Quiet, calm transitions from active play to rest time",
+              "Flexible routines that accommodate different sleep patterns",
+              "Clear communication with families about sleep practices"
+            ]
+          },
+          {
+            "title": "Educator Strategies for Smooth Transitions",
+            "content": "Support children's rest with these caregiver approaches:",
+            "points": [
+              "Observe and learn each child's unique sleep cues and patterns",
+              "Create visual schedules to help children understand routine",
+              "Use gentle, predictable methods for settling children to sleep",
+              "Provide quiet alternatives for children who don't sleep",
+              "Maintain calm demeanor and quiet voice during rest periods",
+              "Document sleep patterns and share observations with families"
+            ]
+          },
+          {
+            "title": "Environment and Setup Considerations",
+            "points": [
+              "Designate quiet, dimly lit sleep areas separate from play spaces",
+              "Ensure proper ventilation and comfortable room temperature",
+              "Use individual bedding that meets safety standards",
+              "Implement safe sleep practices following current guidelines",
+              "Create cozy, inviting sleep spaces with minimal distractions",
+              "Establish clear sightlines for supervision during rest times"
+            ]
+          }
+        ],
+        "source": "Source: https://www.theempowerededucatoronline.com/2021/08/stress-free-childcare-sleep-rest-routines.html/"
+      }
+    }
+  ]
+}

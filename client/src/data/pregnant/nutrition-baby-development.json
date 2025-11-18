@@ -1,0 +1,53 @@
+{
+  "articles": [
+    {
+      "id": "nutrition-baby-development",
+      "title": "Nutrition for Optimal Baby Development",
+      "image": "/assets/pregnancyArticle/pr14.png",
+      "category": "Nutrition",
+      "section": "maternal",
+      "externalLink": "https://www.parenteam.com.ph/how-eating-healthy-benefits-baby",
+      "content": {
+        "headline": "Building Your Baby's Foundation Through Nutrition",
+        "intro": "The nutrients you consume during pregnancy directly impact your baby's growth, brain development, and long-term health. Understanding which foods support specific developmental milestones helps you make informed choices for your baby's wellbeing.",
+        "sections": [
+          {
+            "title": "Essential Nutrients for Baby's Growth",
+            "content": "Focus on these key nutrients throughout pregnancy:",
+            "points": [
+              "Folic acid: Critical for neural tube development in first trimester",
+              "Iron: Supports placenta development and prevents anemia",
+              "Calcium: Builds strong bones and teeth formation",
+              "Omega-3 DHA: Essential for brain and eye development",
+              "Protein: Building blocks for all cells and tissues",
+              "Choline: Supports brain development and prevents neural tube defects"
+            ]
+          },
+          {
+            "title": "Developmental Timeline & Nutrition",
+            "content": "Match your nutrition to baby's developmental stages:",
+            "points": [
+              "Weeks 1-12: Focus on folic acid for neural tube formation",
+              "Weeks 13-24: Increase protein for rapid growth phase",
+              "Weeks 25-40: Emphasize calcium and iron for bone and blood development",
+              "Throughout: Consistent omega-3 intake for brain development",
+              "Third trimester: Additional calories for baby's weight gain"
+            ]
+          },
+          {
+            "title": "Foods to Support Development",
+            "points": [
+              "Leafy greens: Rich in folate for early neural development",
+              "Lean meats & legumes: Protein sources for tissue building",
+              "Dairy products: Calcium for skeletal formation",
+              "Fatty fish: Omega-3s for brain and vision development",
+              "Whole grains: B vitamins for energy and nervous system",
+              "Colorful fruits/vegetables: Antioxidants for cell protection"
+            ]
+          }
+        ],
+        "source": "Sources: https://www.parenteam.com.ph/how-eating-healthy-benefits-baby, https://www.hopkinsmedicine.org/health/wellness-and-prevention/nutrition-during-pregnancy, https://www.unicef.org/nutrition/maternal"
+      }
+    }
+  ]
+}
