@@ -71,7 +71,7 @@ export const babyService = {
 
       return { success: true };
     } catch (error) {
-      return { success: false, error: "Network error" };
+      return { success: false, error: "Please fill out all the fields." };
     }
   },
 };

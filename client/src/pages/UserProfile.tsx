@@ -25,10 +25,18 @@ export default function UserProfile() {
     motherhoodStage: string;
     babyName: string;
     gender: string;
+    pregnancyWeeks?: number | null;
+    lmpDate?: string | null;
   } | null>(null);
+
   const [babyLoading, setBabyLoading] = useState(true);
   const [babyError, setBabyError] = useState<string | null>(null);
   const [showBabyEditModal, setShowBabyEditModal] = useState(false);
+
+  // edit motherhood stage
+  const [showPregnancyModal, setShowPregnancyModal] = useState(false);
+  const [pregnancyWeeks, setPregnancyWeeks] = useState<string>("");
+  const [lmpDate, setLmpDate] = useState<string>("");
 
   const handleEditBabyClick = () => {
     setShowBabyEditModal(true);
@@ -430,11 +438,22 @@ export default function UserProfile() {
                 <select
                   className="border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-bloomPink"
                   value={babyData?.motherhoodStage || ""}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    const stage = e.target.value;
+
                     setBabyData((prev) =>
-                      prev ? { ...prev, motherhoodStage: e.target.value } : prev
-                    )
-                  }
+                      prev ? { ...prev, motherhoodStage: stage } : prev
+                    );
+
+                    if (stage === "pregnant") {
+                      // Pre-fill modal with existing pregnancy info if available
+                      setPregnancyWeeks(
+                        babyData?.pregnancyWeeks?.toString() ?? ""
+                      );
+                      setLmpDate(babyData?.lmpDate ?? "");
+                      setShowPregnancyModal(true);
+                    }
+                  }}
                 >
                   <option value="">Select Stage</option>
                   <option value="pregnant">Pregnant</option>
@@ -487,6 +506,72 @@ export default function UserProfile() {
                   className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-2xl hover:from-[#F9649C] hover:to-[#F3D087] transition-all duration-300 shadow-md w-40 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* pregnancy modal */}
+      {showPregnancyModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-lg w-full mx-auto shadow-xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">
+              Pregnancy Details
+            </h3>
+
+            <div className="flex flex-col gap-4">
+              <InputField
+                label="Weeks Pregnant"
+                type="number"
+                min={0}
+                value={pregnancyWeeks}
+                onChange={setPregnancyWeeks}
+                placeholder="Enter how many weeks pregnant"
+              />
+
+              <InputField
+                label="Last Menstrual Period"
+                type="date"
+                value={lmpDate}
+                placeholder="Enter your last menstrual period"
+                onChange={setLmpDate}
+              />
+
+              <div className="flex justify-center gap-8 mt-4">
+                <button
+                  onClick={() => setShowPregnancyModal(false)}
+                  className="bg-white text-bloomPink border border-bloomPink px-4 py-2 rounded-2xl hover:bg-bloomPink hover:text-white w-40"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    // update babyData
+                    setBabyData((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            pregnancyWeeks:
+                              pregnancyWeeks === ""
+                                ? null
+                                : Number(pregnancyWeeks),
+                            lmpDate: lmpDate || null,
+                          }
+                        : prev
+                    );
+
+                    localStorage.setItem(
+                      "lastWeeksPregnant",
+                      pregnancyWeeks.toString()
+                    );
+
+                    setShowPregnancyModal(false);
+                  }}
+                  className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-2xl hover:from-[#F9649C] hover:to-[#F3D087] w-40"
+                >
+                  Save
                 </button>
               </div>
             </div>
