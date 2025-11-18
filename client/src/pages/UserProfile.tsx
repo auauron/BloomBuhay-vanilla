@@ -423,17 +423,25 @@ export default function UserProfile() {
             )}
 
             <div className="flex flex-col gap-4">
-              <InputField
-                label="Motherhood Stage"
-                type="text"
-                value={babyData?.motherhoodStage || ""}
-                placeholder="Enter Motherhood stage"
-                onChange={(value) =>
-                  setBabyData((prev) =>
-                    prev ? { ...prev, motherhoodStage: value } : null
-                  )
-                }
-              />
+              <div className="flex flex-col">
+                <label className="text-gray-700 font-medium mb-1">
+                  Motherhood Stage
+                </label>
+                <select
+                  className="border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-bloomPink"
+                  value={babyData?.motherhoodStage || ""}
+                  onChange={(e) =>
+                    setBabyData((prev) =>
+                      prev ? { ...prev, motherhoodStage: e.target.value } : prev
+                    )
+                  }
+                >
+                  <option value="">Select Stage</option>
+                  <option value="pregnant">Pregnant</option>
+                  <option value="postpartum">Postpartum</option>
+                  <option value="childcare">Childcare</option>
+                </select>
+              </div>
 
               <InputField
                 label="Baby Name"
@@ -447,17 +455,23 @@ export default function UserProfile() {
                 }
               />
 
-              <InputField
-                label="Gender"
-                type="text"
-                value={babyData?.gender || ""}
-                placeholder="Enter Baby's Gender"
-                onChange={(value) =>
-                  setBabyData((prev) =>
-                    prev ? { ...prev, gender: value } : prev
-                  )
-                }
-              />
+              <div className="flex flex-col">
+                <label className="text-gray-700 font-medium mb-1">Gender</label>
+                <select
+                  className="border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-bloomPink"
+                  value={babyData?.gender || ""}
+                  onChange={(e) =>
+                    setBabyData((prev) =>
+                      prev ? { ...prev, gender: e.target.value } : prev
+                    )
+                  }
+                >
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="unknown">Unknown</option>
+                </select>
+              </div>
 
               <div className="flex justify-center gap-8 mt-4">
                 <button
