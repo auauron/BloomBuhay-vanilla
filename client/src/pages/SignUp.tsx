@@ -47,7 +47,7 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-bloomWhite flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-bloomWhite flex flex-col items-center justify-center overflow-y-auto">
       <div className="max-w-3xl w-full">
         <div className="text-center mb-6 ">
           <div className="flex items-center justify-center -mb-12 -ml-2 mr-20">
@@ -57,7 +57,7 @@ export default function SignupPage() {
               <span className="block -mt-4">Buhay</span>
             </h1>
           </div>
-          <h2 className="mt-6 font-rubik text-xl font-bold text-bloomBlack -ml-2">
+          <h2 className="mt-10 font-rubik text-xl font-bold text-bloomBlack -ml-2">
             Let's get you started!
           </h2>
           <p className="font-rubik text-bloomBlack text-xs -mb-2">
@@ -66,8 +66,8 @@ export default function SignupPage() {
         </div>
 
         {/* Form Container */}
-        <div className="bg-white rounded-2xl w-500 shadow-lg p-8 -pb- pl-16 pr-16">
-          <form onSubmit={handleSubmit} className="space-y-2 mt-2">
+        <div className="bg-white rounded-2xl w-500 shadow-lg p-6 pl-16 pr-16">
+          <form onSubmit={handleSubmit} className="space-y-4 pt-2">
             <AuthToggle />
 
             {/* General Error Message */}
@@ -123,11 +123,11 @@ export default function SignupPage() {
           </form>
 
           {/* Already have an account section */}
-          <div className="text-center mt-6">
+          <div className="text-center mt-7">
             <button
               type="button"
               onClick={handleLoginRedirect}
-              className="text-sm text-gray-500 mb-3 mt-2"
+              className="text-xs hover:underline text-gray-400 mt-2"
             >
               Already have an account?
             </button>
