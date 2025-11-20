@@ -1,0 +1,53 @@
+{
+  "articles": [
+    {
+      "id": "maternal-nutrition-essentials",
+      "title": "Maternal Nutrition Essentials for Healthy Pregnancy",
+      "image": "/assets/pregnancyArticle/pr17.png",
+      "category": "Nutrition",
+      "section": "maternal",
+      "externalLink": "https://www.unicef.org/nutrition/maternal",
+      "content": {
+        "headline": "Essential Nutrition for Mother and Baby's Health",
+        "intro": "Proper maternal nutrition is fundamental for supporting your baby's growth while maintaining your own health during pregnancy. Understanding the essential nutrients and their specific roles helps ensure both you and your baby receive optimal nourishment throughout this critical period.",
+        "sections": [
+          {
+            "title": "Critical Nutrients for Maternal Health",
+            "content": "These nutrients support your changing body during pregnancy:",
+            "points": [
+              "Iron: Prevents anemia and supports increased blood volume",
+              "Calcium: Maintains bone density as baby draws calcium reserves",
+              "Protein: Supports breast and uterine tissue growth",
+              "Folate: Essential for DNA synthesis and cell growth",
+              "Vitamin D: Supports immune function and calcium absorption",
+              "Omega-3 fatty acids: Reduce inflammation and support brain health"
+            ]
+          },
+          {
+            "title": "Nutrition for Different Pregnancy Stages",
+            "content": "Adjust your nutritional focus as pregnancy progresses:",
+            "points": [
+              "First trimester: Emphasize folate-rich foods for neural development",
+              "Second trimester: Increase protein and calcium for growth spurts",
+              "Third trimester: Focus on iron and energy for final growth phase",
+              "Throughout: Maintain consistent intake of all essential nutrients",
+              "Postpartum: Continue nutrient-rich diet for recovery and breastfeeding"
+            ]
+          },
+          {
+            "title": "Global Nutrition Recommendations",
+            "points": [
+              "Eat diverse diet including all food groups daily",
+              "Include plenty of fruits and vegetables for vitamins and fiber",
+              "Choose whole grains over refined carbohydrates",
+              "Include protein sources with each meal",
+              "Stay well-hydrated with water and healthy fluids",
+              "Take prenatal vitamins to fill nutritional gaps"
+            ]
+          }
+        ],
+        "source": "Sources: https://www.unicef.org/nutrition/maternal, https://medlineplus.gov/pregnancyandnutrition.html"
+      }
+    }
+  ]
+}

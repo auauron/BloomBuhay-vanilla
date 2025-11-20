@@ -1,0 +1,54 @@
+{
+  "articles": [
+    {
+      "id": "exercise-easier-childbirth",
+      "title": "Exercise for Easier Childbirth Preparation",
+      "image": "/assets/pregnancyArticle/pr13.png",
+      "category": "Fitness",
+      "section": "maternal",
+      "externalLink": "https://www.parenteam.com.ph/how-exercise-easier-childbirth",
+      "content": {
+        "headline": "Preparing Your Body for Labor Through Exercise",
+        "intro": "Regular exercise during pregnancy can significantly impact your childbirth experience by strengthening the muscles needed for labor and improving your overall stamina. Proper physical preparation helps build endurance, manage pain, and promote faster recovery postpartum.",
+        "sections": [
+          {
+            "title": "Benefits of Exercise for Childbirth",
+            "content": "Staying active during pregnancy provides numerous advantages for labor and delivery:",
+            "points": [
+              "Strengthens uterine and abdominal muscles for more efficient contractions",
+              "Improves cardiovascular endurance for handling labor's physical demands",
+              "Enhances flexibility in hips and pelvis for better positioning during birth",
+              "Reduces risk of gestational diabetes and pregnancy-induced hypertension",
+              "Helps maintain healthy weight gain, reducing delivery complications",
+              "Promotes better sleep and stress management throughout pregnancy"
+            ]
+          },
+          {
+            "title": "Labor-Specific Exercises",
+            "content": "Focus on these exercises to prepare for childbirth:",
+            "points": [
+              "Squats: Strengthen thighs and open pelvis for delivery",
+              "Kegels: Improve pelvic floor control for pushing stage",
+              "Pelvic tilts: Relieve back pain and optimize baby positioning",
+              "Walking: Build endurance and encourage baby engagement",
+              "Prenatal yoga: Increase flexibility and breathing control",
+              "Swimming: Low-impact full-body conditioning"
+            ]
+          },
+          {
+            "title": "Exercise Safety Guidelines",
+            "points": [
+              "Consult your healthcare provider before starting any exercise program",
+              "Stop immediately if you experience pain, dizziness, or bleeding",
+              "Avoid exercises lying flat on your back after first trimester",
+              "Stay hydrated and avoid overheating during workouts",
+              "Listen to your body - modify intensity as pregnancy progresses",
+              "Focus on consistency rather than intensity throughout pregnancy"
+            ]
+          }
+        ],
+        "source": "Sources: https://www.parenteam.com.ph/how-exercise-easier-childbirth, https://www.nhs.uk/pregnancy/keeping-well/exercise/, https://www.betterhealth.vic.gov.au/health/healthyliving/pregnancy-and-exercise"
+      }
+    }
+  ]
+}

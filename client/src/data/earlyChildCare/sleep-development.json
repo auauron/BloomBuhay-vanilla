@@ -1,0 +1,54 @@
+{
+  "articles": [
+    {
+      "id": "sleep-early-childhood-development",
+      "title": "Sleep's Role in Early Childhood Development",
+      "image": "/assets/earlyChildcareArticle/eCC9.png",
+      "category": "Sleep",
+      "section": "baby",
+      "externalLink": "https://kidscareclub.com/sleep-in-early-childhood-development/",
+      "content": {
+        "headline": "How Sleep Powers Early Development",
+        "intro": "Adequate, quality sleep is fundamental to children's growth, learning, and overall development. During sleep, critical processes occur that support physical growth, brain development, and emotional regulation throughout early childhood.",
+        "sections": [
+          {
+            "title": "Developmental Benefits of Quality Sleep",
+            "content": "Sleep supports multiple aspects of child development:",
+            "points": [
+              "Brain development: Neural connections strengthen during sleep",
+              "Memory consolidation: Learning from the day gets processed and stored",
+              "Physical growth: Growth hormone is primarily released during deep sleep",
+              "Immune function: Sleep supports immune system development and function",
+              "Emotional regulation: Well-rested children manage emotions better",
+              "Attention and learning: Adequate sleep improves focus and information processing"
+            ]
+          },
+          {
+            "title": "Age-Appropriate Sleep Requirements",
+            "content": "Ensure children get sufficient sleep for their developmental stage:",
+            "points": [
+              "Newborns (0-3 months): 14-17 hours including naps",
+              "Infants (4-11 months): 12-15 hours including naps",
+              "Toddlers (1-2 years): 11-14 hours including naps",
+              "Preschoolers (3-5 years): 10-13 hours including naps",
+              "School-age (6-13 years): 9-11 hours nightly",
+              "Consistent bedtimes are as important as total sleep duration"
+            ]
+          },
+          {
+            "title": "Signs of Healthy Sleep Patterns",
+            "points": [
+              "Falls asleep within 15-30 minutes of going to bed",
+              "Stays asleep through the night with minimal awakenings",
+              "Wakes up feeling refreshed and energetic",
+              "Maintains consistent sleep and wake times",
+              "Shows age-appropriate nap patterns",
+              "Demonstrates good mood and alertness during waking hours"
+            ]
+          }
+        ],
+        "source": "Source: https://kidscareclub.com/sleep-in-early-childhood-development/"
+      }
+    }
+  ]
+}

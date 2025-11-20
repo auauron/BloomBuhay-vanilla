@@ -1,0 +1,66 @@
+{
+  "articles": [
+    {
+      "id": "maternal-mental-health",
+      "title": "Maternal Mental Health After Childbirth",
+      "image": "/assets/postpartumArticle/pp7.png",
+      "category": "Mental Health",
+      "section": "mother",
+      "externalLink": "https://www.baptistjax.com/juice/stories/pregnancy-childbirth/moms-and-mental-health",
+      "content": {
+        "headline": "Understanding and Supporting Maternal Mental Health",
+        "intro": "The postpartum period brings significant emotional changes that affect mental health. Recognizing the spectrum of maternal mental health conditions—from common baby blues to more serious disorders—is essential for getting appropriate support and treatment. Your emotional wellbeing is just as important as your physical recovery.",
+        "sections": [
+          {
+            "title": "Spectrum of Postpartum Mental Health Conditions",
+            "content": "Understand the range of emotional experiences after childbirth:",
+            "points": [
+              "Baby Blues: Temporary mood swings affecting 70-80% of new mothers",
+              "Postpartum Depression: Persistent sadness, anxiety lasting weeks or months",
+              "Postpartum Anxiety: Excessive worry, panic attacks, racing thoughts",
+              "Postpartum OCD: Intrusive thoughts and compulsive behaviors",
+              "Postpartum PTSD: Trauma response from difficult birth experience",
+              "Postpartum Psychosis: Rare but serious condition requiring immediate care"
+            ]
+          },
+          {
+            "title": "Risk Factors and Prevention",
+            "content": "Certain factors may increase vulnerability to postpartum mental health challenges:",
+            "points": [
+              "Personal or family history of depression or anxiety",
+              "Pregnancy or birth complications and trauma",
+              "Lack of social support or relationship stress",
+              "Financial pressures or housing instability",
+              "Sleep deprivation and physical exhaustion",
+              "Hormonal changes and genetic predisposition"
+            ]
+          },
+          {
+            "title": "Support and Treatment Options",
+            "content": "Multiple approaches can help manage postpartum mental health:",
+            "points": [
+              "Therapy and counseling for emotional processing and coping skills",
+              "Medication when recommended by healthcare providers",
+              "Support groups connecting with other experiencing mothers",
+              "Practical help with childcare, meals, and household tasks",
+              "Self-care practices like rest, nutrition, and gentle exercise",
+              "Partner and family education about supporting recovery"
+            ]
+          },
+          {
+            "title": "When to Seek Professional Help",
+            "points": [
+              "Symptoms lasting more than 2 weeks without improvement",
+              "Difficulty caring for yourself or your baby",
+              "Thoughts of harming yourself or your infant",
+              "Inability to sleep even when baby is sleeping",
+              "Withdrawing from family and friends completely",
+              "Feeling overwhelmed by anxiety or panic attacks"
+            ]
+          }
+        ],
+        "source": "Source: https://www.baptistjax.com/juice/stories/pregnancy-childbirth/moms-and-mental-health"
+      }
+    }
+  ]
+}

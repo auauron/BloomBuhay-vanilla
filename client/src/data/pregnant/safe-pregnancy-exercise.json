@@ -1,0 +1,53 @@
+{
+  "articles": [
+    {
+      "id": "safe-pregnancy-exercise-guide",
+      "title": "Safe Exercise Guidelines Throughout Pregnancy",
+      "image": "/assets/pregnancyArticle/pr15.png",
+      "category": "Fitness",
+      "section": "maternal",
+      "externalLink": "https://www.mayoclinic.org/healthy-lifestyle/pregnancy-week-by-week/in-depth/pregnancy-exercises/art-20546799",
+      "content": {
+        "headline": "Your Complete Guide to Safe Pregnancy Fitness",
+        "intro": "Exercise during pregnancy is generally safe and beneficial, but understanding the specific guidelines for each trimester ensures you and your baby stay healthy. This comprehensive guide covers approved activities, safety precautions, and trimester-specific recommendations.",
+        "sections": [
+          {
+            "title": "Recommended Exercises by Trimester",
+            "content": "Adjust your routine as your pregnancy progresses:",
+            "points": [
+              "First trimester: Continue most pre-pregnancy activities with medical clearance",
+              "Second trimester: Focus on posture and balance as center of gravity shifts",
+              "Third trimester: Emphasize comfort and preparation for labor",
+              "Throughout: Walking, swimming, stationary cycling are consistently safe",
+              "Avoid: Contact sports, activities with falling risk, hot yoga, scuba diving"
+            ]
+          },
+          {
+            "title": "Warning Signs to Stop Exercising",
+            "content": "Immediately cease activity and contact your provider if you experience:",
+            "points": [
+              "Vaginal bleeding or fluid leakage",
+              "Regular painful contractions",
+              "Chest pain or difficulty breathing before exertion",
+              "Dizziness, faintness, or headache",
+              "Calf pain or swelling (possible blood clot)",
+              "Decreased fetal movement"
+            ]
+          },
+          {
+            "title": "Trimester-Specific Modifications",
+            "points": [
+              "Weeks 1-13: Manage fatigue, stay hydrated, avoid overheating",
+              "Weeks 14-27: Modify balance exercises, support growing belly",
+              "Weeks 28-40: Focus on pelvic exercises, reduce intensity as needed",
+              "Always: Warm up gradually and cool down properly",
+              "Monitor: Heart rate should allow conversation during exercise",
+              "Adapt: Listen to your body's changing needs daily"
+            ]
+          }
+        ],
+        "source": "Sources: https://www.mayoclinic.org/healthy-lifestyle/pregnancy-week-by-week/in-depth/pregnancy-exercises/art-20546799, https://www.nhs.uk/pregnancy/keeping-well/exercise/, https://www.betterhealth.vic.gov.au/health/healthyliving/pregnancy-and-exercise"
+      }
+    }
+  ]
+}

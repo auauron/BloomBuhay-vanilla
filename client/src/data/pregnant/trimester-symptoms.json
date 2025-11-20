@@ -1,0 +1,80 @@
+{
+  "articles": [
+    {
+      "id": "comprehensive-pregnancy-symptoms-guide",
+      "title": "Comprehensive Guide to Pregnancy Symptoms by Trimester",
+      "image": "/assets/pregnancyArticle/pr12.png",
+      "category": "Symptoms", 
+      "section": "maternal",
+      "externalLink": "https://www.hopkinsmedicine.org/health/wellness-and-prevention/10-early-signs-of-pregnancy",
+      "content": {
+        "headline": "Pregnancy Symptoms Through Each Trimester: What to Expect",
+        "intro": "Pregnancy is a journey of continuous change, with different symptoms emerging as your baby grows and your body adapts. Understanding the typical progression of symptoms can help you prepare for each stage and know when to seek medical advice.",
+        "sections": [
+          {
+            "title": "First Trimester Symptoms (Weeks 1-12)",
+            "content": "The initial stage brings significant hormonal changes and early adaptation:",
+            "points": [
+              "Fatigue and extreme tiredness",
+              "Morning sickness (nausea and vomiting)",
+              "Tender, swollen breasts and darker areolas",
+              "Frequent urination as uterus expands",
+              "Food cravings and aversions",
+              "Mood swings and emotional changes",
+              "Heightened sense of smell",
+              "Light spotting or implantation bleeding",
+              "Bloating and constipation",
+              "Mild pelvic cramping"
+            ]
+          },
+          {
+            "title": "Second Trimester Symptoms (Weeks 13-28)",
+            "content": "Many early symptoms ease while new ones emerge:",
+            "points": [
+              "Growing baby bump becomes visible",
+              "Feeling baby movements (quickening)",
+              "Round ligament pain as uterus expands",
+              "Nasal congestion and nosebleeds",
+              "Skin changes and possible glow",
+              "Back pain and posture changes",
+              "Increased appetite as nausea subsides",
+              "Braxton Hicks practice contractions",
+              "Linea nigra (dark line on abdomen)",
+              "Varicose veins or hemorrhoids"
+            ]
+          },
+          {
+            "title": "Third Trimester Symptoms (Weeks 29-40)",
+            "content": "Final stage as body prepares for delivery:",
+            "points": [
+              "Shortness of breath as baby pushes diaphragm",
+              "Frequent urination returns with baby's position",
+              "Swelling in feet, ankles, and hands",
+              "Heartburn and indigestion",
+              "Difficulty sleeping and finding comfortable positions",
+              "Braxton Hicks contractions increase",
+              "Pelvic pressure and baby dropping",
+              "Colostrum production in breasts",
+              "Nesting instinct and preparation urges",
+              "Increased fatigue carrying extra weight"
+            ]
+          },
+          {
+            "title": "When to Contact Your Healthcare Provider",
+            "points": [
+              "Severe or persistent abdominal pain",
+              "Heavy bleeding or fluid leakage",
+              "Severe headaches or vision changes",
+              "Significant swelling in face or hands",
+              "Decreased fetal movement in third trimester",
+              "Fever over 38°C or signs of infection",
+              "Regular, painful contractions before 37 weeks",
+              "Symptoms of preeclampsia (high blood pressure, protein in urine)"
+            ]
+          }
+        ],
+        "source": "Sources: https://www.hopkinsmedicine.org/health/wellness-and-prevention/10-early-signs-of-pregnancy, https://www.betterhealth.vic.gov.au/health/healthyliving/pregnancy-signs-and-symptoms, https://standupgirl.com/preg-symptoms/"
+      }
+    }
+  ]
+}

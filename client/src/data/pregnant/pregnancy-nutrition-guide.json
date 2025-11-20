@@ -1,0 +1,54 @@
+{
+  "articles": [
+    {
+      "id": "comprehensive-pregnancy-nutrition",
+      "title": "Comprehensive Pregnancy Nutrition Guide",
+      "image": "/assets/pregnancyArticle/pr16.png",
+      "category": "Nutrition",
+      "section": "maternal",
+      "externalLink": "https://www.hopkinsmedicine.org/health/wellness-and-prevention/nutrition-during-pregnancy",
+      "content": {
+        "headline": "Your Complete Pregnancy Nutrition Handbook",
+        "intro": "Proper nutrition during pregnancy supports both your health and your baby's development. This comprehensive guide covers daily requirements, food safety, managing pregnancy symptoms through diet, and ensuring you get all essential nutrients for a healthy pregnancy.",
+        "sections": [
+          {
+            "title": "Daily Nutritional Requirements",
+            "content": "Aim for these daily targets during pregnancy:",
+            "points": [
+              "Calories: Additional 300-500 calories in 2nd/3rd trimesters",
+              "Protein: 75-100 grams for tissue building and growth",
+              "Calcium: 1,000 mg for bone development",
+              "Iron: 27 mg to support increased blood volume",
+              "Folate: 600 mcg to prevent birth defects",
+              "Vitamin D: 600 IU for calcium absorption and immune function"
+            ]
+          },
+          {
+            "title": "Managing Pregnancy Symptoms Through Diet",
+            "content": "Use nutrition to alleviate common pregnancy discomforts:",
+            "points": [
+              "Morning sickness: Eat small, frequent meals and dry crackers",
+              "Heartburn: Avoid spicy foods, eat smaller portions",
+              "Constipation: Increase fiber and water intake",
+              "Fatigue: Choose complex carbs for sustained energy",
+              "Food aversions: Find alternative nutrient sources",
+              "Cravings: Balance with nutritious choices"
+            ]
+          },
+          {
+            "title": "Food Safety During Pregnancy",
+            "points": [
+              "Avoid raw or undercooked meat, eggs, and seafood",
+              "Skip unpasteurized dairy products and juices",
+              "Limit high-mercury fish like shark and swordfish",
+              "Wash all fruits and vegetables thoroughly",
+              "Reheat leftovers until steaming hot",
+              "Practice good kitchen hygiene and food storage"
+            ]
+          }
+        ],
+        "source": "Sources: https://www.hopkinsmedicine.org/health/wellness-and-prevention/nutrition-during-pregnancy, https://medlineplus.gov/pregnancyandnutrition.html, https://www.unicef.org/nutrition/maternal"
+      }
+    }
+  ]
+}

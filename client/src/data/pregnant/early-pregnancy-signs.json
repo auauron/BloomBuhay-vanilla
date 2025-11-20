@@ -1,0 +1,55 @@
+{
+  "articles": [
+    {
+      "id": "early-pregnancy-signs-symptoms",
+      "title": "Early Signs and Symptoms of Pregnancy",
+      "image": "/assets/pregnancyArticle/pr9.png",
+      "category": "Symptoms",
+      "section": "maternal",
+      "externalLink": "https://www.betterhealth.vic.gov.au/health/healthyliving/pregnancy-signs-and-symptoms",
+      "content": {
+        "headline": "Recognizing the Early Signs of Pregnancy",
+        "intro": "Pregnancy brings various physical and emotional changes that can begin even before a missed period. Understanding these early signs can help you recognize pregnancy and take appropriate next steps. Every woman's experience is unique, and symptoms can vary widely in timing and intensity.",
+        "sections": [
+          {
+            "title": "Common Early Pregnancy Signs",
+            "content": "These symptoms often appear in the first few weeks of pregnancy:",
+            "points": [
+              "Missed period - often the first noticeable sign",
+              "Tender, swollen breasts - due to hormonal changes",
+              "Nausea with or without vomiting - can occur any time of day",
+              "Increased urination - as early as 2-3 weeks after conception",
+              "Fatigue and exhaustion - caused by rising progesterone levels",
+              "Food cravings or aversions - sudden dislike of certain foods",
+              "Mild cramping and spotting - implantation bleeding may occur",
+              "Mood swings - emotional changes due to hormonal fluctuations",
+              "Bloating and constipation - digestive system slows down",
+              "Nasal congestion - increased blood flow to mucous membranes"
+            ]
+          },
+          {
+            "title": "Timeline of Early Symptoms",
+            "content": "Symptoms typically appear in this general sequence:",
+            "points": [
+              "Week 1-4: Missed period, fatigue, breast tenderness",
+              "Week 4-6: Nausea, food aversions, increased urination",
+              "Week 6-8: Mood swings, bloating, mild cramping",
+              "Week 8+: Visible physical changes may begin"
+            ]
+          },
+          {
+            "title": "When to Take a Pregnancy Test",
+            "points": [
+              "Wait until after your missed period for most accurate results",
+              "Use first-morning urine when hCG concentration is highest",
+              "Follow test instructions carefully for proper timing",
+              "Confirm positive results with healthcare provider",
+              "Consider blood tests for earliest detection (7-12 days after conception)"
+            ]
+          }
+        ],
+        "source": "Sources: https://www.betterhealth.vic.gov.au/health/healthyliving/pregnancy-signs-and-symptoms, https://standupgirl.com/preg-symptoms/, https://www.hopkinsmedicine.org/health/wellness-and-prevention/10-early-signs-of-pregnancy"
+      }
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "articles": [
+    {
+      "id": "who-infant-feeding-guidelines",
+      "title": "WHO Infant and Young Child Feeding Guidelines",
+      "image": "/assets/earlyChildcareArticle/eCC6.png",
+      "category": "Feeding",
+      "section": "baby",
+      "externalLink": "https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding",
+      "content": {
+        "headline": "Global Standards for Infant Feeding",
+        "intro": "The World Health Organization establishes evidence-based feeding guidelines that support optimal growth, development, and health for infants and young children worldwide. These recommendations form the foundation for healthy feeding practices from birth through early childhood.",
+        "sections": [
+          {
+            "title": "WHO Key Recommendations",
+            "content": "Follow these evidence-based feeding guidelines:",
+            "points": [
+              "Initiate breastfeeding within first hour after birth",
+              "Practice exclusive breastfeeding for first 6 months",
+              "Continue breastfeeding for 2 years or longer alongside complementary foods",
+              "Introduce safe and nutritionally adequate complementary foods at 6 months",
+              "Increase food variety, frequency, and consistency as child grows",
+              "Practice responsive feeding following child's hunger and satiety cues"
+            ]
+          },
+          {
+            "title": "Benefits of Following WHO Guidelines",
+            "content": "Adhering to these standards provides significant health advantages:",
+            "points": [
+              "Reduces infant mortality by up to 13% through exclusive breastfeeding",
+              "Lowers risk of childhood obesity and chronic diseases later in life",
+              "Supports optimal brain development and cognitive function",
+              "Strengthens immune system and reduces infection rates",
+              "Promotes healthy mother-child bonding and attachment",
+              "Provides complete nutrition tailored to infant's developmental needs"
+            ]
+          },
+          {
+            "title": "Implementation Strategies",
+            "points": [
+              "Create supportive environments for breastfeeding mothers",
+              "Provide accurate feeding information to parents and caregivers",
+              "Train healthcare workers in proper feeding counseling",
+              "Develop community support systems for feeding practices",
+              "Monitor child growth and feeding patterns regularly",
+              "Address feeding challenges with professional guidance"
+            ]
+          }
+        ],
+        "source": "Source: https://www.who.int/news-room/fact-sheets/detail/infant-and-young-child-feeding"
+      }
+    }
+  ]
+}

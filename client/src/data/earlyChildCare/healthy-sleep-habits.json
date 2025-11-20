@@ -1,0 +1,54 @@
+{
+  "articles": [
+    {
+      "id": "encouraging-healthy-sleep-habits",
+      "title": "Encouraging Healthy Sleep Habits in Young Children",
+      "image": "/assets/earlyChildcareArticle/eCC11.png",
+      "category": "Sleep",
+      "section": "baby",
+      "externalLink": "https://www.naeyc.org/our-work/families/encouraging-healthy-sleep-habits",
+      "content": {
+        "headline": "Building Lifelong Healthy Sleep Patterns",
+        "intro": "Establishing healthy sleep habits early in life creates foundations for lifelong wellbeing. Through consistent routines, responsive caregiving, and supportive environments, families and educators can help children develop positive relationships with sleep.",
+        "sections": [
+          {
+            "title": "Foundation of Healthy Sleep Habits",
+            "content": "Build sustainable sleep patterns with these practices:",
+            "points": [
+              "Consistent bedtime routines help signal sleep time to brain",
+              "Regular sleep-wake schedules maintain biological rhythms",
+              "Calm, screen-free wind-down periods before bedtime",
+              "Comforting bedtime rituals (bath, story, cuddles)",
+              "Appropriate sleep environments (dark, quiet, comfortable)",
+              "Responsive settling techniques that build security and trust"
+            ]
+          },
+          {
+            "title": "Addressing Common Sleep Challenges",
+            "content": "Navigate typical sleep issues with these strategies:",
+            "points": [
+              "Separation anxiety: Use transitional objects and gradual separation",
+              "Night wakings: Respond consistently while encouraging self-soothing",
+              "Bedtime resistance: Establish clear limits with empathy and consistency",
+              "Nap transitions: Adjust schedules gradually as sleep needs change",
+              "Early waking: Ensure adequate daytime sleep and dark sleeping environment",
+              "Sleep regressions: Maintain routines during developmental leaps"
+            ]
+          },
+          {
+            "title": "Family-Educator Partnerships",
+            "points": [
+              "Share information about home and childcare sleep patterns",
+              "Collaborate on consistent approaches between home and school",
+              "Communicate about sleep challenges and successful strategies",
+              "Respect cultural and family preferences around sleep practices",
+              "Provide resources and support for establishing healthy routines",
+              "Celebrate progress and milestones in sleep development"
+            ]
+          }
+        ],
+        "source": "Source: https://www.naeyc.org/our-work/families/encouraging-healthy-sleep-habits"
+      }
+    }
+  ]
+}
