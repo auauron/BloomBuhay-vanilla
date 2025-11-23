@@ -1,0 +1,66 @@
+{
+  "articles": [
+    {
+      "id": "new-parent-support-resources",
+      "title": "Support Resources for New Parents",
+      "image": "/assets/postpartumArticle/pp7.png",
+      "category": "Mental Health",
+      "section": "mother",
+      "externalLink": "https://forwhenhelpline.org.au/parent-resources/postpartum-care-first-weeks/",
+      "content": {
+        "headline": "Finding Support During Your Postpartum Journey",
+        "intro": "Navigating the postpartum period can feel overwhelming, but you don't have to do it alone. Accessing the right support resources can make a significant difference in your recovery and adjustment to parenthood. From professional helplines to community connections, understanding your support options empowers you to build the network you need.",
+        "sections": [
+          {
+            "title": "Professional Support Services",
+            "content": "These specialized services provide expert guidance and assistance:",
+            "points": [
+              "Postpartum helplines offer immediate support and resources",
+              "Lactation consultants help with breastfeeding challenges",
+              "Mental health professionals specialize in perinatal mood disorders",
+              "Postpartum doulas provide practical and emotional support",
+              "Physical therapists address recovery from birth injuries",
+              "Parenting educators offer guidance on infant care and development"
+            ]
+          },
+          {
+            "title": "Community and Peer Support",
+            "content": "Connect with others who understand your experience:",
+            "points": [
+              "New parent groups provide shared experiences and camaraderie",
+              "Online communities offer 24/7 support and information sharing",
+              "Local parenting centers host workshops and social gatherings",
+              "Playgroups create opportunities for social connection",
+              "Maternal health clinics provide comprehensive care coordination",
+              "Community health nurses offer home visits and assessments"
+            ]
+          },
+          {
+            "title": "Building Your Personal Support Network",
+            "content": "Create a sustainable support system around you:",
+            "points": [
+              "Communicate your specific needs clearly to family and friends",
+              "Create a meal train or chore schedule for practical help",
+              "Identify trusted people for emergency childcare needs",
+              "Establish regular check-ins with your partner about shared responsibilities",
+              "Build relationships with other parents in your neighborhood",
+              "Don't hesitate to ask for help when you need it"
+            ]
+          },
+          {
+            "title": "Recognizing When to Seek Help",
+            "points": [
+              "Feeling overwhelmed or unable to cope with daily tasks",
+              "Persistent sadness, anxiety, or irritability affecting functioning",
+              "Difficulty bonding with your baby or feeling disconnected",
+              "Physical symptoms that concern you or don't improve",
+              "Relationship strain with your partner or family members",
+              "Any thoughts of harming yourself or your baby require immediate help"
+            ]
+          }
+        ],
+        "source": "Source: https://forwhenhelpline.org.au/parent-resources/postpartum-care-first-weeks/"
+      }
+    }
+  ]
+}
