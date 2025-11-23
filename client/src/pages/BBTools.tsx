@@ -10,21 +10,41 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPersonPregnant } from '@fortawesome/free-solid-svg-icons'
 import { faPersonBreastfeeding } from '@fortawesome/free-solid-svg-icons'
 import { faChild } from '@fortawesome/free-solid-svg-icons'
-import { bbtoolsService } from "../services/BBToolsService";
+import { bbtoolsService, BBMetric, FeedingLog, SleepLog, GrowthRecord } from "../services/BBToolsService";
 
 export default function BBTools() {
   const [activeStage, setActiveStage] = useState("pregnant");
   const [userStage, setUserStage] = useState("pregnant");
+  const [metrics, setMetrics] = useState<BBMetric[]>([]);
+  const [feedings, setFeedings] = useState<FeedingLog[]>([]);
+  const [sleeps, setSleeps] = useState<SleepLog[]>([]);
+  const [growths, setGrowths] = useState<GrowthRecord[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
+      setLoading(true);
       const res = await bbtoolsService.getAll();
-      if (res.success) {
-        // set state from res.data.metrics / feedings / sleeps / growths
+      if (res.success && res.data) {
+        setMetrics(res.data.metrics || []);
+        setFeedings(res.data.feedings || []);
+        setSleeps(res.data.sleeps || []);
+        setGrowths(res.data.growths || []);
       }
+      setLoading(false);
     }
     load();
   }, []);
+
+  const refreshData = async () => {
+    const res = await bbtoolsService.getAll();
+    if (res.success && res.data) {
+      setMetrics(res.data.metrics || []);
+      setFeedings(res.data.feedings || []);
+      setSleeps(res.data.sleeps || []);
+      setGrowths(res.data.growths || []);
+    }
+  };
 
   const stages = [
     { id: "pregnant", label: "Pregnancy Tools", icon: <FontAwesomeIcon icon={faPersonPregnant} style={{ width:18, height:18}} />},
@@ -94,9 +114,22 @@ export default function BBTools() {
 
         {/* Tools Container */}
         <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-pink-100 p-6 mb-8 max-w-7xl w-[90%] mx-auto">
-          {activeStage === "pregnant" && <PregnantTools />}
-          {activeStage === "postpartum" && <PostpartumTools />}
-          {activeStage === "childcare" && <EarlyChildcareTools />}
+          {loading ? (
+            <div className="text-center py-8">Loading baby data...</div>
+          ) : (
+            <>
+              {activeStage === "pregnant" && <PregnantTools />}
+              {activeStage === "postpartum" && (
+                <PostpartumTools 
+                  feedings={feedings}
+                  sleeps={sleeps}
+                  growths={growths}
+                  onRefreshData={refreshData}
+                />
+              )}
+              {activeStage === "childcare" && <EarlyChildcareTools />}
+            </>
+          )}
         </div>
       </div>
     </div>

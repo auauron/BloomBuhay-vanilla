@@ -20,17 +20,20 @@ export interface FeedingLog {
   amount?: number; // ml or amount indicator
   method?: string; // e.g., "breast", "bottle"
   notes?: string;
+  occurredAt?: string;
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface SleepLog {
   id: number;
   userId?: number;
-  startAt?: string;
+  startAt: string; 
   endAt?: string;
   durationMinutes?: number;
   notes?: string;
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface GrowthRecord {
@@ -41,6 +44,7 @@ export interface GrowthRecord {
   headCircumference?: number; // cm
   notes?: string;
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface GenericResponse {
@@ -87,6 +91,86 @@ export interface CreateGrowthRequest {
   height?: number;
   headCircumference?: number;
   notes?: string;
+}
+
+export interface PostpartumToolsProps {
+  feedings?: FeedingLog[];
+  sleeps?: SleepLog[];
+  growths?: GrowthRecord[];
+  onRefreshData?: () => void;
+}
+
+export interface SleepTrackerProps {
+  sleeps: SleepLog[];
+  onRefresh?: () => void;
+}
+
+export interface SleepSessionForm {
+  startTime: string;
+  endTime: string;  
+  notes: string;
+}
+
+export interface GrowthChartProps {
+  growths?: GrowthRecord[];
+  onRefresh?: () => void;
+}
+
+export interface GrowthRecordForm {
+  date: string;
+  age: number;
+  weight: number;
+  height: number;
+  headCircumference?: number;
+  notes: string;
+}
+
+export interface LocalGrowthRecord {
+  id: string;
+  date: string;
+  age: number;
+  weight: number;
+  height: number;
+  headCircumference?: number;
+  notes: string;
+}
+
+export interface FeedingLogProps {
+  feedings?: FeedingLog[];
+  onRefresh?: () => void;
+}
+
+export interface FeedingSessionForm {
+  type: 'breast' | 'formula' | 'solid';
+  side?: 'left' | 'right' | 'both';
+  amount?: number;
+  duration?: number;
+  notes: string;
+}
+
+export interface LocalFeedingSession {
+  id: string;
+  type: 'breast' | 'formula' | 'solid';
+  side?: string;
+  amount?: number;
+  startTime: string;
+  endTime: string;
+  duration: number;
+  notes: string;
+  rawTimestamp: string;
+}
+
+// Local optimistic state
+export interface LocalSleepSession {
+  id: string;
+  type: string;
+  startTime: string;
+  endTime: string;
+  duration: number;
+  quality: 'excellent' | 'good' | 'fair' | 'poor';
+  notes: string;
+  rawStartAt: string;
+  rawEndAt?: string | null;
 }
 
 export const bbtoolsService = {
@@ -234,6 +318,129 @@ export const bbtoolsService = {
     } catch (error) {
       console.error("Add growth error:", error);
       return { success: false, error: "Failed to add growth record" };
+    }
+  },
+
+  async updateSleep(sleepId: string, data: Partial<CreateSleepRequest>): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/sleeps/${sleepId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Update sleep error:", error);
+      return { success: false, error: "Failed to update sleep log" };
+    }
+  },
+
+  async deleteSleep(sleepId: string): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/sleeps/${sleepId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Delete sleep error:", error);
+      return { success: false, error: "Failed to delete sleep log" };
+    }
+  },
+
+  async updateFeeding(feedingId: string, data: Partial<CreateFeedingRequest>): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/feedings/${feedingId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Update feeding error:", error);
+      return { success: false, error: "Failed to update feeding log" };
+    }
+  },
+
+  async deleteFeeding(feedingId: string): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/feedings/${feedingId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Delete feeding error:", error);
+      return { success: false, error: "Failed to delete feeding log" };
+    }
+  },
+
+  async updateGrowth(growthId: string, data: Partial<CreateGrowthRequest>): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/growths/${growthId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Update growth error:", error);
+      return { success: false, error: "Failed to update growth record" };
+    }
+  },
+
+  async deleteGrowth(growthId: string): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/growths/${growthId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Delete growth error:", error);
+      return { success: false, error: "Failed to delete growth record" };
     }
   },
 };
