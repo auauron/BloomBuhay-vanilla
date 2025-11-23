@@ -27,27 +27,55 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
 
   // Convert database FeedingLog to local display format
   const convertToLocalSession = (feeding: FeedingLogType): LocalFeedingSession => {
-  const timestamp = feeding.occurredAt || feeding.createdAt || new Date().toISOString();
-  const date = new Date(timestamp);
-  let duration = 0;
-  let side: string | undefined;
-  let cleanNotes = feeding.notes || '';
-  
-  // Extract duration
-  const durationMatch = feeding.notes?.match(/\(Duration: (\d+) minutes\)/);
-    if (durationMatch) {
-      duration = parseInt(durationMatch[1]);
-      cleanNotes = cleanNotes.replace(/\(Duration: \d+ minutes\)/, '').trim();
+    const timestamp = feeding.occurredAt || feeding.createdAt || new Date().toISOString();
+    const date = new Date(timestamp);
+    let duration = 0;
+    let side: string | undefined;
+    let cleanNotes = feeding.notes || '';
+    
+    // Extract duration using string methods
+    const durationPrefix = "(Duration: ";
+    const durationSuffix = " minutes)";
+    const durationStartIndex = cleanNotes.indexOf(durationPrefix);
+    
+    if (durationStartIndex !== -1) {
+      const durationEndIndex = cleanNotes.indexOf(durationSuffix, durationStartIndex);
+      if (durationEndIndex !== -1) {
+        const durationText = cleanNotes.substring(
+          durationStartIndex + durationPrefix.length,
+          durationEndIndex
+        );
+        duration = parseInt(durationText) || 0;
+        
+        // Remove duration from notes
+        const beforeDuration = cleanNotes.substring(0, durationStartIndex).trim();
+        const afterDuration = cleanNotes.substring(durationEndIndex + durationSuffix.length).trim();
+        cleanNotes = [beforeDuration, afterDuration].filter(Boolean).join(' ').trim();
+      }
     }
     
     // Extract side information for breastfeeding
     if (feeding.method === 'breast') {
-      const sideMatch = feeding.notes?.match(/Side: (\w+)/i);
-      if (sideMatch) {
-        side = sideMatch[1].toLowerCase();
-        cleanNotes = cleanNotes.replace(/Side: \w+/i, '').trim();
-        // Clean up any leftover commas
-        cleanNotes = cleanNotes.replace(/^,\s*/, '').replace(/^\s*,\s*/, '');
+      const sidePrefix = "Side: ";
+      const sideStartIndex = cleanNotes.indexOf(sidePrefix);
+      
+      if (sideStartIndex !== -1) {
+        // Find where the side information ends (comma or end of string)
+        const afterSide = cleanNotes.substring(sideStartIndex + sidePrefix.length);
+        const commaIndex = afterSide.indexOf(',');
+        const sideValue = commaIndex !== -1 
+          ? afterSide.substring(0, commaIndex).trim()
+          : afterSide.trim();
+        
+        side = sideValue.toLowerCase();
+        
+        // Remove side information from notes
+        const beforeSide = cleanNotes.substring(0, sideStartIndex).trim();
+        let afterSideInfo = commaIndex !== -1 
+          ? afterSide.substring(commaIndex + 1).trim()
+          : '';
+        
+        cleanNotes = [beforeSide, afterSideInfo].filter(Boolean).join(' ').trim();
       }
     }
     
