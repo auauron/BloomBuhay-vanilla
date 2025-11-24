@@ -1,19 +1,221 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Calendar, Baby, Clock, CheckCircle, Circle, Sunrise, AlertCircle } from "lucide-react";
+import { bbtoolsService, BBMetric, CreateBBMetricRequest } from "../../../services/BBToolsService";
+
+const LOCAL_KEY = "delivery_timeline_v1";
 
 const DeliveryTimeline: React.FC = () => {
-  const [dueDate, setDueDate] = useState("");
-  const [currentWeek, setCurrentWeek] = useState(0);
+  const [dueDate, setDueDate] = useState<string>("");
+  const [currentWeek, setCurrentWeek] = useState<number>(0);
+  const [savedTimelines, setSavedTimelines] = useState<BBMetric[]>([]);
+  const [loadingSaved, setLoadingSaved] = useState<boolean>(true);
+  const [saving, setSaving] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const calculateTimeline = () => {
-    if (!dueDate) return;
-
-    const dueDateObj = new Date(dueDate);
+  // Helper to compute currentWeek (keeps original logic)
+  const computeCurrentWeek = (dueDateStr: string) => {
+    const dueDateObj = new Date(dueDateStr);
     const today = new Date();
     const diffTime = Math.abs(dueDateObj.getTime() - today.getTime());
     const diffWeeks = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 7));
-    
-    setCurrentWeek(40 - diffWeeks);
+    return 40 - diffWeeks;
+  };
+
+  // Calculate timeline and auto-save
+  const calculateTimeline = async (opts?: { save?: boolean }) => {
+    setError(null);
+    if (!dueDate) return;
+
+    const cw = computeCurrentWeek(dueDate);
+    setCurrentWeek(cw);
+
+    if (opts?.save !== false) {
+      await saveTimelineAuto(dueDate, cw);
+    }
+  };
+
+  // Save to backend (preferred), fallback to localStorage
+  const saveTimelineAuto = async (dueDateStr: string, week: number) => {
+    setSaving(true);
+    setError(null);
+
+    const payload: CreateBBMetricRequest = {
+      title: "DeliveryTimeline",
+      value: String(week),
+      unit: "week",
+      notes: JSON.stringify({
+        dueDate: dueDateStr,
+        currentWeek: week,
+        savedAt: new Date().toISOString(),
+      }),
+    };
+
+    try {
+      const res = await bbtoolsService.createMetric(payload);
+      if (res.success && res.data) {
+        // Prepend created metric to savedTimelines
+        setSavedTimelines((prev) => [res.data as BBMetric, ...prev]);
+      } else {
+        // Not authenticated or server error: fallback to localStorage
+        saveLocalTimeline(dueDateStr, week);
+        // the service already logs warnings; we keep the UI working
+      }
+    } catch (err) {
+      console.warn("Failed to save timeline to server, saving locally", err);
+      saveLocalTimeline(dueDateStr, week);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveLocalTimeline = (dueDateStr: string, week: number) => {
+    try {
+      const existingRaw = localStorage.getItem(LOCAL_KEY);
+      const existing = existingRaw ? JSON.parse(existingRaw) : [];
+      const entry = {
+        id: `local_${Date.now()}`,
+        title: "DeliveryTimeline",
+        value: String(week),
+        unit: "week",
+        notes: JSON.stringify({ dueDate: dueDateStr, currentWeek: week, savedAt: new Date().toISOString() }),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      const updated = [entry, ...existing];
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(updated));
+      // reflect locally in UI as BBMetric-like
+      setSavedTimelines((prev) => [entry as unknown as BBMetric, ...prev]);
+    } catch (e) {
+      console.warn("Failed to save timeline locally", e);
+      setError("Unable to persist timeline locally.");
+    }
+  };
+
+  // Load saved timelines (server-first, fallback to localStorage)
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      setLoadingSaved(true);
+      try {
+        const res = await bbtoolsService.getAll();
+        if (res.success && res.data?.metrics) {
+          const timelines: BBMetric[] = (res.data.metrics as BBMetric[]).filter((m) => m.title === "DeliveryTimeline");
+          // sort by createdAt desc
+          timelines.sort((a, b) => {
+            const ta = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const tb = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return tb - ta;
+          });
+          if (mounted) {
+            setSavedTimelines(timelines);
+            // populate first timeline into UI if empty
+            if (!dueDate && timelines.length > 0) {
+              const first = timelines[0];
+              try {
+                const notes = first.notes ? JSON.parse(first.notes) : {};
+                if (notes.dueDate) {
+                  setDueDate(notes.dueDate);
+                  setCurrentWeek(Number(notes.currentWeek ?? first.value ?? 0));
+                } else if (first.value) {
+                  // if notes missing, try derive dueDate roughly from value (don't overwrite dueDate)
+                  setCurrentWeek(Number(first.value));
+                }
+              } catch (e) {
+                console.warn("Failed to parse timeline notes", e);
+              }
+            }
+            setLoadingSaved(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to fetch timelines from server - falling back to localStorage", err);
+      }
+
+      // fallback local
+      try {
+        const raw = localStorage.getItem(LOCAL_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw) as any[];
+          const mapped: BBMetric[] = parsed.map((p) => ({
+            id: p.id,
+            title: p.title,
+            value: p.value,
+            unit: p.unit,
+            notes: p.notes,
+            createdAt: p.createdAt,
+            updatedAt: p.updatedAt,
+          }));
+          if (mounted) {
+            setSavedTimelines(mapped);
+            if (!dueDate && mapped.length > 0) {
+              try {
+                const firstNotes = mapped[0].notes ? JSON.parse(mapped[0].notes) : {};
+                if (firstNotes.dueDate) {
+                  setDueDate(firstNotes.dueDate);
+                  setCurrentWeek(Number(firstNotes.currentWeek ?? mapped[0].value ?? 0));
+                } else if (mapped[0].value) {
+                  setCurrentWeek(Number(mapped[0].value));
+                }
+              } catch (e) {
+                console.warn("Failed to parse local timeline notes", e);
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("Failed to load local timelines", e);
+      } finally {
+        if (mounted) setLoadingSaved(false);
+      }
+    };
+
+    load();
+    return () => { mounted = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Delete saved timeline (server + local)
+  const deleteSavedTimeline = async (metric: BBMetric) => {
+    // remove optimistic
+    setSavedTimelines((prev) => prev.filter((m) => m !== metric));
+
+    // if id is numeric (server), attempt server delete
+    if (typeof metric.id === "number") {
+      try {
+        const res = await bbtoolsService.deleteMetric(String(metric.id));
+        if (!res.success) console.warn("Failed to delete timeline on server:", res.error ?? res.message);
+      } catch (err) {
+        console.warn("Delete timeline server error", err);
+      }
+    } else {
+      // local deletion: remove from localStorage
+      try {
+        const raw = localStorage.getItem(LOCAL_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw) as any[];
+          const updated = parsed.filter((p) => p.id !== metric.id);
+          localStorage.setItem(LOCAL_KEY, JSON.stringify(updated));
+        }
+      } catch (e) {
+        console.warn("Failed to remove local timeline", e);
+      }
+    }
+  };
+
+  const restoreSavedTimeline = (metric: BBMetric) => {
+    try {
+      const notes = metric.notes ? JSON.parse(metric.notes) : {};
+      if (notes.dueDate) {
+        setDueDate(notes.dueDate);
+        setCurrentWeek(Number(notes.currentWeek ?? metric.value ?? 0));
+      } else if (metric.value) {
+        setCurrentWeek(Number(metric.value));
+      }
+    } catch (e) {
+      console.warn("Failed to restore timeline notes", e);
+      if (metric.value) setCurrentWeek(Number(metric.value));
+    }
   };
 
   const getTrimester = (week: number) => {
@@ -72,12 +274,23 @@ const DeliveryTimeline: React.FC = () => {
               className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-bloomPink focus:border-transparent"
             />
           </div>
-          <div className="flex items-end">
+          <div className="flex items-end gap-3">
             <button
-              onClick={calculateTimeline}
+              onClick={() => calculateTimeline({ save: true })}
               className="w-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white py-3 rounded-2xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
             >
-              Generate Timeline
+              {saving ? "Saving..." : "Generate Timeline"}
+            </button>
+
+            <button
+              onClick={() => {
+                // quick clear
+                setDueDate("");
+                setCurrentWeek(0);
+              }}
+              className="px-4 py-3 rounded-2xl border border-gray-200"
+            >
+              Clear
             </button>
           </div>
         </div>
@@ -92,7 +305,7 @@ const DeliveryTimeline: React.FC = () => {
                 <Baby className="w-5 h-5" />
                 Current Progress
               </h4>
-              
+
               <div className="text-center mb-4">
                 <div className="text-4xl font-bold text-bloomPink mb-1">{currentWeek}</div>
                 <div className="text-lg text-gray-600">Weeks Pregnant</div>
@@ -143,7 +356,7 @@ const DeliveryTimeline: React.FC = () => {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl border border-gray-200 p-6">
               <h4 className="font-semibold text-gray-800 mb-6">Pregnancy Timeline</h4>
-              
+
               <div className="space-y-4">
                 {timelineEvents.map((event, index) => (
                   <div key={index} className="flex items-start gap-4">
@@ -162,26 +375,61 @@ const DeliveryTimeline: React.FC = () => {
                         <Circle className="w-5 h-5" />
                       )}
                     </div>
-                    
-                    <div className={`flex-1 pb-4 ${
-                      index < timelineEvents.length - 1 ? 'border-l-2 border-gray-200' : ''
-                    } pl-4`}>
-                      <div className={`font-semibold ${
-                        event.completed ? 'text-green-700' : 
-                        currentWeek >= event.week ? 'text-blue-700' : 'text-gray-500'
-                      }`}>
+
+                    <div className={`flex-1 pb-4 ${ index < timelineEvents.length - 1 ? 'border-l-2 border-gray-200' : '' } pl-4`}>
+                      <div className={`font-semibold ${ event.completed ? 'text-green-700' : currentWeek >= event.week ? 'text-blue-700' : 'text-gray-500' }`}>
                         Week {event.week}
                       </div>
-                      <div className={`text-sm ${
-                        event.completed ? 'text-green-600' : 
-                        currentWeek >= event.week ? 'text-blue-600' : 'text-gray-400'
-                      }`}>
+                      <div className={`text-sm ${ event.completed ? 'text-green-600' : currentWeek >= event.week ? 'text-blue-600' : 'text-gray-400' }`}>
                         {event.event}
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Saved timelines history */}
+            <div className="mt-6 bg-white rounded-2xl border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-semibold text-gray-800">Saved Timelines</h4>
+                {loadingSaved ? <div className="text-sm text-gray-500">Loading...</div> : <div className="text-sm text-gray-500">{savedTimelines.length} saved</div>}
+              </div>
+
+              {savedTimelines.length === 0 ? (
+                <p className="text-sm text-gray-500">No saved timelines yet. Your timeline will be saved when you generate it.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {savedTimelines.map((m) => {
+                    let notes: any = {};
+                    try { notes = m.notes ? JSON.parse(m.notes) : {}; } catch { notes = {}; }
+                    const savedDue = notes.dueDate ?? "";
+                    const savedWeek = notes.currentWeek ?? m.value;
+                    return (
+                      <li key={m.id ?? `${m.value}-${m.createdAt}`} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <div className="text-sm font-semibold">{savedDue ? new Date(savedDue).toLocaleDateString() : `Week ${savedWeek}`}</div>
+                          <div className="text-xs text-gray-500">{m.createdAt ? new Date(m.createdAt).toLocaleString() : ""}</div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => restoreSavedTimeline(m)}
+                            className="px-3 py-1 text-sm rounded-xl border hover:bg-gray-50"
+                          >
+                            Restore
+                          </button>
+                          <button
+                            onClick={() => deleteSavedTimeline(m)}
+                            className="px-3 py-1 text-sm rounded-xl border border-red-200 text-red-600 hover:bg-red-50"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
             </div>
           </div>
         </div>
