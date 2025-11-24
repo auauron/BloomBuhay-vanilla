@@ -1,4 +1,3 @@
-// src/components/tools/pregnant/BMICalculator.tsx
 import React, { useEffect, useState } from "react";
 import { Calculator, Scale, Ruler, AlertTriangle, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { bbtoolsService, BBMetric, CreateBBMetricRequest } from "../../../services/BBToolsService";
