@@ -1,0 +1,54 @@
+{
+  "articles": [
+    {
+      "id": "childcare-feeding-best-practices",
+      "title": "Best Feeding Practices in Childcare Settings",
+      "image": "/assets/earlyChildcareArticle/eCC8.png",
+      "category": "Feeding",
+      "section": "baby",
+      "externalLink": "https://drexel.edu/hunger-free-center/research/briefs-and-reports/childcare-feeding/",
+      "content": {
+        "headline": "Optimizing Feeding in Childcare Environments",
+        "intro": "Childcare settings play a crucial role in establishing healthy feeding patterns and ensuring children receive adequate nutrition during their early development. Implementing evidence-based feeding practices supports children's growth while creating positive food relationships.",
+        "sections": [
+          {
+            "title": "Essential Childcare Feeding Standards",
+            "content": "Quality childcare programs should implement these feeding practices:",
+            "points": [
+              "Serve age-appropriate portion sizes and food textures",
+              "Offer variety of fruits, vegetables, and whole grains daily",
+              "Limit added sugars, salt, and unhealthy fats in meals",
+              "Provide access to clean drinking water throughout day",
+              "Create structured yet relaxed meal and snack times",
+              "Support breastfeeding mothers with proper milk storage and feeding"
+            ]
+          },
+          {
+            "title": "Staff Training and Environment",
+            "content": "Create supportive feeding environments through:",
+            "points": [
+              "Train staff in responsive feeding techniques and food safety",
+              "Create pleasant, family-style dining atmospheres",
+              "Involve children in food preparation when age-appropriate",
+              "Communicate regularly with parents about feeding and nutrition",
+              "Accommodate special dietary needs and food allergies",
+              "Model healthy eating behaviors during mealtimes"
+            ]
+          },
+          {
+            "title": "Policy and Program Implementation",
+            "points": [
+              "Develop written feeding and nutrition policies",
+              "Participate in federal Child and Adult Care Food Program",
+              "Conduct regular nutrition education for staff and families",
+              "Create gardens or food activities to teach about nutrition",
+              "Establish partnerships with local nutrition resources",
+              "Regularly evaluate and improve feeding practices"
+            ]
+          }
+        ],
+        "source": "Source: https://drexel.edu/hunger-free-center/research/briefs-and-reports/childcare-feeding/"
+      }
+    }
+  ]
+}

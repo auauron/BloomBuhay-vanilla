@@ -8,6 +8,7 @@ import ArticleModal from '../components/ArticleModal';
 import { BookOpen } from "lucide-react";
 import { pregnant, postpartum, earlyChildCare, generalMotherhood } from '../data';
 import { useSearchParams } from "react-router-dom";
+import AIChat from '../components/ai/AIChat';
 
 
 // === GRADIENT SEARCH BAR COMPONENT ===
@@ -26,11 +27,11 @@ const GradientSearchBar = ({
     <div
       className={`w-full rounded-full p-[2px] transition-all duration-300 ${
         focused
-          ? "bg-white shadow-[0_0_12px_rgba(248,117,170,0.4)]"
+          ? "bg-bloomWhite shadow-[0_0_12px_rgba(248,117,170,0.4)]"
           : "bg-gradient-to-r from-bloomPink to-bloomYellow"
       }`}
     >
-      <div className="bg-white rounded-full relative w-full">
+      <div className="bg-bloomWhite rounded-full relative w-full">
         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-bloomPink text-lg">
           <Search />
         </span>
@@ -314,7 +315,16 @@ export default function BloomGuide() {
       ...pregnant.development.articles,
       ...pregnant.commonConcerns.articles,
       ...pregnant.medicalResearch.articles,
-      ...pregnant.secondTrimester.articles
+      ...pregnant.secondTrimester.articles,
+      ...pregnant.earlyPregnancySigns.articles,
+      ...pregnant.pregnancyConfirmation.articles,
+      ...pregnant.trimesterSymptoms.articles,
+      ...pregnant.exerciseChildbirth.articles,
+      ...pregnant.safePregnancyExercise.articles,
+      ...pregnant.nutritionBabyDevelopment.articles,
+      ...pregnant.pregnancyNutritionGuide.articles,
+      ...pregnant.pregnancyExerciseBenefits.articles,
+      ...pregnant.maternalNutritionEssentials.articles
     ];
 
     const postpartumArticles = [
@@ -323,7 +333,9 @@ export default function BloomGuide() {
       ...postpartum.selfCare.articles,
       ...postpartum.breastfeeding.articles,
       ...postpartum.physicalChanges.articles,
-      ...postpartum.bf2.articles
+      ...postpartum.bf2.articles,
+      ...postpartum.firstWeeksCare.articles,
+      ...postpartum.maternalMentalHealth.articles
     ];
 
     const earlyChildcareArticles = [
@@ -331,7 +343,13 @@ export default function BloomGuide() {
       ...earlyChildCare.sleep.articles,
       ...earlyChildCare.feeding.articles,
       ...earlyChildCare.development.articles,
-      ...earlyChildCare.health.articles
+      ...earlyChildCare.health.articles,
+      ...earlyChildCare.infantFeedingWHO.articles,
+      ...earlyChildCare.earlyNutritionCDC.articles,
+      ...earlyChildCare.childcareFeedingPractices.articles,
+      ...earlyChildCare.sleepDevelopment.articles,
+      ...earlyChildCare.childcareSleepRoutines.articles,
+      ...earlyChildCare.healthySleepHabits.articles
     ];
 
     // Use actual generalMotherhood data
@@ -405,35 +423,94 @@ export default function BloomGuide() {
     return categorized;
   };
 
-  // Categorize pregnancy articles by trimester
-  const categorizePregnancyArticles = (articles: Article[]) => {
-    const categorized = {
-      "first-trimester": articles.filter(article => 
-        article.id === "baby-development-5-weeks" ||
-        article.id === "body-adjusting-pregnancy" ||
-        article.id === "managing-morning-sickness"
-      ),
-      "second-trimester": articles.filter(article => 
-        article.id === "pregnancy-second-trimester" ||
-        article.title.includes("Second Trimester")
-      ),
-      "third-trimester": articles.filter(article => 
-        article.id === "fetal-development-stages" ||
-        article.title.includes("Third Trimester")
-      ),
-      "nutrition": articles.filter(article => 
-        article.id === "nutrition-tips-early-pregnancy"
-      ),
-      "fitness": articles.filter(article => 
-        article.id === "exercise-first-trimester"
-      ),
-      "symptoms": articles.filter(article => 
-        article.id === "managing-morning-sickness"
-      )
-    };
+  // Categorize pregnancy articles by trimester - UPDATED WITH SINGLE CATEGORY FIELD
+    const categorizePregnancyArticles = (articles: Article[]) => {
+      const categorized = {
+        "first-trimester": articles.filter(article => 
+          article.category.includes("First Trimester") ||
+          article.id === "baby-development-5-weeks" ||
+          article.id === "body-adjusting-pregnancy" ||
+          article.id === "managing-morning-sickness" ||
+          article.id === "early-pregnancy-signs-symptoms" ||
+          article.id === "pregnancy-symptoms-confirmation" ||
+          article.id === "comprehensive-pregnancy-symptoms-guide" ||
+          article.id === "exercise-easier-childbirth" || // NEW - appears in fitness AND first-trimester
+          article.id === "nutrition-baby-development"    // NEW - appears in nutrition AND first-trimester
+        ),
+        "second-trimester": articles.filter(article => 
+          article.category.includes("Second Trimester") ||
+          article.id === "pregnancy-second-trimester" ||
+          article.title.includes("Second Trimester") ||
+          article.id === "comprehensive-pregnancy-symptoms-guide" ||
+          article.id === "safe-pregnancy-exercise-guide" || // appears in fitness AND second-trimester
+          article.id === "nutrition-baby-development"       // appears in nutrition AND second-trimester
+        ),
+        "third-trimester": articles.filter(article => 
+          article.category.includes("Third Trimester") ||
+          article.id === "fetal-development-stages" ||
+          article.title.includes("Third Trimester") ||
+          article.id === "comprehensive-pregnancy-symptoms-guide" ||
+          article.id === "safe-pregnancy-exercise-guide" || // appears in fitness AND third-trimester
+          article.id === "nutrition-baby-development"       // ppears in nutrition AND third-trimester
+        ),
+        "nutrition": articles.filter(article => 
+          article.category.includes("Nutrition") ||
+          article.id === "nutrition-tips-early-pregnancy" ||
+          article.id === "nutrition-baby-development" ||     
+          article.id === "comprehensive-pregnancy-nutrition"  
+        ),
+        "fitness": articles.filter(article => 
+          article.category.includes("Fitness") ||
+          article.id === "exercise-first-trimester" ||
+          article.id === "exercise-easier-childbirth" ||       
+          article.id === "safe-pregnancy-exercise-guide"        
+        ),
+        "symptoms": articles.filter(article => 
+          article.category.includes("Symptoms") ||
+          article.id === "managing-morning-sickness" ||
+          article.id === "early-pregnancy-signs-symptoms" ||
+          article.id === "pregnancy-symptoms-confirmation" ||
+          article.id === "comprehensive-pregnancy-symptoms-guide" ||
+          article.id === "comprehensive-pregnancy-nutrition"    // appears in nutrition AND symptoms
+        )
+      };
     
     return categorized;
   };
+
+  // Categorize early childcare articles for multiple filters
+    const categorizeEarlyChildcareArticles = (articles: Article[]) => {
+      const categorized = {
+        "newborn-care": articles.filter(article => 
+          article.category === "Baby Care" || 
+          article.category === "Health" ||
+          article.id === "who-infant-feeding-guidelines" ||    // Feeding article in newborn care too
+          article.id === "early-nutrition-foundations" ||      // Feeding article in newborn care too
+          article.id === "childcare-feeding-best-practices" || // Feeding article in newborn care too
+          article.id === "stress-free-childcare-sleep" ||      // Sleep article in newborn care too
+          article.id === "encouraging-healthy-sleep-habits"    // Sleep article in newborn care too
+        ),
+        "feeding": articles.filter(article => 
+          article.category === "Feeding" ||
+          article.id === "who-infant-feeding-guidelines" ||
+          article.id === "early-nutrition-foundations" ||
+          article.id === "childcare-feeding-best-practices"
+        ),
+        "sleep": articles.filter(article => 
+          article.category === "Sleep" ||
+          article.id === "sleep-early-childhood-development" ||
+          article.id === "stress-free-childcare-sleep" ||
+          article.id === "encouraging-healthy-sleep-habits"
+        ),
+        "development": articles.filter(article => 
+          article.category === "Development" ||
+          article.id === "sleep-early-childhood-development" ||  // Sleep article in development too
+          article.id === "encouraging-healthy-sleep-habits"      // Sleep article in development too
+        )
+      };
+      
+      return categorized;
+    };
 
   // Calculate stage counts for filter buttons
   const stageCounts = useMemo(() => {
@@ -494,12 +571,13 @@ export default function BloomGuide() {
     }
     
     if (activeStage === "earlyChildcare") {
+      const categorized = categorizeEarlyChildcareArticles(filteredArticles);
       return {
         all: filteredArticles.length,
-        "newborn-care": filteredArticles.filter(a => a.category === "Baby Care" || a.category === "Health").length,
-        "feeding": filteredArticles.filter(a => a.category === "Feeding").length,
-        "sleep": filteredArticles.filter(a => a.category === "Sleep").length,
-        "development": filteredArticles.filter(a => a.category === "Development").length
+        "newborn-care": categorized["newborn-care"]?.length || 0,
+        "feeding": categorized["feeding"]?.length || 0,
+        "sleep": categorized["sleep"]?.length || 0,
+        "development": categorized["development"]?.length || 0
       };
     }
     
@@ -551,21 +629,9 @@ export default function BloomGuide() {
           break;
       }
     } else if (activeStage === "earlyChildcare" && activeCategory !== "all") {
-      switch (activeCategory) {
-        case "newborn-care":
-          articlesToFilter = articlesToFilter.filter(a => a.category === "Baby Care" || a.category === "Health");
-          break;
-        case "feeding":
-          articlesToFilter = articlesToFilter.filter(a => a.category === "Feeding");
-          break;
-        case "sleep":
-          articlesToFilter = articlesToFilter.filter(a => a.category === "Sleep");
-          break;
-        case "development":
-          articlesToFilter = articlesToFilter.filter(a => a.category === "Development");
-          break;
+        const categorized = categorizeEarlyChildcareArticles(articlesToFilter);
+        articlesToFilter = categorized[activeCategory as keyof typeof categorized] || [];
       }
-    }
 
     // Apply search filtering
     const filteredArticles = filterArticlesBySearch(articlesToFilter);
@@ -626,7 +692,7 @@ export default function BloomGuide() {
   // === MAIN PAGE ===
   return (
     <div 
-      className="bg-white flex flex-col font-poppins relative"
+      className="bg-bloomWhite flex flex-col font-poppins relative"
       style={{
         height: '100vh',
         overflow: 'hidden'
@@ -749,15 +815,6 @@ export default function BloomGuide() {
           </div>
         </div>
       </div>
-
-      {/* Floating Help Button */}
-      <div className="fixed bottom-8 right-8 z-50">
-        <button className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 group">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </button>
-      </div>
       
       {/* ARTICLE MODAL */}
       <ArticleModal 
@@ -765,6 +822,8 @@ export default function BloomGuide() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
+
+      <AIChat />
     </div> 
   );
 };

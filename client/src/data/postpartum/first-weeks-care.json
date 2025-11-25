@@ -1,0 +1,66 @@
+{
+  "articles": [
+    {
+      "id": "postpartum-first-weeks-care",
+      "title": "Postpartum Care in the First Weeks",
+      "image": "/assets/postpartumArticle/pp6.png",
+      "category": "Wellness",
+      "section": "mother",
+      "externalLink": "https://forwhenhelpline.org.au/parent-resources/postpartum-care-first-weeks/",
+      "content": {
+        "headline": "Navigating the First Weeks of Postpartum Recovery",
+        "intro": "The initial weeks after childbirth are a critical period of physical recovery and emotional adjustment. Understanding what to expect and how to care for yourself during this transformative time can make the transition to motherhood smoother and more manageable. Remember, recovery is a journey that requires patience and self-compassion.",
+        "sections": [
+          {
+            "title": "Physical Recovery in Early Postpartum",
+            "content": "Your body undergoes significant changes as it heals from childbirth:",
+            "points": [
+              "Vaginal bleeding (lochia) can last 4-6 weeks - use maternity pads",
+              "Uterus shrinks back to pre-pregnancy size over several weeks",
+              "Perineal soreness or episiotomy healing requires careful hygiene",
+              "Breast engorgement occurs as milk supply establishes",
+              "Afterpains (uterine contractions) help control bleeding",
+              "Hormonal shifts cause night sweats and hair changes"
+            ]
+          },
+          {
+            "title": "Essential Self-Care Practices",
+            "content": "Prioritize these recovery strategies in the first weeks:",
+            "points": [
+              "Rest whenever possible - sleep when your baby sleeps",
+              "Stay hydrated and eat nutritious, easy-to-prepare meals",
+              "Use ice packs or warm compresses for perineal discomfort",
+              "Take pain relief as recommended by your healthcare provider",
+              "Practice gentle movement like short walks to aid circulation",
+              "Wear comfortable, loose clothing and supportive bras"
+            ]
+          },
+          {
+            "title": "Emotional Wellbeing and Support",
+            "content": "Mental health is as important as physical recovery:",
+            "points": [
+              "Expect mood swings and emotional sensitivity (baby blues)",
+              "Accept help from family and friends with meals and chores",
+              "Share your feelings with your partner or support person",
+              "Be patient with yourself - adjustment takes time",
+              "Watch for signs of postpartum depression beyond normal mood swings",
+              "Connect with other new parents for shared experiences"
+            ]
+          },
+          {
+            "title": "When to Seek Medical Attention",
+            "points": [
+              "Heavy bleeding (soaking a pad in 1 hour or less)",
+              "Fever over 38°C or signs of infection",
+              "Severe or worsening abdominal pain",
+              "Redness, swelling, or discharge from c-section incision",
+              "Symptoms of mastitis (red, painful breasts with fever)",
+              "Thoughts of harming yourself or your baby"
+            ]
+          }
+        ],
+        "source": "Source: https://forwhenhelpline.org.au/parent-resources/postpartum-care-first-weeks/"
+      }
+    }
+  ]
+}

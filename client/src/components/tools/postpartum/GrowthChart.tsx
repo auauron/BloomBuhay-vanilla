@@ -1,39 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, TrendingUp, Ruler, Scale, Brain, Trash2, Edit3, Save, X, ChartBar } from "lucide-react";
+import { bbtoolsService, GrowthChartProps, GrowthRecordForm, CreateGrowthRequest, GrowthRecord as GrowthRecordType, LocalGrowthRecord } from "../../../services/BBToolsService";
 
-interface GrowthRecord {
-  id: string;
-  date: string;
-  age: number; // in months
-  weight: number; // in kg
-  height: number; // in cm
-  headCircumference: number; // in cm
-  notes: string;
-}
-
-const GrowthChart: React.FC = () => {
-  const [records, setRecords] = useState<GrowthRecord[]>([
-    {
-      id: '1',
-      date: '2024-01-15',
-      age: 0,
-      weight: 3.2,
-      height: 50,
-      headCircumference: 35,
-      notes: 'Birth measurements'
-    }
-  ]);
-  
+const GrowthChart: React.FC<GrowthChartProps> = ({ growths = [], onRefresh }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    date: '',
-    age: '',
-    weight: '',
-    height: '',
-    headCircumference: '',
+  const [formData, setFormData] = useState<GrowthRecordForm>({
+    date: new Date().toISOString().split('T')[0],
+    age: 0,
+    weight: 0,
+    height: 0,
+    headCircumference: undefined,
     notes: ''
   });
+  // Local optimistic state
+  const [localRecords, setLocalRecords] = useState<LocalGrowthRecord[]>([]);
+
+  // Convert GrowthRecord to local format
+  const convertToLocalRecord = (growth: GrowthRecordType): LocalGrowthRecord => {
+    return {
+      id: growth.id.toString(),
+      date: growth.createdAt ? new Date(growth.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      age: 0,
+      weight: growth.weight || 0,
+      height: growth.height || 0,
+      headCircumference: growth.headCircumference,
+      notes: growth.notes || ''
+    };
+  };
+
+  useEffect(() => {
+    setLocalRecords(growths.map(convertToLocalRecord));
+  }, [growths]);
+
+  const records: LocalGrowthRecord[] = localRecords;
 
   // WHO Growth Chart Percentiles (simplified)
   const whoPercentiles = {
@@ -57,52 +57,59 @@ const GrowthChart: React.FC = () => {
     }
   };
 
-  const addRecord = () => {
-    if (!formData.date || !formData.weight || !formData.height || !formData.headCircumference) return;
+  const addRecord = async () => {
+    if (!formData.weight || !formData.height) return;
 
-    const record: GrowthRecord = {
-      id: Date.now().toString(),
-      date: formData.date,
-      age: parseInt(formData.age) || 0,
-      weight: parseFloat(formData.weight),
-      height: parseFloat(formData.height),
-      headCircumference: parseFloat(formData.headCircumference),
+    const growthData: CreateGrowthRequest = {
+      weight: formData.weight,
+      height: formData.height,
+      headCircumference: formData.headCircumference,
       notes: formData.notes
     };
 
-    setRecords(prev => [record, ...prev]);
-    resetForm();
+    const result = await bbtoolsService.addGrowth(growthData);
+    if (result.success && onRefresh) {
+      onRefresh();
+      resetForm();
+    }
   };
 
-  const updateRecord = () => {
-    if (!editingId || !formData.date || !formData.weight || !formData.height || !formData.headCircumference) return;
+  const updateRecord = async () => {
+    if (!editingId || !formData.weight || !formData.height) return;
 
-    const updatedRecord: GrowthRecord = {
-      id: editingId,
-      date: formData.date,
-      age: parseInt(formData.age) || 0,
-      weight: parseFloat(formData.weight),
-      height: parseFloat(formData.height),
-      headCircumference: parseFloat(formData.headCircumference),
+    const growthData: CreateGrowthRequest = {
+      weight: formData.weight,
+      height: formData.height,
+      headCircumference: formData.headCircumference,
       notes: formData.notes
     };
 
-    setRecords(prev => prev.map(r => r.id === editingId ? updatedRecord : r));
-    setEditingId(null);
-    resetForm();
+    const result = await bbtoolsService.updateGrowth(editingId, growthData);
+    if (result.success && onRefresh) {
+      onRefresh();
+      setEditingId(null);
+      resetForm();
+    }
   };
 
-  const deleteRecord = (id: string) => {
-    setRecords(prev => prev.filter(r => r.id !== id));
+  const deleteRecord = async (id: string) => {
+    setLocalRecords(prev => prev.filter(r => r.id !== id)); // optimistic
+    const result = await bbtoolsService.deleteGrowth(id);
+    if (!result.success) {
+      console.error('Failed to delete growth record:', result.error);
+      if (onRefresh) onRefresh(); // refetch to correct state
+    } else {
+      if (onRefresh) onRefresh();
+    }
   };
 
-  const editRecord = (record: GrowthRecord) => {
+  const editRecord = (record: LocalGrowthRecord) => {
     setFormData({
       date: record.date,
-      age: record.age.toString(),
-      weight: record.weight.toString(),
-      height: record.height.toString(),
-      headCircumference: record.headCircumference.toString(),
+      age: record.age,
+      weight: record.weight,
+      height: record.height,
+      headCircumference: record.headCircumference,
       notes: record.notes
     });
     setEditingId(record.id);
@@ -111,11 +118,11 @@ const GrowthChart: React.FC = () => {
 
   const resetForm = () => {
     setFormData({
-      date: '',
-      age: '',
-      weight: '',
-      height: '',
-      headCircumference: '',
+      date: new Date().toISOString().split('T')[0],
+      age: 0,
+      weight: 0,
+      height: 0,
+      headCircumference: undefined,
       notes: ''
     });
     setShowForm(false);
@@ -172,10 +179,12 @@ const GrowthChart: React.FC = () => {
                   <span className="text-sm text-gray-600">Height</span>
                   <span className="font-semibold text-gray-800">{latestRecord.height} cm</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Head Circ.</span>
-                  <span className="font-semibold text-gray-800">{latestRecord.headCircumference} cm</span>
-                </div>
+                {latestRecord.headCircumference && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Head Circ.</span>
+                    <span className="font-semibold text-gray-800">{latestRecord.headCircumference} cm</span>
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Age</span>
                   <span className="font-semibold text-gray-800">{latestRecord.age} months</span>
@@ -229,7 +238,7 @@ const GrowthChart: React.FC = () => {
                   <input
                     type="number"
                     value={formData.age}
-                    onChange={(e) => setFormData({...formData, age: e.target.value})}
+                    onChange={(e) => setFormData({...formData, age: parseInt(e.target.value) || 0})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="0"
                     min="0"
@@ -245,7 +254,7 @@ const GrowthChart: React.FC = () => {
                     type="number"
                     step="0.1"
                     value={formData.weight}
-                    onChange={(e) => setFormData({...formData, weight: e.target.value})}
+                    onChange={(e) => setFormData({...formData, weight: parseFloat(e.target.value) || 0})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="3.5"
                   />
@@ -258,7 +267,7 @@ const GrowthChart: React.FC = () => {
                   <input
                     type="number"
                     value={formData.height}
-                    onChange={(e) => setFormData({...formData, height: e.target.value})}
+                    onChange={(e) => setFormData({...formData, height: parseFloat(e.target.value) || 0})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="50"
                   />
@@ -271,8 +280,8 @@ const GrowthChart: React.FC = () => {
                   <input
                     type="number"
                     step="0.1"
-                    value={formData.headCircumference}
-                    onChange={(e) => setFormData({...formData, headCircumference: e.target.value})}
+                    value={formData.headCircumference || ''}
+                    onChange={(e) => setFormData({...formData, headCircumference: e.target.value ? parseFloat(e.target.value) : undefined})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="35"
                   />
@@ -366,7 +375,7 @@ const GrowthChart: React.FC = () => {
                         <div className="text-center">
                           <div className="flex items-center justify-center gap-1 mb-1">
                             <Brain className="w-4 h-4 text-purple-600" />
-                            <span className="font-semibold text-gray-800">{record.headCircumference} cm</span>
+                            <span className="font-semibold text-gray-800">{record.headCircumference || 'N/A'} cm</span>
                           </div>
                           <span className="text-xs text-gray-500">Head Circ.</span>
                         </div>

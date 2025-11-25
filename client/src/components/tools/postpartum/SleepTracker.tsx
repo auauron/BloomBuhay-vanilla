@@ -1,100 +1,147 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, Moon, Sun, Clock, Trash2, Edit3, Save, X, Bed } from "lucide-react";
+import { bbtoolsService, SleepTrackerProps, SleepSessionForm, SleepLog, LocalSleepSession, CreateSleepRequest } from "../../../services/BBToolsService";
 
-interface SleepSession {
-  id: string;
-  type: 'nap' | 'night';
-  startTime: string;
-  endTime: string;
-  duration: number;
-  quality: 'excellent' | 'good' | 'fair' | 'poor';
-  notes: string;
-}
-
-const SleepTracker: React.FC = () => {
-  const [sessions, setSessions] = useState<SleepSession[]>([]);
+const SleepTracker: React.FC<SleepTrackerProps> = ({ sleeps = [], onRefresh }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    type: 'nap' as 'nap' | 'night',
+  const [formData, setFormData] = useState<SleepSessionForm>({
     startTime: '',
     endTime: '',
-    quality: 'good' as 'excellent' | 'good' | 'fair' | 'poor',
     notes: ''
   });
+  
+  const [localSessions, setLocalSessions] = useState<LocalSleepSession[]>([]);
+  useEffect(() => {
+    setLocalSessions(sleeps.map(convertToLocalSession));
+  }, [sleeps]);
 
-  const calculateDuration = (start: string, end: string) => {
-    const startDate = new Date(`2000-01-01T${start}`);
-    const endDate = new Date(`2000-01-01T${end}`);
-    let duration = Math.round((endDate.getTime() - startDate.getTime()) / 60000); // minutes
+  // Convert database SleepLog to local display format
+  const convertToLocalSession = (sleep: SleepLog) => {
+    const startDate = new Date(sleep.startAt);
+    const endDate = sleep.endAt ? new Date(sleep.endAt) : null;
     
-    // Handle overnight sleep
-    if (duration < 0) {
-      duration += 24 * 60; // Add 24 hours
-    }
+    // Determine sleep type based on time of day
+    const hour = startDate.getHours();
+    const type = (hour >= 6 && hour < 18) ? 'nap' : 'night';
     
-    return duration;
+    // Format times for display (am/pm)
+    const startTime = startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+    const endTime = endDate ? endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : 'Ongoing';
+
+    // Calculate duration (use stored or calculate)
+    const duration = sleep.durationMinutes || 
+      (endDate ? Math.round((endDate.getTime() - startDate.getTime()) / 60000) : 0);
+    
+    // Simple quality based on duration
+    let quality: 'excellent' | 'good' | 'fair' | 'poor' = 'good';
+    if (duration > 180) quality = 'excellent';
+    else if (duration > 120) quality = 'good';
+    else if (duration > 60) quality = 'fair';
+    else quality = 'poor';
+
+    return {
+      id: sleep.id.toString(),
+      type,
+      startTime,
+      endTime,
+      duration,
+      quality,
+      notes: sleep.notes || '',
+      rawStartAt: sleep.startAt,
+      rawEndAt: sleep.endAt
+    };
   };
 
-  const addSession = () => {
+  const sessions = localSessions; // replace direct mapping usage
+
+  // Convert time string "HH:MM" to full ISO date string for the database
+  const timeToISODate = (timeString: string): string => {
+    if (!timeString) return '';
+    
+    const today = new Date();
+    const [hours, minutes] = timeString.split(':').map(Number);
+    
+    const date = new Date(today);
+    date.setHours(hours, minutes, 0, 0);
+    
+    return date.toISOString();
+  };
+
+  // Convert ISO date string to time string "HH:MM" for form inputs
+  const ISODateToTime = (isoString: string): string => {
+    if (!isoString) return '';
+    
+    const date = new Date(isoString);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    
+    return `${hours}:${minutes}`;
+  };
+
+  const addSession = async () => {
     if (!formData.startTime || !formData.endTime) return;
 
-    const duration = calculateDuration(formData.startTime, formData.endTime);
-    const session: SleepSession = {
-      id: Date.now().toString(),
-      type: formData.type,
-      startTime: formData.startTime,
-      endTime: formData.endTime,
-      duration,
-      quality: formData.quality,
+    const sleepData: CreateSleepRequest = {
+      startAt: timeToISODate(formData.startTime),
+      endAt: timeToISODate(formData.endTime),
       notes: formData.notes
     };
 
-    setSessions(prev => [session, ...prev]);
-    resetForm();
+    const result = await bbtoolsService.addSleep(sleepData);
+    if (result.success && onRefresh) {
+      onRefresh();
+      resetForm();
+    }
   };
 
-  const updateSession = () => {
-    if (!editingId || !formData.startTime || !formData.endTime) return;
+  const updateSession = async () => {
+    if (!editingId) return;
 
-    const duration = calculateDuration(formData.startTime, formData.endTime);
-    const updatedSession: SleepSession = {
-      id: editingId,
-      type: formData.type,
-      startTime: formData.startTime,
-      endTime: formData.endTime,
-      duration,
-      quality: formData.quality,
+    const sleepData: CreateSleepRequest = {
+      startAt: timeToISODate(formData.startTime),
+      endAt: timeToISODate(formData.endTime),
       notes: formData.notes
     };
 
-    setSessions(prev => prev.map(s => s.id === editingId ? updatedSession : s));
-    setEditingId(null);
-    resetForm();
+    const result = await bbtoolsService.updateSleep(editingId, sleepData);
+    if (result.success && onRefresh) {
+      onRefresh();
+      setEditingId(null);
+      resetForm();
+    }
   };
 
-  const deleteSession = (id: string) => {
-    setSessions(prev => prev.filter(s => s.id !== id));
+  const deleteSession = async (id: string) => {
+    // optimistic removal first
+    setLocalSessions(prev => prev.filter(s => s.id !== id));
+    const result = await bbtoolsService.deleteSleep(id);
+    if (!result.success) {
+      console.error('Failed to delete sleep log:', result.error);
+      // revert if failed
+      if (onRefresh) onRefresh();
+    } else {
+      if (onRefresh) onRefresh();
+    }
   };
 
-  const editSession = (session: SleepSession) => {
-    setFormData({
-      type: session.type,
-      startTime: session.startTime,
-      endTime: session.endTime,
-      quality: session.quality,
-      notes: session.notes
-    });
-    setEditingId(session.id);
-    setShowForm(true);
+  const editSession = (session: any) => {
+    const originalSleep = sleeps.find(s => s.id.toString() === session.id);
+    if (originalSleep) {
+      setFormData({
+        startTime: ISODateToTime(originalSleep.startAt),
+        endTime: originalSleep.endAt ? ISODateToTime(originalSleep.endAt) : '',
+        notes: originalSleep.notes || ''
+      });
+      setEditingId(session.id);
+      setShowForm(true);
+    }
   };
 
   const resetForm = () => {
     setFormData({
-      type: 'nap',
       startTime: '',
       endTime: '',
-      quality: 'good',
       notes: ''
     });
     setShowForm(false);
@@ -106,13 +153,19 @@ const SleepTracker: React.FC = () => {
   };
 
   const getTodaySleep = () => {
-    const todaySessions = sessions; // Simplified - in real app filter by date
+    const today = new Date().toDateString();
+    const todaySessions = sessions.filter(session => {
+      const sessionDate = new Date(session.rawStartAt).toDateString();
+      return sessionDate === today;
+    });
     return todaySessions.reduce((total, session) => total + session.duration, 0);
   };
 
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
+    if (hours === 0) return `${mins}m`;
+    if (mins === 0) return `${hours}h`;
     return `${hours}h ${mins}m`;
   };
 
@@ -191,20 +244,6 @@ const SleepTracker: React.FC = () => {
               </button>
             ) : (
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Sleep Type
-                  </label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) => setFormData({...formData, type: e.target.value as any})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  >
-                    <option value="nap">Nap</option>
-                    <option value="night">Night Sleep</option>
-                  </select>
-                </div>
-
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -228,22 +267,6 @@ const SleepTracker: React.FC = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
                   </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Sleep Quality
-                  </label>
-                  <select
-                    value={formData.quality}
-                    onChange={(e) => setFormData({...formData, quality: e.target.value as any})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  >
-                    <option value="excellent">Excellent</option>
-                    <option value="good">Good</option>
-                    <option value="fair">Fair</option>
-                    <option value="poor">Poor</option>
-                  </select>
                 </div>
 
                 <div>

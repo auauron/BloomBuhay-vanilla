@@ -41,7 +41,7 @@ const GradientSearchBar = React.memo(({
       <div
         className={`w-full rounded-full p-[2px] transition-all duration-300 ${
           focused
-            ? "bg-white shadow-[0_0_12px_rgba(248,117,170,0.4)]"
+            ? "bg-bloomWhite shadow-[0_0_12px_rgba(248,117,170,0.4)]"
             : "bg-gradient-to-r from-bloomPink to-bloomYellow"
         }`}
       >
@@ -449,7 +449,7 @@ export default function Journal() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <div className="flex flex-col h-screen font-poppins bg-gradient-to-br from-pink-50 via-white to-rose-50">
+      <div className="flex flex-col h-screen font-poppins bg-white">
         <Header onMenuClick={toggleSidebar} />
         <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 

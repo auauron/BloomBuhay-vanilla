@@ -11,7 +11,7 @@ export type PregnancyPayload = {
   weeksPregnant?: number | null;
   lmpDate?: string | null;
   babyName?: string | null;
-  babyGender?: "male" | "female" | "unknown" | null;
+  babyGender?: "male" | "female" | "unknown" | "prefer-not-to-say" | null;
 };
 
 interface PregnancyProps {
@@ -51,7 +51,8 @@ export default function Pregnancy({
     };
   }, []);
 
-  const babyGenders = ["Girl", "Boy", "Unknown"];
+  // Updated baby genders to include "Prefer not to say"
+  const babyGenders = ["Girl", "Boy", "Unknown", "Prefer not to say"];
 
   const handleGenderSelect = (gender: string) => {
     setSelectedGender(gender);
@@ -81,19 +82,18 @@ export default function Pregnancy({
     selectedDate !== "";
 
   const handleNext = async () => {
-    // basic validation: require selectedGender (matches existing logic)
-    if (!selectedGender) return;
+    // Remove the gender requirement - it's now optional
+    // if (!selectedGender) return;
 
-    // normalize gender
-    const genderMap: Record<string, "male" | "female" | "unknown"> = {
+    // normalize gender - handle "Prefer not to say" case
+    const genderMap: Record<string, "male" | "female" | "unknown" | "prefer-not-to-say" | null> = {
       Boy: "male",
       Girl: "female",
       Unknown: "unknown",
+      "Prefer not to say": "prefer-not-to-say",
     };
-    const babyGenderNormalized = (genderMap[selectedGender] ?? "unknown") as
-      | "male"
-      | "female"
-      | "unknown";
+    const babyGenderNormalized = selectedGender ? 
+      (genderMap[selectedGender] ?? null) : null;
 
     // convert weeksPregnant value to number if present
     const weeksPregnantNum =
@@ -245,7 +245,7 @@ export default function Pregnancy({
                 <div className="baby-details mt-4">
                   <label>
                     <h2 className="font-semibold text-bloomBlack">
-                      Baby's Name
+                      Baby's Name (Optional)
                     </h2>
                     <div className="ml-6 mt-3 w-60">
                       <InputField
@@ -262,11 +262,11 @@ export default function Pregnancy({
 
                   <label>
                     <h2 className="mt-4 font-semibold text-bloomBlack">
-                      Baby's Gender
+                      Baby's Gender (Optional)
                     </h2>
                   </label>
 
-                  <div className="relative mb-4 w-[350px] ml-6">
+                  <div className="relative mb-4 w-[350px] ml-6" ref={dropdownRef}>
                     <button
                       onClick={() => setIsOpen(!isOpen)}
                       className="flex items-center justify-between p-4 mt-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors text-left w-full"
@@ -310,7 +310,8 @@ export default function Pregnancy({
                   <div className="ml-4 ">
                     <NextButton
                       onComplete={handleNext}
-                      isReady={selectedGender !== "" && weeksOrLmpFilled}
+                      // Remove gender requirement from isReady condition
+                      isReady={weeksOrLmpFilled}
                     />
                   </div>
                 </div>

@@ -6,10 +6,16 @@ import Sidebar from "../components/ui/Sidebar";
 import { authService } from "../services/authService";
 import { motion } from "framer-motion";
 import PostpartumTip from "../components/ui/postpartumTips";
+import PregnancyTips from "../components/ui/pregnancyTips"; 
+import EarlyChildcareTips from "../components/ui/earlyChildcareTips"; 
+import { Info, BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import messages from '../components/motivations/messages.json';
 
 const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
@@ -28,6 +34,7 @@ export default function Dashboard() {
 
   const [userName, setUserName] = useState<string | null>(null);
   const [weeksPregnant, setWeeksPregnant] = useState<number | null>(null);
+  const [motivationalMessage, setMotivationalMessage] = useState("");
 
   // baby size fruits
   const babySizeFruits: { maxWeek: number; name: string; image: string }[] = [
@@ -128,6 +135,23 @@ export default function Dashboard() {
       default:
         return null;
     }
+  };
+
+  // Function to get random motivational message
+  const getRandomMotivationalMessage = (stage: string | null) => {
+    let messagePool: string[] = [];
+    
+    // Add stage-specific messages if available
+    if (stage && messages[stage as keyof typeof messages]) {
+      messagePool = [...messages[stage as keyof typeof messages]];
+    }
+    
+    // Always include general messages as fallback
+    messagePool = [...messagePool, ...messages.general];
+    
+    // Select random message
+    const randomIndex = Math.floor(Math.random() * messagePool.length);
+    return messagePool[randomIndex];
   };
 
   useEffect(() => {
@@ -233,7 +257,7 @@ export default function Dashboard() {
     };
   }, []);
 
-  // fallback to optimistic cache if DB hasn't provided anything
+    // fallback to optimistic cache if DB hasn't provided anything
   const cachedStage = localStorage.getItem("lastStage"); // cached canonical key
   const cachedWeeks = Number(localStorage.getItem("lastWeeksPregnant") ?? NaN);
   const effectiveWeeks =
@@ -246,6 +270,11 @@ export default function Dashboard() {
   // readable label for UI
   const stageLabel = enumToUi(canonicalStageKey);
 
+  // Update motivational message when stage changes
+  useEffect(() => {
+    setMotivationalMessage(getRandomMotivationalMessage(canonicalStageKey));
+  }, [canonicalStageKey]);
+
   // show skeleton UI while loading
   const isLoading = loadingStage;
 
@@ -257,21 +286,23 @@ export default function Dashboard() {
     setIsSidebarOpen(false);
   };
 
+  const fruit = getFruitByWeek(effectiveWeeks);
+
   const renderMainCard = () => {
     switch (canonicalStageKey) {
       case "pregnant":
         return (
           <>
-            <h3 className="text-2xl font-bold mb-2">You are now</h3>
-            <h1 className="text-4xl font-extrabold leading-tight text-[#474747]">
+            <h3 className="text-xl md:text-2xl font-bold mb-2">You are now</h3>
+            <h1 className="text-3xl md:text-4xl font-extrabold leading-tight text-[#474747]">
               {effectiveWeeks !== null ? `${effectiveWeeks} weeks` : "— weeks"}
             </h1>
-            <p className="text-2xl font-semibold mb-6">pregnant.</p>
-            <p className="text-white/90 text-xl absolute bottom-8 font-rubik font-light">
+            <p className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">pregnant.</p>
+            <p className="text-white/90 text-lg md:text-xl font-rubik font-light mb-20 md:mb-0 md:absolute md:bottom-8">
               Your baby is as big as a{" "}
               <span className="font-bold">{fruit?.name ?? "—"}!</span>
             </p>
-            <div className="absolute bottom-6 right-6 h-40 w-40 bg-white/80 rounded-full border-8 border-white flex items-center justify-center overflow-hidden">
+            <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6 h-24 w-24 md:h-40 md:w-40 bg-white/80 rounded-full border-4 md:border-8 border-white flex items-center justify-center overflow-hidden">
               {fruit && (
                 <img
                   src={fruit.image}
@@ -285,29 +316,29 @@ export default function Dashboard() {
       case "postpartum":
         return (
           <>
-            <h3 className="text-2xl font-bold mb-2">Postpartum stage</h3>
-            <h1 className="text-3xl font-extrabold leading-tight text-[#474747]">
+            <h3 className="text-xl md:text-2xl font-bold mb-2">Postpartum stage</h3>
+            <h1 className="text-2xl md:text-3xl font-extrabold leading-tight text-[#474747]">
               Welcome to your recovery journey
             </h1>
-            <p className="text-lg font-semibold mb-6">
+            <p className="text-base md:text-lg font-semibold mb-4 md:mb-6">
               Tips and self-care for the first weeks
             </p>
 
             {/* replaced the static p tag with the RandomTip component */}
-            <PostpartumTip className="text-white/90 text-xl absolute bottom-8 font-rubik font-light" />
+            <PostpartumTip className="text-white/90 text-lg md:text-xl font-rubik font-light mb-20 md:mb-0 md:absolute md:bottom-8" />
           </>
         );
       case "childcare":
         return (
           <>
-            <h3 className="text-2xl font-bold mb-2">Early Childcare</h3>
-            <h1 className="text-3xl font-extrabold leading-tight text-[#474747]">
+            <h3 className="text-xl md:text-2xl font-bold mb-2">Early Childcare</h3>
+            <h1 className="text-2xl md:text-3xl font-extrabold leading-tight text-[#474747]">
               Track your baby's growth
             </h1>
-            <p className="text-lg font-semibold mb-6">
+            <p className="text-base md:text-lg font-semibold mb-4 md:mb-6">
               Feeding, sleep, and developmental milestones
             </p>
-            <p className="text-white/90 text-xl absolute bottom-8 font-rubik font-light">
+            <p className="text-white/90 text-lg md:text-xl font-rubik font-light mb-20 md:mb-0 md:absolute md:bottom-8">
               Small wins every day — celebrate every milestone.
             </p>
           </>
@@ -315,82 +346,209 @@ export default function Dashboard() {
       default:
         return (
           <>
-            <h3 className="text-2xl font-bold mb-2">Welcome</h3>
-            <h1 className="text-3xl font-extrabold leading-tight text-[#474747]">
-              Let’s get you set up
+            <h3 className="text-xl md:text-2xl font-bold mb-2">Welcome</h3>
+            <h1 className="text-2xl md:text-3xl font-extrabold leading-tight text-[#474747]">
+              Let's get you set up
             </h1>
-            <p className="text-lg font-semibold mb-6">
+            <p className="text-base md:text-lg font-semibold mb-4 md:mb-6">
               Complete your setup to get personalized tips
             </p>
-            <p className="text-white/90 text-xl absolute bottom-8 font-rubik font-light">
+            <p className="text-white/90 text-lg md:text-xl font-rubik font-light mb-20 md:mb-0 md:absolute md:bottom-8">
               Choose your stage to start getting tailored content.
             </p>
           </>
         );
     }
   };
-  const fruit = getFruitByWeek(effectiveWeeks);
+
+// Calculate progress percentage based on stage and weeks
+const getProgressPercentage = (): string => {
+  if (!canonicalStageKey || !effectiveWeeks) return "0%";
+  
+  switch (canonicalStageKey) {
+    case "pregnant":
+      // Pregnancy is 40 weeks total
+      const pregnancyProgress = Math.min(Math.round((effectiveWeeks / 40) * 100), 100);
+      return `${pregnancyProgress}%`;
+    
+    case "postpartum":
+      // Postpartum first 12 weeks are the main recovery period
+      const postpartumWeeks = effectiveWeeks || 0;
+      const postpartumProgress = Math.min(Math.round((postpartumWeeks / 12) * 100), 100);
+      return `${postpartumProgress}%`;
+    
+    case "childcare":
+      // Early childcare first 52 weeks (1 year)
+      const childcareWeeks = effectiveWeeks || 0;
+      const childcareProgress = Math.min(Math.round((childcareWeeks / 52) * 100), 100);
+      return `${childcareProgress}%`;
+    
+    default:
+      return "0%";
+  }
+};
+
+// Calculate remaining percentage
+const getRemainingPercentage = (): string => {
+  const progress = getProgressPercentage();
+  const progressNum = parseInt(progress) || 0;
+  return `${100 - progressNum}%`;
+};
+
+// Calculate remaining time based on stage
+const getRemainingTime = (): string => {
+  if (!canonicalStageKey || !effectiveWeeks) return "Not set";
+  
+  switch (canonicalStageKey) {
+    case "pregnant":
+      const weeksLeft = 40 - (effectiveWeeks || 0);
+      const daysLeft = weeksLeft * 7;
+      return weeksLeft > 0 ? `${weeksLeft} weeks, ${daysLeft % 7} days` : "Any day now!";
+    
+    case "postpartum":
+      const postpartumWeeksLeft = 12 - (effectiveWeeks || 0);
+      return postpartumWeeksLeft > 0 ? `${postpartumWeeksLeft} weeks` : "Recovery milestone reached!";
+    
+    case "childcare":
+      const childcareWeeksLeft = 52 - (effectiveWeeks || 0);
+      return childcareWeeksLeft > 0 ? `${childcareWeeksLeft} weeks` : "First year complete!";
+    
+    default:
+      return "Complete your profile";
+  }
+};
+
+    // Calculate due date or milestone date
+    const getDueDate = (): string => {
+      if (!canonicalStageKey) return "Complete your profile";
+      
+      // If we have a start date from the profile, calculate from there
+      // For now, using example calculation based on current date
+      const today = new Date();
+      
+      switch (canonicalStageKey) {
+        case "pregnant":
+          if (effectiveWeeks) {
+            const dueDate = new Date(today);
+            dueDate.setDate(today.getDate() + ((40 - effectiveWeeks) * 7));
+            return dueDate.toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            });
+          }
+          return "Not set";
+        
+        case "postpartum":
+          if (effectiveWeeks) {
+            const recoveryEndDate = new Date(today);
+            recoveryEndDate.setDate(today.getDate() + ((12 - effectiveWeeks) * 7));
+            return `Recovery: ${recoveryEndDate.toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric' 
+            })}`;
+          }
+          return "Postpartum journey";
+        
+        case "childcare":
+          if (effectiveWeeks) {
+            const firstYearDate = new Date(today);
+            firstYearDate.setDate(today.getDate() + ((52 - effectiveWeeks) * 7));
+            return `First year: ${firstYearDate.toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric' 
+            })}`;
+          }
+          return "Baby's first year";
+        
+        default:
+          return "Complete your profile";
+      }
+    };
+
+  const getProgressWidthClass = (): string => {
+  if (isLoading) return "w-0";
+  
+  const percentage = parseInt(getProgressPercentage());
+      if (percentage >= 95) return "w-full";
+      if (percentage >= 90) return "w-11/12";
+      if (percentage >= 85) return "w-10/12";
+      if (percentage >= 80) return "w-9/12";
+      if (percentage >= 75) return "w-8/12";
+      if (percentage >= 70) return "w-7/12";
+      if (percentage >= 60) return "w-6/12";
+      if (percentage >= 50) return "w-5/12";
+      if (percentage >= 40) return "w-4/12";
+      if (percentage >= 30) return "w-3/12";
+      if (percentage >= 20) return "w-2/12";
+      if (percentage >= 10) return "w-1/12";
+      return "w-0";
+    };
+
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <div className="min-h-screen bg-pink-50 flex flex-col font-poppins">
+      <div className="min-h-screen bg-bloomWhite flex flex-col font-poppins overflow-y-auto autoscroll">
         <Header onMenuClick={toggleSidebar} />
         <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
         {/* Greeting */}
-        <div className="flex flex-col items-center text-center mt-8 px-4">
+        <div className="flex flex-col items-center text-center mt-8 px-3">
           <h2 className="text-4xl font-bold text-bloomPink">
-            Hello,{" "}
-            {isLoading ? "Mama!" : userName ? `Mama ${userName}` : "Mama!"}
-            {stageLabel && (
-              <span className="text-lg font-medium text-[#474747] ml-3">
-                — {stageLabel}
-              </span>
-            )}
+            Hello, {isLoading ? "Mama!" : userName ? `Mama ${userName.charAt(0).toUpperCase() + userName.slice(1)}!` : "Mama!"}
           </h2>
-          <p className="text-[#474747] font-rubik mt-2 mb-[-5px] font-light text-lg">
-            “One day at a time, one heartbeat at a time — you are growing a
-            miracle.”
+          
+          {stageLabel && (
+            <div className="mt-2 md:mt-3">
+              <span className="text-lg md:text-xl font-rubik font-normal text-bloomBlack">
+                Bloom stage: <span className="text-bloomPink"> {stageLabel} </span>
+              </span>
+            </div>
+          )}
+          
+          <p className="text-bloomBlack text-center font-rubik mt-3 md:mt-4 mb-[-5px] font-light text-base md:text-lg max-w-2xl">
+            "{motivationalMessage}"
           </p>
         </div>
 
         {/* Dashboard Layout */}
-
-        <div className="grid grid-cols-1 md:grid-cols-[550px_1fr] gap-6 p-8 max-w-6xl mx-auto w-full">
+        <div className="grid grid-cols-1 xl:grid-cols-[minmax(400px,550px)_1fr] gap-4 md:gap-6 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
           {/* Left Info Card */}
-          <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-8 rounded-[20px] shadow-lg relative">
+          <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-6 md:p-8 rounded-[20px] shadow-lg relative min-h-[300px] md:min-h-[350px]">
             {renderMainCard()}
           </div>
 
-          {/* Right Column */}
-          <div className="flex flex-col gap-6">
-            {/* Progress */}
-            <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-6 rounded-[20px] shadow-md font-semibold">
-              <h3 className="text-2xl mb-2 text-white font-bold">Progress</h3>
-              <div className="w-full bg-white/60 rounded-full h-5 mt-3 overflow-hidden">
-                <div
-                  className={`bg-[#DE085F] h-full ${
-                    isLoading ? "w-0" : "w-1/3"
-                  } rounded-full`}
-                ></div>
-              </div>
-              <p className="mt-2 text-lg text-center text-[#DE085F] font-bold">
-                17% complete
-              </p>
-              <p className="mt-2 text-lg text-[#474747] font-rubik font-light">
-                <span className="font-bold">Remaining:</span> 83% (33 weeks, 2
-                days)
-              </p>
-              <p className="mt-2 text-lg text-[#474747] font-rubik font-light">
-                <span className="font-bold">Due Date:</span> January 15, 2024
-              </p>
+        {/* Right Column */}
+        <div className="flex flex-col gap-4 md:gap-6">
+          {/* Progress */}
+          <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-4 md:p-6 rounded-[20px] shadow-md font-semibold">
+            <h3 className="text-xl md:text-2xl mb-2 text-white font-bold">Progress</h3>
+            <div className="w-full bg-white/60 rounded-full h-4 md:h-5 mt-2 md:mt-3 overflow-hidden">
+            <div
+              className={`bg-[#DE085F] h-full rounded-full transition-all duration-500 ${getProgressWidthClass()}`}
+            ></div>
+              <div
+                className={`bg-[#DE085F] h-full ${
+                  isLoading ? "w-0" : getProgressPercentage()
+                } rounded-full transition-all duration-500`}
+              ></div>
             </div>
+            <p className="mt-2 text-base md:text-lg text-center text-[#DE085F] font-bold">
+              {isLoading ? "Loading..." : `${getProgressPercentage()} complete`}
+            </p>
+            <p className="mt-2 text-base md:text-lg text-bloomBlack font-rubik font-light">
+              <span className="font-bold">Remaining:</span> {isLoading ? "..." : `${getRemainingPercentage()} (${getRemainingTime()})`}
+            </p>
+            <p className="mt-2 text-base md:text-lg text-bloomBlack font-rubik font-light">
+              <span className="font-bold">Due Date:</span> {isLoading ? "..." : getDueDate()}
+            </p>
+          </div>
 
             {/* To-do + Tips side by side */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] p-6 rounded-[20px] shadow-md">
-                <h3 className="text-2xl mb-3 text-white font-bold">To do</h3>
-                <ul className="space-y-2 text-sm text-[#474747]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow p-4 md:p-6 rounded-[20px] shadow-md">
+                <h3 className="text-xl md:text-2xl mb-2 md:mb-3 text-white font-bold">To do</h3>
+                <ul className="space-y-2 text-xs md:text-sm text-[#474747]">
                   <li className="font-rubik">
                     <input type="checkbox" className="accent-[#DE085F] mr-2" />
                     Schedule checkup
@@ -401,13 +559,39 @@ export default function Dashboard() {
                   </li>
                 </ul>
               </div>
-
-              <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-6 rounded-[20px] shadow-md">
-                <h3 className="text-2xl mb-3 text-white font-bold">Tips</h3>
-                <p className="text-sm text-[#474747] font-rubik">
-                  Drink plenty of water 💧 and take short naps when you feel
-                  tired.
-                </p>
+              {/* STAGE-SPECIFIC TIPS SECTION WITH LEARN MORE ICON */}
+              <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-pink-800 p-4 md:p-6 rounded-[20px] shadow-md relative">
+                {/* Learn More Icon with Square Background */}
+                <button
+                  onClick={() => {
+                    let stage = "all";
+                    if (canonicalStageKey === "pregnant") stage = "pregnant";
+                    if (canonicalStageKey === "postpartum") stage = "postpartum"; 
+                    if (canonicalStageKey === "childcare") stage = "earlyChildcare";
+                    
+                    navigate(`/bloomguide?stage=${stage}`);
+                  }}
+                  className="absolute top-3 right-3 md:top-4 md:right-4 bg-white/20 hover:bg-white/30 p-1.5 md:p-2 rounded-lg transition-all duration-200 group"
+                  title="Learn more about this stage"
+                >
+                  <Info className="w-4 h-4 md:w-5 md:h-5 text-white group-hover:scale-110 transition-transform duration-200" />
+                </button>
+                
+                <h3 className="text-xl md:text-2xl mb-2 md:mb-3 text-white font-bold pr-10 md:pr-12">Tips</h3>
+                {canonicalStageKey === "pregnant" && (
+                  <PregnancyTips className="text-xs md:text-sm text-bloomBlack font-rubik" />
+                )}
+                {canonicalStageKey === "postpartum" && (
+                  <PostpartumTip className="text-xs md:text-sm text-bloomBlack font-rubik" />
+                )}
+                {canonicalStageKey === "childcare" && (
+                  <EarlyChildcareTips className="text-xs md:text-sm text-bloomBlack font-rubik" />
+                )}
+                {!canonicalStageKey && (
+                  <p className="text-xs md:text-sm text-bloomBlack font-rubik">
+                    Complete your profile to get personalized tips for your stage.
+                  </p>
+                )}
               </div>
             </div>
           </div>

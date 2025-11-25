@@ -6,24 +6,60 @@ import VaccinationTracker from "../tools/postpartum/VaccinationTracker";
 import GrowthChart from "../tools/postpartum/GrowthChart";
 import PediatricVisitNotes from "../tools/postpartum/PediatricVisitNotes";
 import { Utensils, Moon, Baby, Syringe, ChartBar, Stethoscope } from "lucide-react";
+import { PostpartumToolsProps } from "../../services/BBToolsService";
 
-const PostpartumTools: React.FC = () => {
+const PostpartumTools: React.FC<PostpartumToolsProps> = ({ 
+  feedings = [], 
+  sleeps = [], 
+  growths = [], 
+  onRefreshData 
+}) => {
   const [activeTool, setActiveTool] = useState("feeding");
 
   const tools = [
-    { id: "feeding", label: "Feeding Log", icon: <Utensils className="w-5 h-5" />, component: <FeedingLog /> },
-    { id: "sleep", label: "Sleep Tracker", icon: <Moon className="w-5 h-5" />, component: <SleepTracker /> },
-    { id: "diaper", label: "Diaper Tracker", icon: <Baby className="w-5 h-5" />, component: <DiaperTracker /> },
-    { id: "vaccination", label: "Vaccination Tracker", icon: <Syringe className="w-5 h-5" />, component: <VaccinationTracker /> },
-    { id: "growth", label: "Growth Chart", icon: <ChartBar className="w-5 h-5" />, component: <GrowthChart /> },
-    { id: "pediatric", label: "Doctor Visits", icon: <Stethoscope className="w-5 h-5" />, component: <PediatricVisitNotes /> },
+    { 
+      id: "feeding", 
+      label: "Feeding Log", 
+      icon: <Utensils className="w-5 h-5" />, 
+      component: <FeedingLog feedings={feedings} onRefresh={onRefreshData} /> 
+    },
+    { 
+      id: "sleep", 
+      label: "Sleep Tracker", 
+      icon: <Moon className="w-5 h-5" />, 
+      component: <SleepTracker sleeps={sleeps} onRefresh={onRefreshData} /> 
+    },
+    { 
+      id: "diaper", 
+      label: "Diaper Tracker", 
+      icon: <Baby className="w-5 h-5" />, 
+      component: <DiaperTracker /> 
+    },
+    { 
+      id: "vaccination", 
+      label: "Vaccination Tracker", 
+      icon: <Syringe className="w-5 h-5" />, 
+      component: <VaccinationTracker /> 
+    },
+    { 
+      id: "growth", 
+      label: "Growth Chart", 
+      icon: <ChartBar className="w-5 h-5" />, 
+      component: <GrowthChart growths={growths} onRefresh={onRefreshData} /> 
+    },
+    { 
+      id: "pediatric", 
+      label: "Doctor Visits", 
+      icon: <Stethoscope className="w-5 h-5" />, 
+      component: <PediatricVisitNotes /> 
+    },
   ];
 
   return (
     <div>
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-bloomPink/90 mb-2">Postpartum & Newborn Tools</h2>
-        <p className="text-bloomBlack font-rubik font-light mb-0">Guiding you and your baby through life’s tender beginnings.</p>
+        <p className="text-bloomBlack font-rubik font-light mb-0">Guiding you and your baby through life's tender beginnings.</p>
       </div>
 
       {/* Tool Navigation */}
