@@ -17,7 +17,7 @@ class AIService {
 
   async askBloomGuide(request: AIRequest): Promise<AIResponse> {
     try {
-      console.log('🔮 Sending AI request to:', `${this.baseURL}/bloomguide/ask`);
+      console.log('Sending AI request to:', `${this.baseURL}/bloomguide/ask`);
       console.log('Question:', request.question);
       
       const response = await fetch(`${this.baseURL}/bloomguide/ask`, {

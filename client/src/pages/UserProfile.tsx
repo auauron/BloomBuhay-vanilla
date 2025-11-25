@@ -6,6 +6,7 @@ import Sidebar from "../components/ui/Sidebar";
 import InputField from "../components/ui/inputField";
 import { Edit, LogOut } from "lucide-react";
 import { userService } from "../services/userService";
+import { babyService } from "../services/babyService";
 import { authService } from "../services/authService";
 
 export default function UserProfile() {
@@ -20,6 +21,27 @@ export default function UserProfile() {
   const [deletePassword, setDeletePassword] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [babyData, setBabyData] = useState<{
+    motherhoodStage: string;
+    babyName: string;
+    gender: string;
+    pregnancyWeeks?: number | null;
+    lmpDate?: string | null;
+  } | null>(null);
+
+  const [babyLoading, setBabyLoading] = useState(true);
+  const [babyError, setBabyError] = useState<string | null>(null);
+  const [showBabyEditModal, setShowBabyEditModal] = useState(false);
+
+  // edit motherhood stage
+  const [showPregnancyModal, setShowPregnancyModal] = useState(false);
+  const [pregnancyWeeks, setPregnancyWeeks] = useState<string>("");
+  const [lmpDate, setLmpDate] = useState<string>("");
+  const [pregnancyInputType, setPregnancyInputType] = useState("weeks");
+
+  const handleEditBabyClick = () => {
+    setShowBabyEditModal(true);
+  };
 
   // User profile data
   const [userData, setUserData] = useState<{
@@ -63,7 +85,7 @@ export default function UserProfile() {
         setProfilePic(result.user.profilePic || "");
       } else {
         setError(result.error || "Failed to load profile");
-        // If not authenticated, try to get from localStorage
+        // Fallback to localStorage if needed
         const storedUser = authService.getUser();
         if (storedUser) {
           setUserData({
@@ -81,6 +103,23 @@ export default function UserProfile() {
     };
 
     fetchProfile();
+  }, []);
+
+  // fetch baby data from backend
+  useEffect(() => {
+    const fetchBabyDetails = async () => {
+      setBabyLoading(true);
+      setBabyError(null);
+
+      const result = await babyService.getBabyDetails();
+      if (result.success && result.baby) {
+        setBabyData(result.baby);
+      } else {
+        setBabyError(result.error || "Failed to load baby details");
+      }
+      setBabyLoading(false);
+    };
+    fetchBabyDetails();
   }, []);
 
   const toggleSidebar = () => {
@@ -208,96 +247,404 @@ export default function UserProfile() {
     setDeleting(false);
   };
 
+  const handleSaveBaby = async () => {
+    if (!babyData) return;
+    setSaving(true);
+    setError(null);
+
+    const result = await babyService.updateBabyDetails(babyData);
+
+    if (result.success) {
+      setShowBabyEditModal(false);
+    } else {
+      setError(result.error || "Failed to update baby details");
+    }
+
+    setSaving(false);
+  };
+
+  const handleBabyCancel = () => {
+    setShowBabyEditModal(false);
+  };
+
   return (
     <div className="min-h-screen bg-pink-50 flex flex-col font-poppins">
       <Header onMenuClick={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
-      <div className="container mx-auto p-8 items-center justify-center">
-        <div className="flex flex-col gap-3 max-w-lg mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold text-bloomBlack">User Profile</h1>
-            <button
-              onClick={handleEditClick}
-              className="flex items-center gap-2 bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-2xl hover:from-[#F9649C] hover:to-[#F3D087] transition-all duration-300 shadow-md"
-            >
-              <Edit size={18} />
-              <span>Edit</span>
-            </button>
-          </div>
+      <div className="grid grid-cols-2 gap-0">
+        <div className="container mx-auto p-8 items-center justify-center">
+          <div className="flex flex-col gap-3 max-w-lg mx-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h1 className="text-3xl font-bold text-bloomBlack">
+                User Profile
+              </h1>
+              <button
+                onClick={handleEditClick}
+                className="flex items-center gap-2 bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-2xl hover:from-[#F9649C] hover:to-[#F3D087] transition-all duration-300 shadow-md"
+              >
+                <Edit size={18} />
+                <span>Edit</span>
+              </button>
+            </div>
 
-          {/* Profile Display */}
-          {loading ? (
-            <div className="bg-white rounded-2xl p-6 shadow-md text-center">
-              <p className="text-gray-600">Loading profile...</p>
-            </div>
-          ) : error && !userData ? (
-            <div className="bg-white rounded-2xl p-6 shadow-md text-center">
-              <p className="text-red-600">{error}</p>
-            </div>
-          ) : userData ? (
-            <div className="bg-white rounded-2xl p-6 shadow-md space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="h-16 w-16 rounded-full bg-pink-100 overflow-hidden flex items-center justify-center">
-                  {userData.profilePic ? (
-                    <img
-                      src={userData.profilePic}
-                      alt="Profile"
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-pink-600 font-bold text-xl">
-                      {userData.fullName?.charAt(0).toUpperCase() +
-                        userData.fullName?.charAt(
-                          userData.fullName?.length - 1
-                        ) || "U"}
-                    </span>
-                  )}
+            {/* Profile Display */}
+            {loading ? (
+              <div className="bg-white rounded-2xl p-6 shadow-md text-center">
+                <p className="text-gray-600">Loading profile...</p>
+              </div>
+            ) : error && !userData ? (
+              <div className="bg-white rounded-2xl p-6 shadow-md text-center">
+                <p className="text-red-600">{error}</p>
+              </div>
+            ) : userData ? (
+              <div className="bg-white rounded-2xl p-6 shadow-md space-y-4">
+                <div className="flex items-center gap-4">
+                  <div className="h-16 w-16 rounded-full bg-pink-100 overflow-hidden flex items-center justify-center">
+                    {userData.profilePic ? (
+                      <img
+                        src={userData.profilePic}
+                        alt="Profile"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-pink-600 font-bold text-xl">
+                        {userData.fullName?.charAt(0).toUpperCase() +
+                          userData.fullName?.charAt(
+                            userData.fullName?.length - 1
+                          ) || "U"}
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-gray-800 text-xl font-semibold">
+                      {userData.fullName}
+                    </p>
+                    <p className="text-gray-500 text-sm">{userData.email}</p>
+                  </div>
                 </div>
                 <div>
-                  <p className="text-gray-800 text-xl font-semibold">
-                    {userData.fullName}
-                  </p>
-                  <p className="text-gray-500 text-sm">{userData.email}</p>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Name
+                  </label>
+                  <p className="text-gray-800 text-lg">{userData.fullName}</p>
+                </div>
+                <div className="border-t border-gray-200 pt-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Email
+                  </label>
+                  <p className="text-gray-800 text-lg">{userData.email}</p>
+                </div>
+                <div className="border-t border-gray-200 pt-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Password
+                  </label>
+                  <p className="text-gray-600 text-lg">••••••••</p>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Name
-                </label>
-                <p className="text-gray-800 text-lg">{userData.fullName}</p>
-              </div>
-              <div className="border-t border-gray-200 pt-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Email
-                </label>
-                <p className="text-gray-800 text-lg">{userData.email}</p>
-              </div>
-              <div className="border-t border-gray-200 pt-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Password
-                </label>
-                <p className="text-gray-600 text-lg">••••••••</p>
-              </div>
-            </div>
-          ) : null}
+            ) : null}
+          </div>
+          <div className="mt-6 flex justify-center gap-4">
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center justify-center gap-2 text-gray-700 hover:text-bloomPink px-6 py-2 rounded-lg transition-all duration-300"
+            >
+              <LogOut size={18} />
+              <span>Log out</span>
+            </button>
+            <button
+              onClick={handleDeleteAccount}
+              className="text-red-500 hover:bg-red-50 px-6 py-2 rounded-lg transition-all duration-300"
+            >
+              Delete Account
+            </button>
+          </div>
         </div>
-        <div className="mt-6 flex justify-center gap-4">
-          <button
-            onClick={handleLogout}
-            className="inline-flex items-center justify-center gap-2 text-gray-700 hover:text-bloomPink px-6 py-2 rounded-lg transition-all duration-300"
-          >
-            <LogOut size={18} />
-            <span>Log out</span>
-          </button>
-          <button
-            onClick={handleDeleteAccount}
-            className="text-red-500 hover:bg-red-50 px-6 py-2 rounded-lg transition-all duration-300"
-          >
-            Delete Account
-          </button>
+
+        {/* Baby profile column */}
+        <div className="container mx-auto p-8 items-center justify-center">
+          <div className="flex flex-col gap-3 max-w-lg mx-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h1 className="text-3xl font-bold text-bloomBlack">
+                BB's Profile
+              </h1>
+              <button
+                onClick={handleEditBabyClick}
+                className="flex items-center gap-2 bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-2xl hover:from-[#F9649C] hover:to-[#F3D087] transition-all duration-300 shadow-md"
+              >
+                <Edit size={18} />
+                <span>Edit</span>
+              </button>
+            </div>
+
+            {/* Baby profile */}
+            {babyLoading ? (
+              <div className="bg-white rounded-2xl p-6 shadow-md text-center">
+                <p className="text-gray-600">Loading baby details...</p>
+              </div>
+            ) : babyError ? (
+              <div className="bg-white rounded-2xl p-6 shadow-md text-center">
+                <p className="text-red-600">{babyError}</p>
+              </div>
+            ) : babyData ? (
+              <div className="bg-white rounded-2xl p-6 shadow-md space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Motherhood Stage
+                  </label>
+                  <p className="text-gray-800 text-lg">
+                    {babyData.motherhoodStage}
+                  </p>
+                </div>
+                <div className="border-t border-gray-200 pt-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Baby's Name
+                  </label>
+                  <p className="text-gray-800 text-lg">{babyData.babyName}</p>
+                </div>
+                <div className="border-t border-gray-200 pt-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Gender
+                  </label>
+                  <p className="text-gray-800 text-lg">{babyData.gender}</p>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl p-6 shadow-md text-center">
+                <p className="text-gray-500">No baby details found.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Edit baby profile modal */}
+      {showBabyEditModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-5- flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-lg w-full mx-auto shadow-xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">
+              Edit BB's Profile
+            </h3>
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col">
+                <label className="text-gray-700 font-medium mb-1">
+                  Motherhood Stage
+                </label>
+                <select
+                  className="border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-bloomPink"
+                  value={babyData?.motherhoodStage || ""}
+                  onChange={(e) => {
+                    const stage = e.target.value;
+
+                    setBabyData((prev) =>
+                      prev ? { ...prev, motherhoodStage: stage } : prev
+                    );
+
+                    // persist stage for dashboard
+                    localStorage.setItem("lastStage", stage);
+
+                    if (stage === "pregnant") {
+                      // Pre-fill modal with existing pregnancy info if available
+                      setPregnancyWeeks(
+                        babyData?.pregnancyWeeks?.toString() ?? ""
+                      );
+                      setLmpDate(babyData?.lmpDate ?? "");
+                      setPregnancyInputType(babyData?.lmpDate ? "lmp" : "weeks");
+                      setShowPregnancyModal(true);
+                    } else {
+                      // clear data if user chooses postpartum or childcare
+                      setPregnancyWeeks("");
+                      setLmpDate("");
+                      setShowPregnancyModal(false);
+                      localStorage.removeItem("lastWeeksPregnant");
+                    }
+                  }}
+                >
+                  <option value="">Select Stage</option>
+                  <option value="pregnant">Pregnant</option>
+                  <option value="postpartum">Postpartum</option>
+                  <option value="childcare">Childcare</option>
+                </select>
+              </div>
+
+              <InputField
+                label="Baby Name"
+                type="text"
+                value={babyData?.babyName || ""}
+                placeholder="Enter your baby's name"
+                onChange={(value) =>
+                  setBabyData((prev) =>
+                    prev ? { ...prev, babyName: value } : prev
+                  )
+                }
+              />
+
+              <div className="flex flex-col">
+                <label className="text-gray-700 font-medium mb-1">Gender</label>
+                <select
+                  className="border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-bloomPink"
+                  value={babyData?.gender || ""}
+                  onChange={(e) =>
+                    setBabyData((prev) =>
+                      prev ? { ...prev, gender: e.target.value } : prev
+                    )
+                  }
+                >
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="unknown">Unknown</option>
+                </select>
+              </div>
+
+              <div className="flex justify-center gap-8 mt-4">
+                <button
+                  onClick={handleBabyCancel}
+                  disabled={saving}
+                  className="bg-white text-bloomPink border border-bloomPink px-4 py-2 rounded-2xl hover:bg-bloomPink hover:text-white transition-all duration-300 shadow-md w-40 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveBaby}
+                  disabled={saving}
+                  className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-2xl hover:from-[#F9649C] hover:to-[#F3D087] transition-all duration-300 shadow-md w-40 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {saving ? "Saving..." : "Save"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showPregnancyModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-lg w-full mx-auto shadow-xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">
+              Pregnancy Details
+            </h3>
+
+            <div className="flex flex-col gap-4">
+              {/* Toggle: How do you want to enter pregnancy info? */}
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-gray-700">
+                  How many weeks pregnant are you?
+                </label>
+
+                <div className="flex gap-6">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="pregnancyInputType"
+                      value="weeks"
+                      checked={pregnancyInputType === "weeks"}
+                      onChange={() => setPregnancyInputType("weeks")}
+                      className="accent-bloomPink"
+                    />
+                    <span>Weeks Pregnant</span>
+                  </label>
+
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="pregnancyInputType"
+                      value="lmp"
+                      checked={pregnancyInputType === "lmp"}
+                      onChange={() => setPregnancyInputType("lmp")}
+                      className="accent-bloomPink"
+                    />
+                    <span>I don't know (Enter LMP)</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Conditionally show Weeks Pregnant */}
+              {pregnancyInputType === "weeks" && (
+                <InputField
+                  label="Weeks Pregnant"
+                  type="number"
+                  min={0}
+                  value={pregnancyWeeks}
+                  onChange={setPregnancyWeeks}
+                  placeholder="Enter how many weeks pregnant"
+                />
+              )}
+
+              {/* Conditionally show LMP */}
+              {pregnancyInputType === "lmp" && (
+                <InputField
+                  label="Last Menstrual Period"
+                  type="date"
+                  value={lmpDate}
+                  onChange={setLmpDate}
+                  placeholder="Enter your last menstrual period"
+                />
+              )}
+
+              <div className="flex justify-center gap-8 mt-4">
+                <button
+                  onClick={() => setShowPregnancyModal(false)}
+                  className="bg-white text-bloomPink border border-bloomPink px-4 py-2 rounded-2xl hover:bg-bloomPink hover:text-white w-40"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={() => {
+                    setBabyData((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+
+                            pregnancyWeeks:
+                              pregnancyInputType === "weeks"
+                                ? pregnancyWeeks === ""
+                                  ? null
+                                  : Number(pregnancyWeeks)
+                                : null,
+
+                            lmpDate:
+                              pregnancyInputType === "lmp"
+                                ? lmpDate || null
+                                : null,
+
+                            pregnancyInputType: pregnancyInputType,
+                          }
+                        : prev
+                    );
+
+                    // Save last selected input type
+                    localStorage.setItem("lastStage", "pregnant");
+                    localStorage.setItem(
+                      "pregnancyInputType",
+                      pregnancyInputType
+                    );
+
+                    if (pregnancyInputType === "weeks") {
+                      localStorage.setItem(
+                        "lastWeeksPregnant",
+                        pregnancyWeeks.toString()
+                      );
+                    }
+
+                    setShowPregnancyModal(false);
+                  }}
+                  className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-2xl hover:from-[#F9649C] hover:to-[#F3D087] w-40"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Edit Profile Modal */}
       {showEditModal && (
@@ -392,7 +739,6 @@ export default function UserProfile() {
           </div>
         </div>
       )}
-
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">

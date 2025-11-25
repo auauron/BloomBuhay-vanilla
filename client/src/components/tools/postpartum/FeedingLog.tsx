@@ -1,91 +1,175 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, Clock, Droplets, Utensils, Trash2, Edit3, Save, X } from "lucide-react";
+import { 
+  bbtoolsService, 
+  FeedingLogProps, 
+  FeedingSessionForm, 
+  CreateFeedingRequest,
+  FeedingLog as FeedingLogType,
+  LocalFeedingSession 
+} from "../../../services/BBToolsService";
 
-interface FeedingSession {
-  id: string;
-  type: 'breast' | 'bottle' | 'pump';
-  side?: 'left' | 'right' | 'both';
-  amount?: number;
-  unit?: 'ml' | 'oz';
-  startTime: string;
-  endTime: string;
-  duration: number;
-  notes: string;
-}
-
-const FeedingLog: React.FC = () => {
-  const [sessions, setSessions] = useState<FeedingSession[]>([]);
+const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({
-    type: 'breast' as 'breast' | 'bottle' | 'pump',
-    side: 'left' as 'left' | 'right' | 'both',
-    amount: '',
-    unit: 'ml' as 'ml' | 'oz',
-    startTime: '',
-    endTime: '',
+  const [formData, setFormData] = useState<FeedingSessionForm>({
+    type: 'breast',
+    side: 'left',
+    amount: undefined,
+    duration: undefined,
     notes: ''
   });
+  const [localSessions, setLocalSessions] = useState<LocalFeedingSession[]>([]);
 
-  const calculateDuration = (start: string, end: string) => {
-    const startDate = new Date(`2000-01-01T${start}`);
-    const endDate = new Date(`2000-01-01T${end}`);
-    return Math.round((endDate.getTime() - startDate.getTime()) / 60000); // minutes
-  };
+  useEffect(() => {
+    setLocalSessions(feedings.map(convertToLocalSession));
+  }, [feedings]);
 
-  const addSession = () => {
-    if (!formData.startTime || !formData.endTime) return;
-
-    const duration = calculateDuration(formData.startTime, formData.endTime);
-    const session: FeedingSession = {
-      id: Date.now().toString(),
-      type: formData.type,
-      side: formData.type === 'breast' ? formData.side : undefined,
-      amount: formData.amount ? parseInt(formData.amount) : undefined,
-      unit: formData.type !== 'breast' ? formData.unit : undefined,
-      startTime: formData.startTime,
-      endTime: formData.endTime,
+  // Convert database FeedingLog to local display format
+  const convertToLocalSession = (feeding: FeedingLogType): LocalFeedingSession => {
+    const timestamp = feeding.occurredAt || feeding.createdAt || new Date().toISOString();
+    const date = new Date(timestamp);
+    let duration = 0;
+    let side: string | undefined;
+    let cleanNotes = feeding.notes || '';
+    
+    // Extract duration using string methods
+    const durationPrefix = "(Duration: ";
+    const durationSuffix = " minutes)";
+    const durationStartIndex = cleanNotes.indexOf(durationPrefix);
+    
+    if (durationStartIndex !== -1) {
+      const durationEndIndex = cleanNotes.indexOf(durationSuffix, durationStartIndex);
+      if (durationEndIndex !== -1) {
+        const durationText = cleanNotes.substring(
+          durationStartIndex + durationPrefix.length,
+          durationEndIndex
+        );
+        duration = parseInt(durationText) || 0;
+        
+        // Remove duration from notes
+        const beforeDuration = cleanNotes.substring(0, durationStartIndex).trim();
+        const afterDuration = cleanNotes.substring(durationEndIndex + durationSuffix.length).trim();
+        cleanNotes = [beforeDuration, afterDuration].filter(Boolean).join(' ').trim();
+      }
+    }
+    
+    // Extract side information for breastfeeding
+    if (feeding.method === 'breast') {
+      const sidePrefix = "Side: ";
+      const sideStartIndex = cleanNotes.indexOf(sidePrefix);
+      
+      if (sideStartIndex !== -1) {
+        // Find where the side information ends (comma or end of string)
+        const afterSide = cleanNotes.substring(sideStartIndex + sidePrefix.length);
+        const commaIndex = afterSide.indexOf(',');
+        const sideValue = commaIndex !== -1 
+          ? afterSide.substring(0, commaIndex).trim()
+          : afterSide.trim();
+        
+        side = sideValue.toLowerCase();
+        
+        // Remove side information from notes
+        const beforeSide = cleanNotes.substring(0, sideStartIndex).trim();
+        let afterSideInfo = commaIndex !== -1 
+          ? afterSide.substring(commaIndex + 1).trim()
+          : '';
+        
+        cleanNotes = [beforeSide, afterSideInfo].filter(Boolean).join(' ').trim();
+      }
+    }
+    
+    const endTime = duration > 0 
+      ? new Date(date.getTime() + duration * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      : 'Unknown';
+      
+    return {
+      id: feeding.id.toString(),
+      type: (feeding.method as 'breast' | 'formula' | 'solid') || 'breast',
+      amount: feeding.amount,
+      startTime: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      endTime,
       duration,
-      notes: formData.notes
+      notes: cleanNotes,
+      rawTimestamp: timestamp,
+      side // Add the extracted side
     };
-
-    setSessions(prev => [session, ...prev]);
-    resetForm();
   };
 
-  const updateSession = () => {
-    if (!editingId || !formData.startTime || !formData.endTime) return;
+  // Replace sessions usage with localSessions for optimistic updates
+  const sessions: LocalFeedingSession[] = localSessions;
 
-    const duration = calculateDuration(formData.startTime, formData.endTime);
-    const updatedSession: FeedingSession = {
-      id: editingId,
-      type: formData.type,
-      side: formData.type === 'breast' ? formData.side : undefined,
-      amount: formData.amount ? parseInt(formData.amount) : undefined,
-      unit: formData.type !== 'breast' ? formData.unit : undefined,
-      startTime: formData.startTime,
-      endTime: formData.endTime,
-      duration,
-      notes: formData.notes
+  const addSession = async () => {
+    if (!formData.type) return;
+    const duration = formData.duration || 0;
+    
+    // Build notes with side information for breastfeeding
+    let notes = formData.notes;
+    if (formData.type === 'breast' && formData.side) {
+      notes = `Side: ${formData.side}${notes ? `, ${notes}` : ''}`;
+    }
+    if (duration > 0) {
+      notes = `${notes}${notes ? ' ' : ''}(Duration: ${duration} minutes)`;
+    }
+    
+    const feedingData: CreateFeedingRequest = {
+      amount: formData.amount,
+      method: formData.type,
+      notes: notes,
+      occurredAt: new Date().toISOString()
     };
-
-    setSessions(prev => prev.map(s => s.id === editingId ? updatedSession : s));
-    setEditingId(null);
-    resetForm();
+    console.log('Adding feeding:', feedingData);
+    const result = await bbtoolsService.addFeeding(feedingData);
+    if (result.success && onRefresh) {
+      onRefresh();
+      resetForm();
+    } else {
+      console.error('Failed to add feeding:', result.error);
+    }
   };
 
-  const deleteSession = (id: string) => {
-    setSessions(prev => prev.filter(s => s.id !== id));
+  const updateSession = async () => {
+    if (!editingId) return;
+    const duration = formData.duration || 0;
+    
+    // Build notes with side information for breastfeeding
+    let notes = formData.notes;
+    if (formData.type === 'breast' && formData.side) {
+      notes = `Side: ${formData.side}${notes ? `, ${notes}` : ''}`;
+    }
+    if (duration > 0) {
+      notes = `${notes}${notes ? ' ' : ''}(Duration: ${duration} minutes)`;
+    }
+    
+    const feedingData: CreateFeedingRequest = {
+      amount: formData.amount,
+      method: formData.type,
+      notes: notes,
+    };
+    const result = await bbtoolsService.updateFeeding(editingId, feedingData);
+    if (result.success && onRefresh) {
+      onRefresh();
+      setEditingId(null);
+      resetForm();
+    }
   };
 
-  const editSession = (session: FeedingSession) => {
+  const deleteSession = async (id: string) => {
+    const result = await bbtoolsService.deleteFeeding(id);
+    if (result.success) {
+      // Optimistically remove
+      setLocalSessions(prev => prev.filter(s => s.id !== id));
+      if (onRefresh) onRefresh();
+    } else {
+      console.error('Failed to delete feeding:', result.error || 'Unknown error');
+    }
+  };
+
+  const editSession = (session: LocalFeedingSession) => {
     setFormData({
       type: session.type,
-      side: session.side || 'left',
-      amount: session.amount?.toString() || '',
-      unit: session.unit || 'ml',
-      startTime: session.startTime,
-      endTime: session.endTime,
+      amount: session.amount,
+      duration: session.duration > 0 ? session.duration : undefined,
       notes: session.notes
     });
     setEditingId(session.id);
@@ -96,10 +180,8 @@ const FeedingLog: React.FC = () => {
     setFormData({
       type: 'breast',
       side: 'left',
-      amount: '',
-      unit: 'ml',
-      startTime: '',
-      endTime: '',
+      amount: undefined,
+      duration: undefined, // No default duration
       notes: ''
     });
     setShowForm(false);
@@ -117,8 +199,8 @@ const FeedingLog: React.FC = () => {
   const getTodaySessions = () => {
     const today = new Date().toDateString();
     return sessions.filter(session => {
-      // In a real app, you'd store actual dates
-      return true; // Simplified for demo
+      const sessionDate = new Date(session.rawTimestamp).toDateString();
+      return sessionDate === today;
     });
   };
 
@@ -185,8 +267,8 @@ const FeedingLog: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="breast">Breastfeeding</option>
-                    <option value="bottle">Bottle Feeding</option>
-                    <option value="pump">Pumping</option>
+                    <option value="formula">Formula</option>
+                    <option value="solid">Solid Food</option>
                   </select>
                 </div>
 
@@ -207,59 +289,33 @@ const FeedingLog: React.FC = () => {
                   </div>
                 )}
 
-                {(formData.type === 'bottle' || formData.type === 'pump') && (
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Amount
-                      </label>
-                      <input
-                        type="number"
-                        value={formData.amount}
-                        onChange={(e) => setFormData({...formData, amount: e.target.value})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="0"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Unit
-                      </label>
-                      <select
-                        value={formData.unit}
-                        onChange={(e) => setFormData({...formData, unit: e.target.value as any})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="ml">ml</option>
-                        <option value="oz">oz</option>
-                      </select>
-                    </div>
+                {(formData.type === 'formula' || formData.type === 'solid') && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Amount (ml)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.amount || ''}
+                      onChange={(e) => setFormData({...formData, amount: e.target.value ? parseInt(e.target.value) : undefined})}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0"
+                    />
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Start Time
-                    </label>
-                    <input
-                      type="time"
-                      value={formData.startTime}
-                      onChange={(e) => setFormData({...formData, startTime: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      End Time
-                    </label>
-                    <input
-                      type="time"
-                      value={formData.endTime}
-                      onChange={(e) => setFormData({...formData, endTime: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Duration (minutes)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.duration || ''}
+                    onChange={(e) => setFormData({...formData, duration: e.target.value ? parseInt(e.target.value) : undefined})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="15"
+                    min="1"
+                  />
                 </div>
 
                 <div>
@@ -277,7 +333,7 @@ const FeedingLog: React.FC = () => {
 
                 <button
                   onClick={editingId ? updateSession : addSession}
-                  className="w-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white py-3 rounded-2xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white py-3 rounded-2xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
                 >
                   <Save className="w-4 h-4" />
                   {editingId ? 'Update Session' : 'Save Session'}
@@ -291,7 +347,6 @@ const FeedingLog: React.FC = () => {
         <div className="lg:col-span-2">
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
             <h4 className="font-semibold text-gray-800 mb-4">Recent Feeding Sessions</h4>
-            
             {sessions.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <Utensils className="w-12 h-12 mx-auto mb-3 text-gray-400" />
@@ -305,26 +360,31 @@ const FeedingLog: React.FC = () => {
                     <div className="flex items-center gap-4">
                       <div className={`p-2 rounded-lg ${
                         session.type === 'breast' ? 'bg-pink-100 text-pink-600' :
-                        session.type === 'bottle' ? 'bg-blue-100 text-blue-600' :
-                        'bg-purple-100 text-purple-600'
+                        session.type === 'formula' ? 'bg-blue-100 text-blue-600' :
+                        'bg-green-100 text-green-600'
                       }`}>
                         {session.type === 'breast' && <Droplets className="w-4 h-4" />}
-                        {session.type === 'bottle' && <Utensils className="w-4 h-4" />}
-                        {session.type === 'pump' && <Droplets className="w-4 h-4" />}
+                        {session.type === 'formula' && <Utensils className="w-4 h-4" />}
+                        {session.type === 'solid' && <Utensils className="w-4 h-4" />}
                       </div>
-                      
                       <div>
                         <div className="font-semibold text-gray-800 capitalize">
                           {session.type} {session.side && `(${session.side})`}
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <div className="flex items-center gap-3 text-sm text-gray-600 flex-wrap">
                           <span className="flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {session.startTime} - {session.endTime}
                           </span>
-                          <span>{session.duration} min</span>
+                          {session.duration > 0 && (
+                            <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
+                              {session.duration} min
+                            </span>
+                          )}
                           {session.amount && (
-                            <span>{session.amount} {session.unit}</span>
+                            <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
+                              {session.amount} ml
+                            </span>
                           )}
                         </div>
                         {session.notes && (
@@ -332,7 +392,6 @@ const FeedingLog: React.FC = () => {
                         )}
                       </div>
                     </div>
-
                     <div className="flex gap-2">
                       <button
                         onClick={() => editSession(session)}
