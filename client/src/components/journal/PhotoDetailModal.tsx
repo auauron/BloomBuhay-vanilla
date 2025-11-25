@@ -18,18 +18,24 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
   onDelete
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: photo.name || '',
     notes: photo.notes || ''
   });
 
-  const handleSave = () => {
-    onUpdate(albumId, {
-      ...photo,
-      name: formData.name,
-      notes: formData.notes
-    });
-    setIsEditing(false);
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await onUpdate(albumId, {
+        ...photo,
+        name: formData.name,
+        notes: formData.notes
+      });
+      setIsEditing(false);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleDelete = () => {
@@ -78,10 +84,11 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
             {isEditing ? (
               <button
                 onClick={handleSave}
-                className="flex items-center gap-2 bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                disabled={isSaving}
+                className="flex items-center gap-2 bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Save className="w-4 h-4" />
-                Save
+                {isSaving ? 'Saving...' : 'Save'}
               </button>
             ) : (
               <button
@@ -94,14 +101,16 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
             )}
             <button
               onClick={handleDelete}
-              className="flex items-center gap-2 bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors"
+              disabled={isSaving}
+              className="flex items-center gap-2 bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Trash2 className="w-4 h-4" />
               Delete
             </button>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              disabled={isSaving}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <X className="w-5 h-5" />
             </button>
@@ -145,6 +154,7 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
                   placeholder="Add notes about this photo..."
                   rows={4}
                   className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent resize-none"
+                  disabled={isSaving}
                 />
               ) : (
                 <p className="text-gray-600 whitespace-pre-line">
