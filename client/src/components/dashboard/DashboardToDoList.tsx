@@ -91,7 +91,7 @@ export default function DashboardToDoList() {
                     tasks.map((task) => (
                         <div
                             key={task.id}
-                             className="flex items-center p-2 hover:bg-bloomBlack  rounded-lg transition-colors"
+                             className="flex items-center p-2  rounded-lg transition-colors"
                         >
                             <input
                             type="checkbox"
@@ -113,7 +113,7 @@ export default function DashboardToDoList() {
                 <div className="mt-3 text-center">
                     <a 
                         href="/planner" 
-                        className="text-sm text-bloomPink hover:underline"
+                        className="text-sm text-bloomWhite hover:underline"
                     >
                         View all tasks in Planner →
                     </a>
