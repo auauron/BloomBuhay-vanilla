@@ -144,6 +144,12 @@ export default function Pregnancy({
       console.error("Error saving pregnancy profile:", err);
     }
 
+    localStorage.setItem("lastStage", "pregnant");
+    if (weeksPregnantNum !== null)
+      localStorage.setItem("babyWeeksPregnant", String(weeksPregnantNum));
+    if (inputValue) localStorage.setItem("babyName", inputValue);
+    localStorage.setItem("babyGender", babyGenderNormalized);
+
     // notify parent (if any navigation logic uses onComplete)
     onComplete?.(payload);
   };

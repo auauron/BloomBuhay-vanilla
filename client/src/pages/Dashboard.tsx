@@ -300,7 +300,7 @@ export default function Dashboard() {
             <p className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">pregnant.</p>
             <p className="text-white/90 text-lg md:text-xl font-rubik font-light mb-20 md:mb-0 md:absolute md:bottom-8">
               Your baby is as big as a{" "}
-              <span className="font-bold">{fruit?.name}!</span>
+              <span className="font-bold">{fruit?.name ?? "—"}!</span>
             </p>
             <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6 h-24 w-24 md:h-40 md:w-40 bg-white/80 rounded-full border-4 md:border-8 border-white flex items-center justify-center overflow-hidden">
               {fruit && (
