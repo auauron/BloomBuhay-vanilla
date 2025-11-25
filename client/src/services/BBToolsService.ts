@@ -179,6 +179,11 @@ export interface Contraction {
   duration: number;
   frequency: number;
 }
+export interface DueDateLog {
+  id?: number;
+  lmpDate: string; // ISO string
+  weeksPregnant: number;
+}
 
 export const bbtoolsService = {
   async getAll(): Promise<GetBBToolsResponse> {
@@ -508,6 +513,47 @@ export const bbtoolsService = {
     } catch (err) {
       console.error("Delete contraction error:", err);
       return { success: false, error: "Failed to delete contraction" };
+    }
+  },
+
+    async getDueDate(): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/tools/duedate`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return await res.json();
+    } catch (err) {
+      console.error("Get due date log error:", err);
+      return { success: false, error: "Failed to fetch due date log" };
+    }
+  },
+
+  async saveDueDate(data: DueDateLog): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/tools/duedate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (err) {
+      console.error("Save due date log error:", err);
+      return { success: false, error: "Failed to save due date log" };
     }
   },
 };

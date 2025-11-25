@@ -426,5 +426,50 @@ router.delete("/tools/contractions/:id", authenticateToken, async (req: AuthRequ
   }
 });
 
+/**
+ * GET /api/bbtools/tools/duedate
+ */
+router.get("/tools/duedate", authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
+
+    const logs = await db.toolsLog.findMany({
+      where: { motherId: userId, type: "dueDateCalculator" },
+      orderBy: { createdAt: "desc" },
+      take: 1,
+    });
+
+    res.status(200).json({ success: true, data: logs.length > 0 ? logs[0].data : null });
+  } catch (err) {
+    console.error("Get due date log error:", err);
+    res.status(500).json({ success: false, error: "Failed to fetch due date log" });
+  }
+});
+
+/**
+ * POST /api/bbtools/tools/duedate
+ */
+router.post("/tools/duedate", authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
+
+    const data = req.body; // { lmpDate, weeksPregnant }
+
+    const created = await db.toolsLog.create({
+      data: {
+        motherId: userId,
+        type: "dueDateCalculator",
+        data,
+      },
+    });
+
+    res.status(201).json({ success: true, data: created });
+  } catch (err) {
+    console.error("Create due date log error:", err);
+    res.status(500).json({ success: false, error: "Failed to create due date log" });
+  }
+});
 
 export default router;
