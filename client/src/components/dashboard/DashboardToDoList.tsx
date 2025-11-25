@@ -70,9 +70,9 @@ export default function DashboardToDoList() {
         <motion.div
             initial={{opacity: 0, y: 10}}
             animate={{ opacity: 1, y: 0}}
-            className="bg-white rounded-xl p-4 shadow-md"
+            className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-pink-800 p-4 md:p-6 rounded-[20px] shadow-md relative"
         >
-            <h3 className="text-lg font-bold text-gray-800 mb-3"> Upcoming Tasks </h3>
+            <h3 className="text-xl md:text-2xl mb-2 md:mb-3 text-white font-bold pr-10  "> Upcoming Tasks </h3>
 
             {error && (
                 <div className="p-2 mb-3 bg-red-100 text-red-700 rounded text-sm">{error}</div>
@@ -80,18 +80,18 @@ export default function DashboardToDoList() {
 
             <div className="space-y-2">
                 {loading ? (
-                    <p className="text-center text-gray-500 text-sm py-4">
+                    <p className="text-center text-bloomBlack text-sm py-4">
                         Loading tasks...
                     </p>
                 ) : tasks.length === 0 ? ( 
-                    <p className="text-center text-gray-500 text-sm py-4">
+                    <p className="text-center text-bloomBlack text-sm py-4">
                         No tasks yet. Add some in the Planner!
                     </p>
                 ) : (
                     tasks.map((task) => (
                         <div
                             key={task.id}
-                             className="flex items-center p-2 hover:bg-gray-50 rounded-lg transition-colors"
+                             className="flex items-center p-2 hover:bg-bloomBlack  rounded-lg transition-colors"
                         >
                             <input
                             type="checkbox"
