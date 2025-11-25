@@ -19,6 +19,7 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState({
     name: photo.name || '',
     notes: photo.notes || ''
@@ -33,18 +34,24 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
         notes: formData.notes
       });
       setIsEditing(false);
+      // Close the modal after successful save
+      onClose();
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this photo?')) {
-      onDelete(albumId, photo.id);
-      onClose();
+      setIsDeleting(true);
+      try {
+        await onDelete(albumId, photo.id);
+        onClose();
+      } finally {
+        setIsDeleting(false);
+      }
     }
   };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -60,9 +67,11 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
     });
   };
 
+  const isLoading = isSaving || isDeleting;
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-60">
-      <div className="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-xl max-w-4xl w-full overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
           <div className="flex items-center gap-3">
@@ -72,7 +81,8 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Photo name"
-                className="text-xl font-semibold border-b border-gray-300 focus:border-bloomPink focus:outline-none"
+                disabled={isLoading}
+                className="text-xl font-semibold border-b border-gray-300 focus:border-bloomPink focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
               />
             ) : (
               <h2 className="text-xl font-semibold text-gray-800">
@@ -84,7 +94,7 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
             {isEditing ? (
               <button
                 onClick={handleSave}
-                disabled={isSaving}
+                disabled={isLoading}
                 className="flex items-center gap-2 bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Save className="w-4 h-4" />
@@ -93,7 +103,8 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
             ) : (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                disabled={isLoading}
+                className="flex items-center gap-2 bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Edit3 className="w-4 h-4" />
                 Edit
@@ -101,15 +112,15 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
             )}
             <button
               onClick={handleDelete}
-              disabled={isSaving}
+              disabled={isLoading}
               className="flex items-center gap-2 bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Trash2 className="w-4 h-4" />
-              Delete
+              {isDeleting ? 'Deleting...' : 'Delete'}
             </button>
             <button
               onClick={onClose}
-              disabled={isSaving}
+              disabled={isLoading}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <X className="w-5 h-5" />
@@ -126,7 +137,7 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
               className="max-w-full max-h-96 object-contain rounded-xl shadow-lg"
             />
           </div>
-
+            
           {/* Details */}
           <div className="space-y-6">
             {/* Dates */}
@@ -153,8 +164,8 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   placeholder="Add notes about this photo..."
                   rows={4}
-                  className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent resize-none"
-                  disabled={isSaving}
+                  disabled={isLoading}
+                  className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent resize-none disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               ) : (
                 <p className="text-gray-600 whitespace-pre-line">
@@ -162,6 +173,19 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
                 </p>
               )}
             </div>
+
+            {/* Loading Overlay */}
+            {isLoading && (
+              <div className="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center rounded-2xl max-h-auto!">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-bloomPink mx-auto mb-2"></div>
+                  <p className="text-gray-600 text-sm">
+                    {isSaving && "Saving changes..."}
+                    {isDeleting && "Deleting photo..."}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
