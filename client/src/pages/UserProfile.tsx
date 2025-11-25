@@ -446,12 +446,16 @@ export default function UserProfile() {
                       prev ? { ...prev, motherhoodStage: stage } : prev
                     );
 
+                    // persist stage for dashboard
+                    localStorage.setItem("lastStage", stage);
+
                     if (stage === "pregnant") {
                       // Pre-fill modal with existing pregnancy info if available
                       setPregnancyWeeks(
                         babyData?.pregnancyWeeks?.toString() ?? ""
                       );
                       setLmpDate(babyData?.lmpDate ?? "");
+                      setPregnancyInputType(babyData?.lmpDate ? "lmp" : "weeks");
                       setShowPregnancyModal(true);
                     } else {
                       // clear data if user chooses postpartum or childcare
@@ -617,6 +621,7 @@ export default function UserProfile() {
                     );
 
                     // Save last selected input type
+                    localStorage.setItem("lastStage", "pregnant");
                     localStorage.setItem(
                       "pregnancyInputType",
                       pregnancyInputType
