@@ -37,6 +37,7 @@ export default function UserProfile() {
   const [showPregnancyModal, setShowPregnancyModal] = useState(false);
   const [pregnancyWeeks, setPregnancyWeeks] = useState<string>("");
   const [lmpDate, setLmpDate] = useState<string>("");
+  const [pregnancyInputType, setPregnancyInputType] = useState("weeks");
 
   const handleEditBabyClick = () => {
     setShowBabyEditModal(true);
@@ -452,6 +453,12 @@ export default function UserProfile() {
                       );
                       setLmpDate(babyData?.lmpDate ?? "");
                       setShowPregnancyModal(true);
+                    } else {
+                      // clear data if user chooses postpartum or childcare
+                      setPregnancyWeeks("");
+                      setLmpDate("");
+                      setShowPregnancyModal(false);
+                      localStorage.removeItem("lastWeeksPregnant");
                     }
                   }}
                 >
@@ -513,7 +520,6 @@ export default function UserProfile() {
         </div>
       )}
 
-      {/* pregnancy modal */}
       {showPregnancyModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 max-w-lg w-full mx-auto shadow-xl max-h-[90vh] overflow-y-auto">
@@ -522,22 +528,61 @@ export default function UserProfile() {
             </h3>
 
             <div className="flex flex-col gap-4">
-              <InputField
-                label="Weeks Pregnant"
-                type="number"
-                min={0}
-                value={pregnancyWeeks}
-                onChange={setPregnancyWeeks}
-                placeholder="Enter how many weeks pregnant"
-              />
+              {/* Toggle: How do you want to enter pregnancy info? */}
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-gray-700">
+                  How many weeks pregnant are you?
+                </label>
 
-              <InputField
-                label="Last Menstrual Period"
-                type="date"
-                value={lmpDate}
-                placeholder="Enter your last menstrual period"
-                onChange={setLmpDate}
-              />
+                <div className="flex gap-6">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="pregnancyInputType"
+                      value="weeks"
+                      checked={pregnancyInputType === "weeks"}
+                      onChange={() => setPregnancyInputType("weeks")}
+                      className="accent-bloomPink"
+                    />
+                    <span>Weeks Pregnant</span>
+                  </label>
+
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="pregnancyInputType"
+                      value="lmp"
+                      checked={pregnancyInputType === "lmp"}
+                      onChange={() => setPregnancyInputType("lmp")}
+                      className="accent-bloomPink"
+                    />
+                    <span>I don't know (Enter LMP)</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Conditionally show Weeks Pregnant */}
+              {pregnancyInputType === "weeks" && (
+                <InputField
+                  label="Weeks Pregnant"
+                  type="number"
+                  min={0}
+                  value={pregnancyWeeks}
+                  onChange={setPregnancyWeeks}
+                  placeholder="Enter how many weeks pregnant"
+                />
+              )}
+
+              {/* Conditionally show LMP */}
+              {pregnancyInputType === "lmp" && (
+                <InputField
+                  label="Last Menstrual Period"
+                  type="date"
+                  value={lmpDate}
+                  onChange={setLmpDate}
+                  placeholder="Enter your last menstrual period"
+                />
+              )}
 
               <div className="flex justify-center gap-8 mt-4">
                 <button
@@ -546,26 +591,43 @@ export default function UserProfile() {
                 >
                   Cancel
                 </button>
+
                 <button
                   onClick={() => {
-                    // update babyData
                     setBabyData((prev) =>
                       prev
                         ? {
                             ...prev,
+
                             pregnancyWeeks:
-                              pregnancyWeeks === ""
-                                ? null
-                                : Number(pregnancyWeeks),
-                            lmpDate: lmpDate || null,
+                              pregnancyInputType === "weeks"
+                                ? pregnancyWeeks === ""
+                                  ? null
+                                  : Number(pregnancyWeeks)
+                                : null,
+
+                            lmpDate:
+                              pregnancyInputType === "lmp"
+                                ? lmpDate || null
+                                : null,
+
+                            pregnancyInputType: pregnancyInputType,
                           }
                         : prev
                     );
 
+                    // Save last selected input type
                     localStorage.setItem(
-                      "lastWeeksPregnant",
-                      pregnancyWeeks.toString()
+                      "pregnancyInputType",
+                      pregnancyInputType
                     );
+
+                    if (pregnancyInputType === "weeks") {
+                      localStorage.setItem(
+                        "lastWeeksPregnant",
+                        pregnancyWeeks.toString()
+                      );
+                    }
 
                     setShowPregnancyModal(false);
                   }}
