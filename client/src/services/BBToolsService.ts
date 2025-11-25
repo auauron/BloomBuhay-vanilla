@@ -172,6 +172,13 @@ export interface LocalSleepSession {
   rawStartAt: string;
   rawEndAt?: string | null;
 }
+export interface Contraction {
+  id?: number;
+  startTime: string;
+  endTime: string;
+  duration: number;
+  frequency: number;
+}
 
 export const bbtoolsService = {
   async getAll(): Promise<GetBBToolsResponse> {
@@ -441,6 +448,66 @@ export const bbtoolsService = {
     } catch (error) {
       console.error("Delete growth error:", error);
       return { success: false, error: "Failed to delete growth record" };
+    }
+  },
+    async getContractions(): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/tools/contractions`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return await res.json();
+    } catch (err) {
+      console.error("Get contractions error:", err);
+      return { success: false, error: "Failed to fetch contractions" };
+    }
+  },
+
+  async createContraction(data: Contraction): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/tools/contractions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (err) {
+      console.error("Create contraction error:", err);
+      return { success: false, error: "Failed to create contraction" };
+    }
+  },
+
+  async deleteContraction(id: number): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/tools/contractions/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return await res.json();
+    } catch (err) {
+      console.error("Delete contraction error:", err);
+      return { success: false, error: "Failed to delete contraction" };
     }
   },
 };

@@ -1,4 +1,3 @@
-// src/routes/bbToolsRoute.ts
 import { Router, Response } from "express";
 import { authenticateToken, AuthRequest } from "../middleware/auth";
 import { BabyMetric, FeedingLog, GrowthRecord, PrismaClient, SleepLog } from "@prisma/client";
@@ -359,5 +358,73 @@ router.delete("/growths/:id", authenticateToken, async (req: AuthRequest, res: R
     res.status(500).json({ success: false, error: "failed to delete growth" });
   }
 });
+
+/**
+ * GET /api/bbtools/tools/contractions
+ */
+router.get("/tools/contractions", authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
+
+    const logs = await db.toolsLog.findMany({
+      where: { motherId: userId, type: "contractionTimer" },
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.status(200).json({ success: true, data: logs.map(l => l.data) });
+  } catch (err) {
+    console.error("Get contractions error:", err);
+    res.status(500).json({ success: false, error: "Failed to get contractions" });
+  }
+});
+
+/**
+ * POST /api/bbtools/tools/contractions
+ */
+router.post("/tools/contractions", authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
+
+    const data = req.body; // { startTime, endTime, duration, frequency }
+
+    const created = await db.toolsLog.create({
+      data: {
+        motherId: userId,
+        type: "contractionTimer",
+        data,
+      },
+    });
+
+    res.status(201).json({ success: true, data: created });
+  } catch (err) {
+    console.error("Create contraction error:", err);
+    res.status(500).json({ success: false, error: "Failed to create contraction" });
+  }
+});
+
+/**
+ * DELETE /api/bbtools/tools/contractions/:id
+ */
+router.delete("/tools/contractions/:id", authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+    const id = Number(req.params.id);
+    if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
+
+    const deleted = await db.toolsLog.deleteMany({
+      where: { id, motherId: userId, type: "contractionTimer" },
+    });
+
+    if (deleted.count === 0) return res.status(404).json({ success: false, error: "Contraction not found" });
+
+    res.status(200).json({ success: true, message: "Deleted" });
+  } catch (err) {
+    console.error("Delete contraction error:", err);
+    res.status(500).json({ success: false, error: "Failed to delete contraction" });
+  }
+});
+
 
 export default router;
