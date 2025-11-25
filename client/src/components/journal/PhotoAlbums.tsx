@@ -32,6 +32,11 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
     });
   };
 
+  // Function to get the current album from albums state
+  const getCurrentAlbum = (albumId: string) => {
+    return albums.find(album => album.id === albumId) || null;
+  };
+
   if (albums.length === 0) {
     return (
       <div className="text-center py-12">
@@ -50,7 +55,7 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
             {/* Cover Photo */}
             <div 
               className="relative h-48 bg-gray-200 overflow-hidden cursor-pointer"
-              onClick={() => setViewingAlbum(album)}
+              onClick={() => setViewingAlbum(getCurrentAlbum(album.id))}
             >
               <img 
                 src={album.coverPhoto} 
@@ -74,7 +79,7 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      setEditingAlbum(album);
+                      setEditingAlbum(getCurrentAlbum(album.id));
                     }}
                     className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
                   >
@@ -108,7 +113,7 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
 
               {/* View Album Button */}
               <button
-                onClick={() => setViewingAlbum(album)}
+                onClick={() => setViewingAlbum(getCurrentAlbum(album.id))}
                 className="w-full mt-3 bg-gradient-to-r from-bloomPink to-bloomYellow text-white py-2 rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
               >
                 View Album
