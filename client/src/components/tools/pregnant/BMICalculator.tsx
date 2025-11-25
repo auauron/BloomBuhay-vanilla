@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Calculator, Scale, Ruler, AlertTriangle, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { bbtoolsService, BBMetric, CreateBBMetricRequest } from "../../../services/BBToolsService";
 
 const BMICalculator: React.FC = () => {
   const [weight, setWeight] = useState("");
@@ -8,11 +9,86 @@ const BMICalculator: React.FC = () => {
   const [weightUnit, setWeightUnit] = useState("kg");
   const [bmi, setBmi] = useState<number | null>(null);
 
-  const calculateBMI = () => {
-    if (!weight || !height) return;
+  // persisted metrics (only those with title === "BMI")
+  const [savedMetrics, setSavedMetrics] = useState<BBMetric[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load persisted BMI metrics on mount
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await bbtoolsService.getAll();
+        if (!mounted) return;
+        if (!res.success) {
+          // not authenticated or no data - keep empty
+          setSavedMetrics([]);
+          setLoading(false);
+          return;
+        }
+
+        const metrics = res.data?.metrics ?? [];
+        const bmiMetrics = metrics.filter((m: BBMetric) => m.title === "BMI").sort((a: BBMetric, b: BBMetric) => {
+          const da = a.updatedAt ? new Date(a.updatedAt).getTime() : new Date(a.createdAt || 0).getTime();
+          const db = b.updatedAt ? new Date(b.updatedAt).getTime() : new Date(b.createdAt || 0).getTime();
+          return db - da;
+        });
+        setSavedMetrics(bmiMetrics);
+        // if there's a latest saved metric, try to populate inputs
+        if (bmiMetrics.length > 0) {
+          const latest = bmiMetrics[0];
+          // try parse notes JSON if present
+          try {
+            if (latest.notes) {
+              const parsed = JSON.parse(latest.notes);
+              if (parsed.weight !== undefined) setWeight(String(parsed.weight));
+              if (parsed.height !== undefined) setHeight(String(parsed.height));
+              if (parsed.heightUnit) setHeightUnit(parsed.heightUnit);
+              if (parsed.weightUnit) setWeightUnit(parsed.weightUnit);
+            } else if (latest.unit) {
+              // fallback: unit might be like "kg/cm"
+              const parts = latest.unit.split("/");
+              if (parts[0]) setWeightUnit(parts[0]);
+              if (parts[1]) setHeightUnit(parts[1]);
+            }
+            if (latest.value) {
+              const num = parseFloat(latest.value);
+              if (!isNaN(num)) setBmi(Number(num.toFixed(1)));
+            }
+          } catch (e) {
+            // ignore parse errors
+            console.warn("Failed to parse latest BMI metric notes", e);
+          }
+        }
+      } catch (e) {
+        console.error(e);
+        if (mounted) setError("Failed to load saved BMI data");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    load();
+    return () => { mounted = false; };
+  }, []);
+
+  const calculateBMI = async () => {
+    setError(null);
+    if (!weight || !height) {
+      setError("Please enter both weight and height");
+      return;
+    }
 
     let weightInKg = parseFloat(weight);
     let heightInMeters = parseFloat(height);
+
+    if (isNaN(weightInKg) || isNaN(heightInMeters)) {
+      setError("Invalid number entered");
+      return;
+    }
 
     // Convert weight to kg if needed
     if (weightUnit === "lbs") {
@@ -22,15 +98,29 @@ const BMICalculator: React.FC = () => {
     // Convert height to meters if needed
     if (heightUnit === "cm") {
       heightInMeters = heightInMeters / 100;
+    } else if (heightUnit === "m") {
+      // already meters
     } else if (heightUnit === "ft") {
-      // Convert feet and inches to meters
+      // user enters feet.decimal like 5.6 => treat integer part as feet, decimal portion as fractional feet
       const feet = Math.floor(heightInMeters);
-      const inches = (heightInMeters - feet) * 100;
+      const fractional = heightInMeters - feet;
+      // Treat decimal fraction as inches fraction (user expects 5.6 -> 5ft6in)
+      // if fractional <= 0.12 it's probably decimal feet, we'll approximate by multiplying by 12 to get inches.
+      const inches = Math.round(fractional * 12);
       heightInMeters = (feet * 0.3048) + (inches * 0.0254);
     }
 
+    if (heightInMeters <= 0) {
+      setError("Height must be greater than zero");
+      return;
+    }
+
     const bmiValue = weightInKg / (heightInMeters * heightInMeters);
-    setBmi(parseFloat(bmiValue.toFixed(1)));
+    const rounded = parseFloat(bmiValue.toFixed(1));
+    setBmi(rounded);
+
+    // Auto-save the calculated BMI
+    await saveMetricAuto(rounded);
   };
 
   const getBMICategory = (bmiValue: number) => {
@@ -41,13 +131,62 @@ const BMICalculator: React.FC = () => {
   };
 
   const getPregnancyRecommendation = (category: string) => {
-    const recommendations = {
+    const recommendations: Record<string, string> = {
       Underweight: "Aim for 12.5-18 kg weight gain during pregnancy",
       "Healthy Weight": "Aim for 11.5-16 kg weight gain during pregnancy",
       Overweight: "Aim for 7-11.5 kg weight gain during pregnancy",
       Obese: "Aim for 5-9 kg weight gain during pregnancy"
     };
-    return recommendations[category as keyof typeof recommendations];
+    return recommendations[category] ?? "";
+  };
+
+  // Save metric (called automatically after calculation)
+  const saveMetricAuto = async (bmiValue: number) => {
+    setSaving(true);
+    setError(null);
+    try {
+      const payload: CreateBBMetricRequest = {
+        title: "BMI",
+        value: String(bmiValue),
+        unit: `${weightUnit}/${heightUnit}`,
+        notes: JSON.stringify({
+          weight: Number(weight),
+          height: Number(height),
+          weightUnit,
+          heightUnit,
+        }),
+      };
+      const res = await bbtoolsService.createMetric(payload);
+      if (!res.success) {
+        // may be unauthenticated or backend error - show message but keep UI working
+        console.warn("Failed to save metric:", res.error ?? res.message);
+        // don't treat as fatal; allow local UI to still show bmi
+        return;
+      }
+      // prepend new created metric to list
+      const created = res.data;
+      setSavedMetrics(prev => [created, ...prev]);
+    } catch (e) {
+      console.error("Error saving BMI metric:", e);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (metricId?: number) => {
+    if (!metricId) return;
+    setError(null);
+    try {
+      const res = await bbtoolsService.deleteMetric(String(metricId));
+      if (!res.success) {
+        setError(res.error ?? "Failed to delete saved BMI");
+        return;
+      }
+      setSavedMetrics(prev => prev.filter(m => m.id !== metricId));
+    } catch (e) {
+      console.error(e);
+      setError("Failed to delete saved BMI");
+    }
   };
 
   const bmiCategory = bmi ? getBMICategory(bmi) : null;
@@ -132,6 +271,9 @@ const BMICalculator: React.FC = () => {
                 <Calculator className="w-5 h-5" />
                 Calculate BMI
               </button>
+
+              {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
+              {saving && <p className="text-sm text-gray-600 mt-2">Saving BMI...</p>}
             </div>
           </div>
 
@@ -213,6 +355,63 @@ const BMICalculator: React.FC = () => {
               </p>
             </div>
           )}
+
+          {/* Saved BMI History */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-semibold text-gray-800">Saved BMI Entries</h4>
+              {loading ? <span className="text-sm text-gray-500">Loading...</span> : <span className="text-sm text-gray-500">{savedMetrics.length} saved</span>}
+            </div>
+
+            {savedMetrics.length === 0 && !loading && (
+              <p className="text-sm text-gray-500">No saved BMI entries yet. Your results will be auto-saved when you calculate (if you're logged in).</p>
+            )}
+
+            <ul className="space-y-3">
+              {savedMetrics.map((m) => (
+                <li key={m.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div>
+                    <div className="text-sm font-semibold">{m.value} BMI</div>
+                    <div className="text-xs text-gray-500">
+                      {m.unit ? `${m.unit}` : ""} • {m.createdAt ? new Date(m.createdAt).toLocaleString() : ""}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        // restore saved metric to UI inputs if notes parseable
+                        try {
+                          if (m.notes) {
+                            const parsed = JSON.parse(m.notes);
+                            if (parsed.weight !== undefined) setWeight(String(parsed.weight));
+                            if (parsed.height !== undefined) setHeight(String(parsed.height));
+                            if (parsed.weightUnit) setWeightUnit(parsed.weightUnit);
+                            if (parsed.heightUnit) setHeightUnit(parsed.heightUnit);
+                          }
+                          if (m.value) {
+                            const num = parseFloat(m.value);
+                            if (!isNaN(num)) setBmi(Number(num.toFixed(1)));
+                          }
+                        } catch (e) {
+                          console.warn("Cannot restore metric", e);
+                        }
+                      }}
+                      className="px-3 py-1 text-sm rounded-xl border hover:bg-gray-50"
+                    >
+                      Restore
+                    </button>
+                    <button
+                      onClick={() => handleDelete(m.id)}
+                      className="px-3 py-1 text-sm rounded-xl border border-red-200 text-red-600 hover:bg-red-50"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
         </div>
       </div>
     </div>

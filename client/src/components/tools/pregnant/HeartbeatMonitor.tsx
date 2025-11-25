@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Play, Square, RotateCcw, Heart, Clock, Volume2 } from "lucide-react";
-import { useLocation } from 'react-router-dom';
+import { Play, Square, Heart, Clock, Volume2 } from "lucide-react";
+import { bbtoolsService } from "../../../services/BBToolsService";
 
 interface HeartbeatSession {
+  id?: number;
   date: string;
   time: string;
   bpm: number;
@@ -19,24 +20,45 @@ const HeartbeatMonitor: React.FC = () => {
   const [audioPlaying, setAudioPlaying] = useState(false);
 
   useEffect(() => {
-    let interval:  ReturnType<typeof setInterval> | undefined;
+    // Fetch session history from backend on mount
+    fetchSessions();
+  }, []);
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | undefined;
     if (isMonitoring) {
       interval = setInterval(() => {
         setDuration(prev => prev + 1);
-        // Simulate slight BPM variations
-        setBpm(prev => prev + (Math.random() - 0.5) * 4);
+        setBpm(prev => prev + (Math.random() - 0.5) * 4); // simulate variation
       }, 1000);
     }
     return () => clearInterval(interval);
   }, [isMonitoring]);
 
+  const fetchSessions = async () => {
+    const res = await bbtoolsService.getAll();
+    if (res.success && res.data) {
+      // Filter tools logs for heartbeat sessions
+      const heartbeatLogs = res.data.metrics?.filter((m: any) => m.title === "heartbeatMonitor") || [];
+      const formatted = heartbeatLogs.map((log: any) => ({
+        id: log.id,
+        date: new Date(log.createdAt).toLocaleDateString(),
+        time: new Date(log.createdAt).toLocaleTimeString(),
+        bpm: log.value ? Number(log.value) : 0,
+        duration: log.notes ? Number(log.notes.split(" | ")[0]) : 0,
+        notes: log.notes ? log.notes.split(" | ")[1] : "",
+      }));
+      setSessionHistory(formatted);
+    }
+  };
+
   const startMonitoring = () => {
     setIsMonitoring(true);
     setDuration(0);
-    setBpm(120 + Math.random() * 40); // Start with random BPM between 120-160
+    setBpm(120 + Math.random() * 40);
   };
 
-  const stopMonitoring = () => {
+  const stopMonitoring = async () => {
     setIsMonitoring(false);
     if (duration > 0) {
       const session: HeartbeatSession = {
@@ -48,12 +70,19 @@ const HeartbeatMonitor: React.FC = () => {
       };
       setSessionHistory(prev => [session, ...prev.slice(0, 4)]);
       setNotes("");
+
+      // Persist to backend as a ToolsLog metric
+      await bbtoolsService.createMetric({
+        title: "heartbeatMonitor",
+        value: String(session.bpm),
+        notes: `${session.duration} | ${session.notes}`, // store duration + notes together
+      });
+      fetchSessions(); // refresh history after saving
     }
   };
 
   const playHeartbeatSound = () => {
     setAudioPlaying(true);
-    // In a real app, this would play actual heartbeat audio
     setTimeout(() => setAudioPlaying(false), 3000);
   };
 
@@ -140,28 +169,8 @@ const HeartbeatMonitor: React.FC = () => {
           </div>
         </div>
 
-        {/* Info & History Section */}
+        {/* History Section */}
         <div className="space-y-6">
-          {/* BPM Info */}
-          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200">
-            <h4 className="font-semibold text-blue-800 mb-3">Normal Fetal Heart Rate</h4>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center p-3 bg-white rounded-xl">
-                <span className="text-gray-700">Normal Range</span>
-                <span className="font-semibold text-green-600">110-160 BPM</span>
-              </div>
-              <div className="flex justify-between items-center p-3 bg-white rounded-xl">
-                <span className="text-gray-700">Tachycardia</span>
-                <span className="font-semibold text-red-600">Above 160 BPM</span>
-              </div>
-              <div className="flex justify-between items-center p-3 bg-white rounded-xl">
-                <span className="text-gray-700">Bradycardia</span>
-                <span className="font-semibold text-yellow-600">Below 110 BPM</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Session History */}
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
             <h4 className="font-semibold text-gray-800 mb-4">Recent Sessions</h4>
             {sessionHistory.length === 0 ? (
@@ -185,17 +194,6 @@ const HeartbeatMonitor: React.FC = () => {
                 ))}
               </div>
             )}
-          </div>
-
-          {/* Instructions */}
-          <div className="bg-pink-50 rounded-2xl p-6 border border-pink-200">
-            <h4 className="font-semibold text-pink-800 mb-2">Monitoring Tips</h4>
-            <ul className="text-sm text-pink-700 space-y-1">
-              <li>• Best done when baby is active</li>
-              <li>• Use Doppler device if available</li>
-              <li>• Contact provider for abnormal readings</li>
-              <li>• Regular monitoring helps track patterns</li>
-            </ul>
           </div>
         </div>
       </div>
