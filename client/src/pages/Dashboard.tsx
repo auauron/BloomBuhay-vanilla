@@ -214,6 +214,59 @@ export default function Dashboard() {
 
   const fruit = getFruitByWeek(effectiveWeeks);
 
+  // Helper functions for childcare stage
+  const getBabyAge = (): string => {
+    if (!effectiveWeeks) return "Not set";
+    
+    const totalWeeks = effectiveWeeks;
+    const years = Math.floor(totalWeeks / 52);
+    const remainingWeeks = totalWeeks % 52;
+    const months = Math.floor(remainingWeeks / 4);
+    const weeks = remainingWeeks % 4;
+
+    if (years > 0) {
+      return `${years} year${years > 1 ? 's' : ''}${months > 0 ? `, ${months} month${months > 1 ? 's' : ''}` : ''}`;
+    } else {
+      return `${months} month${months > 1 ? 's' : ''}${weeks > 0 ? `, ${weeks} week${weeks > 1 ? 's' : ''}` : ''}`;
+    }
+  };
+
+  const getDevelopmentStage = (): string => {
+    if (!effectiveWeeks) return "Newborn";
+    
+    const months = Math.floor(effectiveWeeks / 4);
+    
+    if (months < 3) return "Newborn";
+    if (months < 6) return "Infant";
+    if (months < 12) return "Baby";
+    if (months < 24) return "Toddler";
+    return "Preschooler";
+  };
+
+  const getCurrentFocus = (): string => {
+    if (!effectiveWeeks) return "Bonding & feeding";
+    
+    const months = Math.floor(effectiveWeeks / 4);
+    
+    const focuses: Record<string, string> = {
+      "0": "Bonding & establishing routines",
+      "3": "Tummy time & visual tracking", 
+      "6": "Sitting & solid foods",
+      "9": "Crawling & babbling",
+      "12": "Walking & first words",
+      "18": "Running & simple sentences",
+      "24": "Pretend play & independence",
+      "36": "Social skills & potty training"
+    };
+    
+    // Find the closest milestone
+    const closest = Object.keys(focuses).reduce((prev, curr) => 
+      Math.abs(months - parseInt(curr)) < Math.abs(months - parseInt(prev)) ? curr : prev
+    );
+    
+    return focuses[closest] ?? "Learning & growing every day!";
+  };
+
   const renderMainCard = () => {
     switch (canonicalStageKey) {
       case "pregnant":
@@ -301,9 +354,9 @@ export default function Dashboard() {
         return `${postpartumProgress}%`;
       
       case "childcare":
-        const childcareWeeks = effectiveWeeks || 0;
-        const childcareProgress = Math.min(Math.round((childcareWeeks / 52) * 100), 100);
-        return `${childcareProgress}%`;
+        const months = Math.floor(effectiveWeeks / 4);
+        if (months < 12) return `${Math.min(Math.round((months / 12) * 100), 100)}%`;
+        return "Growing strong!";
       
       default:
         return "0%";
@@ -330,8 +383,7 @@ export default function Dashboard() {
         return postpartumWeeksLeft > 0 ? `${postpartumWeeksLeft} weeks` : "Recovery milestone reached!";
       
       case "childcare":
-        const childcareWeeksLeft = 52 - (effectiveWeeks || 0);
-        return childcareWeeksLeft > 0 ? `${childcareWeeksLeft} weeks` : "First year complete!";
+        return "Every day brings new growth!";
       
       default:
         return "Complete your profile";
@@ -368,15 +420,7 @@ export default function Dashboard() {
         return "Postpartum journey";
       
       case "childcare":
-        if (effectiveWeeks) {
-          const firstYearDate = new Date(today);
-          firstYearDate.setDate(today.getDate() + ((52 - effectiveWeeks) * 7));
-          return `First year: ${firstYearDate.toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric' 
-          })}`;
-        }
-        return "Baby's first year";
+        return "Watching milestones unfold";
       
       default:
         return "Complete your profile";
@@ -400,6 +444,46 @@ export default function Dashboard() {
     if (percentage >= 20) return "w-2/12";
     if (percentage >= 10) return "w-1/12";
     return "w-0";
+  };
+
+  const renderProgressSection = () => {
+    if (canonicalStageKey === "childcare") {
+      return (
+        <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-4 md:p-6 rounded-[20px] shadow-md font-semibold">
+          <h3 className="text-xl md:text-2xl mb-2 text-white font-bold">Baby's Growth</h3>
+          <p className="mt-2 text-base md:text-lg text-center rounded-[20px] bg-white/30 px-2 py-1 text-[#DE085F] font-bold">
+            {isLoading ? "Loading..." : `${getBabyAge()} old`}
+          </p>
+          <p className="mt-2 text-base md:text-lg text-bloomBlack font-rubik font-light">
+            <span className="font-bold">Development Stage:</span> {isLoading ? "..." : getDevelopmentStage()}
+          </p>
+          <p className="mt-2 text-base md:text-lg text-bloomBlack font-rubik font-light">
+            <span className="font-bold">What to Expect:</span> {isLoading ? "..." : getCurrentFocus()}
+          </p>
+        </div>
+      );
+    }
+
+    // Default progress section for other stages
+    return (
+      <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-4 md:p-6 rounded-[20px] shadow-md font-semibold">
+        <h3 className="text-xl md:text-2xl mb-2 text-white font-bold">Progress</h3>
+        <div className="w-full bg-white/60 rounded-full h-4 md:h-5 mt-2 md:mt-3 overflow-hidden">
+          <div
+            className={`bg-[#DE085F] h-full rounded-full transition-all duration-500 ${getProgressWidthClass()}`}
+          ></div>
+        </div>
+        <p className="mt-2 text-base md:text-lg text-center text-[#DE085F] font-bold">
+          {isLoading ? "Loading..." : `${getProgressPercentage()} complete`}
+        </p>
+        <p className="mt-2 text-base md:text-lg text-bloomBlack font-rubik font-light">
+          <span className="font-bold">Remaining:</span> {isLoading ? "..." : `${getRemainingPercentage()} (${getRemainingTime()})`}
+        </p>
+        <p className="mt-2 text-base md:text-lg text-bloomBlack font-rubik font-light">
+          <span className="font-bold">Due Date:</span> {isLoading ? "..." : getDueDate()}
+        </p>
+      </div>
+    );
   };
 
   return (
@@ -432,23 +516,7 @@ export default function Dashboard() {
           </div>
 
           <div className="flex flex-col gap-4 md:gap-6">
-            <div className="bg-gradient-to-r from-[#F875AA] via-[#F5ABA1] to-[#F3E198] text-pink-800 p-4 md:p-6 rounded-[20px] shadow-md font-semibold">
-              <h3 className="text-xl md:text-2xl mb-2 text-white font-bold">Progress</h3>
-              <div className="w-full bg-white/60 rounded-full h-4 md:h-5 mt-2 md:mt-3 overflow-hidden">
-                <div
-                  className={`bg-[#DE085F] h-full rounded-full transition-all duration-500 ${getProgressWidthClass()}`}
-                ></div>
-              </div>
-              <p className="mt-2 text-base md:text-lg text-center text-[#DE085F] font-bold">
-                {isLoading ? "Loading..." : `${getProgressPercentage()} complete`}
-              </p>
-              <p className="mt-2 text-base md:text-lg text-bloomBlack font-rubik font-light">
-                <span className="font-bold">Remaining:</span> {isLoading ? "..." : `${getRemainingPercentage()} (${getRemainingTime()})`}
-              </p>
-              <p className="mt-2 text-base md:text-lg text-bloomBlack font-rubik font-light">
-                <span className="font-bold">Due Date:</span> {isLoading ? "..." : getDueDate()}
-              </p>
-            </div>
+            {renderProgressSection()}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <DashboardToDoList/>
