@@ -51,3 +51,5 @@ coverage/
 DETAILED_PROJECT_GUIDE.md
 client/src/pages/Planner.tsx
 server/API_DOCS.md
+docs/ComprehensiveProjectGuide.md
+docs/TechnicalCheatsheet.md

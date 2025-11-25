@@ -11,6 +11,7 @@ import EarlyChildcareTips from "../components/ui/earlyChildcareTips";
 import { Info, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import messages from '../components/motivations/messages.json';
+import DashboardToDoList from "../components/dashboard/DashboardToDoList";
 
 const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
 
@@ -544,21 +545,8 @@ const getRemainingTime = (): string => {
             </p>
           </div>
 
-            {/* To-do + Tips side by side */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow p-4 md:p-6 rounded-[20px] shadow-md">
-                <h3 className="text-xl md:text-2xl mb-2 md:mb-3 text-white font-bold">To do</h3>
-                <ul className="space-y-2 text-xs md:text-sm text-[#474747]">
-                  <li className="font-rubik">
-                    <input type="checkbox" className="accent-[#DE085F] mr-2" />
-                    Schedule checkup
-                  </li>
-                  <li className="font-rubik">
-                    <input type="checkbox" className="accent-[#DE085F] mr-2" />
-                    Ask OB about safe medications for morning sickness
-                  </li>
-                </ul>
-              </div>
+              <DashboardToDoList/>
               {/* STAGE-SPECIFIC TIPS SECTION WITH LEARN MORE ICON */}
               <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-pink-800 p-4 md:p-6 rounded-[20px] shadow-md relative">
                 {/* Learn More Icon with Square Background */}
