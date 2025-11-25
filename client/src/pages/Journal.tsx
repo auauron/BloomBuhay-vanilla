@@ -243,9 +243,25 @@ export default function Journal() {
   }, []);
 
   const deleteAlbum = useCallback(async (id: string) => {
-    const response = await journalService.deleteAlbum(id);
-    if (response.success) {
-      setAlbums(prev => prev.filter(album => album.id !== id));
+    console.log('Deleting album with id:', id);
+    
+    if (window.confirm('Are you sure you want to delete this album?')) {
+      setAlbums(prev => {
+        const newAlbums = prev.filter(album => album.id !== id);
+        console.log('Removed from local state. Remaining albums:', newAlbums.map(a => a.id));
+        return newAlbums;
+      });
+
+      try {
+        const response = await journalService.deleteAlbum(id);
+        console.log('Server delete response:', response);
+        
+        if (!response.success) {
+          console.warn('Server deletion failed, but album removed from local state:', response.error);
+        }
+      } catch (error) {
+        console.warn('Network error during server deletion, but album removed from local state:', error);
+      }
     }
   }, []);
 

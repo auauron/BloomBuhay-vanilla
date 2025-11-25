@@ -52,24 +52,30 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {albums.map((album) => (
           <div key={album.id} className="bg-white rounded-2xl shadow-lg border border-pink-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-            {/* Cover Photo */}
-            <div 
-              className="relative h-48 bg-gray-200 overflow-hidden cursor-pointer"
-              onClick={() => setViewingAlbum(getCurrentAlbum(album.id))}
-            >
-              <img 
-                src={album.coverPhoto} 
-                alt={album.title}
-                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-              />
-              <div className="absolute top-3 right-3 bg-black/50 text-white px-2 py-1 rounded-full text-xs backdrop-blur-sm">
-                <Image className="w-3 h-3 inline mr-1" />
-                {album.photos.length}
-              </div>
-              <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                <Eye className="w-8 h-8 text-white opacity-0 hover:opacity-100 transition-opacity duration-300" />
-              </div>
+    <div 
+      className="relative h-48 bg-gray-200 overflow-hidden cursor-pointer"
+      onClick={() => setViewingAlbum(getCurrentAlbum(album.id))}
+    >
+      {album.coverPhoto ? (
+        <img 
+          src={album.coverPhoto} 
+          alt={album.title}
+          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+        />
+      ) : (
+            <div className="w-full h-full bg-gradient-to-br from-bloomPink/20 to-bloomYellow/20 flex items-center justify-center">
+              <Image className="w-12 h-12 text-gray-400" />
+              <span className="sr-only">No cover photo</span>
             </div>
+          )}
+          <div className="absolute top-3 right-3 bg-black/50 text-white px-2 py-1 rounded-full text-xs backdrop-blur-sm">
+            <Image className="w-3 h-3 inline mr-1" />
+            {album.photos.length}
+          </div>
+          <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+            <Eye className="w-8 h-8 text-white opacity-0 hover:opacity-100 transition-opacity duration-300" />
+          </div>
+        </div>
 
             {/* Album Info */}
             <div className="p-4">
@@ -85,15 +91,17 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
                   >
                     <Edit3 className="w-4 h-4" />
                   </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (window.confirm(`Are you sure you want to delete "${album.title}"? This action cannot be undone.`)) {
                       onDeleteAlbum(album.id);
-                    }}
-                    className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                    }
+                  }}
+                  className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
                 </div>
               </div>
 
