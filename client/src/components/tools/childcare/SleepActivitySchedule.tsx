@@ -1,20 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, Trash2, Edit3, Check, Moon, Sun, Activity, Bed, Utensils, Clock} from "lucide-react";
-
-interface ScheduleEntry {
-  id: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  type: "sleep" | "activity" | "feeding";
-  description: string;
-  notes: string;
-}
+import { bbtoolsService, ScheduleEntry, CreateScheduleRequest } from "../../../services/BBToolsService";
 
 const SleepActivitySchedule: React.FC = () => {
   const [entries, setEntries] = useState<ScheduleEntry[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     startTime: "",
@@ -23,6 +15,27 @@ const SleepActivitySchedule: React.FC = () => {
     description: "",
     notes: ""
   });
+
+  // Load schedule entries from backend
+  useEffect(() => {
+    loadScheduleEntries();
+  }, []);
+
+  const loadScheduleEntries = async () => {
+    setLoading(true);
+    try {
+      const response = await bbtoolsService.getScheduleEntries();
+      if (response.success && response.data) {
+        setEntries(response.data);
+      } else {
+        console.error("Failed to load schedule entries:", response.error);
+      }
+    } catch (error) {
+      console.error("Error loading schedule entries:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -63,30 +76,36 @@ const SleepActivitySchedule: React.FC = () => {
     return `${minutes}m`;
   };
 
-  const handleAddEntry = () => {
+  const handleAddEntry = async () => {
     if (!formData.startTime || !formData.endTime || !formData.description) return;
 
-    const newEntry: ScheduleEntry = {
-      id: Date.now().toString(),
-      ...formData
-    };
-
-    setEntries([...entries, newEntry].sort((a, b) => {
-      if (a.date === b.date) {
-        return a.startTime.localeCompare(b.startTime);
+    setLoading(true);
+    try {
+      console.log("Sending schedule data:", formData); // DEBUG
+      
+      const response = await bbtoolsService.addSchedule(formData as CreateScheduleRequest);
+      
+      console.log("API Response:", response); // DEBUG
+      
+      if (response.success && response.data) {
+        setEntries([response.data, ...entries].sort((a, b) => {
+          if (a.date === b.date) {
+            return a.startTime.localeCompare(b.startTime);
+          }
+          return new Date(b.date).getTime() - new Date(a.date).getTime();
+        }));
+        resetForm();
+        setIsAdding(false);
+      } else {
+        console.error("Failed to add schedule entry - Full response:", response);
+        alert(`Failed to save schedule entry: ${response.error || 'Unknown error'}`);
       }
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    }));
-
-    setFormData({
-      date: new Date().toISOString().split('T')[0],
-      startTime: "",
-      endTime: "",
-      type: "sleep",
-      description: "",
-      notes: ""
-    });
-    setIsAdding(false);
+    } catch (error) {
+      console.error("Error adding schedule entry:", error);
+      alert("Network error saving schedule entry. Please check console.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEdit = (id: string) => {
@@ -105,13 +124,52 @@ const SleepActivitySchedule: React.FC = () => {
     }
   };
 
-  const handleUpdateEntry = () => {
+  const handleUpdateEntry = async () => {
     if (!formData.startTime || !formData.endTime || !formData.description || !editingId) return;
 
-    setEntries(entries.map(entry => 
-      entry.id === editingId ? { ...entry, ...formData } : entry
-    ));
-    
+    setLoading(true);
+    try {
+      const response = await bbtoolsService.updateSchedule(editingId, formData);
+      if (response.success && response.data) {
+        setEntries(entries.map(entry => 
+          entry.id === editingId ? { ...entry, ...response.data } : entry
+        ));
+        resetForm();
+        setEditingId(null);
+        setIsAdding(false);
+      } else {
+        console.error("Failed to update schedule entry:", response.error);
+        alert("Failed to update schedule entry. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error updating schedule entry:", error);
+      alert("Error updating schedule entry. Please check console.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this schedule entry?")) return;
+
+    setLoading(true);
+    try {
+      const response = await bbtoolsService.deleteSchedule(id);
+      if (response.success) {
+        setEntries(entries.filter(entry => entry.id !== id));
+      } else {
+        console.error("Failed to delete schedule entry:", response.error);
+        alert("Failed to delete schedule entry. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error deleting schedule entry:", error);
+      alert("Error deleting schedule entry. Please check console.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetForm = () => {
     setFormData({
       date: new Date().toISOString().split('T')[0],
       startTime: "",
@@ -120,25 +178,12 @@ const SleepActivitySchedule: React.FC = () => {
       description: "",
       notes: ""
     });
-    setEditingId(null);
-    setIsAdding(false);
-  };
-
-  const handleDelete = (id: string) => {
-    setEntries(entries.filter(entry => entry.id !== id));
   };
 
   const cancelEdit = () => {
     setIsAdding(false);
     setEditingId(null);
-    setFormData({
-      date: new Date().toISOString().split('T')[0],
-      startTime: "",
-      endTime: "",
-      type: "sleep",
-      description: "",
-      notes: ""
-    });
+    resetForm();
   };
 
   const getStats = () => {
@@ -168,18 +213,18 @@ const SleepActivitySchedule: React.FC = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-
         <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-xl">
+          <div className="p-2 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-xl">
             <Bed className="w-6 h-6 text-white" />
-        </div>
-        <h3 className="text-2xl font-bold text-bloomBlack">Sleep & Activity Schedule</h3>
+          </div>
+          <h3 className="text-2xl font-bold text-bloomBlack">Sleep & Activity Schedule</h3>
         </div>
         
         {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}
-            className="flex items-center gap-2 bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-lg hover:shadow-lg transition hover:scale-105"
+            disabled={loading}
+            className="flex items-center gap-2 bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-lg hover:shadow-lg transition hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Plus className="w-4 h-4" />
             Add Entry
@@ -219,6 +264,7 @@ const SleepActivitySchedule: React.FC = () => {
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                disabled={loading}
               />
             </div>
             <div>
@@ -227,6 +273,7 @@ const SleepActivitySchedule: React.FC = () => {
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                disabled={loading}
               >
                 <option value="sleep">Sleep</option>
                 <option value="activity">Activity</option>
@@ -240,6 +287,7 @@ const SleepActivitySchedule: React.FC = () => {
                 value={formData.startTime}
                 onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                disabled={loading}
               />
             </div>
             <div>
@@ -249,6 +297,7 @@ const SleepActivitySchedule: React.FC = () => {
                 value={formData.endTime}
                 onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                disabled={loading}
               />
             </div>
             <div className="md:col-span-2">
@@ -259,6 +308,7 @@ const SleepActivitySchedule: React.FC = () => {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="e.g., Nap time, Tummy time, Morning feeding"
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                disabled={loading}
               />
             </div>
             <div className="md:col-span-2">
@@ -269,21 +319,23 @@ const SleepActivitySchedule: React.FC = () => {
                 placeholder="Any observations..."
                 rows={2}
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                disabled={loading}
               />
             </div>
           </div>
           <div className="flex gap-2">
             <button
               onClick={editingId ? handleUpdateEntry : handleAddEntry}
-              disabled={!formData.startTime || !formData.endTime || !formData.description}
+              disabled={!formData.startTime || !formData.endTime || !formData.description || loading}
               className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
             >
               <Check className="w-4 h-4" />
-              {editingId ? "Update" : "Save"}
+              {loading ? "Saving..." : (editingId ? "Update" : "Save")}
             </button>
             <button
               onClick={cancelEdit}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              disabled={loading}
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Cancel
             </button>
@@ -292,7 +344,12 @@ const SleepActivitySchedule: React.FC = () => {
       )}
 
       <div className="space-y-4">
-        {entries.length === 0 ? (
+        {loading && entries.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-bloomPink mx-auto mb-3"></div>
+            <p>Loading schedule entries...</p>
+          </div>
+        ) : entries.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <Clock className="w-12 h-12 mx-auto mb-3 text-gray-300" />
             <p>No schedule entries yet. Add your first entry to get started!</p>
@@ -318,13 +375,15 @@ const SleepActivitySchedule: React.FC = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleEdit(entry.id)}
-                    className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                    disabled={loading}
+                    className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Edit3 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(entry.id)}
-                    className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                    disabled={loading}
+                    className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

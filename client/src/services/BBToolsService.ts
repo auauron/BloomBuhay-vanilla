@@ -3,6 +3,60 @@ import { authService } from "./authService";
 
 const API_URL = "http://localhost:3000/api/bbtools";
 
+
+export interface Vaccination {
+  id: string;
+  name: string;
+  dueDate: string;
+  completed: boolean;
+  completedDate?: string;
+  notes: string;
+}
+
+export interface CreateVaccinationRequest {
+  name: string;
+  dueDate: string;
+  completed?: boolean;
+  completedDate?: string;
+  notes: string;
+}
+
+export interface ScheduleEntry {
+  id: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  type: "sleep" | "activity" | "feeding";
+  description: string;
+  notes: string;
+}
+
+export interface CreateScheduleRequest {
+  date: string;
+  startTime: string;
+  endTime: string;
+  type: "sleep" | "activity" | "feeding";
+  description: string;
+  notes: string;
+}
+
+export interface NutritionEntry {
+  id: string;
+  date: string;
+  time: string;
+  food: string;
+  amount: string;
+  notes: string;
+}
+
+export interface CreateNutritionRequest {
+  date: string;
+  time: string;
+  food: string;
+  amount: string;
+  notes: string;
+}
+
 export interface BBMetric {
   id: number;
   userId?: number;
@@ -206,6 +260,8 @@ export const bbtoolsService = {
     }
   },
 
+
+  
   /* Metrics CRUD */
   async createMetric(data: CreateBBMetricRequest): Promise<GenericResponse> {
     try {
@@ -556,4 +612,253 @@ export const bbtoolsService = {
       return { success: false, error: "Failed to save due date log" };
     }
   },
-};
+  /* Nutrition CRUD */
+  async getNutritionLogs(): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/tools/nutrition`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Get nutrition logs error:", error);
+      return { success: false, error: "Failed to fetch nutrition logs" };
+    }
+  },
+
+  async addNutrition(data: CreateNutritionRequest): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/tools/nutrition`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Add nutrition error:", error);
+      return { success: false, error: "Failed to add nutrition entry" };
+    }
+  },
+
+  async updateNutrition(nutritionId: string, data: Partial<CreateNutritionRequest>): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/tools/nutrition/${nutritionId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Update nutrition error:", error);
+      return { success: false, error: "Failed to update nutrition entry" };
+    }
+  },
+
+  async deleteNutrition(nutritionId: string): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/tools/nutrition/${nutritionId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Delete nutrition error:", error);
+      return { success: false, error: "Failed to delete nutrition entry" };
+    }
+  },
+
+    /* Schedule CRUD */
+    async getScheduleEntries(): Promise<GenericResponse> {
+      try {
+        const token = authService.getToken();
+        if (!token) return { success: false, error: "Not authenticated" };
+
+        const res = await fetch(`${API_URL}/tools/schedule`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        return await res.json();
+      } catch (error) {
+        console.error("Get schedule entries error:", error);
+        return { success: false, error: "Failed to fetch schedule entries" };
+      }
+    },
+
+    async addSchedule(data: CreateScheduleRequest): Promise<GenericResponse> {
+      try {
+        const token = authService.getToken();
+        if (!token) return { success: false, error: "Not authenticated" };
+
+        const res = await fetch(`${API_URL}/tools/schedule`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(data),
+        });
+
+        return await res.json();
+      } catch (error) {
+        console.error("Add schedule error:", error);
+        return { success: false, error: "Failed to add schedule entry" };
+      }
+    },
+
+    async updateSchedule(scheduleId: string, data: Partial<CreateScheduleRequest>): Promise<GenericResponse> {
+      try {
+        const token = authService.getToken();
+        if (!token) return { success: false, error: "Not authenticated" };
+
+        const res = await fetch(`${API_URL}/tools/schedule/${scheduleId}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(data),
+        });
+
+        return await res.json();
+      } catch (error) {
+        console.error("Update schedule error:", error);
+        return { success: false, error: "Failed to update schedule entry" };
+      }
+    },
+
+    async deleteSchedule(scheduleId: string): Promise<GenericResponse> {
+      try {
+        const token = authService.getToken();
+        if (!token) return { success: false, error: "Not authenticated" };
+
+        const res = await fetch(`${API_URL}/tools/schedule/${scheduleId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        return await res.json();
+      } catch (error) {
+        console.error("Delete schedule error:", error);
+        return { success: false, error: "Failed to delete schedule entry" };
+      }
+    },
+    /* Vaccination CRUD */
+    async getVaccinations(): Promise<GenericResponse> {
+      try {
+        const token = authService.getToken();
+        if (!token) return { success: false, error: "Not authenticated" };
+
+        const res = await fetch(`${API_URL}/tools/vaccinations`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        return await res.json();
+      } catch (error) {
+        console.error("Get vaccinations error:", error);
+        return { success: false, error: "Failed to fetch vaccinations" };
+      }
+    },
+
+    async addVaccination(data: CreateVaccinationRequest): Promise<GenericResponse> {
+      try {
+        const token = authService.getToken();
+        if (!token) return { success: false, error: "Not authenticated" };
+
+        const res = await fetch(`${API_URL}/tools/vaccinations`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(data),
+        });
+
+        return await res.json();
+      } catch (error) {
+        console.error("Add vaccination error:", error);
+        return { success: false, error: "Failed to add vaccination" };
+      }
+    },
+
+    async updateVaccination(vaccinationId: string, data: Partial<CreateVaccinationRequest>): Promise<GenericResponse> {
+      try {
+        const token = authService.getToken();
+        if (!token) return { success: false, error: "Not authenticated" };
+
+        const res = await fetch(`${API_URL}/tools/vaccinations/${vaccinationId}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(data),
+        });
+
+        return await res.json();
+      } catch (error) {
+        console.error("Update vaccination error:", error);
+        return { success: false, error: "Failed to update vaccination" };
+      }
+    },
+
+    async deleteVaccination(vaccinationId: string): Promise<GenericResponse> {
+      try {
+        const token = authService.getToken();
+        if (!token) return { success: false, error: "Not authenticated" };
+
+        const res = await fetch(`${API_URL}/tools/vaccinations/${vaccinationId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        return await res.json();
+      } catch (error) {
+        console.error("Delete vaccination error:", error);
+        return { success: false, error: "Failed to delete vaccination" };
+      }
+    },
+  };
+
+
