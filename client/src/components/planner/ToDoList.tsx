@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { PlusCircle, Trash2 } from "lucide-react";
+import { PlusCircle, Trash2, CheckCircle2, CheckCircle } from 'lucide-react';
 import { plannerService } from "../../services/plannerService";
 import AddTaskModal from "./modal/AddTask";
 
@@ -165,12 +165,19 @@ export default function ToDoList() {
                   className="flex items-center w-full justify-between bg-gradient-to-r from-pink-50 to-pink-100 p-3 rounded-xl mb-3 shadow-sm hover:shadow-md transition"
                 >
                   <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={task.completed}
-                      onChange={() => handleToggleTask(task.id)}
-                      className="w-5 h-5 accent-bloomPink cursor-pointer"
-                    />
+                    <button
+                      onClick={() => handleToggleTask(task.id)}
+                      className="flex-shrink-0 transition-all duration-200 hover:scale-110"
+                      aria-label={task.completed ? "Mark as incomplete" : "Mark as complete"}
+                    >
+                      {task.completed ? (
+                        <CheckCircle2 className="w-5 h-5 text-bloomPink fill-current" />
+                      ) : (
+                        <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+                        </svg>
+                      )}
+                    </button>
                     <span
                       className={`text-lg ${
                         task.completed
