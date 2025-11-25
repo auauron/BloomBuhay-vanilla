@@ -31,25 +31,25 @@ export default function Childbirth({
     setIsOpen(false);
   };
 
-  const babyGenders = ["Girl", "Boy"];
+  // Updated baby genders to include "Prefer not to say" like pregnancy
+  const babyGenders = ["Girl", "Boy", "Unknown", "Prefer not to say"];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
   };
 
   const handleNext = () => {
-    // basic validation: require a selected gender (matches other components)
-    if (!selectedGender) return;
-
-    // normalize gender to server enum: male | female | unknown
-    const genderMap: Record<string, "male" | "female" | "unknown"> = {
+    // Remove validation - all fields are now optional
+    
+    // normalize gender to include "prefer-not-to-say" like pregnancy
+    const genderMap: Record<string, "male" | "female" | "unknown" | "prefer-not-to-say" | null> = {
       Boy: "male",
       Girl: "female",
+      Unknown: "unknown",
+      "Prefer not to say": "prefer-not-to-say",
     };
-    const babyGenderNormalized = (genderMap[selectedGender] ?? "unknown") as
-      | "male"
-      | "female"
-      | "unknown";
+    const babyGenderNormalized = selectedGender ? 
+      (genderMap[selectedGender] ?? null) : null;
 
     // convert age value to number if present
     const babyAgeMonthsNum =
@@ -84,7 +84,7 @@ export default function Childbirth({
               <div className="flex flex-col items-start">
                 <label className="block">
                   <h2 className="font-semibold text-bloomBlack text-left">
-                    Baby's Name
+                    Baby's Name (Optional)
                   </h2>
                   <div className="mt-3 ml-4 w-64">
                     <InputField
@@ -101,7 +101,7 @@ export default function Childbirth({
 
                 <label className="block">
                   <h2 className="font-semibold text-bloomBlack text-left mt-4">
-                    Baby's Age
+                    Baby's Age (Optional)
                   </h2>
                   <div className="ml-4 w-[320px] m-4">
                     <InputField
@@ -132,11 +132,12 @@ export default function Childbirth({
 
                 <label className="block">
                   <h2 className="mt-3 font-semibold text-bloomBlack ml-1 text-left">
-                    Baby's Gender
+                    Baby's Gender (Optional)
                   </h2>
                 </label>
 
-                <div className="relative mb-4 ml-4 text-left">
+
+                <div className="relative mb-4 ml-4 text-left w-[350px]">
                   <button
                     onClick={() => setIsOpen(!isOpen)}
                     className="flex items-center justify-between p-4 mt-4 border border-gray-300 rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left w-full"
@@ -157,6 +158,7 @@ export default function Childbirth({
                     />
                   </button>
 
+
                   {/* Dropdown menu */}
                   {isOpen && (
                     <div className="absolute left-0 top-full mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-20 w-full">
@@ -166,7 +168,7 @@ export default function Childbirth({
                           onClick={() => handleGenderSelect(gender)}
                           className={`p-4 hover:bg-bloomWhite transition-colors cursor-pointer ${
                             selectedGender === gender
-                              ? "text-bloomPink"
+                              ? "bg-bloomWhite text-bloomPink"
                               : "text-bloomBlack"
                           }`}
                         >
@@ -177,11 +179,13 @@ export default function Childbirth({
                   )}
                 </div>
 
-                {/* Next button */}
-                <NextButton
-                  onComplete={handleNext}
-                  isReady={Boolean(inputValue && value && selectedGender)}
-                />
+                {/* Next button - always enabled since all fields are optional */}
+                <div className="ml-4">
+                  <NextButton
+                    onComplete={handleNext}
+                    isReady={true} // Always enabled since all fields are optional
+                  />
+                </div>
               </div>
             </div>
           </div>

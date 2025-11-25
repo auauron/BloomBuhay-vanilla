@@ -35,25 +35,25 @@ export default function Postpartum({
     setIsOpen(false);
   };
 
-  const babyGenders = ["Girl", "Boy"];
+  // Updated baby genders to include "Prefer not to say" like pregnancy
+  const babyGenders = ["Girl", "Boy", "Unknown", "Prefer not to say"];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
   };
 
   const handleNext = () => {
-    // basic validation — require a selected gender (keeps current behavior)
-    if (!selectedGender) return;
-
-    // normalize gender
-    const genderMap: Record<string, "male" | "female" | "unknown"> = {
+    // Remove validation for baby details but keep weeks required
+    
+    // normalize gender to include "prefer-not-to-say" like pregnancy
+    const genderMap: Record<string, "male" | "female" | "unknown" | "prefer-not-to-say" | null> = {
       Boy: "male",
       Girl: "female",
+      Unknown: "unknown",
+      "Prefer not to say": "prefer-not-to-say",
     };
-    const babyGenderNormalized = (genderMap[selectedGender] ?? "unknown") as
-      | "male"
-      | "female"
-      | "unknown";
+    const babyGenderNormalized = selectedGender ? 
+      (genderMap[selectedGender] ?? null) : null;
 
     // convert weeksAfterBirth value to number if present
     const weeksAfterBirthNum =
@@ -84,6 +84,7 @@ export default function Postpartum({
             className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] scrollbar-thin overflow-y-auto scrollbar-thumb-white/50 scrollbar-track hover:scrollbar-thumb-white/50 shadow-lg p-8 pb-4 mb-6"
           >
             <div className="text-left ">
+              {/* REMOVED "(Optional)" from this label - making it required */}
               <h2 className="text-bloomBlack font-semibold">
                 How many weeks has it been since you gave birth?
               </h2>
@@ -119,7 +120,7 @@ export default function Postpartum({
             <div className="baby-details flex flex-col items-start">
               <label className="block">
                 <h2 className="font-semibold text-bloomBlack text-left">
-                  Baby's Name
+                  Baby's Name (Optional)
                 </h2>
                 <div className="mt-3 ml-4 w-64">
                   <InputField
@@ -135,10 +136,10 @@ export default function Postpartum({
               </label>
               <label className="block">
                 <h2 className="mt-4 font-semibold text-bloomBlack text-left">
-                  Baby's Gender
+                  Baby's Gender (Optional)
                 </h2>
               </label>
-              <div className="relative mb-4 ml-4 text-left">
+              <div className="relative mb-4 ml-4 text-left w-[350px]">
                 <button
                   onClick={() => setIsOpen(!isOpen)}
                   className="flex items-center justify-between p-4 mt-4 border border-gray-300 rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left w-full"
@@ -168,7 +169,7 @@ export default function Postpartum({
                         onClick={() => handleGenderSelect(gender)}
                         className={`p-4 hover:bg-bloomWhite transition-colors cursor-pointer ${
                           selectedGender === gender
-                            ? "text-bloomPink"
+                            ? "bg-bloomWhite text-bloomPink"
                             : "text-bloomBlack"
                         }`}
                       >
@@ -208,11 +209,13 @@ export default function Postpartum({
                 </label>
               </div>
 
-              {/* Next button */}
-              <NextButton
-                onComplete={handleNext}
-                isReady={Boolean(inputValue && value && selectedGender)}
-              />
+              {/* Next button - only require weeks value, baby details remain optional */}
+              <div className="ml-4">
+                <NextButton
+                  onComplete={handleNext}
+                  isReady={Boolean(value)} // Only require the weeks value
+                />
+              </div>
             </div>
           </div>
         </div>
