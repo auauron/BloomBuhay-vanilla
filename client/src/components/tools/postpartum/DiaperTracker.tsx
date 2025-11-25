@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { Plus, Droplets, Trash2, Edit3, Save, X, Baby, TrendingUp } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Plus, Droplets, Trash2, Edit3, Save, X, Baby } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPoop } from "@fortawesome/free-solid-svg-icons";
+import { bbtoolsService, CreateDiaperRequest, DiaperLog } from "../../../services/BBToolsService";
 
 interface DiaperChange {
   id: string;
@@ -12,7 +13,7 @@ interface DiaperChange {
   consistency?: 'seedy' | 'pasty' | 'watery';
 }
 
-const DiaperTracker: React.FC = () => {
+const DiaperTracker: React.FC<{ diapers?: DiaperLog[]; onRefresh?: () => void }> = ({ diapers = [], onRefresh }) => {
   const [changes, setChanges] = useState<DiaperChange[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -24,41 +25,97 @@ const DiaperTracker: React.FC = () => {
     consistency: 'seedy' as 'seedy' | 'pasty' | 'watery'
   });
 
-  const addChange = () => {
-    if (!formData.time) return;
+  // Map server logs to local view
+  useEffect(() => {
+    const mapped = (diapers || []).map((d) => ({
+      id: String(d.id),
+      type: (d.diaperType || 'wet') as 'wet' | 'dirty' | 'both',
+      time: d.occurredAt ? new Date(d.occurredAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
+      notes: d.notes || '',
+      color: d.color,
+      consistency: d.consistency,
+    }));
+    setChanges(mapped);
+  }, [diapers]);
 
-    const change: DiaperChange = {
-      id: Date.now().toString(),
+  const addChange = async () => {
+    if (!formData.time) return;
+    // Build occurredAt today + time
+    const [hh, mm] = formData.time.split(":");
+    const occurredAt = new Date();
+    occurredAt.setHours(parseInt(hh), parseInt(mm), 0, 0);
+
+    const payload: CreateDiaperRequest = {
+      diaperType: formData.type,
+      occurredAt: occurredAt.toISOString(),
+      color: formData.type !== 'wet' ? formData.color : undefined,
+      consistency: formData.type !== 'wet' ? (formData.consistency as any) : undefined,
+      notes: formData.notes,
+    };
+
+    // optimistic
+    const tempId = Date.now().toString();
+    const optimistic: DiaperChange = {
+      id: tempId,
       type: formData.type,
       time: formData.time,
       notes: formData.notes,
-      color: formData.type !== 'wet' ? formData.color : undefined,
-      consistency: formData.type !== 'wet' ? formData.consistency : undefined
+      color: payload.color,
+      consistency: payload.consistency as any,
     };
+    setChanges((prev) => [optimistic, ...prev]);
 
-    setChanges(prev => [change, ...prev]);
+    const res = await bbtoolsService.addDiaper(payload);
+    if (!res.success) {
+      // rollback
+      setChanges((prev) => prev.filter((c) => c.id !== tempId));
+      console.error('Failed to add diaper log', res.error);
+      return;
+    }
+    if (onRefresh) onRefresh();
     resetForm();
   };
 
-  const updateChange = () => {
+  const updateChange = async () => {
     if (!editingId || !formData.time) return;
 
-    const updatedChange: DiaperChange = {
-      id: editingId,
-      type: formData.type,
-      time: formData.time,
-      notes: formData.notes,
+    const [hh, mm] = formData.time.split(":");
+    const occurredAt = new Date();
+    occurredAt.setHours(parseInt(hh), parseInt(mm), 0, 0);
+
+    const payload: Partial<CreateDiaperRequest> = {
+      diaperType: formData.type,
+      occurredAt: occurredAt.toISOString(),
       color: formData.type !== 'wet' ? formData.color : undefined,
-      consistency: formData.type !== 'wet' ? formData.consistency : undefined
+      consistency: formData.type !== 'wet' ? (formData.consistency as any) : undefined,
+      notes: formData.notes,
     };
 
-    setChanges(prev => prev.map(c => c.id === editingId ? updatedChange : c));
+    // optimistic
+    const prevSnapshot = changes;
+    setChanges((prev) => prev.map((c) => c.id === editingId ? { ...c, type: formData.type, time: formData.time, notes: formData.notes, color: payload.color, consistency: payload.consistency as any } : c));
+
+    const res = await bbtoolsService.updateDiaper(editingId, payload);
+    if (!res.success) {
+      setChanges(prevSnapshot);
+      console.error('Failed to update diaper log', res.error);
+      return;
+    }
     setEditingId(null);
     resetForm();
+    if (onRefresh) onRefresh();
   };
 
-  const deleteChange = (id: string) => {
-    setChanges(prev => prev.filter(c => c.id !== id));
+  const deleteChange = async (id: string) => {
+    const prevSnapshot = changes;
+    setChanges((prev) => prev.filter((c) => c.id !== id));
+    const res = await bbtoolsService.deleteDiaper(id);
+    if (!res.success) {
+      setChanges(prevSnapshot);
+      console.error('Failed to delete diaper log', res.error);
+    } else {
+      if (onRefresh) onRefresh();
+    }
   };
 
   const editChange = (change: DiaperChange) => {
@@ -67,55 +124,37 @@ const DiaperTracker: React.FC = () => {
       time: change.time,
       notes: change.notes,
       color: change.color || 'yellow',
-      consistency: change.consistency || 'seedy'
+      consistency: (change.consistency || 'seedy') as any,
     });
     setEditingId(change.id);
     setShowForm(true);
   };
 
   const resetForm = () => {
-    setFormData({
-      type: 'wet',
-      time: '',
-      notes: '',
-      color: 'yellow',
-      consistency: 'seedy'
-    });
+    setFormData({ type: 'wet', time: '', notes: '', color: 'yellow', consistency: 'seedy' });
     setShowForm(false);
     setEditingId(null);
   };
 
-  const getTodayChanges = () => {
-    return changes; // Simplified - in real app filter by date
-  };
-
-  const getWetCount = () => {
-    return changes.filter(change => change.type === 'wet' || change.type === 'both').length;
-  };
-
-  const getDirtyCount = () => {
-    return changes.filter(change => change.type === 'dirty' || change.type === 'both').length;
-  };
-
-  const getHealthStatus = () => {
-    const wetCount = getWetCount();
-    const dirtyCount = getDirtyCount();
-    
-    if (wetCount >= 6 && dirtyCount >= 1) return { status: 'Excellent', color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200' };
-    if (wetCount >= 4 && dirtyCount >= 1) return { status: 'Good', color: 'text-blue-600', bg: 'bg-blue-50', border: 'border-blue-200' };
-    if (wetCount >= 3) return { status: 'Fair', color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200' };
-    return { status: 'Monitor', color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' };
-  };
-
-  const healthStatus = getHealthStatus();
+  const getTodayChanges = () => changes; // backend already returns recent list
+  const getWetCount = () => changes.filter((c) => c.type === 'wet' || c.type === 'both').length;
+  const getDirtyCount = () => changes.filter((c) => c.type === 'dirty' || c.type === 'both').length;
 
   const getDiaperIcon = (type: string) => {
     switch (type) {
-      case 'wet': return <Droplets className="w-4 h-4" />;
-      case 'dirty': return <FontAwesomeIcon icon={faPoop} style={{color: "#ffffff", width: 4, height: 4}} />
-    //   <Poop className="w-4 h-4" />;
-      case 'both': return <><Droplets className="w-4 h-4" /><FontAwesomeIcon icon={faPoop} style={{color: "#ffffff", width: 4, height: 4}} /></>;
-      default: return <Droplets className="w-4 h-4" />;
+      case 'wet':
+        return <Droplets className="flex w-4 h-4" />;
+      case 'dirty':
+        return <FontAwesomeIcon icon={faPoop} className="flex w-4 h-4 text-white" />;
+      case 'both':
+        return (
+          <div className="flex items-center justify-center gap-1 w-8 h-4">
+            <Droplets className="flex w-4 h-4" />
+            <FontAwesomeIcon icon={faPoop} className="flex w-4 h-4 text-white" />
+          </div>
+        );
+      default:
+        return <Droplets className="flex w-4 h-4" />;
     }
   };
 
@@ -141,7 +180,7 @@ const DiaperTracker: React.FC = () => {
         {/* Stats & Form */}
         <div className="lg:col-span-1 space-y-6">
           {/* Health Status */}
-          <div className={`rounded-2xl p-6 border ${healthStatus.bg} ${healthStatus.border}`}>
+          <div className={`rounded-2xl p-6 border bg-blue-50 border-blue-200`}>
             <h4 className="font-semibold text-gray-800 mb-3">Today's Summary</h4>
             <div className="grid grid-cols-2 gap-4 mb-3">
               <div className="text-center">
@@ -154,20 +193,9 @@ const DiaperTracker: React.FC = () => {
               </div>
             </div>
             <div className="text-center">
-              <div className={`font-semibold ${healthStatus.color}`}>{healthStatus.status}</div>
-              <div className="text-xs text-gray-600">Hydration Status</div>
+              <div className={`font-semibold text-blue-700`}>Hydration Monitor</div>
+              <div className="text-xs text-gray-600">Track patterns over time</div>
             </div>
-          </div>
-
-          {/* Guidelines */}
-          <div className="bg-blue-50 rounded-2xl border border-blue-200 p-6">
-            <h4 className="font-semibold text-blue-800 mb-3">Healthy Guidelines</h4>
-            <ul className="text-sm text-blue-700 space-y-2">
-              <li>• 6+ wet diapers daily indicates good hydration</li>
-              <li>• 1+ dirty diaper daily for breastfed babies</li>
-              <li>• 1+ dirty diaper every 1-2 days for formula-fed</li>
-              <li>• Contact doctor for: no wet diapers in 6+ hours</li>
-            </ul>
           </div>
 
           {/* Diaper Form */}
@@ -177,34 +205,22 @@ const DiaperTracker: React.FC = () => {
                 {editingId ? 'Edit Diaper Change' : 'New Diaper Change'}
               </h4>
               {showForm && (
-                <button
-                  onClick={resetForm}
-                  className="p-1 hover:bg-gray-100 rounded-lg"
-                >
+                <button onClick={resetForm} className="p-1 hover:bg-gray-100 rounded-lg">
                   <X className="w-4 h-4 text-gray-600" />
                 </button>
               )}
             </div>
 
             {!showForm ? (
-              <button
-                onClick={() => setShowForm(true)}
-                className="w-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white py-3 rounded-2xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
-              >
+              <button onClick={() => setShowForm(true)} className="w-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white py-3 rounded-2xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
                 <Plus className="w-5 h-5" />
                 Log Diaper Change
               </button>
             ) : (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Diaper Type
-                  </label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) => setFormData({...formData, type: e.target.value as any})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                  >
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Diaper Type</label>
+                  <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value as any})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent">
                     <option value="wet">Wet Only</option>
                     <option value="dirty">Dirty Only</option>
                     <option value="both">Wet & Dirty</option>
@@ -212,28 +228,15 @@ const DiaperTracker: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Time
-                  </label>
-                  <input
-                    type="time"
-                    value={formData.time}
-                    onChange={(e) => setFormData({...formData, time: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                  />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Time</label>
+                  <input type="time" value={formData.time} onChange={(e) => setFormData({...formData, time: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" />
                 </div>
 
                 {formData.type !== 'wet' && (
                   <>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Stool Color
-                      </label>
-                      <select
-                        value={formData.color}
-                        onChange={(e) => setFormData({...formData, color: e.target.value as any})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                      >
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Stool Color</label>
+                      <select value={formData.color} onChange={(e) => setFormData({...formData, color: e.target.value as any})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent">
                         <option value="yellow">Yellow (Normal)</option>
                         <option value="green">Green</option>
                         <option value="brown">Brown</option>
@@ -242,14 +245,8 @@ const DiaperTracker: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Consistency
-                      </label>
-                      <select
-                        value={formData.consistency}
-                        onChange={(e) => setFormData({...formData, consistency: e.target.value as any})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                      >
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Consistency</label>
+                      <select value={formData.consistency} onChange={(e) => setFormData({...formData, consistency: e.target.value as any})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent">
                         <option value="seedy">Seedy (Normal BF)</option>
                         <option value="pasty">Pasty (Normal FF)</option>
                         <option value="watery">Watery</option>
@@ -259,22 +256,11 @@ const DiaperTracker: React.FC = () => {
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Notes
-                  </label>
-                  <textarea
-                    value={formData.notes}
-                    onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
-                    rows={2}
-                    placeholder="Any observations, rash, etc."
-                  />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                  <textarea value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none" rows={2} placeholder="Any observations, rash, etc." />
                 </div>
 
-                <button
-                  onClick={editingId ? updateChange : addChange}
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-400 text-white py-3 rounded-2xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
-                >
+                <button onClick={editingId ? updateChange : addChange} className="w-full bg-gradient-to-r from-amber-500 to-orange-400 text-white py-3 rounded-2xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
                   <Save className="w-4 h-4" />
                   {editingId ? 'Update Change' : 'Save Change'}
                 </button>
@@ -287,7 +273,6 @@ const DiaperTracker: React.FC = () => {
         <div className="lg:col-span-2">
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
             <h4 className="font-semibold text-gray-800 mb-4">Diaper Change History</h4>
-            
             {changes.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <Droplets className="w-12 h-12 mx-auto mb-3 text-gray-400" />
@@ -323,16 +308,10 @@ const DiaperTracker: React.FC = () => {
                     </div>
 
                     <div className="flex gap-2">
-                      <button
-                        onClick={() => editChange(change)}
-                        className="p-2 hover:bg-white rounded-lg transition-colors text-gray-600 hover:text-amber-600"
-                      >
+                      <button onClick={() => editChange(change)} className="p-2 hover:bg-white rounded-lg transition-colors text-gray-600 hover:text-amber-600">
                         <Edit3 className="w-4 h-4" />
                       </button>
-                      <button
-                        onClick={() => deleteChange(change.id)}
-                        className="p-2 hover:bg-white rounded-lg transition-colors text-gray-600 hover:text-red-600"
-                      >
+                      <button onClick={() => deleteChange(change.id)} className="p-2 hover:bg-white rounded-lg transition-colors text-gray-600 hover:text-red-600">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
