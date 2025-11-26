@@ -1007,6 +1007,27 @@ export const bbtoolsService = {
     }
   },
 
+  async getDueDate(): Promise<GenericResponse> {
+    const token = authService.getToken();
+    const res = await fetch(`${API_URL}/tools/duedate`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.json();
+  },
+
+  async saveDueDate(data: { lmpDate: string; weeksPregnant: number }): Promise<GenericResponse> {
+    const token = authService.getToken();
+    const res = await fetch(`${API_URL}/tools/duedate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  },
+
     async getKickSessions(): Promise<GenericResponse & { data?: KickSession[] }> {
     try {
       const token = authService.getToken();
