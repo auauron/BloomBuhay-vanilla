@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { X, Upload, Edit3, Trash2, Calendar, Clock, Plus } from "lucide-react";
 import { Album, Photo } from "./types";
 import PhotoDetailModal from "./PhotoDetailModal";
@@ -22,12 +22,28 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const [currentAlbum, setCurrentAlbum] = useState<Album>(album);
+
+  // Update local state when album prop changes
+  useEffect(() => {
+    setCurrentAlbum(album);
+  }, [album]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (files.length > 0) {
-      onAddPhotos(album.id, files);
+      onAddPhotos(currentAlbum.id, files);
     }
+  };
+
+  const handleUpdatePhoto = async (albumId: string, updatedPhoto: Photo) => {
+    await onUpdatePhoto(albumId, updatedPhoto);
+    // The parent should update the albums state, which will trigger the useEffect above
+  };
+
+  const handleDeletePhoto = async (albumId: string, photoId: string) => {
+    await onDeletePhoto(albumId, photoId);
+    // The parent should update the albums state, which will trigger the useEffect above
   };
 
   const formatDate = (dateString: string) => {
@@ -51,8 +67,8 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-200 sticky top-0 bg-white">
           <div>
-            <h2 className="text-2xl font-semibold text-gray-800">{album.title}</h2>
-            <p className="text-gray-600 mt-1">{album.description}</p>
+            <h2 className="text-2xl font-semibold text-gray-800">{currentAlbum.title}</h2>
+            <p className="text-gray-600 mt-1">{currentAlbum.description}</p>
           </div>
           <button
             onClick={onClose}
@@ -67,11 +83,11 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4" />
-              <span>Created: {formatDate(album.createdAt)}</span>
+              <span>Created: {formatDate(currentAlbum.createdAt)}</span>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              <span>Updated: {formatDate(album.lastUpdated)} at {formatTime(album.lastUpdated)}</span>
+              <span>Updated: {formatDate(currentAlbum.lastUpdated)} at {formatTime(currentAlbum.lastUpdated)}</span>
             </div>
           </div>
         </div>
@@ -80,7 +96,7 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-800">
-              Photos ({album.photos.length})
+              Photos ({currentAlbum.photos.length})
             </h3>
             <button
               onClick={() => fileInputRef.current?.click()}
@@ -102,7 +118,7 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({
 
         {/* Photos Grid */}
         <div className="p-6">
-          {album.photos.length === 0 ? (
+          {currentAlbum.photos.length === 0 ? (
             <div className="text-center py-12">
               <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
                 <Plus className="w-8 h-8 text-gray-400" />
@@ -112,7 +128,7 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {album.photos.map((photo) => (
+              {currentAlbum.photos.map((photo) => (
                 <div
                   key={photo.id}
                   className="bg-gray-100 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group relative"
@@ -152,10 +168,10 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({
       {selectedPhoto && (
         <PhotoDetailModal
           photo={selectedPhoto}
-          albumId={album.id}
+          albumId={currentAlbum.id}
           onClose={() => setSelectedPhoto(null)}
-          onUpdate={onUpdatePhoto}
-          onDelete={onDeletePhoto}
+          onUpdate={handleUpdatePhoto}
+          onDelete={handleDeletePhoto}
         />
       )}
     </div>

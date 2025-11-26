@@ -13,6 +13,10 @@ export function translateBloomdate ( date: BloomDate ): string {
   return `${date.day}/${date.date}/${date.month}/${date.year}`
 };
 
+export function translateBloomtime ( time: BloomTime ): string {
+  return `${time.hour}/${time.min}/${time.sec}`
+};
+
 export function translateDateStringToBloomDate ( date: string ) : BloomDate {
   const data = date.split("/"); 
   return { day: Number(data[0]), date: Number(data[1]), month: Number(data[2]), year: Number(data[3]) }

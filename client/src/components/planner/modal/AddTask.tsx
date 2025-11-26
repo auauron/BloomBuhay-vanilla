@@ -4,47 +4,53 @@ import { X, ChevronRight, ChevronUp, ChevronDown, Target } from "lucide-react";
 import { Task, BloomDate, AddTaskModalProps, BloomTime } from "../../../types/plan";
 import { getFullDate, getNow, getTime, taskID, translateBloomdate } from "../PlannerFuntions";
 
-export default function AddTaskModal({ onClose, onCancel, onAdd, selectDate, selectMode } : AddTaskModalProps) {
+export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, onSelectDate } : AddTaskModalProps) {
 
   const now: BloomDate = getNow()
   const nowTime: BloomTime = getTime()
-  const selectedMonth = (selectDate) ? selectDate : now
+  
+
 
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [isSingleDate, setSingleDate] = useState(true);
   const [isWholeDay, setWholeDay] = useState(true);
   const [dateStart, setDateStart] = useState(now)
-  const [dateEnd, setDateEnd] = useState(now)
+  const [dateEnd, setDateEnd] = useState<BloomDate | null>(null)
+  const [selectingDate, toggleSelectingDate] = useState<string | null>(null)
   const [days, setDays] = useState<number[]>([])
   const [interval, setInterval] = useState(0)
   const [timeHr, setTimeHr] = useState(6)
   const [timeMin, setTimeMin] = useState(0)
   const [clock, setClock] = useState("AM")
+  const [time, setTime] = useState<BloomTime | null>(null)
+
+  const [selectedDate, setSelectedDate] = useState<string | null>(null)
 
     
   const [form, setForm] = useState<Task>({
     id: taskID(now, nowTime),
-    task: title,
+    title: title,
     description: description,
     isCompleted: false,
     startDate: dateStart,
     endDate: dateEnd,
     days: days,
     interval: interval,
-    time: { hour: timeHr, min: timeMin, sec: 0 } as BloomTime
-
+    time: { hour: timeHr, min: timeMin, sec: 0 } as BloomTime,
+    updatedAt: translateBloomdate(now)
   });
 
-  const [isSelectingDate, setIsSelectingDate] = useState(false)
-  const [selectedDay, setSelectedDay] = useState(now)
-
   const handleSingleDay = () => {
-    setSingleDate(!isSingleDate)
+    setSingleDate(!isSingleDate);
+    if (dateEnd === null) setDateEnd(now); else null;
+    setInterval(0);
+    if (!days) setDays([0,1,2,3,4,5,6]); else setDays([]);
   }
 
   const handleWholeDay = () => {
-    setWholeDay(!isWholeDay)
+    setWholeDay(!isWholeDay);
+    if (time === null) setTime({ hour: timeHr, min: timeMin, sec: 0 } as BloomTime); else null;
   }
 
   const handleClose = () => {
@@ -53,11 +59,16 @@ export default function AddTaskModal({ onClose, onCancel, onAdd, selectDate, sel
 
   const handleCancel = () => {
     setForm({
-    id: taskID( now, nowTime),
-    task: "Task",
-    description: null,
+    id: taskID(now, nowTime),
+    title: title,
+    description: description,
     isCompleted: false,
-    startDate: now
+    startDate: dateStart,
+    endDate: dateEnd,
+    days: days,
+    interval: interval,
+    time: null,
+    updatedAt: translateBloomdate(now)
     })
     onClose();
   }
@@ -66,8 +77,8 @@ export default function AddTaskModal({ onClose, onCancel, onAdd, selectDate, sel
     onAdd(form)
   }
 
-  const handelStartDate = () => {
-    
+  const handleSelectDate = () => {
+    onSelectDate();
   }
 
 
@@ -140,13 +151,24 @@ export default function AddTaskModal({ onClose, onCancel, onAdd, selectDate, sel
                       className="flex items-center justify-center gap-2"
                       >
                         <button 
-                        className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105"
+                        className={`py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105
+                          ${(selectingDate === "startDate") ? `bg-gradient-to-r from-bloomPink to-bloomYellow text-white` : `shadow border-bloomBlack/0 scale-105`}
+                          `}
+                        onClick={
+                          toggleSelectingDate("startDate")
+                        }
                         >
                           {getFullDate(dateStart)}
                         </button>
                         <ChevronRight className="text-bloomPink" />
-                        <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
-                          {getFullDate(dateEnd)}
+                        <button className={`py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105
+                          ${(selectingDate === "endDate") ? `bg-gradient-to-r from-bloomPink to-bloomYellow text-white` : `shadow border-bloomBlack/0 scale-105`}
+                        `}
+                        onClick={
+                          toggleSelectingDate("endDate")
+                        }
+                        >
+                          {getFullDate(dateEnd || now)}
                         </button>
                       </motion.div>
                       : 
@@ -158,9 +180,16 @@ export default function AddTaskModal({ onClose, onCancel, onAdd, selectDate, sel
                       transition={{ duration: 0.3 }}
                       className="flex items-center justify-center"
                       >
-                        <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
+                        <button
+                        className={`py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105
+                        ${(selectingDate === "startDate") ? `bg-gradient-to-r from-bloomPink to-bloomYellow text-white` : `shadow border-bloomBlack/0 scale-105`}
+                        `}
+                        onClick={
+                          toggleSelectingDate("startDate")
+                        }
+                        >
                             {getFullDate(dateStart)}
-                          </button>
+                        </button>
                       </motion.div>
                     )}
                   </div>

@@ -21,17 +21,17 @@ export interface HealthMood {
   userId?: number;
   mood: string;
   notes?: string;
-  createdAt?: string;
+  createdAt: string;
 }
 
 export interface HealthSymptom {
   id: number;
-  symptom: string;        // frontend mapped name
+  symptom: string;
   intensity?: "Low" | "Medium" | "High" | string;
   notes?: string;
   resolved?: boolean;
   rawCreatedAt?: string;
-  time?: string; // display time string
+  time?: string;
 }
 
 export interface GetHealthResponse {
@@ -82,6 +82,7 @@ export const healthtrackerService = {
     }
   },
 
+  /* ---------- Metrics ---------- */
   async createMetric(data: CreateMetricRequest): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
@@ -144,14 +145,75 @@ export const healthtrackerService = {
     }
   },
 
-  /* ---------- Symptom helpers ---------- */
+  /* ---------- Moods (CRUD) ---------- */
+  async addMood(data: { mood: string; notes?: string }): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
 
-  // Frontend should call this with the frontend shape if possible.
+      const res = await fetch(`${API_URL}/moods`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (err) {
+      console.error("Add mood error:", err);
+      return { success: false, error: "Failed to create mood" };
+    }
+  },
+
+  async updateMood(id: number | string, data: { mood?: string; notes?: string }): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/moods/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (err) {
+      console.error("Update mood error:", err);
+      return { success: false, error: "Failed to update mood" };
+    }
+  },
+
+  async deleteMood(id: number | string): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/moods/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return await res.json();
+    } catch (err) {
+      console.error("Delete mood error:", err);
+      return { success: false, error: "Failed to delete mood" };
+    }
+  },
+
+  /* ---------- Symptom helpers ---------- */
   async addSymptom(data: {
     symptom: string;
     intensity?: "Low" | "Medium" | "High" | string;
-    date?: string; // YYYY-MM-DD
-    time?: string; // HH:MM or "hh:mm AM/PM"
+    date?: string;
+    time?: string;
     resolved?: boolean;
     notes?: string;
   }): Promise<GenericResponse> {
@@ -159,9 +221,7 @@ export const healthtrackerService = {
       const token = authService.getToken();
       if (!token) return { success: false, error: "Not authenticated" };
 
-      // Map to server-friendly payload (server accepts both shapes)
       const payload: any = {
-        // server accepts 'symptom' or legacy 'name'
         symptom: data.symptom,
         intensity: data.intensity,
         date: data.date,

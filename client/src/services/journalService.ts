@@ -317,28 +317,47 @@ export const journalService = {
     },
 
     async deleteAlbum(albumId: string): Promise<ApiResponse<void>> {
-        try {
+    try {
         const token = authService.getToken();
         if (!token) {
             return { success: false, error: "Not authenticated" };
         }
 
-        const response = await fetch(`${API_URL}/albums/${albumId}`, {
+        console.log(`Deleting album ${albumId} from ${API_URL}/album/${albumId}`);
+        
+        const response = await fetch(`${API_URL}/album/${albumId}`, {
             method: "DELETE",
             headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
             },
         });
 
-        const result = await response.json();
-        return result;
-        } catch (error) {
-        console.error("Delete album error:", error);
-        return { success: false, error: "Failed to delete album" };
-        }
-    },
+        console.log('Delete response status:', response.status);
 
+        if (response.status === 404) {
+            return { success: false, error: "Album not found" };
+        }
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            return { 
+                success: false, 
+                error: errorText || `HTTP error! status: ${response.status}`
+            };
+        }
+
+        // Success case - no content expected
+        return { success: true, data: undefined };
+
+    } catch (error) {
+        console.error("Delete album error:", error);
+        return { 
+            success: false, 
+            error: error instanceof Error ? error.message : "Failed to delete album" 
+        };
+    }
+},
     // PHOTOS API
 
     async addPhotosToAlbum(

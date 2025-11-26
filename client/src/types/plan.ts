@@ -18,34 +18,43 @@ export interface DateJumperProps {
 }
 
 export interface CalendarState {
-  selectedDate: (date: BloomDate | null) => void;
-  selectMode: boolean;
+  selectedDay: string | null;
+  setSelectedDay: React.Dispatch<React.SetStateAction<string | null>>;
+  month: number;
+  setMonth: React.Dispatch<React.SetStateAction<number>>;
+  year: number;
+  setYear: React.Dispatch<React.SetStateAction<number>>;
+  showPicker: boolean;
+  setShowPicker: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface ToDoListState {
-  selectedMode: () => void;
-  selectedDate: BloomDate | null
+  selectedDate: BloomDate | null;
+  isSelecting: boolean;
+  onSelectDate: React.Dispatch<React.SetStateAction<boolean>>;
+
 }
 
 export interface Task {
-  id: string
-  task: string | null;
-  description?: string | null;
+  id: number;
+  title: string;
+  description: string;
   isCompleted: boolean;
   startDate: BloomDate;
-  endDate?: BloomDate;
-  days?: number[];
-  interval?: number;
-  time?: BloomTime;
-  dateCreated?: string;
+  endDate: BloomDate | null;
+  days: number[];
+  interval: number;
+  time: BloomTime | null;
+  dateCreated?: string | null;
+  updatedAt: string;
 };
 
 export interface AddTaskModalProps {
   onClose: () => void;
-  onCancel: () => void;
   onAdd: (task: Task) => void;
   selectDate: BloomDate | null;
-  selectMode: () => void;
+  isSelecting: boolean;
+  onSelectDate: () => void;
 }
 
 

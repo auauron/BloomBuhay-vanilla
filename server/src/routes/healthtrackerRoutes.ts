@@ -6,9 +6,6 @@ import { PrismaClient, HealthMetric, HealthMood, HealthSymptom } from "@prisma/c
 const router = Router();
 const db = new PrismaClient();
 
-/**
- * Helper: format a Date into the frontend display string used by the UI.
- */
 function formatDisplayDateFromDate(d: Date): string {
   const now = new Date();
   const yesterday = new Date(now);
@@ -21,9 +18,6 @@ function formatDisplayDateFromDate(d: Date): string {
   return `${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}, ${timeString}`;
 }
 
-/**
- * Safe intensity mapping from DB severity -> frontend "Low"|"Medium"|"High"
- */
 function mapSeverityToIntensity(severity?: string): "Low" | "Medium" | "High" {
   const s = (severity || "").toLowerCase();
   if (s === "high") return "High";
@@ -63,7 +57,7 @@ router.get("/", authenticateToken, async (req: AuthRequest, res: Response): Prom
       moods = await db.healthMood.findMany({
         where: { motherId },
         orderBy: [{ createdAt: "desc" }],
-        take: 20,
+        take: 50,
       });
     } catch (err) {
       console.warn("Failed to fetch moods, returning empty array", err);
@@ -83,7 +77,6 @@ router.get("/", authenticateToken, async (req: AuthRequest, res: Response): Prom
       symptomsRaw = [];
     }
 
-    // Map DB rows to the frontend-friendly shape
     const symptoms = symptomsRaw.map((s) => {
       const createdAt = s.createdAt ? new Date(s.createdAt) : new Date();
       return {
@@ -125,29 +118,95 @@ router.post("/metrics", authenticateToken, async (req: AuthRequest, res: Respons
 
 /**
  * Create a new mood
+ * POST /api/healthtracker/moods
  */
 router.post("/moods", authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const motherId = req.userId!;
     const { mood, notes } = req.body;
 
+    if (!mood || typeof mood !== "string") {
+      res.status(400).json({ success: false, error: "Invalid mood" });
+      return;
+    }
+
     const newMood = await db.healthMood.create({
-      data: { motherId, mood, notes },
+      data: { motherId, mood, notes: notes ?? "" },
     });
 
     res.status(201).json({ success: true, data: newMood });
   } catch (err) {
-    console.error(err);
+    console.error("Failed to add mood:", err);
     res.status(500).json({ success: false, error: "Failed to add mood" });
   }
 });
 
 /**
- * Create a new symptom
- *
- * Accepts legacy { name, severity, notes } or frontend shape { symptom, intensity, date, time, resolved, notes }.
- * Returns mapped frontend object.
+ * Update a mood (partial)
+ * PATCH /api/healthtracker/moods/:id
  */
+router.patch("/moods/:id", authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const motherId = req.userId!;
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      res.status(400).json({ success: false, error: "Invalid id" });
+      return;
+    }
+
+    const existing = await db.healthMood.findUnique({ where: { id } });
+    if (!existing || existing.motherId !== motherId) {
+      res.status(404).json({ success: false, error: "Not found" });
+      return;
+    }
+
+    const { notes, mood } = req.body as any;
+    const updates: any = {};
+    if (typeof notes !== "undefined") updates.notes = notes;
+    if (typeof mood !== "undefined") updates.mood = mood;
+
+    const updated = await db.healthMood.update({
+      where: { id },
+      data: updates,
+    });
+
+    res.status(200).json({ success: true, data: updated });
+  } catch (err) {
+    console.error("Update mood error", err);
+    res.status(500).json({ success: false, error: "Failed to update mood" });
+  }
+});
+
+/**
+ * Delete a mood
+ * DELETE /api/healthtracker/moods/:id
+ */
+router.delete("/moods/:id", authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const motherId = req.userId!;
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      res.status(400).json({ success: false, error: "Invalid id" });
+      return;
+    }
+
+    const existing = await db.healthMood.findUnique({ where: { id } });
+    if (!existing || existing.motherId !== motherId) {
+      res.status(404).json({ success: false, error: "Not found" });
+      return;
+    }
+
+    await db.healthMood.delete({ where: { id } });
+
+    res.status(200).json({ success: true, data: { id } });
+  } catch (err) {
+    console.error("Delete mood error:", err);
+    res.status(500).json({ success: false, error: "Failed to delete mood" });
+  }
+});
+
+/* ---------- Symptom routes (unchanged, kept for completeness) ---------- */
+
 router.post("/symptoms", authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const motherId = req.userId!;
@@ -219,13 +278,9 @@ router.post("/symptoms", authenticateToken, async (req: AuthRequest, res: Respon
   }
 });
 
-/**
- * Update a symptom (partial update).
- * PATCH /api/healthtracker/symptoms/:id
- */
 router.patch("/symptoms/:id", authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const motherId = req.userId!;
+    const motherId = req.userId;
     const id = Number(req.params.id);
     if (Number.isNaN(id)) {
       res.status(400).json({ success: false, error: "Invalid id" });
@@ -238,7 +293,6 @@ router.patch("/symptoms/:id", authenticateToken, async (req: AuthRequest, res: R
       return;
     }
 
-    // allow partial updates of these fields
     const { symptom, intensity, name, severity, notes, resolved, date, time } = req.body as any;
 
     const updates: any = {};
@@ -248,7 +302,6 @@ router.patch("/symptoms/:id", authenticateToken, async (req: AuthRequest, res: R
     if (typeof notes !== "undefined") updates.notes = notes;
     if (typeof resolved === "boolean") updates.resolved = resolved;
 
-    // optional update createdAt if date/time provided and valid
     if (date) {
       let createdAt: Date | null = null;
       try {
@@ -293,10 +346,6 @@ router.patch("/symptoms/:id", authenticateToken, async (req: AuthRequest, res: R
   }
 });
 
-/**
- * Delete a symptom
- * DELETE /api/healthtracker/symptoms/:id
- */
 router.delete("/symptoms/:id", authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const motherId = req.userId!;

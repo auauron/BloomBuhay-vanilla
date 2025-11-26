@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 import { PlusCircle, Trash2 } from "lucide-react";
 import { plannerService } from "../../services/plannerService";
 import AddTaskModal from "./modal/AddTask";
-import { Task, BloomDate, BloomTime, ToDoListState } from "../../types/plan";
-import { getFullDate, getNow, getTime, taskID, translateBloomdate } from "./PlannerFuntions";
+import { Task, ToDoListState } from "../../types/plan";
+import { getFullDate, getNow, translateBloomdate } from "./PlannerFuntions";
 
-export default function ToDoList({ selectedMode, selectedDate }: ToDoListState) {
+export default function ToDoList({ selectedDate, isSelecting, onSelectDate }: ToDoListState) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [loading, setLoading] = useState(true);
@@ -24,23 +24,11 @@ export default function ToDoList({ selectedMode, selectedDate }: ToDoListState) 
     try {
       setLoading(true);
       setError(null);
+
       const response = await plannerService.getTasks();
       
       if (response.success && response.data) {
-        // Transform API data to component format
-        const transformedTasks = response.data.map((task) => ({
-          id: task.id,
-          task: task.task,
-          description: task.description,
-          isCompleted: task.isCompleted,
-          startDate: task.startDate,
-          endDate: task.endDate,
-          days: task.days,
-          interval: task.interval,
-          time: task.time,
-          dateCreated: task.dateCreated
-        }));
-        setTasks(transformedTasks);
+        setTasks(response.data)
       } else {
         setError(response.error || "Failed to fetch tasks");
       }
@@ -52,33 +40,32 @@ export default function ToDoList({ selectedMode, selectedDate }: ToDoListState) 
     }
   }
 
-  // Add new task
+  // Filter Tasks by Selected Date
+  const filteredTasks = selectedDate
+  ? tasks.filter(t =>
+      t.startDate.date === selectedDate.date &&
+      t.startDate.month === selectedDate.month &&
+      t.startDate.year === selectedDate.year
+    )
+  : tasks;
+
   async function handleAddTask() {
     if (!newTaskTitle.trim()) return;
 
     try {
       const response = await plannerService.createTask({
-        id: taskID(getNow(), getTime()),
-        title: newTaskTitle,
-        description: null,
-        isCompleted: false,
-        startDate: (selectedDate === null) ? getNow() : selectedDate
+        title: newTaskTitle.trim(),
+        description: "",
+        startDate: selectedDate ?? getNow(),
+        endDate: selectedDate ?? getNow(),
+        days: [],
+        interval: 0,
+        time: null,
+        dateCreated: getNow()
       });
 
       if (response.success && response.data) {
-        const newTask: Task = {
-          id: response.data.id,
-          task: response.data.task,
-          description: response.data.description,
-          isCompleted: response.data.isCompleted,
-          startDate: response.data.startDate,
-          endDate: response.data.endDate,
-          days: response.data.days,
-          interval: response.data.interval,
-          time: response.data.time,
-          dateCreated: response.data.dateCreated
-        };
-        setTasks((prev) => [newTask, ...prev]);
+        setTasks((prev) => [response.data!, ...prev]);
         setNewTaskTitle("");
       } else {
         setError(response.error || "Failed to create task");
@@ -90,7 +77,7 @@ export default function ToDoList({ selectedMode, selectedDate }: ToDoListState) 
   }
 
   // Delete task
-  async function handleDeleteTask(id: string) {
+  async function handleDeleteTask(id: number) {
     try {
       const response = await plannerService.deleteTask(id);
       
@@ -106,18 +93,26 @@ export default function ToDoList({ selectedMode, selectedDate }: ToDoListState) 
   }
 
   // Toggle checkbox
-  async function handleToggleTask(id: string) {
-    const task = tasks.find((t) => t.id === id);
+  async function handleToggleTask(id: number) {
+    const task = tasks.find(t => t.id === id);
     if (!task) return;
 
     try {
       const response = await plannerService.updateTask(id, {
         isCompleted: !task.isCompleted,
+        title: task.title,
+        description: task.description,
+        startDate: task.startDate,
+        endDate: task.endDate,
+        days: task.days,
+        interval: task.interval,
+        time: task.time,
+        updatedAt: getNow()
       });
 
       if (response.success) {
         setTasks((prev) =>
-          prev.map((t) =>
+          prev.map(t =>
             t.id === id ? { ...t, completed: !t.isCompleted } : t
           )
         );
@@ -152,11 +147,11 @@ export default function ToDoList({ selectedMode, selectedDate }: ToDoListState) 
 
           <div className="h-[500px] flex flex-col gap-3">
           {/* Error Message */}
-          {error && (
-            <div className="p-3 bg-red-100 text-red-700 rounded-xl text-sm">
-              {error}
-            </div>
-          )}
+            {error && (
+              <div className="p-3 bg-red-100 text-red-700 rounded-xl text-sm">
+                {error}
+              </div>
+            )}
 
           {/* Task List Container */}
           <div className="flex flex-col justify-start items-center bg-white rounded-xl p-4 text-[#474747] h-full overflow-y-auto shadow-inner">
@@ -186,12 +181,12 @@ export default function ToDoList({ selectedMode, selectedDate }: ToDoListState) 
                           : "text-gray-800"
                       }`}
                     >
-                      {task.task}
+                      {task.title}
                     </span>
                   </div>
 
                   <div className="flex items-center gap-3 text-sm text-gray-500">
-                    <span>{task.dateCreated}</span>
+                    <span>{translateBloomdate(task.startDate)}</span>
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
@@ -210,7 +205,7 @@ export default function ToDoList({ selectedMode, selectedDate }: ToDoListState) 
           {newTaskTitle.length >= 0 && (
             <input
               type="text"
-              placeholder="Type new task..."
+              placeholder={`Type new task on ${(selectedDate === null) ? `${getNow().month + 1}/${getNow().day}/${getNow().year}` : `${selectedDate.month + 1}/${selectedDate.date}/${selectedDate.year}`}`}
               value={newTaskTitle}
               onChange={(e) => setNewTaskTitle(e.target.value)}
               className="w-full p-3 rounded-xl bg-white/80 focus:bg-white outline-none text-gray-700"
@@ -223,13 +218,13 @@ export default function ToDoList({ selectedMode, selectedDate }: ToDoListState) 
     ) : (
       <AddTaskModal
       onClose = {() => setIsAdding(!isAdding)}
-      onCancel={() => setIsAdding(!isAdding)}
       onAdd={(task) => {
         setTasks(tasks.concat(task))
         setIsAdding(!isAdding)
       }}
       selectDate={selectedDate}
-      selectMode={() => selectedMode()}
+      isSelecting={isSelecting}
+      onSelectDate={() => onSelectDate(!isSelecting)}
       />
     )
   );
