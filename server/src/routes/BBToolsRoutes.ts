@@ -1358,4 +1358,76 @@ router.delete("/doctor-visits/:id", authenticateToken, async (req: AuthRequest, 
   }
 });
 
+// GET /api/bbtools/kicks
+router.get("/kicks", authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
+
+    const kickLogs = await db.toolsLog.findMany({
+      where: { motherId: userId, type: "kick" },
+      orderBy: [{ createdAt: "desc" }],
+      take: 100,
+    });
+
+    const kicks = kickLogs.map((t) => {
+      const d: any = t.data || {};
+      return {
+        id: t.id,
+        userId,
+        startTime: d.startTime ?? null,
+        endTime: d.endTime ?? null,
+        durationSeconds: d.durationSeconds ?? 0,
+        kicks: d.kicks ?? 0,
+        createdAt: t.createdAt.toISOString(),
+        updatedAt: t.createdAt.toISOString(),
+      };
+    });
+
+    res.status(200).json({ success: true, data: kicks });
+  } catch (error) {
+    console.error("Get kicks error:", error);
+    res.status(500).json({ success: false, error: "failed to fetch kick sessions" });
+  }
+});
+
+// POST /api/bbtools/kicks
+router.post("/kicks", authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId;
+    if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
+
+    const { startTime, endTime, durationSeconds, kicks } = req.body;
+
+    const created = await db.toolsLog.create({
+      data: {
+        motherId: userId,
+        type: "kick",
+        data: {
+          startTime: startTime ?? null,
+          endTime: endTime ?? null,
+          durationSeconds: durationSeconds ?? 0,
+          kicks: kicks ?? 0,
+        },
+      },
+    });
+
+    const d: any = created.data || {};
+    const responseObj = {
+      id: created.id,
+      userId,
+      startTime: d.startTime || null,
+      endTime: d.endTime || null,
+      durationSeconds: d.durationSeconds || 0,
+      kicks: d.kicks || 0,
+      createdAt: created.createdAt.toISOString(),
+      updatedAt: created.createdAt.toISOString(),
+    };
+
+    res.status(201).json({ success: true, data: responseObj });
+  } catch (error) {
+    console.error("Create kick session error:", error);
+    res.status(500).json({ success: false, error: "failed to create kick session" });
+  }
+});
 export default router;

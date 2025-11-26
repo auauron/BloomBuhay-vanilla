@@ -1,4 +1,3 @@
-// src/services/BBToolsService.ts
 import { authService } from "./authService";
 
 const API_URL = "http://localhost:3000/api/bbtools";
@@ -324,6 +323,24 @@ export interface DueDateLog {
   id?: number;
   lmpDate: string; // ISO string
   weeksPregnant: number;
+}
+export interface KickSession {
+  id: number;
+  userId?: number;
+  startTime?: string; // ISO
+  endTime?: string;   // ISO
+  durationSeconds: number;
+  kicks: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+/* Kick endpoints */
+export interface CreateKickRequest {
+  startTime?: string;
+  endTime?: string;
+  durationSeconds: number;
+  kicks: number;
 }
 
 export const bbtoolsService = {
@@ -987,6 +1004,41 @@ export const bbtoolsService = {
     } catch (err) {
       console.error('Delete schedule error:', err);
       return { success: false, error: 'Failed to delete schedule entry' };
+    }
+  },
+
+    async getKickSessions(): Promise<GenericResponse & { data?: KickSession[] }> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not Authenticated" };
+
+      const res = await fetch(`${API_URL}/kicks`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Get kick sessions error:", error);
+      return { success: false, error: "Failed to fetch kick sessions" };
+    }
+  },
+
+  async createKickSession(data: CreateKickRequest): Promise<GenericResponse & { data?: KickSession }> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not Authenticated" };
+
+      const res = await fetch(`${API_URL}/kicks`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Create kick session error:", error);
+      return { success: false, error: "Failed to create kick session" };
     }
   },
 };
