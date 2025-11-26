@@ -24,6 +24,23 @@ export default function SignupPage() {
     setErrors([]);
     setGeneralError("");
 
+    // Client-side validation for full name and password length
+    if (fullName.length > 50) {
+      setErrors((prev) => [...prev, { field: "fullName", message: "Full name must be at most 50 characters long." }]);
+      setLoading(false);
+      return;
+    }
+    if (password.length > 25) {
+      setErrors((prev) => [...prev, { field: "password", message: "Password must be at most 25 characters long." }]);
+      setLoading(false);
+      return;
+    }
+    if (confirmPassword.length > 25) {
+      setErrors((prev) => [...prev, { field: "confirmPassword", message: "Confirm password must be at most 25 characters long." }]);
+      setLoading(false);
+      return;
+    }
+
     const result = await authService.signup({
       fullName,
       email,
@@ -83,6 +100,7 @@ export default function SignupPage() {
               onChange={setFullName}
               placeholder="Enter your name"
               error={getFieldError("fullName")}
+              maxLength={50}
             />
 
             <InputField
@@ -98,18 +116,20 @@ export default function SignupPage() {
               label="Password"
               type="password"
               value={password}
-              onChange={setPassword}
+              onChange={(val) => setPassword(val.slice(0, 25))}
               placeholder="Enter your password"
               error={getFieldError("password")}
+              maxLength={25}
             />
 
             <InputField
               label="Confirm Password"
               type="password"
               value={confirmPassword}
-              onChange={setConfirmPassword}
+              onChange={(val) => setConfirmPassword(val.slice(0, 25))}
               placeholder="Re-enter your password"
               error={getFieldError("confirmPassword")}
+              maxLength={25}
             />
             <div>
               <button
