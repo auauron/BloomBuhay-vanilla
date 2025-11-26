@@ -102,7 +102,7 @@ export default function AIChat() {
           {/* Header */}
           <div className="bg-white p-4 rounded-t-2xl border-b border-gray-200">
             <div className="flex justify-between items-center">
-              <h3 className="font-semibold text-gray-800 text-sm">BloomGuide AI Assistant</h3>
+              <h3 className="font-semibold text-bloomPink text-sm">BloomGuide AI Assistant</h3>
               <button
                 onClick={() => setIsOpen(false)}
                 className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"

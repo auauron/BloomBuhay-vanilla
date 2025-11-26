@@ -595,48 +595,50 @@ export default function Dashboard() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <div className="min-h-screen bg-bloomWhite flex flex-col font-poppins overflow-y-auto autoscroll">
+      <div className="h-screen bg-bloomWhite flex flex-col font-poppins relative">
         <Header onMenuClick={toggleSidebar} />
         <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
-        <div className="flex flex-col items-center text-center mt-8 px-3">
-          <h2 className="text-4xl font-bold text-bloomPink">
-            Hello,{" "}
-            {isLoading
-              ? "Mama!"
-              : userName
-              ? `Mama ${userName.charAt(0).toUpperCase() + userName.slice(1)}!`
-              : "Mama!"}
-          </h2>
+        <main className="flex-1 overflow-auto">
+          <div className="flex flex-col items-center text-center mt-8 px-3">
+            <h2 className="text-4xl font-bold text-bloomPink">
+              Hello,{" "}
+              {isLoading
+                ? "Mama!"
+                : userName
+                ? `Mama ${userName.charAt(0).toUpperCase() + userName.slice(1)}!`
+                : "Mama!"}
+            </h2>
 
-          {stageLabel && (
-            <div className="mt-2 md:mt-3">
-              <span className="text-lg md:text-xl font-rubik font-normal text-bloomBlack">
-                Bloom stage:{" "}
-                <span className="text-bloomPink"> {stageLabel} </span>
-              </span>
-            </div>
-          )}
+            {stageLabel && (
+              <div className="mt-2 md:mt-3">
+                <span className="text-lg md:text-xl font-rubik font-normal text-bloomBlack">
+                  Bloom stage: {" "}
+                  <span className="text-bloomPink"> {stageLabel} </span>
+                </span>
+              </div>
+            )}
 
-          <p className="text-bloomBlack text-center font-rubik mt-3 md:mt-4 mb-[-5px] font-light text-base md:text-lg max-w-2xl">
-            "{motivationalMessage}"
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 xl:grid-cols-[minmax(400px,550px)_1fr] gap-4 md:gap-6 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
-          <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-6 md:p-8 rounded-[20px] shadow-lg relative min-h-[300px] md:min-h-[350px]">
-            {renderMainCard()}
+            <p className="text-bloomBlack text-center font-rubik mt-3 md:mt-4 mb-[-5px] font-light text-base md:text-lg max-w-2xl">
+              "{motivationalMessage}"
+            </p>
           </div>
 
-          <div className="flex flex-col gap-4 md:gap-6">
-            {renderProgressSection()}
+          <div className="grid grid-cols-1 xl:grid-cols-[minmax(400px,550px)_1fr] gap-4 md:gap-6 p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+            <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-6 md:p-8 rounded-[20px] shadow-lg relative min-h-[300px] md:min-h-[350px]">
+              {renderMainCard()}
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <DashboardToDoList />
-              <DashboardTipsSection canonicalStageKey={canonicalStageKey} />
+            <div className="flex flex-col gap-4 md:gap-6">
+              {renderProgressSection()}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <DashboardToDoList />
+                <DashboardTipsSection canonicalStageKey={canonicalStageKey} />
+              </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </motion.div>
   );

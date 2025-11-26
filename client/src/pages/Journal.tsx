@@ -325,7 +325,7 @@ export default function Journal() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <div className="flex flex-col h-screen font-poppins bg-white">
+      <div className="flex flex-col h-screen font-poppins bg-bloomWhite">
         <Header onMenuClick={toggleSidebar} />
         <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
