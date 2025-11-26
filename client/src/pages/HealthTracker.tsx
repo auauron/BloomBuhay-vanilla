@@ -17,7 +17,7 @@ import {
   ScanHeart
 } from "lucide-react";
 import '../index.css';
-import { healthtrackerService, HealthMetric } from "../services/healthtrackerService";
+import { healthtrackerService, HealthMetric } from "../services/healthTrackerService";
 
 export default function HealthTracker() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

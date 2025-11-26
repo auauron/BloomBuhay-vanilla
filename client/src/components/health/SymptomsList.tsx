@@ -14,7 +14,7 @@ import {
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "../../index.css";
-import { healthtrackerService } from "../../services/healthtrackerService";
+import { healthtrackerService } from "../../services/healthTrackerService";
 
 type Intensity = "Low" | "Medium" | "High";
 
