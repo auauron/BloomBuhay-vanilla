@@ -3,7 +3,7 @@ import { authService } from "./authService";
 
 const API_URL = "http://localhost:3000/api/bbtools";
 
-export interface Vaccination {
+export interface ChildcareVaccination {
   id: string;
   name: string;
   dueDate: string;
@@ -12,7 +12,7 @@ export interface Vaccination {
   notes: string;
 }
 
-export interface CreateVaccinationRequest {
+export interface CreateChildcareVaccinationRequest {
   name: string;
   dueDate: string;
   completed?: boolean;
@@ -597,6 +597,7 @@ export const bbtoolsService = {
     }
   },
 
+  /* Diaper Logs */
   async addDiaper(data: CreateDiaperRequest): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
@@ -656,6 +657,22 @@ export const bbtoolsService = {
     } catch (error) {
       console.error("Delete diaper error:", error);
       return { success: false, error: "Failed to delete diaper log" };
+    }
+  },
+
+  /* Postpartum Vaccination Logs */
+    async getVaccinations(): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/vaccinations`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Get vaccinations error:', err);
+      return { success: false, error: 'Failed to fetch vaccinations' };
     }
   },
 
@@ -721,6 +738,70 @@ export const bbtoolsService = {
     }
   },
 
+  /* Childcare Vaccinations (Simple) */
+  async getChildcareVaccinations(): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/vaccinations`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Get childcare vaccinations error:', err);
+      return { success: false, error: 'Failed to fetch childcare vaccinations' };
+    }
+  },
+
+  async addChildcareVaccination(data: CreateChildcareVaccinationRequest): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/vaccinations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data)
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Add childcare vaccination error:', err);
+      return { success: false, error: 'Failed to add childcare vaccination' };
+    }
+  },
+
+  async updateChildcareVaccination(id: string, data: Partial<CreateChildcareVaccinationRequest>): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/vaccinations/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data)
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Update childcare vaccination error:', err);
+      return { success: false, error: 'Failed to update childcare vaccination' };
+    }
+  },
+
+  async deleteChildcareVaccination(id: string): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/vaccinations/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Delete childcare vaccination error:', err);
+      return { success: false, error: 'Failed to delete childcare vaccination' };
+    }
+  },
+
+  /* Doctor Visits */
   async addDoctorVisit(data: CreateDoctorVisitRequest): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
@@ -783,20 +864,7 @@ export const bbtoolsService = {
     }
   },
 
-  async getVaccinations(): Promise<GenericResponse> {
-    try {
-      const token = authService.getToken();
-      if (!token) return { success: false, error: 'Not authenticated' };
-      const res = await fetch(`${API_URL}/vaccinations`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-      });
-      return await res.json();
-    } catch (err) {
-      console.error('Get vaccinations error:', err);
-      return { success: false, error: 'Failed to fetch vaccinations' };
-    }
-  },
+  /* Nutrition Logs */
   async getNutritionLogs(): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
@@ -811,6 +879,7 @@ export const bbtoolsService = {
       return { success: false, error: 'Failed to fetch nutrition logs' };
     }
   },
+
   async addNutrition(data: CreateNutritionRequest): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
@@ -826,6 +895,7 @@ export const bbtoolsService = {
       return { success: false, error: 'Failed to add nutrition entry' };
     }
   },
+
   async updateNutrition(id: string, data: Partial<CreateNutritionRequest>): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
@@ -841,6 +911,7 @@ export const bbtoolsService = {
       return { success: false, error: 'Failed to update nutrition entry' };
     }
   },
+
   async deleteNutrition(id: string): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
@@ -855,6 +926,8 @@ export const bbtoolsService = {
       return { success: false, error: 'Failed to delete nutrition entry' };
     }
   },
+
+  /* Schedule Entries */
   async getScheduleEntries(): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
@@ -869,6 +942,7 @@ export const bbtoolsService = {
       return { success: false, error: 'Failed to fetch schedule entries' };
     }
   },
+
   async addSchedule(data: CreateScheduleRequest): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
@@ -884,6 +958,7 @@ export const bbtoolsService = {
       return { success: false, error: 'Failed to add schedule entry' };
     }
   },
+
   async updateSchedule(id: string, data: Partial<CreateScheduleRequest>): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
@@ -899,6 +974,7 @@ export const bbtoolsService = {
       return { success: false, error: 'Failed to update schedule entry' };
     }
   },
+
   async deleteSchedule(id: string): Promise<GenericResponse> {
     try {
       const token = authService.getToken();

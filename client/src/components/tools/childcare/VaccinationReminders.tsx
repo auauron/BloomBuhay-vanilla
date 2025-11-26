@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Bell, CheckCircle, Clock, AlertCircle, Plus, Trash2, Syringe } from "lucide-react";
-import { bbtoolsService, Vaccination, CreateVaccinationRequest } from "../../../services/BBToolsService";
+import { bbtoolsService, ChildcareVaccination, CreateChildcareVaccinationRequest } from "../../../services/BBToolsService";
 
 const VaccinationReminders: React.FC = () => {
-  const [vaccinations, setVaccinations] = useState<Vaccination[]>(() => {
+  const [vaccinations, setVaccinations] = useState<ChildcareVaccination[]>(() => {
     // Start with empty array - no default vaccinations
     return [];
   });
@@ -24,9 +24,9 @@ const VaccinationReminders: React.FC = () => {
   const loadVaccinations = async () => {
     setLoading(true);
     try {
-      const response = await bbtoolsService.getVaccinations();
+      const response = await bbtoolsService.getChildcareVaccinations();
       if (response.success && response.data) {
-        setVaccinations(response.data);
+        setVaccinations(response.data as ChildcareVaccination[]);
       } else {
         console.error("Failed to load vaccinations:", response.error);
       }
@@ -37,7 +37,7 @@ const VaccinationReminders: React.FC = () => {
     }
   };
 
-  const getStatus = (vaccination: Vaccination) => {
+  const getStatus = (vaccination: ChildcareVaccination) => {
     if (vaccination.completed) return "completed";
     const dueDate = new Date(vaccination.dueDate);
     const today = new Date();
@@ -100,15 +100,25 @@ const VaccinationReminders: React.FC = () => {
       const vaccination = vaccinations.find(v => v.id === id);
       if (!vaccination) return;
 
+      const isNowCompleted = !vaccination.completed;
+      const completedDate = isNowCompleted ? new Date().toISOString().split('T')[0] : undefined;
+
       const updatedData = {
-        completed: !vaccination.completed,
-        completedDate: !vaccination.completed ? new Date().toISOString().split('T')[0] : undefined
+        name: vaccination.name,
+        dueDate: vaccination.dueDate,
+        completed: isNowCompleted,
+        completedDate: completedDate,
+        notes: vaccination.notes
       };
 
-      const response = await bbtoolsService.updateVaccination(id, updatedData);
+      const response = await bbtoolsService.updateChildcareVaccination(id, updatedData); 
       if (response.success && response.data) {
         setVaccinations(vaccinations.map(v => 
-          v.id === id ? { ...v, ...response.data } : v
+          v.id === id ? { 
+            ...v, 
+            completed: isNowCompleted,
+            completedDate: completedDate
+          } : v
         ));
       } else {
         console.error("Failed to update vaccination:", response.error);
@@ -127,10 +137,13 @@ const VaccinationReminders: React.FC = () => {
 
     setLoading(true);
     try {
-      const response = await bbtoolsService.addVaccination({
-        ...newVaccination,
-        completed: false
-      } as CreateVaccinationRequest);
+      const response = await bbtoolsService.addChildcareVaccination({
+        name: newVaccination.name,
+        dueDate: newVaccination.dueDate,
+        completed: false,
+        completedDate: undefined,
+        notes: newVaccination.notes
+      } as CreateChildcareVaccinationRequest);
       
       if (response.success && response.data) {
         setVaccinations([...vaccinations, response.data]);
@@ -153,7 +166,7 @@ const VaccinationReminders: React.FC = () => {
 
     setLoading(true);
     try {
-      const response = await bbtoolsService.deleteVaccination(id);
+      const response = await bbtoolsService.deleteChildcareVaccination(id);
       if (response.success) {
         setVaccinations(vaccinations.filter(v => v.id !== id));
       } else {
