@@ -25,8 +25,8 @@ export default function SignupPage() {
     setGeneralError("");
 
     // Client-side validation for full name and password length
-    if (fullName.length > 50) {
-      setErrors((prev) => [...prev, { field: "fullName", message: "Full name must be at most 50 characters long." }]);
+    if (fullName.length > 35) {
+      setErrors((prev) => [...prev, { field: "fullName", message: "Full name must be at most 35 characters long." }]);
       setLoading(false);
       return;
     }
@@ -100,7 +100,7 @@ export default function SignupPage() {
               onChange={setFullName}
               placeholder="Enter your name"
               error={getFieldError("fullName")}
-              maxLength={50}
+              maxLength={35}
             />
 
             <InputField
