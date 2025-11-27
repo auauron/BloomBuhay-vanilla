@@ -69,7 +69,7 @@ model PlannerTask {
   title       String
   description String
   isCompleted Boolean   @default(false)
-  startDate   Strig
+  startDate   String
   endDate     String
   days        Int[]
   interval    Int

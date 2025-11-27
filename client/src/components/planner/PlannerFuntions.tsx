@@ -9,6 +9,22 @@ export function getTime (): BloomTime {
   return { hour: new Date().getHours(), min: new Date().getMinutes(), sec: new Date().getSeconds() }
 }
 
+export function militaryTime (hour: number, min: number, clock: string): BloomTime {
+  if (hour === 12) {
+    if (clock === "AM") {
+      return {hour: 0, min: min, sec: 0}
+    } else {
+      return {hour: 12, min: min, sec: 0}
+    }
+  } else {
+    if (clock === "AM") {
+      return {hour: hour, min: min, sec: 0}
+    } else {
+      return {hour: hour + 12, min: min, sec: 0}
+    }
+  }
+}
+
 export function translateBloomdate ( date: BloomDate ): string {
   return `${date.day}/${date.date}/${date.month}/${date.year}`
 };

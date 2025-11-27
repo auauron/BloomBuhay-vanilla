@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, number } from "framer-motion";
 import { X, ChevronRight, ChevronUp, ChevronDown, Target } from "lucide-react";
 import { Task, BloomDate, AddTaskModalProps, BloomTime } from "../../../types/plan";
-import { getFullDate, getNow, getTime, taskID, translateBloomdate } from "../PlannerFuntions";
+import { getFullDate, getNow, getTime, militaryTime, taskID, translateBloomdate } from "../PlannerFuntions";
 
 export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, onSelectDate } : AddTaskModalProps) {
 
@@ -37,7 +37,7 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
     endDate: dateEnd,
     days: days,
     interval: interval,
-    time: { hour: timeHr, min: timeMin, sec: 0 } as BloomTime,
+    time: militaryTime(timeHr, timeMin, clock),
     updatedAt: translateBloomdate(now)
   });
 
@@ -77,9 +77,32 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
     onAdd(form)
   }
 
-  const handleSelectDate = () => {
-    onSelectDate();
+  const handleSelectStartDate = () => {
+    if (selectingDate === null) {
+      onSelectDate();
+    }
+
+    if (selectingDate !== "StartDate") {
+      toggleSelectingDate("StartDate")
+    } else {
+      toggleSelectingDate(null)
+    }
+
   }
+
+    const handleSelectEndDate = () => {
+    if (selectingDate === null) {
+      onSelectDate();
+    }
+
+    if (selectingDate !== "EndDate") {
+      toggleSelectingDate("EndDate")
+    } else {
+      toggleSelectingDate(null)
+    }
+
+  }
+
 
 
   const handleChangeClock = () => {
@@ -152,21 +175,17 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
                       >
                         <button 
                         className={`py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105
-                          ${(selectingDate === "startDate") ? `bg-gradient-to-r from-bloomPink to-bloomYellow text-white` : `shadow border-bloomBlack/0 scale-105`}
+                          ${(selectingDate === "StartDate") ? `bg-gradient-to-r from-bloomPink to-bloomYellow text-white` : `shadow border-bloomBlack/0 scale-105`}
                           `}
-                        onClick={
-                          toggleSelectingDate("startDate")
-                        }
+                        onClick={handleSelectStartDate}
                         >
                           {getFullDate(dateStart)}
                         </button>
                         <ChevronRight className="text-bloomPink" />
                         <button className={`py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105
-                          ${(selectingDate === "endDate") ? `bg-gradient-to-r from-bloomPink to-bloomYellow text-white` : `shadow border-bloomBlack/0 scale-105`}
+                          ${(selectingDate === "EndDate") ? `bg-gradient-to-r from-bloomPink to-bloomYellow text-white` : `shadow border-bloomBlack/0 scale-105`}
                         `}
-                        onClick={
-                          toggleSelectingDate("endDate")
-                        }
+                        onClick={handleSelectEndDate}
                         >
                           {getFullDate(dateEnd || now)}
                         </button>
@@ -182,11 +201,9 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
                       >
                         <button
                         className={`py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105
-                        ${(selectingDate === "startDate") ? `bg-gradient-to-r from-bloomPink to-bloomYellow text-white` : `shadow border-bloomBlack/0 scale-105`}
+                        ${(selectingDate === "StartDate") ? `bg-gradient-to-r from-bloomPink to-bloomYellow text-white` : `shadow border-bloomBlack/0 scale-105`}
                         `}
-                        onClick={
-                          toggleSelectingDate("startDate")
-                        }
+                        onClick={handleSelectStartDate}
                         >
                             {getFullDate(dateStart)}
                         </button>
