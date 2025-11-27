@@ -19,7 +19,8 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "https://bloombuhay-client.onrender.com",
-  "https://bloombuhay-vanilla-backend.onrender.com"
+  "https://bloombuhay-vanilla-backend.onrender.com",
+  ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : [])
 ];
 
 app.use(
@@ -27,7 +28,7 @@ app.use(
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps, curl, etc.)
       if (!origin) return callback(null, true);
-      
+
       if (allowedOrigins.indexOf(origin) === -1) {
         const msg = `CORS policy: ${origin} not allowed`;
         return callback(new Error(msg), false);

@@ -25,7 +25,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: REACT_BACKEND_URL
-        value: https://bloom-buhay-api.onrender.com  # Update this to your actual API URL after deployment
+        value: https://bloombuhay-vanilla-backend.onrender.com
     plan: free
 
 databases:

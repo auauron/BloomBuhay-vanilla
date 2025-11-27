@@ -1,7 +1,8 @@
 import { SignupRequest, LoginRequest, AuthResponse } from "../types/auth";
+import { API_BASE_URL } from "../config";
 
 // Use the environment variable for the backend URL with fallback for development
-const API_URL = `${process.env.REACT_BACKEND_URL || 'http://localhost:3000'}/api/auth`;
+const API_URL = `${API_BASE_URL}/api/auth`;
 
 // Common fetch options for API requests
 const fetchOptions = (method: string, data?: any): RequestInit => ({
@@ -29,8 +30,8 @@ export const authService = {
             Promise.resolve(localStorage.setItem("token", result.token)),
             result.refreshToken
               ? Promise.resolve(
-                  localStorage.setItem("refreshToken", result.refreshToken)
-                )
+                localStorage.setItem("refreshToken", result.refreshToken)
+              )
               : Promise.resolve(),
             Promise.resolve(
               localStorage.setItem("user", JSON.stringify(result.user))

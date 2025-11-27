@@ -34,7 +34,7 @@
   },
   "scripts": {
     "dev": "webpack serve",
-    "build": "webpack"
+    "build": "webpack && node -e \"require('fs').copyFileSync('static.json', 'dist/static.json')\""
   },
   "dependencies": {
     "@alloc/quick-lru": "^5.2.0",

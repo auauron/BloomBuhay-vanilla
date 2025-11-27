@@ -1,6 +1,7 @@
 import { authService } from "./authService";
+import { API_BASE_URL } from "../config";
 
-const API_URL = `${process.env.REACT_BACKEND_URL || 'http://localhost:3000'}/api/users`;
+const API_URL = `${API_BASE_URL}/api/users`;
 
 export interface UserProfile {
   id: number;

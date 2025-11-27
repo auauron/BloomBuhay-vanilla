@@ -1,6 +1,7 @@
 import { authService } from "./authService";
+import { API_BASE_URL } from "../config";
 
-const API_URL = process.env.REACT_BACKEND_URL || "http://localhost:3000";
+const API_URL = API_BASE_URL;
 
 interface BabyDetails {
   motherhoodStage: string;
@@ -44,7 +45,7 @@ export const babyService = {
       return { success: false, error: "Network error" };
     }
   },
-  
+
   async updateBabyDetails(baby: {
     motherhoodStage: string;
     babyName: string;

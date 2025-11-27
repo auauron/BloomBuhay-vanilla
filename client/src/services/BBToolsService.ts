@@ -1,14 +1,6 @@
-import { authService } from "./authService";
-
-const API_URL = `${process.env.REACT_BACKEND_URL || 'http://localhost:3000'}/api/bbtools`;
-
-export interface ChildcareVaccination {
-  id: string;
-  name: string;
-  dueDate: string;
-  completed: boolean;
-  completedDate?: string;
-  notes: string;
+completed: boolean;
+completedDate ?: string;
+notes: string;
 }
 
 export interface CreateChildcareVaccinationRequest {
@@ -93,7 +85,7 @@ export interface GrowthRecord {
   userId?: number;
   weight?: number;
   height?: number;
-  headCircumference?: number; 
+  headCircumference?: number;
   ageMonths?: number;
   notes?: string;
   createdAt?: string;
@@ -117,7 +109,7 @@ export interface VaccinationLog {
   userId?: number;
   vaccineName?: string;
   dose?: string;
-  date?: string; 
+  date?: string;
   administeredDate?: string;
   status?: "scheduled" | "completed" | "overdue";
   clinic?: string;
@@ -678,7 +670,7 @@ export const bbtoolsService = {
   },
 
   /* Postpartum Vaccination Logs */
-    async getVaccinations(): Promise<GenericResponse> {
+  async getVaccinations(): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
       if (!token) return { success: false, error: 'Not authenticated' };
@@ -1028,7 +1020,7 @@ export const bbtoolsService = {
     return res.json();
   },
 
-    async getKickSessions(): Promise<GenericResponse & { data?: KickSession[] }> {
+  async getKickSessions(): Promise<GenericResponse & { data?: KickSession[] }> {
     try {
       const token = authService.getToken();
       if (!token) return { success: false, error: "Not Authenticated" };
@@ -1063,7 +1055,7 @@ export const bbtoolsService = {
     }
   },
 
-    /* Pregnancy – Contraction Timer */
+  /* Pregnancy – Contraction Timer */
   async getContractions(): Promise<GenericResponse> {
     try {
       const token = authService.getToken();

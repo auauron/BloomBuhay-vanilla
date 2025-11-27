@@ -1,24 +1,14 @@
-import { authService } from "./authService";
-import { Note, Album, Photo } from "../components/journal/types";
-
-
-const API_URL = `${process.env.REACT_BACKEND_URL || 'http://localhost:3000'}/api/journal`;
-
-// TYPE DEFINITIONS
-
-export interface ApiNote {
-    id: number;
-    motherId: number;
-    title: string;
-    content: string;
-    photoUrl: string | null;
-    tags: string[];
-    mood: string | null;
-    createdAt: string;
-    lastUpdated: string;
+motherId: number;
+title: string;
+content: string;
+photoUrl: string | null;
+tags: string[];
+mood: string | null;
+createdAt: string;
+lastUpdated: string;
 }
 
-export interface ApiAlbum{
+export interface ApiAlbum {
     id: number;
     motherId: number;
     title: string;
@@ -29,7 +19,7 @@ export interface ApiAlbum{
     photos: ApiPhoto[];
 }
 
-export interface ApiPhoto{
+export interface ApiPhoto {
     id: number;
     albumId: number;
     fileUrl: string;
@@ -62,26 +52,26 @@ function convertApiNoteToNote(apiNote: ApiNote): Note {
 }
 
 function convertApiPhotoToPhoto(apiPhoto: ApiPhoto): Photo {
-  return {
-    id: apiPhoto.id.toString(),
-    file: apiPhoto.fileUrl,
-    name: apiPhoto.name || undefined,
-    notes: apiPhoto.notes || undefined,
-    createdAt: apiPhoto.createdAt,
-    uploadedAt: apiPhoto.uploadedAt,
-  };
+    return {
+        id: apiPhoto.id.toString(),
+        file: apiPhoto.fileUrl,
+        name: apiPhoto.name || undefined,
+        notes: apiPhoto.notes || undefined,
+        createdAt: apiPhoto.createdAt,
+        uploadedAt: apiPhoto.uploadedAt,
+    };
 }
 
 function convertApiAlbumToAlbum(apiAlbum: ApiAlbum): Album {
-  return {
-    id: apiAlbum.id.toString(),
-    title: apiAlbum.title,
-    coverPhoto: apiAlbum.coverPhoto || "",
-    photos: apiAlbum.photos.map(convertApiPhotoToPhoto),
-    createdAt: apiAlbum.createdAt,
-    lastUpdated: apiAlbum.lastUpdated,
-    description: apiAlbum.description || "",
-  };
+    return {
+        id: apiAlbum.id.toString(),
+        title: apiAlbum.title,
+        coverPhoto: apiAlbum.coverPhoto || "",
+        photos: apiAlbum.photos.map(convertApiPhotoToPhoto),
+        createdAt: apiAlbum.createdAt,
+        lastUpdated: apiAlbum.lastUpdated,
+        description: apiAlbum.description || "",
+    };
 }
 
 // journal service
@@ -90,8 +80,8 @@ export const journalService = {
     async getNotes(): Promise<ApiResponse<Note[]>> {
         try {
             const token = authService.getToken();
-            if(!token) {
-                return { success: false, error: "Not authenticated"}
+            if (!token) {
+                return { success: false, error: "Not authenticated" }
             }
 
             const response = await fetch(`${API_URL}/notes`, {
@@ -109,11 +99,11 @@ export const journalService = {
             return result;
         } catch (e) {
             console.error("Get notes error", e);
-            return{success: false, error: "Failed to fetch notes"};
+            return { success: false, error: "Failed to fetch notes" };
         }
     },
 
-    async createNote(noteData:{
+    async createNote(noteData: {
         title: string;
         content: string;
         photo?: string;
@@ -123,21 +113,21 @@ export const journalService = {
         try {
             const token = authService.getToken();
             if (!token) {
-                return { success: false, error: "Not authenticated"};
+                return { success: false, error: "Not authenticated" };
             }
 
             const response = await fetch(`${API_URL}/notes`, {
                 method: "POST",
                 headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                title: noteData.title,
-                content: noteData.content,
-                photoUrl: noteData.photo || null,
-                tags: noteData.tags || [],
-                mood: noteData.mood || null,
+                    title: noteData.title,
+                    content: noteData.content,
+                    photoUrl: noteData.photo || null,
+                    tags: noteData.tags || [],
+                    mood: noteData.mood || null,
                 }),
             });
 
@@ -149,49 +139,49 @@ export const journalService = {
             return result;
         } catch (e) {
             console.error("Create not error:", e);
-            return { success: false, error: "Failed to create note"}
+            return { success: false, error: "Failed to create note" }
         }
     },
 
     async updateNote(
         noteId: string,
         noteData: Partial<{
-        title: string;
-        content: string;
-        photo: string;
-        tags: string[];
-        mood: string;
+            title: string;
+            content: string;
+            photo: string;
+            tags: string[];
+            mood: string;
         }>
     ): Promise<ApiResponse<Note>> {
         try {
-        const token = authService.getToken();
-        if (!token) {
-            return { success: false, error: "Not authenticated" };
-        }
+            const token = authService.getToken();
+            if (!token) {
+                return { success: false, error: "Not authenticated" };
+            }
 
-        const response = await fetch(`${API_URL}/notes/${noteId}`, {
-            method: "PATCH",
-            headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-            title: noteData.title,
-            content: noteData.content,
-            photoUrl: noteData.photo,
-            tags: noteData.tags,
-            mood: noteData.mood,
-            }),
-        });
+            const response = await fetch(`${API_URL}/notes/${noteId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    title: noteData.title,
+                    content: noteData.content,
+                    photoUrl: noteData.photo,
+                    tags: noteData.tags,
+                    mood: noteData.mood,
+                }),
+            });
 
-        const result = await response.json();
-        if (result.success && result.data) {
-            result.data = convertApiNoteToNote(result.data);
-        }
-        return result;
+            const result = await response.json();
+            if (result.success && result.data) {
+                result.data = convertApiNoteToNote(result.data);
+            }
+            return result;
         } catch (error) {
-        console.error("Update note error:", error);
-        return { success: false, error: "Failed to update note" };
+            console.error("Update note error:", error);
+            return { success: false, error: "Failed to update note" };
         }
     },
 
@@ -205,16 +195,16 @@ export const journalService = {
             const response = await fetch(`${API_URL}/notes/${noteId}`, {
                 method: "DELETE",
                 headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
             });
 
             const result = await response.json();
             return result;
         } catch (error) {
-        console.error("Delete note error:", error);
-        return { success: false, error: "Failed to delete note" };
+            console.error("Delete note error:", error);
+            return { success: false, error: "Failed to delete note" };
         }
     },
 
@@ -223,27 +213,27 @@ export const journalService = {
 
     async getAlbums(): Promise<ApiResponse<Album[]>> {
         try {
-        const token = authService.getToken();
-        if (!token) {
-            return { success: false, error: "Not authenticated" };
-        }
+            const token = authService.getToken();
+            if (!token) {
+                return { success: false, error: "Not authenticated" };
+            }
 
-        const response = await fetch(`${API_URL}/albums`, {
-            method: "GET",
-            headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            },
-        });
+            const response = await fetch(`${API_URL}/albums`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
-        const result = await response.json();
-        if (result.success && result.data) {
-            result.data = result.data.map(convertApiAlbumToAlbum);
-        }
-        return result;
+            const result = await response.json();
+            if (result.success && result.data) {
+                result.data = result.data.map(convertApiAlbumToAlbum);
+            }
+            return result;
         } catch (error) {
-        console.error("Get albums error:", error);
-        return { success: false, error: "Failed to fetch albums" };
+            console.error("Get albums error:", error);
+            return { success: false, error: "Failed to fetch albums" };
         }
     },
 
@@ -253,111 +243,111 @@ export const journalService = {
         description?: string;
     }): Promise<ApiResponse<Album>> {
         try {
-        const token = authService.getToken();
-        if (!token) {
-            return { success: false, error: "Not authenticated" };
-        }
+            const token = authService.getToken();
+            if (!token) {
+                return { success: false, error: "Not authenticated" };
+            }
 
-        const response = await fetch(`${API_URL}/albums`, {
-            method: "POST",
-            headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-            title: albumData.title,
-            coverPhoto: albumData.coverPhoto || null,
-            description: albumData.description || null,
-            }),
-        });
+            const response = await fetch(`${API_URL}/albums`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    title: albumData.title,
+                    coverPhoto: albumData.coverPhoto || null,
+                    description: albumData.description || null,
+                }),
+            });
 
-        const result = await response.json();
-        if (result.success && result.data) {
-            result.data = convertApiAlbumToAlbum(result.data);
-        }
-        return result;
+            const result = await response.json();
+            if (result.success && result.data) {
+                result.data = convertApiAlbumToAlbum(result.data);
+            }
+            return result;
         } catch (error) {
-        console.error("Create album error:", error);
-        return { success: false, error: "Failed to create album" };
+            console.error("Create album error:", error);
+            return { success: false, error: "Failed to create album" };
         }
     },
 
     async updateAlbum(
         albumId: string,
         albumData: Partial<{
-        title: string;
-        coverPhoto: string;
-        description: string;
+            title: string;
+            coverPhoto: string;
+            description: string;
         }>
     ): Promise<ApiResponse<Album>> {
         try {
-        const token = authService.getToken();
-        if (!token) {
-            return { success: false, error: "Not authenticated" };
-        }
+            const token = authService.getToken();
+            if (!token) {
+                return { success: false, error: "Not authenticated" };
+            }
 
-        const response = await fetch(`${API_URL}/albums/${albumId}`, {
-            method: "PATCH",
-            headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(albumData),
-        });
+            const response = await fetch(`${API_URL}/albums/${albumId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(albumData),
+            });
 
-        const result = await response.json();
-        if (result.success && result.data) {
-            result.data = convertApiAlbumToAlbum(result.data);
-        }
-        return result;
+            const result = await response.json();
+            if (result.success && result.data) {
+                result.data = convertApiAlbumToAlbum(result.data);
+            }
+            return result;
         } catch (error) {
-        console.error("Update album error:", error);
-        return { success: false, error: "Failed to update album" };
+            console.error("Update album error:", error);
+            return { success: false, error: "Failed to update album" };
         }
     },
 
     async deleteAlbum(albumId: string): Promise<ApiResponse<void>> {
-    try {
-        const token = authService.getToken();
-        if (!token) {
-            return { success: false, error: "Not authenticated" };
-        }
+        try {
+            const token = authService.getToken();
+            if (!token) {
+                return { success: false, error: "Not authenticated" };
+            }
 
-        console.log(`Deleting album ${albumId} from ${API_URL}/album/${albumId}`);
-        
-        const response = await fetch(`${API_URL}/album/${albumId}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-        });
+            console.log(`Deleting album ${albumId} from ${API_URL}/album/${albumId}`);
 
-        console.log('Delete response status:', response.status);
+            const response = await fetch(`${API_URL}/album/${albumId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
-        if (response.status === 404) {
-            return { success: false, error: "Album not found" };
-        }
+            console.log('Delete response status:', response.status);
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            return { 
-                success: false, 
-                error: errorText || `HTTP error! status: ${response.status}`
+            if (response.status === 404) {
+                return { success: false, error: "Album not found" };
+            }
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                return {
+                    success: false,
+                    error: errorText || `HTTP error! status: ${response.status}`
+                };
+            }
+
+            // Success case - no content expected
+            return { success: true, data: undefined };
+
+        } catch (error) {
+            console.error("Delete album error:", error);
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : "Failed to delete album"
             };
         }
-
-        // Success case - no content expected
-        return { success: true, data: undefined };
-
-    } catch (error) {
-        console.error("Delete album error:", error);
-        return { 
-            success: false, 
-            error: error instanceof Error ? error.message : "Failed to delete album" 
-        };
-    }
-},
+    },
     // PHOTOS API
 
     async addPhotosToAlbum(
@@ -365,28 +355,28 @@ export const journalService = {
         photos: Array<{ fileUrl: string; name?: string; notes?: string }>
     ): Promise<ApiResponse<Album>> {
         try {
-        const token = authService.getToken();
-        if (!token) {
-            return { success: false, error: "Not authenticated" };
-        }
+            const token = authService.getToken();
+            if (!token) {
+                return { success: false, error: "Not authenticated" };
+            }
 
-        const response = await fetch(`${API_URL}/albums/${albumId}/photos`, {
-            method: "POST",
-            headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ photos }),
-        });
+            const response = await fetch(`${API_URL}/albums/${albumId}/photos`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ photos }),
+            });
 
-        const result = await response.json();
-        if (result.success && result.data) {
-            result.data = convertApiAlbumToAlbum(result.data);
-        }
-        return result;
+            const result = await response.json();
+            if (result.success && result.data) {
+                result.data = convertApiAlbumToAlbum(result.data);
+            }
+            return result;
         } catch (error) {
-        console.error("Add photos error:", error);
-        return { success: false, error: "Failed to add photos" };
+            console.error("Add photos error:", error);
+            return { success: false, error: "Failed to add photos" };
         }
     },
 
@@ -395,51 +385,51 @@ export const journalService = {
         photoData: { name?: string; notes?: string }
     ): Promise<ApiResponse<Photo>> {
         try {
-        const token = authService.getToken();
-        if (!token) {
-            return { success: false, error: "Not authenticated" };
-        }
+            const token = authService.getToken();
+            if (!token) {
+                return { success: false, error: "Not authenticated" };
+            }
 
-        const response = await fetch(`${API_URL}/photos/${photoId}`, {
-            method: "PATCH",
-            headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(photoData),
-        });
+            const response = await fetch(`${API_URL}/photos/${photoId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(photoData),
+            });
 
-        const result = await response.json();
-        if (result.success && result.data) {
-            result.data = convertApiPhotoToPhoto(result.data);
-        }
-        return result;
+            const result = await response.json();
+            if (result.success && result.data) {
+                result.data = convertApiPhotoToPhoto(result.data);
+            }
+            return result;
         } catch (error) {
-        console.error("Update photo error:", error);
-        return { success: false, error: "Failed to update photo" };
+            console.error("Update photo error:", error);
+            return { success: false, error: "Failed to update photo" };
         }
     },
 
     async deletePhoto(photoId: string): Promise<ApiResponse<void>> {
         try {
-        const token = authService.getToken();
-        if (!token) {
-            return { success: false, error: "Not authenticated" };
-        }
+            const token = authService.getToken();
+            if (!token) {
+                return { success: false, error: "Not authenticated" };
+            }
 
-        const response = await fetch(`${API_URL}/photos/${photoId}`, {
-            method: "DELETE",
-            headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            },
-        });
+            const response = await fetch(`${API_URL}/photos/${photoId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
-        const result = await response.json();
-        return result;
+            const result = await response.json();
+            return result;
         } catch (error) {
-        console.error("Delete photo error:", error);
-        return { success: false, error: "Failed to delete photo" };
+            console.error("Delete photo error:", error);
+            return { success: false, error: "Failed to delete photo" };
         }
     },
 
