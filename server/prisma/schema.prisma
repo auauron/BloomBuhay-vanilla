@@ -69,12 +69,12 @@ model PlannerTask {
   title       String
   description String
   isCompleted Boolean   @default(false)
-  startDate   Json?
-  endDate     Json?
+  startDate   Strig
+  endDate     String
   days        Int[]
-  interval    Int?
-  time        Json?
-  dateCreated String?
+  interval    Int
+  time        String
+  dateCreated String
   updatedAt   DateTime  @updatedAt @db.Timestamptz(6)
   
   @@index([userId], name: "idx_planner_task_user_id")
