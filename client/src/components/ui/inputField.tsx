@@ -9,6 +9,7 @@ interface InputFieldProps {
   placeholder: string;
   error?: string;
   min?: string | number;
+  max?: string | number;
   maxLength?: number;
 }
 
@@ -20,6 +21,7 @@ export default function InputField({
   placeholder,
   error,
   min,
+  max,
   maxLength,
 }: InputFieldProps) {
   const [showPassword, setShowPassword] = useState(false);
@@ -37,6 +39,7 @@ export default function InputField({
           type={inputType}
           value={value}
           min={min}
+          max={max}
           maxLength={maxLength}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
