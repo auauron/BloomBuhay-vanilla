@@ -19,48 +19,101 @@ router.get("/", authenticateToken, async (req: AuthRequest, res: Response): Prom
 
     let metrics: BabyMetric[] = [];
     try {
-      metrics = await db.babyMetric.findMany({
-        where: { userId },
-        orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
+      const metricLogs = await db.toolsLog.findMany({
+        where: { motherId: userId, type: "metric" },
+        orderBy: [{ createdAt: "desc" }],
+        take: 50,
+      });
+      metrics = metricLogs.map((t) => {
+        const d: any = t.data || {};
+        return {
+          id: t.id,
+          userId,
+          title: d.title,
+          value: d.value,
+          unit: d.unit,
+          notes: d.notes,
+          createdAt: t.createdAt.toISOString(),
+          updatedAt: t.createdAt.toISOString(),
+        } as any;
       });
     } catch (err) {
-      console.warn("Failed to fetch metrics, returning empty array", err);
+      console.warn("Failed to fetch metrics via ToolsLog, returning empty array", err);
       metrics = [];
     }
 
     let feedings: FeedingLog[] = [];
     try {
-      feedings = await db.feedingLog.findMany({
-        where: { userId },
+      const feedingLogs = await db.toolsLog.findMany({
+        where: { motherId: userId, type: "feeding" },
         orderBy: [{ createdAt: "desc" }],
         take: 50,
       });
+      feedings = feedingLogs.map((t) => {
+        const d: any = t.data || {};
+        return {
+          id: t.id,
+          userId,
+          amount: d.amount,
+          method: d.method,
+          notes: d.notes,
+          occurredAt: d.occurredAt ?? t.createdAt.toISOString(),
+          createdAt: t.createdAt.toISOString(),
+          updatedAt: t.createdAt.toISOString(),
+        } as any;
+      });
     } catch (err) {
-      console.warn("Failed to fetch feedings, returning empty array", err);
+      console.warn("Failed to fetch feedings via ToolsLog, returning empty array", err);
       feedings = [];
     }
 
     let sleeps: SleepLog[] = [];
     try {
-      sleeps = await db.sleepLog.findMany({
-        where: { userId },
-        orderBy: [{ startAt: "desc" }],
+      const sleepLogs = await db.toolsLog.findMany({
+        where: { motherId: userId, type: "sleep" },
+        orderBy: [{ createdAt: "desc" }],
         take: 50,
       });
+      sleeps = sleepLogs.map((t) => {
+        const d: any = t.data || {};
+        return {
+          id: t.id,
+          userId,
+          startAt: d.startAt ?? t.createdAt.toISOString(),
+          endAt: d.endAt ?? null,
+          notes: d.notes,
+          createdAt: t.createdAt.toISOString(),
+          updatedAt: t.createdAt.toISOString(),
+        } as any;
+      });
     } catch (err) {
-      console.warn("Failed to fetch sleeps, returning empty array", err);
+      console.warn("Failed to fetch sleeps via ToolsLog, returning empty array", err);
       sleeps = [];
     }
 
     let growths: GrowthRecord[] = [];
     try {
-      growths = await db.growthRecord.findMany({
-        where: { userId },
+      const growthLogs = await db.toolsLog.findMany({
+        where: { motherId: userId, type: "growth" },
         orderBy: [{ createdAt: "desc" }],
         take: 50,
       });
+      growths = growthLogs.map((t) => {
+        const d: any = t.data || {};
+        return {
+          id: t.id,
+          userId,
+          weight: d.weight,
+          height: d.height,
+          headCircumference: d.headCircumference,
+          ageMonths: d.ageMonths,
+          notes: d.notes,
+          createdAt: t.createdAt.toISOString(),
+          updatedAt: t.createdAt.toISOString(),
+        } as any;
+      });
     } catch (err) {
-      console.warn("Failed to fetch growth records, returning empty array", err);
+      console.warn("Failed to fetch growth records via ToolsLog, returning empty array", err);
       growths = [];
     }
 
@@ -165,7 +218,6 @@ router.get("/", authenticateToken, async (req: AuthRequest, res: Response): Prom
 
 /**
  * POST /api/bbtools/metrics
- * Create a baby metric
  */
 router.post("/metrics", authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
@@ -173,17 +225,23 @@ router.post("/metrics", authenticateToken, async (req: AuthRequest, res: Respons
     if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
     const { title, value, unit, notes } = req.body;
-    const created = await db.babyMetric.create({
+    const created = await db.toolsLog.create({
+      data: { motherId: userId, type: "metric", data: { title, value, unit, notes } },
+    });
+
+    res.status(201).json({
+      success: true,
       data: {
+        id: created.id,
         userId,
         title,
         value,
         unit,
         notes,
+        createdAt: created.createdAt.toISOString(),
+        updatedAt: created.createdAt.toISOString(),
       },
     });
-
-    res.status(201).json({ success: true, data: created });
   } catch (error) {
     console.error("Create metric error:", error);
     res.status(500).json({ success: false, error: "failed to create metric" });
@@ -199,15 +257,38 @@ router.patch("/metrics/:id", authenticateToken, async (req: AuthRequest, res: Re
     const id = Number(req.params.id);
     if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
-    const updated = await db.babyMetric.updateMany({
-      where: { id, userId },
-      data: req.body,
+    const existing = await db.toolsLog.findFirst({ where: { id, motherId: userId, type: "metric" } });
+    if (!existing) return res.status(404).json({ success: false, error: "Metric not found" });
+
+    const current = (existing.data as any) || {};
+    const { title, value, unit, notes } = req.body;
+    const updated = await db.toolsLog.update({
+      where: { id },
+      data: {
+        data: {
+          ...current,
+          ...(title !== undefined ? { title } : {}),
+          ...(value !== undefined ? { value } : {}),
+          ...(unit !== undefined ? { unit } : {}),
+          ...(notes !== undefined ? { notes } : {}),
+        },
+      },
     });
 
-    if (updated.count === 0) return res.status(404).json({ success: false, error: "Metric not found" });
-
-    const metric = await db.babyMetric.findUnique({ where: { id } });
-    res.status(200).json({ success: true, data: metric });
+    const d: any = updated.data || {};
+    res.status(200).json({
+      success: true,
+      data: {
+        id: updated.id,
+        userId,
+        title: d.title,
+        value: d.value,
+        unit: d.unit,
+        notes: d.notes,
+        createdAt: updated.createdAt.toISOString(),
+        updatedAt: updated.createdAt.toISOString(),
+      },
+    });
   } catch (error) {
     console.error("Update metric error:", error);
     res.status(500).json({ success: false, error: "failed to update metric" });
@@ -223,7 +304,7 @@ router.delete("/metrics/:id", authenticateToken, async (req: AuthRequest, res: R
     const id = Number(req.params.id);
     if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
-    const deleted = await db.babyMetric.deleteMany({ where: { id, userId } });
+    const deleted = await db.toolsLog.deleteMany({ where: { id, motherId: userId, type: "metric" } });
     if (deleted.count === 0) return res.status(404).json({ success: false, error: "Metric not found" });
 
     res.status(200).json({ success: true, message: "Deleted" });
@@ -242,17 +323,24 @@ router.post("/feedings", authenticateToken, async (req: AuthRequest, res: Respon
     if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
     const { amount, method, notes, occurredAt } = req.body;
-    const created = await db.feedingLog.create({
-      data: {
-        userId,
-        amount,
-        method,
-        notes,
-        occurredAt: occurredAt ? new Date(occurredAt) : new Date(),
-      },
+    const created = await db.toolsLog.create({
+      data: { motherId: userId, type: "feeding", data: { amount, method, notes, occurredAt } },
     });
 
-    res.status(201).json({ success: true, data: created });
+    const d: any = created.data || {};
+    res.status(201).json({
+      success: true,
+      data: {
+        id: created.id,
+        userId,
+        amount: d.amount,
+        method: d.method,
+        notes: d.notes,
+        occurredAt: d.occurredAt ?? created.createdAt.toISOString(),
+        createdAt: created.createdAt.toISOString(),
+        updatedAt: created.createdAt.toISOString(),
+      },
+    });
   } catch (error) {
     console.error("Add feeding error:", error);
     res.status(500).json({ success: false, error: "failed to add feeding" });
@@ -268,22 +356,38 @@ router.patch("/feedings/:id", authenticateToken, async (req: AuthRequest, res: R
     const id = Number(req.params.id);
     if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
-    const { amount, method, notes, occurredAt } = req.body;
-    const updateData: any = {};
-    if (amount !== undefined) updateData.amount = amount;
-    if (method !== undefined) updateData.method = method;
-    if (notes !== undefined) updateData.notes = notes;
-    if (occurredAt !== undefined) updateData.occurredAt = new Date(occurredAt);
+    const existing = await db.toolsLog.findFirst({ where: { id, motherId: userId, type: "feeding" } });
+    if (!existing) return res.status(404).json({ success: false, error: "Feeding not found" });
 
-    const updated = await db.feedingLog.updateMany({
-      where: { id, userId },
-      data: updateData,
+    const current = (existing.data as any) || {};
+    const { amount, method, notes, occurredAt } = req.body;
+    const updated = await db.toolsLog.update({
+      where: { id },
+      data: {
+        data: {
+          ...current,
+          ...(amount !== undefined ? { amount } : {}),
+          ...(method !== undefined ? { method } : {}),
+          ...(notes !== undefined ? { notes } : {}),
+          ...(occurredAt !== undefined ? { occurredAt } : {}),
+        },
+      },
     });
 
-    if (updated.count === 0) return res.status(404).json({ success: false, error: "Feeding not found" });
-
-    const feeding = await db.feedingLog.findUnique({ where: { id } });
-    res.status(200).json({ success: true, data: feeding });
+    const d: any = updated.data || {};
+    res.status(200).json({
+      success: true,
+      data: {
+        id: updated.id,
+        userId,
+        amount: d.amount,
+        method: d.method,
+        notes: d.notes,
+        occurredAt: d.occurredAt ?? updated.createdAt.toISOString(),
+        createdAt: updated.createdAt.toISOString(),
+        updatedAt: updated.createdAt.toISOString(),
+      },
+    });
   } catch (error) {
     console.error("Update feeding error:", error);
     res.status(500).json({ success: false, error: "failed to update feeding" });
@@ -299,7 +403,7 @@ router.delete("/feedings/:id", authenticateToken, async (req: AuthRequest, res: 
     const id = Number(req.params.id);
     if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
-    const deleted = await db.feedingLog.deleteMany({ where: { id, userId } });
+    const deleted = await db.toolsLog.deleteMany({ where: { id, motherId: userId, type: "feeding" } });
     if (deleted.count === 0) return res.status(404).json({ success: false, error: "Feeding not found" });
 
     res.status(200).json({ success: true, message: "Deleted" });
@@ -318,16 +422,23 @@ router.post("/sleeps", authenticateToken, async (req: AuthRequest, res: Response
     if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
     const { startAt, endAt, notes } = req.body;
-    const created = await db.sleepLog.create({
-      data: {
-        userId,
-        startAt: new Date(startAt),
-        endAt: endAt ? new Date(endAt) : null,
-        notes,
-      },
+    const created = await db.toolsLog.create({
+      data: { motherId: userId, type: "sleep", data: { startAt, endAt, notes } },
     });
 
-    res.status(201).json({ success: true, data: created });
+    const d: any = created.data || {};
+    res.status(201).json({
+      success: true,
+      data: {
+        id: created.id,
+        userId,
+        startAt: d.startAt ?? created.createdAt.toISOString(),
+        endAt: d.endAt ?? null,
+        notes: d.notes,
+        createdAt: created.createdAt.toISOString(),
+        updatedAt: created.createdAt.toISOString(),
+      },
+    });
   } catch (error) {
     console.error("Add sleep error:", error);
     res.status(500).json({ success: false, error: "failed to add sleep log" });
@@ -343,17 +454,36 @@ router.patch("/sleeps/:id", authenticateToken, async (req: AuthRequest, res: Res
     const id = Number(req.params.id);
     if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
+    const existing = await db.toolsLog.findFirst({ where: { id, motherId: userId, type: "sleep" } });
+    if (!existing) return res.status(404).json({ success: false, error: "Sleep log not found" });
+
+    const current = (existing.data as any) || {};
     const { startAt, endAt, notes } = req.body;
-    const updateData: any = {};
-    if (startAt !== undefined) updateData.startAt = new Date(startAt);
-    if (endAt !== undefined) updateData.endAt = endAt ? new Date(endAt) : null;
-    if (notes !== undefined) updateData.notes = notes;
+    const updated = await db.toolsLog.update({
+      where: { id },
+      data: {
+        data: {
+          ...current,
+          ...(startAt !== undefined ? { startAt } : {}),
+          ...(endAt !== undefined ? { endAt } : {}),
+          ...(notes !== undefined ? { notes } : {}),
+        },
+      },
+    });
 
-    const updated = await db.sleepLog.updateMany({ where: { id, userId }, data: updateData });
-    if (updated.count === 0) return res.status(404).json({ success: false, error: "Sleep log not found" });
-
-    const sleep = await db.sleepLog.findUnique({ where: { id } });
-    res.status(200).json({ success: true, data: sleep });
+    const d: any = updated.data || {};
+    res.status(200).json({
+      success: true,
+      data: {
+        id: updated.id,
+        userId,
+        startAt: d.startAt ?? updated.createdAt.toISOString(),
+        endAt: d.endAt ?? null,
+        notes: d.notes,
+        createdAt: updated.createdAt.toISOString(),
+        updatedAt: updated.createdAt.toISOString(),
+      },
+    });
   } catch (error) {
     console.error("Update sleep error:", error);
     res.status(500).json({ success: false, error: "failed to update sleep" });
@@ -369,7 +499,7 @@ router.delete("/sleeps/:id", authenticateToken, async (req: AuthRequest, res: Re
     const id = Number(req.params.id);
     if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
-    const deleted = await db.sleepLog.deleteMany({ where: { id, userId } });
+    const deleted = await db.toolsLog.deleteMany({ where: { id, motherId: userId, type: "sleep" } });
     if (deleted.count === 0) return res.status(404).json({ success: false, error: "Sleep log not found" });
 
     res.status(200).json({ success: true, message: "Deleted" });
@@ -388,18 +518,25 @@ router.post("/growths", authenticateToken, async (req: AuthRequest, res: Respons
     if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
     const { weight, height, headCircumference, notes, ageMonths } = req.body;
-    const created = await db.growthRecord.create({
-      data: {
-        userId,
-        weight,
-        height,
-        headCircumference,
-        ageMonths,
-        notes,
-      },
+    const created = await db.toolsLog.create({
+      data: { motherId: userId, type: "growth", data: { weight, height, headCircumference, ageMonths, notes } },
     });
 
-    res.status(201).json({ success: true, data: created });
+    const d: any = created.data || {};
+    res.status(201).json({
+      success: true,
+      data: {
+        id: created.id,
+        userId,
+        weight: d.weight,
+        height: d.height,
+        headCircumference: d.headCircumference,
+        ageMonths: d.ageMonths,
+        notes: d.notes,
+        createdAt: created.createdAt.toISOString(),
+        updatedAt: created.createdAt.toISOString(),
+      },
+    });
   } catch (error) {
     console.error("Add growth record error:", error);
     res.status(500).json({ success: false, error: "failed to add growth record" });
@@ -415,19 +552,40 @@ router.patch("/growths/:id", authenticateToken, async (req: AuthRequest, res: Re
     const id = Number(req.params.id);
     if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
+    const existing = await db.toolsLog.findFirst({ where: { id, motherId: userId, type: "growth" } });
+    if (!existing) return res.status(404).json({ success: false, error: "Growth record not found" });
+
+    const current = (existing.data as any) || {};
     const { weight, height, headCircumference, notes, ageMonths } = req.body;
-    const updateData: any = {};
-    if (weight !== undefined) updateData.weight = weight;
-    if (height !== undefined) updateData.height = height;
-    if (headCircumference !== undefined) updateData.headCircumference = headCircumference;
-    if (ageMonths !== undefined) updateData.ageMonths = ageMonths;
-    if (notes !== undefined) updateData.notes = notes;
+    const updated = await db.toolsLog.update({
+      where: { id },
+      data: {
+        data: {
+          ...current,
+          ...(weight !== undefined ? { weight } : {}),
+          ...(height !== undefined ? { height } : {}),
+          ...(headCircumference !== undefined ? { headCircumference } : {}),
+          ...(ageMonths !== undefined ? { ageMonths } : {}),
+          ...(notes !== undefined ? { notes } : {}),
+        },
+      },
+    });
 
-    const updated = await db.growthRecord.updateMany({ where: { id, userId }, data: updateData });
-    if (updated.count === 0) return res.status(404).json({ success: false, error: "Growth record not found" });
-
-    const growth = await db.growthRecord.findUnique({ where: { id } });
-    res.status(200).json({ success: true, data: growth });
+    const d: any = updated.data || {};
+    res.status(200).json({
+      success: true,
+      data: {
+        id: updated.id,
+        userId,
+        weight: d.weight,
+        height: d.height,
+        headCircumference: d.headCircumference,
+        ageMonths: d.ageMonths,
+        notes: d.notes,
+        createdAt: updated.createdAt.toISOString(),
+        updatedAt: updated.createdAt.toISOString(),
+      },
+    });
   } catch (error) {
     console.error("Update growth error:", error);
     res.status(500).json({ success: false, error: "failed to update growth" });
@@ -443,7 +601,7 @@ router.delete("/growths/:id", authenticateToken, async (req: AuthRequest, res: R
     const id = Number(req.params.id);
     if (!userId) return res.status(401).json({ success: false, error: "Unauthorized" });
 
-    const deleted = await db.growthRecord.deleteMany({ where: { id, userId } });
+    const deleted = await db.toolsLog.deleteMany({ where: { id, motherId: userId, type: "growth" } });
     if (deleted.count === 0) return res.status(404).json({ success: false, error: "Growth record not found" });
 
     res.status(200).json({ success: true, message: "Deleted" });
@@ -1260,6 +1418,7 @@ router.post("/doctor-visits", authenticateToken, async (req: AuthRequest, res: R
         notes: d.notes,
         prescriptions: d.prescriptions,
         nextVisit: d.nextVisit ?? d.followUpDate,
+        followUpDate: d.followUpDate,
         createdAt: created.createdAt.toISOString(),
         updatedAt: created.createdAt.toISOString()
       }
@@ -1326,6 +1485,7 @@ router.patch("/doctor-visits/:id", authenticateToken, async (req: AuthRequest, r
         notes: d.notes,
         prescriptions: d.prescriptions,
         nextVisit: d.nextVisit ?? d.followUpDate,
+        followUpDate: d.followUpDate,
         createdAt: updated.createdAt.toISOString(),
         updatedAt: updated.createdAt.toISOString()
       }
