@@ -1,6 +1,6 @@
 import { authService } from "./authService";
 
-const API_URL = "http://localhost:3000/api/healthtracker";
+const API_URL = `${process.env.REACT_BACKEND_URL || 'http://localhost:3000'}/api/healthtracker`;
 
 export interface HealthMetric {
   id: number;

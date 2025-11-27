@@ -59,6 +59,10 @@ module.exports = {
       systemvars: true,
       defaults: true
     }),
+    new webpack.DefinePlugin({
+      'process.env.REACT_BACKEND_URL': JSON.stringify(process.env.REACT_BACKEND_URL || 'http://localhost:3000'),
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+    }),
   ],
   devServer: {
     port: 5173,

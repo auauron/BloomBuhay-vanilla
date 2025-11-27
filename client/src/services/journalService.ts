@@ -2,7 +2,7 @@ import { authService } from "./authService";
 import { Note, Album, Photo } from "../components/journal/types";
 
 
-const API_URL = "http://localhost:3000/api/journal";
+const API_URL = `${process.env.REACT_BACKEND_URL || 'http://localhost:3000'}/api/journal`;
 
 // TYPE DEFINITIONS
 

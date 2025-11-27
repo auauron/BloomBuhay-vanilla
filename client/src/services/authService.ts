@@ -1,7 +1,7 @@
 import { SignupRequest, LoginRequest, AuthResponse } from "../types/auth";
 
 // Use the environment variable for the backend URL with fallback for development
-const API_URL = `${process.env.REACT_BACKEND_URL || 'http://localhost:5173'}/api/auth`;
+const API_URL = `${process.env.REACT_BACKEND_URL || 'http://localhost:3000'}/api/auth`;
 
 // Common fetch options for API requests
 const fetchOptions = (method: string, data?: any): RequestInit => ({

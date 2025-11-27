@@ -1,6 +1,6 @@
 import { authService } from "./authService";
 
-const API_URL = "http://localhost:3000/api/planner";
+const API_URL = `${process.env.REACT_BACKEND_URL || 'http://localhost:3000'}/api/planner`;
 
 export interface PlannerTask {
     id: number;

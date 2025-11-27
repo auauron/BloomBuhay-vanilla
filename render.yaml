@@ -16,12 +16,11 @@ services:
           property: connectionString
     plan: free
 
-  - type: web
+  - type: static
     name: bloom-buhay-web
-    env: node
     rootDirectory: client
     buildCommand: npm install && npm run build
-    staticPublishPath: "./dist"
+    staticPublishPath: ./dist
     envVars:
       - key: NODE_ENV
         value: production

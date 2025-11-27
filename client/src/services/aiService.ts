@@ -13,7 +13,7 @@ export interface AIResponse {
 
 class AIService {
   // Direct connection to your server on port 3000
-  private baseURL = 'http://localhost:3000/api/ai';
+  private baseURL = `${process.env.REACT_BACKEND_URL || 'http://localhost:3000'}/api/ai`;
 
   async askBloomGuide(request: AIRequest): Promise<AIResponse> {
     try {
