@@ -7,9 +7,9 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ growths = [], onRefresh }) =>
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<GrowthRecordForm>({
     date: new Date().toISOString().split('T')[0],
-    age: 0,
-    weight: 0,
-    height: 0,
+    age: undefined,
+    weight: undefined,
+    height: undefined,
     headCircumference: undefined,
     notes: ''
   });
@@ -21,7 +21,7 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ growths = [], onRefresh }) =>
     return {
       id: growth.id.toString(),
       date: growth.createdAt ? new Date(growth.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-      age: 0,
+      age: growth.ageMonths ?? 0,
       weight: growth.weight || 0,
       height: growth.height || 0,
       headCircumference: growth.headCircumference,
@@ -64,6 +64,7 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ growths = [], onRefresh }) =>
       weight: formData.weight,
       height: formData.height,
       headCircumference: formData.headCircumference,
+      ageMonths: formData.age,
       notes: formData.notes
     };
 
@@ -81,6 +82,7 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ growths = [], onRefresh }) =>
       weight: formData.weight,
       height: formData.height,
       headCircumference: formData.headCircumference,
+      ageMonths: formData.age,
       notes: formData.notes
     };
 
@@ -119,9 +121,9 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ growths = [], onRefresh }) =>
   const resetForm = () => {
     setFormData({
       date: new Date().toISOString().split('T')[0],
-      age: 0,
-      weight: 0,
-      height: 0,
+      age: undefined,
+      weight: undefined,
+      height: undefined,
       headCircumference: undefined,
       notes: ''
     });
@@ -237,8 +239,8 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ growths = [], onRefresh }) =>
                   </label>
                   <input
                     type="number"
-                    value={formData.age}
-                    onChange={(e) => setFormData({...formData, age: parseInt(e.target.value) || 0})}
+                    value={formData.age ?? ''}
+                    onChange={(e) => setFormData({...formData, age: e.target.value === '' ? undefined : parseInt(e.target.value)})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="0"
                     min="0"

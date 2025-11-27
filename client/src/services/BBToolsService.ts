@@ -1,7 +1,59 @@
-// src/services/BBToolsService.ts
 import { authService } from "./authService";
 
 const API_URL = "http://localhost:3000/api/bbtools";
+
+export interface ChildcareVaccination {
+  id: string;
+  name: string;
+  dueDate: string;
+  completed: boolean;
+  completedDate?: string;
+  notes: string;
+}
+
+export interface CreateChildcareVaccinationRequest {
+  name: string;
+  dueDate: string;
+  completed?: boolean;
+  completedDate?: string;
+  notes: string;
+}
+
+export interface ScheduleEntry {
+  id: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  type: "sleep" | "activity" | "feeding";
+  description: string;
+  notes: string;
+}
+
+export interface CreateScheduleRequest {
+  date: string;
+  startTime: string;
+  endTime: string;
+  type: "sleep" | "activity" | "feeding";
+  description: string;
+  notes: string;
+}
+
+export interface NutritionEntry {
+  id: string;
+  date: string;
+  time: string;
+  food: string;
+  amount: string;
+  notes: string;
+}
+
+export interface CreateNutritionRequest {
+  date: string;
+  time: string;
+  food: string;
+  amount: string;
+  notes: string;
+}
 
 export interface BBMetric {
   id: number;
@@ -17,8 +69,8 @@ export interface BBMetric {
 export interface FeedingLog {
   id: number;
   userId?: number;
-  amount?: number; // ml or amount indicator
-  method?: string; // e.g., "breast", "bottle"
+  amount?: number;
+  method?: string;
   notes?: string;
   occurredAt?: string;
   createdAt?: string;
@@ -28,7 +80,7 @@ export interface FeedingLog {
 export interface SleepLog {
   id: number;
   userId?: number;
-  startAt: string; 
+  startAt: string;
   endAt?: string;
   durationMinutes?: number;
   notes?: string;
@@ -39,10 +91,56 @@ export interface SleepLog {
 export interface GrowthRecord {
   id: number;
   userId?: number;
-  weight?: number; // kg
-  height?: number; // cm / length
-  headCircumference?: number; // cm
+  weight?: number;
+  height?: number;
+  headCircumference?: number; 
+  ageMonths?: number;
   notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface DiaperLog {
+  id: number;
+  userId?: number;
+  diaperType?: "wet" | "dirty" | "both";
+  occurredAt?: string;
+  color?: "yellow" | "green" | "brown" | "black";
+  consistency?: "seedy" | "pasty" | "watery";
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface VaccinationLog {
+  id: number;
+  userId?: number;
+  vaccineName?: string;
+  dose?: string;
+  date?: string; 
+  administeredDate?: string;
+  status?: "scheduled" | "completed" | "overdue";
+  clinic?: string;
+  sideEffects?: string;
+  notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface DoctorVisitLog {
+  id: number;
+  userId?: number;
+  visitDate?: string;
+  reason?: string;
+  doctor?: string;
+  clinic?: string;
+  weight?: number;
+  height?: number;
+  headCircumference?: number;
+  diagnosis?: string;
+  prescriptions?: string;
+  notes?: string;
+  nextVisit?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -61,6 +159,9 @@ export interface GetBBToolsResponse {
     feedings?: FeedingLog[];
     sleeps?: SleepLog[];
     growths?: GrowthRecord[];
+    diapers?: DiaperLog[];
+    vaccinations?: VaccinationLog[];
+    doctorVisits?: DoctorVisitLog[];
   };
   error?: string;
 }
@@ -90,13 +191,50 @@ export interface CreateGrowthRequest {
   weight?: number;
   height?: number;
   headCircumference?: number;
+  ageMonths?: number;
   notes?: string;
+}
+
+export interface CreateDiaperRequest {
+  diaperType: "wet" | "dirty" | "both";
+  occurredAt?: string;
+  color?: "yellow" | "green" | "brown" | "black";
+  consistency?: "seedy" | "pasty" | "watery";
+  notes?: string;
+}
+
+export interface CreateVaccinationLogRequest {
+  vaccineName: string;
+  dose?: string;
+  date: string;
+  administeredDate?: string;
+  status?: "scheduled" | "completed" | "overdue";
+  clinic?: string;
+  sideEffects?: string;
+  notes?: string;
+}
+
+export interface CreateDoctorVisitRequest {
+  visitDate: string;
+  reason: string;
+  doctor?: string;
+  clinic?: string;
+  weight?: number;
+  height?: number;
+  headCircumference?: number;
+  diagnosis?: string;
+  prescriptions?: string;
+  notes?: string;
+  nextVisit?: string;
 }
 
 export interface PostpartumToolsProps {
   feedings?: FeedingLog[];
   sleeps?: SleepLog[];
   growths?: GrowthRecord[];
+  diapers?: DiaperLog[];
+  vaccinations?: VaccinationLog[];
+  doctorVisits?: DoctorVisitLog[];
   onRefreshData?: () => void;
 }
 
@@ -107,7 +245,7 @@ export interface SleepTrackerProps {
 
 export interface SleepSessionForm {
   startTime: string;
-  endTime: string;  
+  endTime: string;
   notes: string;
 }
 
@@ -118,9 +256,9 @@ export interface GrowthChartProps {
 
 export interface GrowthRecordForm {
   date: string;
-  age: number;
-  weight: number;
-  height: number;
+  age?: number;
+  weight?: number;
+  height?: number;
   headCircumference?: number;
   notes: string;
 }
@@ -141,8 +279,8 @@ export interface FeedingLogProps {
 }
 
 export interface FeedingSessionForm {
-  type: 'breast' | 'formula' | 'solid';
-  side?: 'left' | 'right' | 'both';
+  type: "breast" | "formula" | "solid";
+  side?: "left" | "right" | "both";
   amount?: number;
   duration?: number;
   notes: string;
@@ -150,7 +288,7 @@ export interface FeedingSessionForm {
 
 export interface LocalFeedingSession {
   id: string;
-  type: 'breast' | 'formula' | 'solid';
+  type: "breast" | "formula" | "solid";
   side?: string;
   amount?: number;
   startTime: string;
@@ -167,11 +305,12 @@ export interface LocalSleepSession {
   startTime: string;
   endTime: string;
   duration: number;
-  quality: 'excellent' | 'good' | 'fair' | 'poor';
+  quality: "excellent" | "good" | "fair" | "poor";
   notes: string;
   rawStartAt: string;
   rawEndAt?: string | null;
 }
+
 export interface Contraction {
   id?: number;
   startTime: string;
@@ -179,10 +318,29 @@ export interface Contraction {
   duration: number;
   frequency: number;
 }
+
 export interface DueDateLog {
   id?: number;
   lmpDate: string; // ISO string
   weeksPregnant: number;
+}
+export interface KickSession {
+  id: number;
+  userId?: number;
+  startTime?: string; // ISO
+  endTime?: string;   // ISO
+  durationSeconds: number;
+  kicks: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+/* Kick endpoints */
+export interface CreateKickRequest {
+  startTime?: string;
+  endTime?: string;
+  durationSeconds: number;
+  kicks: number;
 }
 
 export const bbtoolsService = {
@@ -455,32 +613,14 @@ export const bbtoolsService = {
       return { success: false, error: "Failed to delete growth record" };
     }
   },
-    async getContractions(): Promise<GenericResponse> {
+
+  /* Diaper Logs */
+  async addDiaper(data: CreateDiaperRequest): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
       if (!token) return { success: false, error: "Not authenticated" };
 
-      const res = await fetch(`${API_URL}/tools/contractions`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      return await res.json();
-    } catch (err) {
-      console.error("Get contractions error:", err);
-      return { success: false, error: "Failed to fetch contractions" };
-    }
-  },
-
-  async createContraction(data: Contraction): Promise<GenericResponse> {
-    try {
-      const token = authService.getToken();
-      if (!token) return { success: false, error: "Not authenticated" };
-
-      const res = await fetch(`${API_URL}/tools/contractions`, {
+      const res = await fetch(`${API_URL}/diapers`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -490,18 +630,39 @@ export const bbtoolsService = {
       });
 
       return await res.json();
-    } catch (err) {
-      console.error("Create contraction error:", err);
-      return { success: false, error: "Failed to create contraction" };
+    } catch (error) {
+      console.error("Add diaper error:", error);
+      return { success: false, error: "Failed to add diaper log" };
     }
   },
 
-  async deleteContraction(id: number): Promise<GenericResponse> {
+  async updateDiaper(id: string, data: Partial<CreateDiaperRequest>): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
       if (!token) return { success: false, error: "Not authenticated" };
 
-      const res = await fetch(`${API_URL}/tools/contractions/${id}`, {
+      const res = await fetch(`${API_URL}/diapers/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Update diaper error:", error);
+      return { success: false, error: "Failed to update diaper log" };
+    }
+  },
+
+  async deleteDiaper(id: string): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/diapers/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -510,38 +671,34 @@ export const bbtoolsService = {
       });
 
       return await res.json();
-    } catch (err) {
-      console.error("Delete contraction error:", err);
-      return { success: false, error: "Failed to delete contraction" };
+    } catch (error) {
+      console.error("Delete diaper error:", error);
+      return { success: false, error: "Failed to delete diaper log" };
     }
   },
 
-    async getDueDate(): Promise<GenericResponse> {
+  /* Postpartum Vaccination Logs */
+    async getVaccinations(): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
-      if (!token) return { success: false, error: "Not authenticated" };
-
-      const res = await fetch(`${API_URL}/tools/duedate`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/vaccinations`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
       });
-
       return await res.json();
     } catch (err) {
-      console.error("Get due date log error:", err);
-      return { success: false, error: "Failed to fetch due date log" };
+      console.error('Get vaccinations error:', err);
+      return { success: false, error: 'Failed to fetch vaccinations' };
     }
   },
 
-  async saveDueDate(data: DueDateLog): Promise<GenericResponse> {
+  async addVaccination(data: CreateVaccinationLogRequest): Promise<GenericResponse> {
     try {
       const token = authService.getToken();
       if (!token) return { success: false, error: "Not authenticated" };
 
-      const res = await fetch(`${API_URL}/tools/duedate`, {
+      const res = await fetch(`${API_URL}/vaccinations`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -551,9 +708,358 @@ export const bbtoolsService = {
       });
 
       return await res.json();
+    } catch (error) {
+      console.error("Add vaccination error:", error);
+      return { success: false, error: "Failed to add vaccination" };
+    }
+  },
+
+  async updateVaccination(id: string, data: Partial<CreateVaccinationLogRequest>): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/vaccinations/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Update vaccination error:", error);
+      return { success: false, error: "Failed to update vaccination" };
+    }
+  },
+
+  async deleteVaccination(id: string): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/vaccinations/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Delete vaccination error:", error);
+      return { success: false, error: "Failed to delete vaccination" };
+    }
+  },
+
+  /* Childcare Vaccinations (Simple) */
+  async getChildcareVaccinations(): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/vaccinations`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+      });
+      return await res.json();
     } catch (err) {
-      console.error("Save due date log error:", err);
-      return { success: false, error: "Failed to save due date log" };
+      console.error('Get childcare vaccinations error:', err);
+      return { success: false, error: 'Failed to fetch childcare vaccinations' };
+    }
+  },
+
+  async addChildcareVaccination(data: CreateChildcareVaccinationRequest): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/vaccinations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data)
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Add childcare vaccination error:', err);
+      return { success: false, error: 'Failed to add childcare vaccination' };
+    }
+  },
+
+  async updateChildcareVaccination(id: string, data: Partial<CreateChildcareVaccinationRequest>): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/vaccinations/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data)
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Update childcare vaccination error:', err);
+      return { success: false, error: 'Failed to update childcare vaccination' };
+    }
+  },
+
+  async deleteChildcareVaccination(id: string): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/vaccinations/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Delete childcare vaccination error:', err);
+      return { success: false, error: 'Failed to delete childcare vaccination' };
+    }
+  },
+
+  /* Doctor Visits */
+  async addDoctorVisit(data: CreateDoctorVisitRequest): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/doctor-visits`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Add doctor visit error:", error);
+      return { success: false, error: "Failed to add doctor visit" };
+    }
+  },
+
+  async updateDoctorVisit(id: string, data: Partial<CreateDoctorVisitRequest>): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/doctor-visits/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Update doctor visit error:", error);
+      return { success: false, error: "Failed to update doctor visit" };
+    }
+  },
+
+  async deleteDoctorVisit(id: string): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/doctor-visits/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Delete doctor visit error:", error);
+      return { success: false, error: "Failed to delete doctor visit" };
+    }
+  },
+
+  /* Nutrition Logs */
+  async getNutritionLogs(): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/nutrition`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Get nutrition logs error:', err);
+      return { success: false, error: 'Failed to fetch nutrition logs' };
+    }
+  },
+
+  async addNutrition(data: CreateNutritionRequest): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/nutrition`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data)
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Add nutrition error:', err);
+      return { success: false, error: 'Failed to add nutrition entry' };
+    }
+  },
+
+  async updateNutrition(id: string, data: Partial<CreateNutritionRequest>): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/nutrition/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data)
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Update nutrition error:', err);
+      return { success: false, error: 'Failed to update nutrition entry' };
+    }
+  },
+
+  async deleteNutrition(id: string): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/nutrition/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Delete nutrition error:', err);
+      return { success: false, error: 'Failed to delete nutrition entry' };
+    }
+  },
+
+  /* Schedule Entries */
+  async getScheduleEntries(): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/schedule`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Get schedule entries error:', err);
+      return { success: false, error: 'Failed to fetch schedule entries' };
+    }
+  },
+
+  async addSchedule(data: CreateScheduleRequest): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/schedule`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data)
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Add schedule error:', err);
+      return { success: false, error: 'Failed to add schedule entry' };
+    }
+  },
+
+  async updateSchedule(id: string, data: Partial<CreateScheduleRequest>): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/schedule/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data)
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Update schedule error:', err);
+      return { success: false, error: 'Failed to update schedule entry' };
+    }
+  },
+
+  async deleteSchedule(id: string): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
+      const res = await fetch(`${API_URL}/tools/schedule/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+      });
+      return await res.json();
+    } catch (err) {
+      console.error('Delete schedule error:', err);
+      return { success: false, error: 'Failed to delete schedule entry' };
+    }
+  },
+
+  async getDueDate(): Promise<GenericResponse> {
+    const token = authService.getToken();
+    const res = await fetch(`${API_URL}/tools/duedate`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.json();
+  },
+
+  async saveDueDate(data: { lmpDate: string; weeksPregnant: number }): Promise<GenericResponse> {
+    const token = authService.getToken();
+    const res = await fetch(`${API_URL}/tools/duedate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  },
+
+    async getKickSessions(): Promise<GenericResponse & { data?: KickSession[] }> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not Authenticated" };
+
+      const res = await fetch(`${API_URL}/kicks`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Get kick sessions error:", error);
+      return { success: false, error: "Failed to fetch kick sessions" };
+    }
+  },
+
+  async createKickSession(data: CreateKickRequest): Promise<GenericResponse & { data?: KickSession }> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not Authenticated" };
+
+      const res = await fetch(`${API_URL}/kicks`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Create kick session error:", error);
+      return { success: false, error: "Failed to create kick session" };
     }
   },
 };

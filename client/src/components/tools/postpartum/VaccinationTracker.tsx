@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Plus, Syringe, Calendar, CheckCircle, Clock, AlertTriangle, Trash2, Edit3, Save, X } from "lucide-react";
+import { bbtoolsService, CreateVaccinationLogRequest, VaccinationLog } from "../../../services/BBToolsService";
 
-interface Vaccine {
+interface VaccineLocal {
   id: string;
   name: string;
   scheduledDate: string;
@@ -11,35 +12,8 @@ interface Vaccine {
   dose: string;
 }
 
-const VaccinationTracker: React.FC = () => {
-  const [vaccines, setVaccines] = useState<Vaccine[]>([
-    {
-      id: '1',
-      name: 'Hepatitis B',
-      scheduledDate: '2024-01-15',
-      administeredDate: '2024-01-15',
-      status: 'completed',
-      notes: 'First dose - no reaction',
-      dose: 'Birth'
-    },
-    {
-      id: '2',
-      name: 'DTaP',
-      scheduledDate: '2024-02-15',
-      status: 'scheduled',
-      notes: '',
-      dose: '2 months'
-    },
-    {
-      id: '3',
-      name: 'IPV',
-      scheduledDate: '2024-02-15',
-      status: 'scheduled',
-      notes: '',
-      dose: '2 months'
-    }
-  ]);
-  
+const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?: () => void }> = ({ vaccinations = [], onRefresh }) => {
+  const [vaccines, setVaccines] = useState<VaccineLocal[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -50,6 +24,19 @@ const VaccinationTracker: React.FC = () => {
     notes: '',
     dose: ''
   });
+
+  useEffect(() => {
+    const mapped = (vaccinations || []).map((v) => ({
+      id: String(v.id),
+      name: v.vaccineName || '',
+      scheduledDate: v.date || '',
+      administeredDate: v.administeredDate || undefined,
+      status: (v.status || 'scheduled') as any,
+      notes: v.notes || '',
+      dose: v.dose || '',
+    }));
+    setVaccines(mapped);
+  }, [vaccinations]);
 
   const commonVaccines = [
     { name: 'Hepatitis B', doses: ['Birth', '1-2 months', '6-18 months'] },
@@ -62,54 +49,71 @@ const VaccinationTracker: React.FC = () => {
     { name: 'Varicella', doses: ['12-15 months', '4-6 years'] },
   ];
 
-  const addVaccine = () => {
+  const addVaccine = async () => {
     if (!formData.name || !formData.scheduledDate) return;
 
-    const vaccine: Vaccine = {
-      id: Date.now().toString(),
-      name: formData.name,
-      scheduledDate: formData.scheduledDate,
-      administeredDate: formData.administeredDate || undefined,
+    const payload: CreateVaccinationLogRequest = {
+      vaccineName: formData.name,
+      dose: formData.dose,
+      date: formData.scheduledDate,
+      administeredDate: formData.status === 'completed' ? (formData.administeredDate || new Date().toISOString().split('T')[0]) : undefined,
       status: formData.status,
       notes: formData.notes,
-      dose: formData.dose
     };
 
-    setVaccines(prev => [vaccine, ...prev]);
+    // optimistic
+    const tempId = Date.now().toString();
+    const optimistic: VaccineLocal = { id: tempId, name: formData.name, scheduledDate: formData.scheduledDate, administeredDate: payload.administeredDate, status: formData.status, notes: formData.notes, dose: formData.dose };
+    setVaccines((prev) => [optimistic, ...prev]);
+
+    const res = await bbtoolsService.addVaccination(payload);
+    if (!res.success) {
+      setVaccines((prev) => prev.filter((v) => v.id !== tempId));
+      console.error('Failed to add vaccination', res.error);
+      return;
+    }
+    if (onRefresh) onRefresh();
     resetForm();
   };
 
-  const updateVaccine = () => {
+  const updateVaccine = async () => {
     if (!editingId || !formData.name || !formData.scheduledDate) return;
-
-    const updatedVaccine: Vaccine = {
-      id: editingId,
-      name: formData.name,
-      scheduledDate: formData.scheduledDate,
-      administeredDate: formData.administeredDate || undefined,
+    const payload: Partial<CreateVaccinationLogRequest> = {
+      vaccineName: formData.name,
+      dose: formData.dose,
+      date: formData.scheduledDate,
+      administeredDate: formData.status === 'completed' ? (formData.administeredDate || new Date().toISOString().split('T')[0]) : undefined,
       status: formData.status,
       notes: formData.notes,
-      dose: formData.dose
     };
 
-    setVaccines(prev => prev.map(v => v.id === editingId ? updatedVaccine : v));
+    const snapshot = vaccines;
+    setVaccines((prev) => prev.map((v) => v.id === editingId ? { ...v, name: formData.name, scheduledDate: formData.scheduledDate, administeredDate: payload.administeredDate, status: formData.status, notes: formData.notes, dose: formData.dose } : v));
+    const res = await bbtoolsService.updateVaccination(editingId, payload);
+    if (!res.success) {
+      setVaccines(snapshot);
+      console.error('Failed to update vaccination', res.error);
+      return;
+    }
     setEditingId(null);
     resetForm();
+    if (onRefresh) onRefresh();
   };
 
-  const deleteVaccine = (id: string) => {
-    setVaccines(prev => prev.filter(v => v.id !== id));
+  const deleteVaccine = async (id: string) => {
+    const snapshot = vaccines;
+    setVaccines((prev) => prev.filter((v) => v.id !== id));
+    const res = await bbtoolsService.deleteVaccination(id);
+    if (!res.success) {
+      setVaccines(snapshot);
+      console.error('Failed to delete vaccination', res.error);
+    } else {
+      if (onRefresh) onRefresh();
+    }
   };
 
-  const editVaccine = (vaccine: Vaccine) => {
-    setFormData({
-      name: vaccine.name,
-      scheduledDate: vaccine.scheduledDate,
-      administeredDate: vaccine.administeredDate || '',
-      status: vaccine.status,
-      notes: vaccine.notes,
-      dose: vaccine.dose
-    });
+  const editVaccine = (vaccine: VaccineLocal) => {
+    setFormData({ name: vaccine.name, scheduledDate: vaccine.scheduledDate, administeredDate: vaccine.administeredDate || '', status: vaccine.status, notes: vaccine.notes, dose: vaccine.dose });
     setEditingId(vaccine.id);
     setShowForm(true);
   };
@@ -121,14 +125,7 @@ const VaccinationTracker: React.FC = () => {
   };
 
   const resetForm = () => {
-    setFormData({
-      name: '',
-      scheduledDate: '',
-      administeredDate: '',
-      status: 'scheduled',
-      notes: '',
-      dose: ''
-    });
+    setFormData({ name: '', scheduledDate: '', administeredDate: '', status: 'scheduled', notes: '', dose: '' });
     setShowForm(false);
     setEditingId(null);
   };
@@ -186,34 +183,22 @@ const VaccinationTracker: React.FC = () => {
                 {editingId ? 'Edit Vaccine' : 'Add Vaccine'}
               </h4>
               {showForm && (
-                <button
-                  onClick={resetForm}
-                  className="p-1 hover:bg-gray-100 rounded-lg"
-                >
+                <button onClick={resetForm} className="p-1 hover:bg-gray-100 rounded-lg">
                   <X className="w-4 h-4 text-gray-600" />
                 </button>
               )}
             </div>
 
             {!showForm ? (
-              <button
-                onClick={() => setShowForm(true)}
-                className="w-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white py-3 rounded-2xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
-              >
+              <button onClick={() => setShowForm(true)} className="w-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white py-3 rounded-2xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
                 <Plus className="w-5 h-5" />
                 Add Vaccine
               </button>
             ) : (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Vaccine Name
-                  </label>
-                  <select
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  >
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Vaccine Name</label>
+                  <select value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     <option value="">Select Vaccine</option>
                     {commonVaccines.map(vaccine => (
                       <option key={vaccine.name} value={vaccine.name}>{vaccine.name}</option>
@@ -222,45 +207,23 @@ const VaccinationTracker: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Dose
-                  </label>
-                  <select
-                    value={formData.dose}
-                    onChange={(e) => setFormData({...formData, dose: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  >
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Dose</label>
+                  <select value={formData.dose} onChange={(e) => setFormData({...formData, dose: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     <option value="">Select Dose</option>
-                    {commonVaccines
-                      .find(v => v.name === formData.name)
-                      ?.doses.map(dose => (
-                        <option key={dose} value={dose}>{dose}</option>
-                      ))
-                    }
+                    {commonVaccines.find(v => v.name === formData.name)?.doses.map(dose => (
+                      <option key={dose} value={dose}>{dose}</option>
+                    ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Scheduled Date
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.scheduledDate}
-                    onChange={(e) => setFormData({...formData, scheduledDate: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
+                  <label className="block text sm font-medium text-gray-700 mb-2">Scheduled Date</label>
+                  <input type="date" value={formData.scheduledDate} onChange={(e) => setFormData({...formData, scheduledDate: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent" />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Status
-                  </label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({...formData, status: e.target.value as any})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  >
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                  <select value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value as any})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     <option value="scheduled">Scheduled</option>
                     <option value="completed">Completed</option>
                     <option value="overdue">Overdue</option>
@@ -269,35 +232,17 @@ const VaccinationTracker: React.FC = () => {
 
                 {formData.status === 'completed' && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Administered Date
-                    </label>
-                    <input
-                      type="date"
-                      value={formData.administeredDate}
-                      onChange={(e) => setFormData({...formData, administeredDate: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Administered Date</label>
+                    <input type="date" value={formData.administeredDate} onChange={(e) => setFormData({...formData, administeredDate: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent" />
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Notes
-                  </label>
-                  <textarea
-                    value={formData.notes}
-                    onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
-                    rows={2}
-                    placeholder="Reactions, doctor notes, etc."
-                  />
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                  <textarea value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none" rows={2} placeholder="Reactions, doctor notes, etc." />
                 </div>
 
-                <button
-                  onClick={editingId ? updateVaccine : addVaccine}
-                  className="w-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white py-3 rounded-2xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
-                >
+                <button onClick={editingId ? updateVaccine : addVaccine} className="w-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white py-3 rounded-2xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2">
                   <Save className="w-4 h-4" />
                   {editingId ? 'Update Vaccine' : 'Save Vaccine'}
                 </button>
@@ -314,7 +259,6 @@ const VaccinationTracker: React.FC = () => {
               <Calendar className="w-5 h-5 text-yellow-600" />
               Upcoming Vaccinations
             </h4>
-            
             {upcomingVaccines.length === 0 ? (
               <p className="text-gray-500 text-center py-4">No upcoming vaccinations</p>
             ) : (
@@ -325,35 +269,17 @@ const VaccinationTracker: React.FC = () => {
                       <div className="p-2 bg-yellow-100 rounded-lg text-yellow-600">
                         <Clock className="w-4 h-4" />
                       </div>
-                      
                       <div>
                         <div className="font-semibold text-gray-800">{vaccine.name}</div>
-                        <div className="text-sm text-gray-600">
-                          Dose: {vaccine.dose} • Scheduled: {new Date(vaccine.scheduledDate).toLocaleDateString()}
-                        </div>
-                        {vaccine.notes && (
-                          <p className="text-sm text-gray-700 mt-1">{vaccine.notes}</p>
-                        )}
+                        <div className="text-sm text-gray-600">Dose: {vaccine.dose} • Scheduled: {new Date(vaccine.scheduledDate).toLocaleDateString()}</div>
+                        {vaccine.notes && <p className="text-sm text-gray-700 mt-1">{vaccine.notes}</p>}
                       </div>
                     </div>
-
                     <div className="flex gap-2">
-                      <button
-                        onClick={() => markAsCompleted(vaccine.id)}
-                        className="bg-green-500 text-white px-3 py-1 rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
-                      >
-                        Mark Done
-                      </button>
-                      <button
-                        onClick={() => editVaccine(vaccine)}
-                        className="p-2 hover:bg-white rounded-lg transition-colors text-gray-600 hover:text-green-600"
-                      >
+                      <button onClick={() => editVaccine(vaccine)} className="p-2 hover:bg-white rounded-lg transition-colors text-gray-600 hover:text-green-600">
                         <Edit3 className="w-4 h-4" />
                       </button>
-                      <button
-                        onClick={() => deleteVaccine(vaccine.id)}
-                        className="p-2 hover:bg-white rounded-lg transition-colors text-gray-600 hover:text-red-600"
-                      >
+                      <button onClick={() => deleteVaccine(vaccine.id)} className="p-2 hover:bg-white rounded-lg transition-colors text-gray-600 hover:text-red-600">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -369,7 +295,6 @@ const VaccinationTracker: React.FC = () => {
               <CheckCircle className="w-5 h-5 text-green-600" />
               Completed Vaccinations
             </h4>
-            
             {completedVaccines.length === 0 ? (
               <p className="text-gray-500 text-center py-4">No completed vaccinations</p>
             ) : (
@@ -380,29 +305,17 @@ const VaccinationTracker: React.FC = () => {
                       <div className="p-2 bg-green-100 rounded-lg text-green-600">
                         <CheckCircle className="w-4 h-4" />
                       </div>
-                      
                       <div>
                         <div className="font-semibold text-gray-800">{vaccine.name}</div>
-                        <div className="text-sm text-gray-600">
-                          Dose: {vaccine.dose} • Completed: {new Date(vaccine.administeredDate!).toLocaleDateString()}
-                        </div>
-                        {vaccine.notes && (
-                          <p className="text-sm text-gray-700 mt-1">{vaccine.notes}</p>
-                        )}
+                        <div className="text-sm text-gray-600">Dose: {vaccine.dose} • Completed: {new Date(vaccine.administeredDate!).toLocaleDateString()}</div>
+                        {vaccine.notes && <p className="text-sm text-gray-700 mt-1">{vaccine.notes}</p>}
                       </div>
                     </div>
-
                     <div className="flex gap-2">
-                      <button
-                        onClick={() => editVaccine(vaccine)}
-                        className="p-2 hover:bg-white rounded-lg transition-colors text-gray-600 hover:text-green-600"
-                      >
+                      <button onClick={() => editVaccine(vaccine)} className="p-2 hover:bg-white rounded-lg transition-colors text-gray-600 hover:text-green-600">
                         <Edit3 className="w-4 h-4" />
                       </button>
-                      <button
-                        onClick={() => deleteVaccine(vaccine.id)}
-                        className="p-2 hover:bg-white rounded-lg transition-colors text-gray-600 hover:text-red-600"
-                      >
+                      <button onClick={() => deleteVaccine(vaccine.id)} className="p-2 hover:bg-white rounded-lg transition-colors text-gray-600 hover:text-red-600">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
