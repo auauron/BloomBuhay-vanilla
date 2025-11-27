@@ -220,7 +220,12 @@ export default function ToDoList() {
         </div>
         </motion.div>
     ) : (
-      <AddTaskModal onClose = {() => setIsAdding(!isAdding)} />
+      isAdding && (
+        <AddTaskModal 
+          onClose={() => setIsAdding(false)}
+          onTaskAdded={fetchTasks}
+        />
+      )
     )
   );
 }

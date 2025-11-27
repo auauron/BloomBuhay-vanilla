@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, number } from "framer-motion";
 import { X, ChevronRight, ChevronUp, ChevronDown, Target } from "lucide-react";
-import { Task, BloomDate, AddTaskModalProps, BloomTime } from "../../../types/plan";
+import { plannerService } from "../../../services/plannerService";
+import { Task, BloomDate, BloomTime } from "../../../types/plan";
+
+interface AddTaskModalProps {
+  onClose: () => void;
+  onTaskAdded?: () => Promise<void>;
+}
 import { getFullDate, getNow, getTime, taskID, translateBloomdate } from "../PlannerFuntions";
 
-export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
+export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps) {
 
   const now: BloomDate = getNow()
   const nowTime: BloomTime = getTime()
@@ -50,9 +56,30 @@ export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
   //   onCancel();
   // }
 
-  // const handleAdd = () => {
-  //   onAdd(form)
-  // }
+  const handleAdd = async () => {
+    try {
+      // Convert the date from dd/mm/yyyy to yyyy-mm-dd format for the server
+      const [day, month, year] = dateStart.split('/').map(Number);
+      const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      
+      const response = await plannerService.createTask({
+        title: title || 'New Task',
+        description: description || '',
+        date: isoDate
+      });
+      
+      if (response.success) {
+        if (onTaskAdded) {
+          await onTaskAdded();
+        }
+        onClose();
+      } else {
+        console.error('Failed to add task:', response.error);
+      }
+    } catch (error) {
+      console.error('Error adding task:', error);
+    }
+  }
 
   const handelStartDate = () => {
     
@@ -70,93 +97,71 @@ export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
   return (
     <AnimatePresence>
       <motion.div
-      key="add-task-card"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
+        key="add-task-card"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
       >
-        <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-4 rounded-[20px] shadow-lg relative items-center">
+        <div className="bg-white p-6 rounded-3xl shadow-xl relative overflow-hidden">
+          {/* Decorative elements */}
           {/* Header */}
-          <h3 className="text-2xl text-white font-bold flex items-center justify-center gap-4 p-2 mb-2">
-            <span className="flex-1 text-center">Add Task</span>
+          <div className="relative z-10">
+            <h3 className="text-3xl font-semibold text-bloomPink mb-2 text-center">
+              Add New Task
+            </h3>
+            <p className="text-sm text-bloomPink/80 text-center mb-6">Take it one step at a time, mama! 💕</p>
 
-            {/* Add Button */}
+            {/* Close Button */}
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.1, rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
               onClick={handleClose}
+              className="absolute top-0 right-0 p-2 text-bloomPink hover:text-bloomBlack transition-colors"
+              aria-label="Close"
             >
-              <X className="w-8 h-8 text-white" />
+              <X className="w-6 h-6" />
             </motion.button>
-          </h3>
+          </div>
 
-          <div className=" flex flex-col items-center content-center justify-between bg-white rounded-xl p-4 text-[#474747] h-[500px] overflow-y-auto">
+          <div className="flex flex-col items-center content-center justify-between bg-white rounded-xl p-3 text-bloomBlack h-[450px] overflow-y-auto">
             <div className="w-full">
-              {/* Title input */}
-              <motion.div
-              className="flex gap-2 mb-2 items-center"
-              >
-                <input
-                  id="title"
-                  type="text"
-                  placeholder="Title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full border border-bloomBlack/50 outline-none text-bloomBlack placeholder-bloomBlack/50 text-[12px] font-bold bg-White shadow-md rounded-full px-2 focus:placeholder-bloomPink/50 focus:border-bloomPink focus:text-bloomPink focus:bg-bloomYellow/25"
-                />
-                <div className="p-3 bg-bloomPink rounded-full"></div>
-              </motion.div>
-
-              {/* Description input */}
-              <textarea
-                key="description"
-                placeholder="Description..."
-                rows={3}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full mb-2 resize-none overflow-hidden border border-bloomBlack/50 outline-none text-bloomBlack placeholder-bloomBlack/50 text-[12px] font-bold bg-White shadow-md rounded-[12px] p-2 focus:placeholder-bloomPink/50 focus:border-bloomPink focus:text-bloomPink focus:bg-bloomYellow/25"
-              />
-              <motion.div transition={{ duration: 0.3, ease: "easeOut"}}>
-                <AnimatePresence>
-                  <div className="relative flex justify-center items-center mb-2">
-                    {(!isSingleDate ?
-                      <motion.div
-                      key="single1"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="flex items-center justify-center gap-2"
-                      >
-                        <button 
-                        className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105"
-                        >
-                          {dateStart}
-                        </button>
-                        <ChevronRight className="text-bloomPink" />
-                        <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
-                          {dateEnd}
-                        </button>
-                      </motion.div>
-                      : 
-                      <motion.div
-                      key="single2"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="flex items-center justify-center"
-                      >
-                        <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
-                            {dateStart}
-                          </button>
-                      </motion.div>
-                    )}
+              <div className="space-y-4 relative z-10 mb-4">
+                {/* Task Title */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-bloomBlack/80">Task Name</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-white/80 border border-bloomPink/20 text-bloomBlack placeholder-bloomPink/40 focus:outline-none focus:ring-2 focus:ring-bloomPink/30 focus:border-transparent transition-all duration-200 shadow-sm text-sm"
+                      placeholder="What do you need to do?"
+                    />
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <svg className="h-5 w-5 text-bloomPink/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </div>
                   </div>
-                </AnimatePresence>
-                
-                
+                </div>
+
+                {/* Task Description */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-bloomBlack/80">Notes (Optional)</label>
+                  <div className="relative">
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-white/80 border border-bloomPink/20 text-bloomBlack placeholder-bloomPink/40 focus:outline-none focus:ring-2 focus:ring-bloomPink/30 focus:border-transparent transition-all duration-200 shadow-sm min-h-[80px] text-sm"
+                      placeholder="Any special notes or details?"
+                    />
+                    <div className="absolute bottom-3 right-3 text-bloomPink/40">
+                      
+                    </div>
+                  </div>
+                </div>
+
                 {/* Single Date toggle */}
                 <motion.div
                 layout
@@ -328,16 +333,34 @@ export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.div>
+
+                {/* Date & Time Picker */}
+                <div className="space-y-3">
+                  <label className="block text-sm font-medium text-bloomBlack/80">Schedule</label>
+                  <div className="flex items-center space-x-3">
+                    <div className="relative flex-1">
+                      <button
+                        onClick={handelStartDate}
+                        className="w-full py-1.5 rounded-lg bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-medium hover:opacity-90 transition-all duration-200 shadow hover:shadow-md text-sm"
+                      >
+                        {dateStart}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="w-full">
               {/* Buttons */}
               <div className="flex justify-between gap-4">
-                <button className="w-32 py-2 rounded-full border border-bloomPink text-bloomPink font-bold hover:bg-pink-50 transition">
+                <button className="w-28 py-1.5 rounded-full border border-bloomPink text-bloomPink font-bold hover:bg-pink-50 transition text-sm">
                   Cancel
                 </button>
-                <button className="w-32 py-2 rounded-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-bold shadow hover:opacity-90 transition">
+                <button 
+                  onClick={handleAdd}
+                  className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-5 py-1.5 rounded-full font-medium hover:opacity-90 transition-opacity text-sm"
+                >
                   Add
                 </button>
               </div>

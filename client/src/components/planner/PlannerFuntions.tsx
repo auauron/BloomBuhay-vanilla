@@ -13,7 +13,8 @@ export function translateBloomdate ( date: BloomDate ): string {
 };
 
 export function getFullDate ( date: BloomDate ) : string {
-  return `${date.date}/${date.month}/${date.year}`
+  // Add 1 to month since getMonth() returns 0-11
+  return `${date.date}/${date.month + 1}/${date.year}`
 }
 
 export function taskID ( date: BloomDate, time: BloomTime ): string {

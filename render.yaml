@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: bloom-buhay-api
+    env: node
+    buildCommand: cd server && npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bloom-buhay-db
+          property: connectionString
+    plan: free
+
+databases:
+  - name: bloom-buhay-db
+    databaseName: bloom_buhay
+    user: bloom_buhay_user
+    plan: free
