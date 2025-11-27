@@ -2,24 +2,30 @@ import React, { useState, useMemo } from "react";
 import { ChevronsLeft, ChevronsRight, Calendar } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import DateJumper from "./modal/DateJumper";
-import { BloomDate } from "../../types/plan";
-import { createCalendar, translateBloomdate, isLeapYear, getDayOfWeek, getNow } from "./PlannerFuntions";
+import { BloomDate, CalendarState } from "../../types/plan";
+import { createCalendar, translateBloomdate, getNow, translateDateStringToBloomDate, taskID } from "./PlannerFuntions";
 
-export default function CalendarView() {
+export default function CalendarView({
+  selectedDay,
+  setSelectedDay,
+  month,
+  setMonth,
+  year,
+  setYear,
+  showPicker,
+  setShowPicker
+} : CalendarState) {
   const now: BloomDate = getNow()
-  const [selectedDay, setSelectedDay] = useState<string | null>(translateBloomdate(now));
-  const [month, setMonth] = useState(now.month);
-  const [year, setYear] = useState(now.year);
-  const [showPicker, setShowPicker] = useState(false);
-
+  const today: string = translateBloomdate(now)
+ 
   const daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"];
 
   const handleSelect = (id: string) => {
-    setSelectedDay((prev) => (prev === id ? null : id));
+    setSelectedDay((prev) => (prev === id) ? null : id);
   };
 
   const calendar = useMemo(() => createCalendar(month, year), [month, year]);
-  const today: string = translateBloomdate(now);
+  console.log(selectedDay)
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
@@ -84,10 +90,10 @@ export default function CalendarView() {
               ))}
 
               {calendar.map((date) => {
-                const id = translateBloomdate(date);
+                const id = translateBloomdate(date)
                 const isCurrentMonth = date.month === month;
                 const isToday = id === today;
-                const isSelected = id === selectedDay;
+                const isSelected = id == selectedDay;
 
                 return (
                   <div

@@ -63,17 +63,21 @@ model MotherProfiles {
 }
 
 model PlannerTask {
-  id          Int      @id @default(autoincrement())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
   title       String
   description String
-  date        DateTime @db.Date
-  isCompleted Boolean  @default(false)
-  createdAt   DateTime @default(now()) @db.Timestamptz(6)
-
+  isCompleted Boolean   @default(false)
+  startDate   String
+  endDate     String
+  days        Int[]
+  interval    Int
+  time        String
+  dateCreated String
+  updatedAt   DateTime  @updatedAt @db.Timestamptz(6)
+  
   @@index([userId], name: "idx_planner_task_user_id")
-  @@index([date], name: "idx_planner_task_date")
   @@map("planner_task")
 }
 
