@@ -1,11 +1,19 @@
-value: string;
-unit ?: string;
-change ?: string;
-trend ?: "up" | "down" | "stable" | string;
-color ?: string;
-category ?: string;
-createdAt ?: string;
-updatedAt ?: string;
+import { authService } from "./authService";
+
+const API_URL = "http://localhost:3000/api/healthtracker";
+
+export interface HealthMetric {
+  id: number;
+  userId?: number;
+  title: string;
+  value: string;
+  unit?: string;
+  change?: string;
+  trend?: "up" | "down" | "stable" | string;
+  color?: string;
+  category?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface HealthMood {

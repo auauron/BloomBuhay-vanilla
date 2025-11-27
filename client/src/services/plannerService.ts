@@ -1,5 +1,14 @@
-date: string;
-isCompleted: boolean,
+import { authService } from "./authService";
+
+const API_URL = "http://localhost:3000/api/planner";
+
+export interface PlannerTask {
+    id: number;
+    userId: number;
+    title: string;
+    description: string,
+    date: string;
+    isCompleted: boolean,
     createdAt: string;
 }
 
@@ -38,103 +47,103 @@ export interface DeleteTaskResponse {
 }
 
 export const plannerService = {
-    async getTasks(): Promise<GetTasksResponse> {
-        try {
-            const token = authService.getToken();
-            if (!token) {
-                return { success: false, error: "Not Authenticated" }
+        async getTasks(): Promise<GetTasksResponse> {
+            try {
+                const token = authService.getToken();
+                if (!token) {
+                    return { success: false, error: "Not Authenticated"}
+                    
+                }
 
+                const response = await fetch(`${API_URL}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+
+                const result =  await response.json();
+                return result;
+            } catch (error) {
+                console.error("Get tasks error", error);
+                return {
+                    success: false,
+                    error: "Failed to fetch tasks"
+                };
             }
+        },
 
-            const response = await fetch(`${API_URL}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            })
+        async createTask(data: CreateTaskRequest): Promise<CreateTaskResponse> {
+            try{
+                const token = authService.getToken();
+                if (!token){
+                    return { success: false, error: "Not authenticated"}
+                }
 
-            const result = await response.json();
-            return result;
-        } catch (error) {
-            console.error("Get tasks error", error);
-            return {
-                success: false,
-                error: "Failed to fetch tasks"
-            };
-        }
-    },
+                const response = await fetch(`${API_URL}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(data)
+                })
 
-    async createTask(data: CreateTaskRequest): Promise<CreateTaskResponse> {
-        try {
-            const token = authService.getToken();
-            if (!token) {
-                return { success: false, error: "Not authenticated" }
+                const result = await response.json();
+                return result;
+            } catch(error) {
+                console.error("Create task error:", error);
+                return {
+                    success: false,
+                    error: "Failed to create task",
+                };
             }
+        },
 
-            const response = await fetch(`${API_URL}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(data)
-            })
+        async updateTask(taskId: number, data: UpdateTaskRequest): Promise<UpdateTaskResponse> {
+            try {
+                const token = authService.getToken();
+                if (!token) {
+                    return { success: false, error: "Not authenticated"};
+                }
 
-            const result = await response.json();
-            return result;
-        } catch (error) {
-            console.error("Create task error:", error);
-            return {
-                success: false,
-                error: "Failed to create task",
-            };
-        }
-    },
+                const response = await fetch(`${API_URL}/${taskId}`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
 
-    async updateTask(taskId: number, data: UpdateTaskRequest): Promise<UpdateTaskResponse> {
-        try {
-            const token = authService.getToken();
-            if (!token) {
-                return { success: false, error: "Not authenticated" };
+                const result = await response.json();
+                return result
+            } catch (error) {
+                console.error("Update task error:", error);
+                return { success: false, error: "Failed to update task"};
             }
+        },
 
-            const response = await fetch(`${API_URL}/${taskId}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify(data)
-            });
+        async deleteTask(taskId: number): Promise<DeleteTaskResponse>{
+            try {
+                const token = authService.getToken();
+                if (!token) {
+                    return {success: false, error: "Failed to delete task"}
+                }
 
-            const result = await response.json();
-            return result
-        } catch (error) {
-            console.error("Update task error:", error);
-            return { success: false, error: "Failed to update task" };
-        }
-    },
-
-    async deleteTask(taskId: number): Promise<DeleteTaskResponse> {
-        try {
-            const token = authService.getToken();
-            if (!token) {
-                return { success: false, error: "Failed to delete task" }
+                const response = await fetch(`${API_URL}/${taskId}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                })
+                const result = await response.json();
+                return result;
+            } catch(error) {
+                console.error("Delete task error:", error);
+                return {success: false, error:"Failed to delete task"}
             }
-
-            const response = await fetch(`${API_URL}/${taskId}`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
-            })
-            const result = await response.json();
-            return result;
-        } catch (error) {
-            console.error("Delete task error:", error);
-            return { success: false, error: "Failed to delete task" }
         }
-    }
 }
