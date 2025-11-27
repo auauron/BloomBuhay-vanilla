@@ -1,7 +1,7 @@
 import { authService } from "./authService";
 import { API_BASE_URL } from "../config";
 
-const API_URL = `${API_BASE_URL}/api/healthtracker` || "http://localhost:3000";
+const API_URL = `${API_BASE_URL}/api/healthtracker` || "http://localhost:3000/api/healthtracker";
 
 export interface HealthMetric {
   id: number;
