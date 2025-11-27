@@ -36,6 +36,7 @@ export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps
   const [timeHr, setTimeHr] = useState(6)
   const [timeMin, setTimeMin] = useState(0)
   const [clock, setClock] = useState("AM")
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isSelectingDate, setIsSelectingDate] = useState(false)
   const [selectedDay, setSelectedDay] = useState(now)
@@ -359,9 +360,14 @@ export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps
                 </button>
                 <button 
                   onClick={handleAdd}
-                  className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-5 py-1.5 rounded-full font-medium hover:opacity-90 transition-opacity text-sm"
+                  disabled={isSubmitting}
+                  className={`bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-5 py-1.5 rounded-full font-medium transition-opacity text-sm ${
+                    isSubmitting 
+                      ? 'opacity-70 cursor-not-allowed' 
+                      : 'hover:opacity-90 cursor-pointer'
+                  }`}
                 >
-                  Add
+                  {isSubmitting ? 'Adding...' : 'Add'}
                 </button>
               </div>
             </div>
