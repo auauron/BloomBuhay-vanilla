@@ -83,7 +83,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             
             if (mounted) {
               setUser({ 
-                fullName: name,
+                fullName: name.charAt(0).toUpperCase() + name.slice(1).toLowerCase(),
                 profilePic: profilePic
               });
             }

@@ -255,6 +255,15 @@ export default function UserProfile() {
     const result = await babyService.updateBabyDetails(babyData);
 
     if (result.success) {
+      // Update the baby data in state with the latest values
+      setBabyData(prev => ({
+        ...prev!,
+        babyName: babyData.babyName,
+        gender: babyData.gender,
+        motherhoodStage: babyData.motherhoodStage,
+        pregnancyWeeks: babyData.pregnancyWeeks,
+        lmpDate: babyData.lmpDate
+      }));
       setShowBabyEditModal(false);
     } else {
       setError(result.error || "Failed to update baby details");
@@ -302,7 +311,11 @@ export default function UserProfile() {
                     </button>
                   </div>
                   <div>
-                    <h1 className="text-2xl font-bold">{userData?.fullName || 'User Profile'}</h1>
+                    <h1 className="text-2xl font-bold">
+                      {userData?.fullName 
+                        ? userData.fullName.charAt(0).toUpperCase() + userData.fullName.slice(1)
+                        : 'User Profile'}
+                    </h1>
                     <p className="text-white/90">{userData?.email || ''}</p>
                     <div className="mt-2 flex items-center space-x-2">
                       <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-medium">
@@ -370,7 +383,7 @@ export default function UserProfile() {
                       </div>
                     </div>
                     
-                    <div className="pt-4 mt-6 border-t border-gray-200">
+                    <div className="pt-4 mt-6 border-t border-gray-200 align-right">
                       <h3 className="text-sm font-medium text-gray-500 mb-3">Account Actions</h3>
                       <div className="flex flex-wrap gap-3">
                         <button
