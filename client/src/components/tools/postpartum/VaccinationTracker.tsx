@@ -138,6 +138,22 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
     }
   };
 
+  const getCardClasses = (status: string) => {
+    switch (status) {
+      case 'completed': return 'bg-green-50 border-green-200';
+      case 'overdue': return 'bg-red-50 border-red-200';
+      default: return 'bg-yellow-50 border-yellow-200';
+    }
+  };
+
+  const getIconWrapper = (status: string) => {
+    switch (status) {
+      case 'completed': return 'p-2 bg-green-100 text-green-600 rounded-lg';
+      case 'overdue': return 'p-2 bg-red-100 text-red-600 rounded-lg';
+      default: return 'p-2 bg-yellow-100 text-yellow-600 rounded-lg';
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed': return <CheckCircle className="w-4 h-4" />;
@@ -148,6 +164,7 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
 
   const upcomingVaccines = vaccines.filter(v => v.status === 'scheduled');
   const completedVaccines = vaccines.filter(v => v.status === 'completed');
+  const overdueVaccines = vaccines.filter(v => v.status === 'overdue');
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -164,7 +181,7 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
           {/* Stats */}
           <div className="bg-white rounded-2xl border border-green-200 p-6">
             <h4 className="font-semibold text-green-800 mb-4">Vaccination Summary</h4>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">{completedVaccines.length}</div>
                 <div className="text-sm text-green-700">Completed</div>
@@ -172,6 +189,10 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
               <div className="text-center">
                 <div className="text-2xl font-bold text-yellow-600">{upcomingVaccines.length}</div>
                 <div className="text-sm text-yellow-700">Upcoming</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-red-600">{overdueVaccines.length}</div>
+                <div className="text-sm text-red-700">Overdue</div>
               </div>
             </div>
           </div>
@@ -217,7 +238,7 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
                 </div>
 
                 <div>
-                  <label className="block text sm font-medium text-gray-700 mb-2">Scheduled Date</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Scheduled Date</label>
                   <input type="date" value={formData.scheduledDate} onChange={(e) => setFormData({...formData, scheduledDate: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent" />
                 </div>
 
@@ -264,13 +285,54 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
             ) : (
               <div className="space-y-3">
                 {upcomingVaccines.map((vaccine) => (
-                  <div key={vaccine.id} className="flex items-center justify-between p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+                  <div key={vaccine.id} className={`flex items-center justify-between p-4 rounded-xl border ${getCardClasses(vaccine.status)}`}>
                     <div className="flex items-center gap-4">
-                      <div className="p-2 bg-yellow-100 rounded-lg text-yellow-600">
-                        <Clock className="w-4 h-4" />
+                      <div className={getIconWrapper(vaccine.status)}>
+                        {getStatusIcon(vaccine.status)}
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-800">{vaccine.name}</div>
+                        <div className="font-semibold text-gray-800 flex items-center gap-2">
+                          {vaccine.name}
+                        </div>
+                        <div className="text-sm text-gray-600">Dose: {vaccine.dose} • Scheduled: {new Date(vaccine.scheduledDate).toLocaleDateString()}</div>
+                        {vaccine.notes && <p className="text-sm text-gray-700 mt-1">{vaccine.notes}</p>}
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={() => editVaccine(vaccine)} className="p-2 hover:bg-white rounded-lg transition-colors text-gray-600 hover:text-green-600">
+                        <Edit3 className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => deleteVaccine(vaccine.id)} className="p-2 hover:bg-white rounded-lg transition-colors text-gray-600 hover:text-red-600">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Overdue Vaccines */}
+          <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <h4 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-600" />
+              Overdue Vaccinations
+            </h4>
+            {overdueVaccines.length === 0 ? (
+              <p className="text-gray-500 text-center py-4">No overdue vaccinations</p>
+            ) : (
+              <div className="space-y-3">
+                {overdueVaccines.map((vaccine) => (
+                  <div key={vaccine.id} className={`flex items-center justify-between p-4 rounded-xl border ${getCardClasses(vaccine.status)}`}>
+                    <div className="flex items-center gap-4">
+                      <div className={getIconWrapper(vaccine.status)}>
+                        {getStatusIcon(vaccine.status)}
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-800 flex items-center gap-2">
+                          {vaccine.name}
+                          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700">Overdue</span>
+                        </div>
                         <div className="text-sm text-gray-600">Dose: {vaccine.dose} • Scheduled: {new Date(vaccine.scheduledDate).toLocaleDateString()}</div>
                         {vaccine.notes && <p className="text-sm text-gray-700 mt-1">{vaccine.notes}</p>}
                       </div>
