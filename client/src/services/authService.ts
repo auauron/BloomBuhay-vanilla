@@ -2,7 +2,7 @@ import { SignupRequest, LoginRequest, AuthResponse } from "../types/auth";
 import { API_BASE_URL } from "../config";
 
 // Use the environment variable for the backend URL with fallback for development
-const API_URL = `${API_BASE_URL}/api/auth`;
+const API_URL = `${API_BASE_URL}/api/auth` || "http://localhost:3000";
 
 // Common fetch options for API requests
 const fetchOptions = (method: string, data?: any): RequestInit => ({

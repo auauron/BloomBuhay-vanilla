@@ -1,7 +1,8 @@
 import { authService } from "./authService";
+
 import { API_BASE_URL } from "../config";
 
-const API_URL = `${API_BASE_URL}/api/users`;
+const API_URL = `${API_BASE_URL}/api/users` || "http://localhost:3000";
 
 export interface UserProfile {
   id: number;

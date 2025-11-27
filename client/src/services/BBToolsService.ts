@@ -1,6 +1,7 @@
 import { authService } from "./authService";
+import { API_BASE_URL } from "../config";
 
-const API_URL = "http://localhost:3000/api/bbtools";
+const API_URL = `${API_BASE_URL}/api/bbtools` || "http://localhost:3000";
 
 export interface ChildcareVaccination {
   id: string;

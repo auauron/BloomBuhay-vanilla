@@ -1,3 +1,7 @@
+import { API_BASE_URL } from "../config";
+
+// Use the environment variable for the backend URL with fallback for development
+
 // client/src/services/aiService.ts
 export interface AIRequest {
   question: string;
@@ -13,8 +17,7 @@ export interface AIResponse {
 
 class AIService {
   // Direct connection to your server on port 3000
-  private baseURL = 'http://localhost:3000/api/ai';
-
+  private baseURL = `${API_BASE_URL}/api/ai` || "http://localhost:3000";
   async askBloomGuide(request: AIRequest): Promise<AIResponse> {
     try {
       console.log('Sending AI request to:', `${this.baseURL}/bloomguide/ask`);

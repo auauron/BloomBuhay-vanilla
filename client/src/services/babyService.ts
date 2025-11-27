@@ -1,7 +1,7 @@
 import { authService } from "./authService";
 import { API_BASE_URL } from "../config";
 
-const API_URL = `${API_BASE_URL}/api/baby`;
+const API_URL = `${API_BASE_URL}` || "http://localhost:3000";
 
 interface BabyDetails {
   motherhoodStage: string;

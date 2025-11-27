@@ -1,8 +1,8 @@
 import { authService } from "./authService";
 import { Note, Album, Photo } from "../components/journal/types";
+import { API_BASE_URL } from "../config";
 
-
-const API_URL = "http://localhost:3000/api/journal";
+const API_URL = `${API_BASE_URL}/api/journal` || "http://localhost:3000";
 
 // TYPE DEFINITIONS
 

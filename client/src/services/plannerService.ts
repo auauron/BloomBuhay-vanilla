@@ -1,6 +1,8 @@
 import { authService } from "./authService";
+import { API_BASE_URL } from "../config";
 
-const API_URL = "http://localhost:3000/api/planner";
+const API_URL = `${API_BASE_URL}/api/planner` || "http://localhost:3000";
+
 
 export interface PlannerTask {
     id: number;

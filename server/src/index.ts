@@ -14,38 +14,47 @@ import BBToolsRoutes from "./routes/BBToolsRoutes";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// CORS configuration
+// ---------- CORS Setup ----------
+
+// Frontend origins
 const allowedOrigins = [
+  "http://localhost:3000", // if your frontend runs on this port locally
   "http://localhost:5173",
   "http://127.0.0.1:5173",
-  "https://bloombuhay-client.onrender.com",
-  "https://bloombuhay-vanilla-backend.onrender.com",
-  ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : [])
+  "https://bloombuhay-client.onrender.com", // deployed frontend
+  ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : []),
 ];
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, etc.)
-      if (!origin) return callback(null, true);
+// CORS options
+const corsOptions = {
+  origin: (origin: string | undefined, callback: any) => {
+    if (!origin) return callback(null, true); // allow non-browser requests (curl, Postman)
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`Blocked CORS request from origin: ${origin}`);
+      callback(new Error("Not allowed by CORS"), false);
+    }
+  },
+  credentials: true, // allow cookies/auth headers
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  exposedHeaders: ["Content-Range", "X-Total-Count"],
+};
 
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = `CORS policy: ${origin} not allowed`;
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-    exposedHeaders: ["Content-Range", "X-Total-Count"],
-  })
-);
+// Use CORS differently in dev vs production for convenience
+if (process.env.NODE_ENV === "development") {
+  console.log("Running in development mode: allowing all origins for convenience");
+  app.use(cors({ origin: true, credentials: true }));
+} else {
+  app.use(cors(corsOptions));
+}
 
+// ---------- Middleware ----------
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(express.json({ limit: "10mb" }));
 
-// Other API routes
+// ---------- Routes ----------
 app
   .use("/api/auth", authRoutes)
   .use("/api/users", userRoutes)
@@ -65,8 +74,11 @@ app.get("/", (req, res) => {
   });
 });
 
+// ---------- Start Server ----------
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
-  console.log(`CORS enabled for: http://localhost:5173`);
+  if (process.env.NODE_ENV !== "development") {
+    console.log("CORS enabled for frontend domains:", allowedOrigins);
+  }
 });
