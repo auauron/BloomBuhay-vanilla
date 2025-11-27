@@ -268,156 +268,205 @@ export default function UserProfile() {
   };
 
   return (
-    <div className="min-h-screen bg-pink-50 flex flex-col font-poppins">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-blue-50 flex flex-col font-poppins">
       <Header onMenuClick={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
-      <div className="flex w-full max-w-6xl mx-auto pt-4">
-        <div className="w-1/2 px-4">
-          <div className="flex flex-col gap-3 max-w-lg mx-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h1 className="text-3xl font-bold text-bloomBlack">
-                User Profile
-              </h1>
-              <button
-                onClick={handleEditClick}
-                className="flex items-center gap-2 bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-2xl hover:from-[#F9649C] hover:to-[#F3D087] transition-all duration-300 shadow-md"
-              >
-                <Edit size={18} />
-                <span>Edit</span>
-              </button>
-            </div>
-
-            {/* Profile Display */}
-            {loading ? (
-              <div className="bg-white rounded-2xl p-6 shadow-md text-center">
-                <p className="text-gray-600">Loading profile...</p>
-              </div>
-            ) : error && !userData ? (
-              <div className="bg-white rounded-2xl p-6 shadow-md text-center">
-                <p className="text-red-600">{error}</p>
-              </div>
-            ) : userData ? (
-              <div className="bg-white rounded-2xl p-6 shadow-md space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="h-16 w-16 rounded-full bg-pink-100 overflow-hidden flex items-center justify-center">
-                    {userData.profilePic ? (
-                      <img
-                        src={userData.profilePic}
-                        alt="Profile"
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-pink-600 font-bold text-xl">
-                        {userData.fullName?.charAt(0).toUpperCase() +
-                          userData.fullName?.charAt(
-                            userData.fullName?.length - 1
-                          ) || "U"}
-                      </span>
-                    )}
+      <main className="flex-1 py-8 px-4">
+        <div className="max-w-6xl mx-auto">
+          {/* Profile Header */}
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
+            <div className="bg-gradient-to-r from-bloomPink to-bloomYellow p-6 text-white">
+              <div className="flex flex-col md:flex-row md:items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="relative group">
+                    <div className="h-24 w-24 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/30 flex items-center justify-center overflow-hidden">
+                      {userData?.profilePic ? (
+                        <img
+                          src={userData.profilePic}
+                          alt="Profile"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-3xl font-bold text-white">
+                          {userData?.fullName?.charAt(0).toUpperCase() || 'U'}
+                        </span>
+                      )}
+                    </div>
+                    <button 
+                      onClick={handleEditClick}
+                      className="absolute -bottom-2 -right-2 bg-white rounded-full p-2 shadow-lg hover:scale-110 transition-transform duration-200"
+                      title="Edit profile"
+                    >
+                      <Edit size={16} className="text-bloomPink" />
+                    </button>
                   </div>
                   <div>
-                    <p className="text-gray-800 text-xl font-semibold">
-                      {userData.fullName}
-                    </p>
-                    <p className="text-gray-500 text-sm">{userData.email}</p>
+                    <h1 className="text-2xl font-bold">{userData?.fullName || 'User Profile'}</h1>
+                    <p className="text-white/90">{userData?.email || ''}</p>
+                    <div className="mt-2 flex items-center space-x-2">
+                      <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-medium">
+                        {babyData?.motherhoodStage ? 
+                          `${babyData.motherhoodStage.charAt(0).toUpperCase()}${babyData.motherhoodStage.slice(1)}` : 
+                          'Update your status'}
+                      </span>
+                      {babyData?.babyName && (
+                        <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-medium">
+                          👶 {babyData.babyName}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
-                    Name
-                  </label>
-                  <p className="text-gray-800 text-lg">{userData.fullName}</p>
-                </div>
-                <div className="border-t border-gray-200 pt-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
-                    Email
-                  </label>
-                  <p className="text-gray-800 text-lg">{userData.email}</p>
-                </div>
-                <div className="border-t border-gray-200 pt-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
-                    Password
-                  </label>
-                  <p className="text-gray-600 text-lg">••••••••</p>
+                <div className="mt-4 md:mt-0">
+                  <button
+                    onClick={handleEditBabyClick}
+                    className="flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-200"
+                  >
+                    <Edit size={16} />
+                    <span>Edit Baby Profile</span>
+                  </button>
                 </div>
               </div>
-            ) : null}
-          </div>
-          <div className="mt-6 flex justify-center gap-4">
-            <button
-              onClick={handleLogout}
-              className="inline-flex items-center justify-center gap-2 text-gray-700 hover:text-bloomPink px-6 py-2 rounded-lg transition-all duration-300"
-            >
-              <LogOut size={18} />
-              <span>Log out</span>
-            </button>
-            <button
-              onClick={handleDeleteAccount}
-              className="text-red-500 hover:bg-red-50 px-6 py-2 rounded-lg transition-all duration-300"
-            >
-              Delete Account
-            </button>
-          </div>
-        </div>
-
-        {/* Baby profile column */}
-        <div className="w-1/2 px-4">
-          <div className="flex flex-col gap-3 max-w-lg mx-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h1 className="text-3xl font-bold text-bloomBlack">
-                BB's Profile
-              </h1>
-              <button
-                onClick={handleEditBabyClick}
-                className="flex items-center gap-2 bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-2xl hover:from-[#F9649C] hover:to-[#F3D087] transition-all duration-300 shadow-md"
-              >
-                <Edit size={18} />
-                <span>Edit</span>
-              </button>
             </div>
 
-            {/* Baby profile */}
-            {babyLoading ? (
-              <div className="bg-white rounded-2xl p-6 shadow-md text-center">
-                <p className="text-gray-600">Loading baby details...</p>
+            {/* Main Content */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+              {/* Account Information */}
+              <div className="space-y-6">
+                <h2 className="text-xl font-semibold text-gray-800">Account Information</h2>
+                {loading ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-600">Loading profile...</p>
+                  </div>
+                ) : error && !userData ? (
+                  <div className="bg-red-50 p-4 rounded-lg">
+                    <p className="text-red-600">{error}</p>
+                  </div>
+                ) : userData ? (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500 mb-1">Full Name</label>
+                      <p className="text-gray-800">{userData.fullName || '—'}</p>
+                    </div>
+                    
+                    <div className="pt-4 border-t border-gray-100">
+                      <label className="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
+                      <p className="text-gray-800">{userData.email || '—'}</p>
+                    </div>
+                    
+                    <div className="pt-4 border-t border-gray-100">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-500 mb-1">Password</label>
+                          <p className="text-gray-800">••••••••</p>
+                        </div>
+                        <button 
+                          onClick={handleEditClick}
+                          className="text-sm text-bloomPink hover:text-pink-600 font-medium"
+                        >
+                          Change
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="pt-4 mt-6 border-t border-gray-200">
+                      <h3 className="text-sm font-medium text-gray-500 mb-3">Account Actions</h3>
+                      <div className="flex flex-wrap gap-3">
+                        <button
+                          onClick={handleLogout}
+                          className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 text-sm font-medium"
+                        >
+                          <LogOut size={16} />
+                          <span>Sign Out</span>
+                        </button>
+                        <button
+                          onClick={handleDeleteAccount}
+                          className="px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200 text-sm font-medium"
+                        >
+                          Delete Account
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
               </div>
-            ) : babyError ? (
-              <div className="bg-white rounded-2xl p-6 shadow-md text-center">
-                <p className="text-red-600">{babyError}</p>
+
+              {/* Baby Information */}
+              <div className="space-y-6">
+                <h2 className="text-xl font-semibold text-gray-800">Baby's Information</h2>
+                
+                {babyLoading ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500">Loading baby details...</p>
+                  </div>
+                ) : babyError ? (
+                  <div className="bg-red-50 p-4 rounded-lg">
+                    <p className="text-red-600 text-sm">{babyError}</p>
+                  </div>
+                ) : babyData ? (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-500 mb-1">Motherhood Stage</label>
+                      <p className="text-gray-800 capitalize">{babyData.motherhoodStage || '—'}</p>
+                    </div>
+                    
+                    <div className="pt-4 border-t border-gray-100">
+                      <label className="block text-sm font-medium text-gray-500 mb-1">Baby's Name</label>
+                      <p className="text-gray-800">{babyData.babyName || '—'}</p>
+                    </div>
+                    
+                    <div className="pt-4 border-t border-gray-100">
+                      <label className="block text-sm font-medium text-gray-500 mb-1">Gender</label>
+                      <p className="text-gray-800 capitalize">{babyData.gender || '—'}</p>
+                    </div>
+                    
+                    {babyData.pregnancyWeeks && (
+                      <div className="pt-4 border-t border-gray-100">
+                        <label className="block text-sm font-medium text-gray-500 mb-1">Weeks Pregnant</label>
+                        <p className="text-gray-800">{babyData.pregnancyWeeks} weeks</p>
+                      </div>
+                    )}
+                    
+                    {babyData.lmpDate && (
+                      <div className="pt-4 border-t border-gray-100">
+                        <label className="block text-sm font-medium text-gray-500 mb-1">Last Menstrual Period</label>
+                        <p className="text-gray-800">{new Date(babyData.lmpDate).toLocaleDateString()}</p>
+                      </div>
+                    )}
+                    
+                    {/* Pregnancy Progress Tracker */}
+                    {babyData.motherhoodStage === 'pregnant' && babyData.pregnancyWeeks && (
+                      <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                        <h3 className="text-sm font-medium text-gray-700 mb-2">Pregnancy Progress</h3>
+                        <div className="w-full bg-white rounded-full h-2.5 mb-2">
+                          <div 
+                            className="bg-bloomPink h-2.5 rounded-full" 
+                            style={{ width: `${Math.min(100, (babyData.pregnancyWeeks / 40) * 100)}%` }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          Week {babyData.pregnancyWeeks} of 40 • {Math.round((babyData.pregnancyWeeks / 40) * 100)}% complete
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-lg">
+                    <p className="text-gray-500 mb-4">No baby information added yet</p>
+                    <button
+                      onClick={handleEditBabyClick}
+                      className="inline-flex items-center gap-2 bg-bloomPink text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition-colors duration-200 text-sm font-medium"
+                    >
+                      Add Baby Details
+                    </button>
+                  </div>
+                )}
               </div>
-            ) : babyData ? (
-              <div className="bg-white rounded-2xl p-6 shadow-md space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
-                    Motherhood Stage
-                  </label>
-                  <p className="text-gray-800 text-lg">
-                    {babyData.motherhoodStage}
-                  </p>
-                </div>
-                <div className="border-t border-gray-200 pt-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
-                    Baby's Name
-                  </label>
-                  <p className="text-gray-800 text-lg">{babyData.babyName}</p>
-                </div>
-                <div className="border-t border-gray-200 pt-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">
-                    Gender
-                  </label>
-                  <p className="text-gray-800 text-lg">{babyData.gender}</p>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-white rounded-2xl p-6 shadow-md text-center">
-                <p className="text-gray-500">No baby details found.</p>
-              </div>
-            )}
+            </div>
           </div>
         </div>
-      </div>
-
+        </main>
       {/* Edit baby profile modal */}
       {showBabyEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-5- flex items-center justify-center p-4">
