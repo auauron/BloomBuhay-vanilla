@@ -1,7 +1,7 @@
 import { authService } from "./authService";
 import { API_BASE_URL } from "../config";
 
-const API_URL = API_BASE_URL;
+const API_URL = `${API_BASE_URL}/api/baby`;
 
 interface BabyDetails {
   motherhoodStage: string;
