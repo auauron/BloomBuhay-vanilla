@@ -2,8 +2,9 @@ services:
   - type: web
     name: bloom-buhay-api
     env: node
-    buildCommand: cd server && npm install && npm run build
-    startCommand: npm run start
+    rootDirectory: server
+    buildCommand: npm i && npm run build && npm prune --production
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
