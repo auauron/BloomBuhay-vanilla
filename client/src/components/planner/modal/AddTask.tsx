@@ -111,7 +111,7 @@ export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps
             <h3 className="text-3xl font-semibold text-bloomPink mb-2 text-center">
               Add New Task
             </h3>
-            <p className="text-sm text-bloomPink/80 text-center mb-6">Take it one step at a time, mama! 💕</p>
+            <p className="text-sm text-bloomPink/80 text-center mb-6">One task at a time, mama!</p>
 
             {/* Close Button */}
             <motion.button
@@ -136,7 +136,7 @@ export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps
                       type="text"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg bg-white/80 border border-bloomPink/20 text-bloomBlack placeholder-bloomPink/40 focus:outline-none focus:ring-2 focus:ring-bloomPink/30 focus:border-transparent transition-all duration-200 shadow-sm text-sm"
+                      className="w-full px-3 py-2 rounded-lg bg-white/80 border border-gray-200 text-bloomBlack placeholder-bloomPink/40 focus:outline-none focus:ring-2 focus:ring-bloomPink/20 focus:border-transparent transition-all duration-200 shadow-sm text-sm"
                       placeholder="What do you need to do?"
                     />
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -154,7 +154,7 @@ export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps
                     <textarea
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg bg-white/80 border border-bloomPink/20 text-bloomBlack placeholder-bloomPink/40 focus:outline-none focus:ring-2 focus:ring-bloomPink/30 focus:border-transparent transition-all duration-200 shadow-sm min-h-[80px] text-sm"
+                      className="w-full px-3 py-2 rounded-lg bg-white/80 border border-gray-200 text-bloomBlack placeholder-bloomPink/40 focus:outline-none focus:ring-2 focus:ring-bloomPink/20 focus:border-transparent transition-all duration-200 shadow-sm min-h-[80px] text-sm"
                       placeholder="Any special notes or details?"
                     />
                     <div className="absolute bottom-3 right-3 text-bloomPink/40">
