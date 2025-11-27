@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { PlusCircle, Trash2 } from "lucide-react";
+import { PlusCircle, Trash2, CheckCircle2, Circle } from "lucide-react";
 import { plannerService } from "../../services/plannerService";
 import AddTaskModal from "./modal/AddTask";
 import { Task, ToDoListState } from "../../types/plan";
@@ -166,24 +166,26 @@ export default function ToDoList({ selectedDate, isSelecting, onSelectDate }: To
                   key={task.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex items-center w-full justify-between bg-gradient-to-r from-pink-50 to-pink-100 p-3 rounded-xl mb-3 shadow-sm hover:shadow-md transition"
+                  className="flex items-center w-full justify-between gap-3 p-3 bg-pink-50 rounded-xl mb-3 hover:bg-pink-100 transition-colors group border border-gray-200"
                 >
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={task.isCompleted}
-                      onChange={() => handleToggleTask(task.id)}
-                      className="w-5 h-5 accent-bloomPink cursor-pointer"
-                    />
-                    <span
-                      className={`text-lg ${
-                        task.isCompleted
-                          ? "line-through text-gray-400"
-                          : "text-gray-800"
-                      }`}
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <button
+                      onClick={() => handleToggleTask(task.id)}
+                      className="flex-shrink-0 transition-all duration-200 hover:scale-110"
                     >
+                      {task.isCompleted ? (
+                        <CheckCircle2 className="w-5 h-5 text-bloomPink fill-current" />
+                      ) : (
+                        <Circle className="w-5 h-5 text-gray-400 group-hover:text-bloomPink" />
+                      )}
+                    </button>
+                    <p className={`font-medium text-sm transition-all duration-200 ${
+                      task.isCompleted 
+                        ? 'line-through text-gray-400' 
+                        : 'text-gray-800'
+                    }`}>
                       {task.title}
-                    </span>
+                    </p>
                   </div>
 
                   <div className="flex items-center gap-3 text-sm text-gray-500">
