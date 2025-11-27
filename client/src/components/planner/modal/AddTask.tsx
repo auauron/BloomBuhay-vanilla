@@ -2,104 +2,63 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, number } from "framer-motion";
 import { X, ChevronRight, ChevronUp, ChevronDown, Target } from "lucide-react";
 import { Task, BloomDate, AddTaskModalProps, BloomTime } from "../../../types/plan";
-import { getFullDate, getNow, getTime, militaryTime, taskID, translateBloomdate } from "../PlannerFuntions";
+import { getFullDate, getNow, getTime, taskID, translateBloomdate } from "../PlannerFuntions";
 
-export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, onSelectDate } : AddTaskModalProps) {
+export default function AddTaskModal( {onClose} : {onClose: () => void} ) {
 
-  const now: BloomDate = getNow();
-  const nowTime: BloomTime = getTime();
+  const now: BloomDate = getNow()
+  const nowTime: BloomTime = getTime()
+  const today: string = getFullDate(getNow())
   
-
-
-  const [selectingDate, toggleSelectingDate] = useState<string | null>(null);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [isSingleDate, setSingleDate] = useState(true);
-  const [isWholeDay, setWholeDay] = useState(true);
-  const [dateStart, setDateStart] = useState(now);
-  const [dateEnd, setDateEnd] = useState(now);
-  const [days, setDays] = useState<number[]>([]);
-  const [interval, setInterval] = useState(0);
-  const [timeHr, setTimeHr] = useState(6);
-  const [timeMin, setTimeMin] = useState(0);
-  const [clock, setClock] = useState("AM");
-  const [time, setTime] = useState<BloomTime | null>(null);
-
-  useEffect(() => {
-    if (isSelecting && selectingDate === "StartDate") setDateStart((selectDate) ? selectDate : now);
-    else if (isSelecting && selectingDate === "EndDate") setDateEnd((selectDate) ? selectDate : now);
-
-  }, [isSelecting, selectDate])
-    
   const [form, setForm] = useState<Task>({
-    id: taskID(now, nowTime),
-    title: title,
-    description: description,
+    id: taskID( now, nowTime),
+    task: "Task",
+    description: null,
     isCompleted: false,
-    startDate: dateStart,
-    endDate: dateEnd,
-    days: days,
-    interval: interval,
-    time: militaryTime(timeHr, timeMin, clock),
-    updatedAt: translateBloomdate(now)
+    startDate: now
   });
 
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+  const [editing, setIsEditing] = useState(false)
+  const [isSingleDate, setSingleDate] = useState(true);
+  const [isWholeDay, setWholeDay] = useState(true);
+  const [dateStart, setDateStart] = useState(today)
+  const [dateEnd, setDateEnd] = useState(today)
+  const [weekly, setWeekly] = useState<string[]>([])
+  const [interval, setInterval] = useState(0)
+  const [timeHr, setTimeHr] = useState(6)
+  const [timeMin, setTimeMin] = useState(0)
+  const [clock, setClock] = useState("AM")
+
+  const [isSelectingDate, setIsSelectingDate] = useState(false)
+  const [selectedDay, setSelectedDay] = useState(now)
+
   const handleSingleDay = () => {
-    setSingleDate(!isSingleDate);
-    setDateEnd(dateStart);
-    setInterval(0);
-    if (!days) setDays([0,1,2,3,4,5,6]); else setDays([]);
+    setSingleDate(!isSingleDate)
   }
 
   const handleWholeDay = () => {
-    setWholeDay(!isWholeDay);
-    if (time === null) setTime({ hour: timeHr, min: timeMin, sec: 0 } as BloomTime); else null;
+    setWholeDay(!isWholeDay)
   }
 
   const handleClose = () => {
     onClose();
   }
 
-  const handleCancel = () => {
-    setForm({
-    id: taskID(now, nowTime),
-    title: title,
-    description: description,
-    isCompleted: false,
-    startDate: dateStart,
-    endDate: dateEnd,
-    days: days,
-    interval: interval,
-    time: null,
-    updatedAt: translateBloomdate(now)
-    })
-    onClose();
+  // const handleCancel = () => {
+  //   onCancel();
+  // }
+
+  // const handleAdd = () => {
+  //   onAdd(form)
+  // }
+
+  const handelStartDate = () => {
+    
   }
 
-  const handleAdd = () => {
-    onAdd(form)
-  }
-
-  const handleSelectStartDate = () => {
-    if (!isSelecting) onSelectDate();
-
-    if (selectingDate !== "StartDate") {
-      toggleSelectingDate("StartDate")
-    } else {
-      toggleSelectingDate(null)
-    }
-
-  }
-
-  const handleSelectEndDate = () => {
-    if (!isSelecting) onSelectDate();
-
-    if (selectingDate !== "EndDate") {
-      toggleSelectingDate("EndDate")
-    } else {
-      toggleSelectingDate(null)
-    }
-
+  const handleTimeMin = (val: number) => {
   }
 
   const handleChangeClock = () => {
@@ -107,8 +66,6 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
     ? setClock("PM")
     : setClock("AM")
   }
-
-  console.log(isSelecting)
 
   return (
     <AnimatePresence>
@@ -173,20 +130,13 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
                       className="flex items-center justify-center gap-2"
                       >
                         <button 
-                        className={`py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105
-                          ${(selectingDate === "StartDate") ? `bg-gradient-to-r from-bloomPink to-bloomYellow text-white` : `shadow border-bloomBlack/0 scale-105`}
-                          `}
-                        onClick={handleSelectStartDate}
+                        className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105"
                         >
-                          {getFullDate(dateStart)}
+                          {dateStart}
                         </button>
                         <ChevronRight className="text-bloomPink" />
-                        <button className={`py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105
-                          ${(selectingDate === "EndDate") ? `bg-gradient-to-r from-bloomPink to-bloomYellow text-white` : `shadow border-bloomBlack/0 scale-105`}
-                        `}
-                        onClick={handleSelectEndDate}
-                        >
-                          {getFullDate(dateEnd)}
+                        <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
+                          {dateEnd}
                         </button>
                       </motion.div>
                       : 
@@ -198,14 +148,9 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
                       transition={{ duration: 0.3 }}
                       className="flex items-center justify-center"
                       >
-                        <button
-                        className={`py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105
-                        ${(selectingDate === "StartDate") ? `bg-gradient-to-r from-bloomPink to-bloomYellow text-white` : `shadow border-bloomBlack/0 scale-105`}
-                        `}
-                        onClick={handleSelectStartDate}
-                        >
-                            {getFullDate(dateStart)}
-                        </button>
+                        <button className="py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105">
+                            {dateStart}
+                          </button>
                       </motion.div>
                     )}
                   </div>
@@ -250,27 +195,23 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
                     >
                       {/* Day selection */}
                       <div className="flex items-center gap-2 mb-2">
-                        <input
-                        type="radio"
-                        name="daySelection"
-                        className="appearance-none w-3 h-3 border border-bloomBlack/50 rounded-full checked:bg-bloomPink checked:border-bloomPink checked:shadow transition-all duration-300 cursor-pointer"
-                        />
+                        <input type="radio" name="daySelection" className="appearance-none w-3 h-3 border border-bloomBlack/50 rounded-full checked:bg-bloomPink checked:border-bloomPink checked:shadow transition-all duration-300 cursor-pointer" />
                         <span className="font-bold text-bloomBlack">Everyday</span>
                       </div>
 
-                      <div className="flex justify-evenly w-full gap-2 mb-2 cursor-pointer">
+                      <div className="flex justify-evenly w-full gap-2 mb-2">
                         {["Su", "M", "Tu", "W", "Th", "F", "Sa"].map((day, i) => (
                           <div
                             key={i}
                             className={`w-[32px] h-[32px] flex items-center justify-center rounded-full text-sm font-bold ${
-                              days.includes(i)
+                              weekly.includes(day)
                                 ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow scale-105"
                                 : "border border-bloomPink text-bloomPink hover:bg-bloomYellow/50 hover:scale-105"
                             }`}
                             onClick={() => {
-                              (!days.includes(i))
-                              ? setDays(days.concat(i))
-                              : setDays(days.filter((x) => x !== i))
+                              (!weekly.includes(day))
+                              ? setWeekly(weekly.concat(day))
+                              : setWeekly(weekly.filter((x) => x !== day))
                             }}
                           >
                             {day}
@@ -393,18 +334,12 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
             <div className="w-full">
               {/* Buttons */}
               <div className="flex justify-between gap-4">
-                <motion.button
-                className="w-32 py-2 rounded-full border border-bloomPink text-bloomPink font-bold hover:bg-pink-50 transition"
-                onClick={handleCancel}
-                >
+                <button className="w-32 py-2 rounded-full border border-bloomPink text-bloomPink font-bold hover:bg-pink-50 transition">
                   Cancel
-                </motion.button>
-                <motion.button
-                className="w-32 py-2 rounded-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-bold shadow hover:opacity-90 transition"
-                onClick={handleAdd}
-                >
+                </button>
+                <button className="w-32 py-2 rounded-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-bold shadow hover:opacity-90 transition">
                   Add
-                </motion.button>
+                </button>
               </div>
             </div>
           </div>
