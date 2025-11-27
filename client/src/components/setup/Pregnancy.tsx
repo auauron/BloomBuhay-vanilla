@@ -148,7 +148,7 @@ export default function Pregnancy({
     if (weeksPregnantNum !== null)
       localStorage.setItem("babyWeeksPregnant", String(weeksPregnantNum));
     if (inputValue) localStorage.setItem("babyName", inputValue);
-    localStorage.setItem("babyGender", babyGenderNormalized);
+    localStorage.setItem("babyGender", babyGenderNormalized ?? "");
 
     // notify parent (if any navigation logic uses onComplete)
     onComplete?.(payload);
