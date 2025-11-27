@@ -6,27 +6,30 @@ import { getFullDate, getNow, getTime, militaryTime, taskID, translateBloomdate 
 
 export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, onSelectDate } : AddTaskModalProps) {
 
-  const now: BloomDate = getNow()
-  const nowTime: BloomTime = getTime()
+  const now: BloomDate = getNow();
+  const nowTime: BloomTime = getTime();
   
 
 
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
+  const [selectingDate, toggleSelectingDate] = useState<string | null>(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [isSingleDate, setSingleDate] = useState(true);
   const [isWholeDay, setWholeDay] = useState(true);
-  const [dateStart, setDateStart] = useState(now)
-  const [dateEnd, setDateEnd] = useState<BloomDate | null>(null)
-  const [selectingDate, toggleSelectingDate] = useState<string | null>(null)
-  const [days, setDays] = useState<number[]>([])
-  const [interval, setInterval] = useState(0)
-  const [timeHr, setTimeHr] = useState(6)
-  const [timeMin, setTimeMin] = useState(0)
-  const [clock, setClock] = useState("AM")
-  const [time, setTime] = useState<BloomTime | null>(null)
+  const [dateStart, setDateStart] = useState(now);
+  const [dateEnd, setDateEnd] = useState(now);
+  const [days, setDays] = useState<number[]>([]);
+  const [interval, setInterval] = useState(0);
+  const [timeHr, setTimeHr] = useState(6);
+  const [timeMin, setTimeMin] = useState(0);
+  const [clock, setClock] = useState("AM");
+  const [time, setTime] = useState<BloomTime | null>(null);
 
-  const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  useEffect(() => {
+    if (isSelecting && selectingDate === "StartDate") setDateStart((selectDate) ? selectDate : now);
+    else if (isSelecting && selectingDate === "EndDate") setDateEnd((selectDate) ? selectDate : now);
 
+  }, [isSelecting, selectDate])
     
   const [form, setForm] = useState<Task>({
     id: taskID(now, nowTime),
@@ -43,7 +46,7 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
 
   const handleSingleDay = () => {
     setSingleDate(!isSingleDate);
-    if (dateEnd === null) setDateEnd(now); else null;
+    setDateEnd(dateStart);
     setInterval(0);
     if (!days) setDays([0,1,2,3,4,5,6]); else setDays([]);
   }
@@ -78,9 +81,7 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
   }
 
   const handleSelectStartDate = () => {
-    if (selectingDate === null) {
-      onSelectDate();
-    }
+    if (!isSelecting) onSelectDate();
 
     if (selectingDate !== "StartDate") {
       toggleSelectingDate("StartDate")
@@ -90,10 +91,8 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
 
   }
 
-    const handleSelectEndDate = () => {
-    if (selectingDate === null) {
-      onSelectDate();
-    }
+  const handleSelectEndDate = () => {
+    if (!isSelecting) onSelectDate();
 
     if (selectingDate !== "EndDate") {
       toggleSelectingDate("EndDate")
@@ -103,13 +102,13 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
 
   }
 
-
-
   const handleChangeClock = () => {
     (clock === "AM")
     ? setClock("PM")
     : setClock("AM")
   }
+
+  console.log(isSelecting)
 
   return (
     <AnimatePresence>
@@ -187,7 +186,7 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
                         `}
                         onClick={handleSelectEndDate}
                         >
-                          {getFullDate(dateEnd || now)}
+                          {getFullDate(dateEnd)}
                         </button>
                       </motion.div>
                       : 
@@ -251,7 +250,11 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
                     >
                       {/* Day selection */}
                       <div className="flex items-center gap-2 mb-2">
-                        <input type="radio" name="daySelection" className="appearance-none w-3 h-3 border border-bloomBlack/50 rounded-full checked:bg-bloomPink checked:border-bloomPink checked:shadow transition-all duration-300 cursor-pointer" />
+                        <input
+                        type="radio"
+                        name="daySelection"
+                        className="appearance-none w-3 h-3 border border-bloomBlack/50 rounded-full checked:bg-bloomPink checked:border-bloomPink checked:shadow transition-all duration-300 cursor-pointer"
+                        />
                         <span className="font-bold text-bloomBlack">Everyday</span>
                       </div>
 
