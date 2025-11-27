@@ -199,33 +199,7 @@ export default function Postpartum({
               </div>
 
               {/* radio btn track recovery and milestones */}
-              <div className="radio-btn items-start flex flex-col">
-                <h2 className="font-semibold text-bloomBlack text-left mt-4">
-                  Would you like to track your recovery and baby's milestones?
-                </h2>
-                <label className="text-bloomBlack font-rubik ml-2 p-3 mt-2">
-                  <input
-                    type="radio"
-                    name="radioGroup"
-                    value="option1"
-                    onChange={handleOptionChange}
-                    checked={selectedOption === "option1"}
-                    className="w-3 h-3  mr-2 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full checked:bg-bloomPink checked;border-bloomPink appearance-none focus:outline-none border-2"
-                  />
-                  Yes
-                </label>
-                <label className="text-bloomBlack font-rubik ml-2 p-3">
-                  <input
-                    type="radio"
-                    name="radioGroup"
-                    value="option2"
-                    checked={selectedOption === "option2"}
-                    onChange={handleOptionChange}
-                    className="w-3 h-3 mr-2 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full checked:bg-bloomPink checked;border-bloomPink appearance-none focus:outline-none border-2"
-                  />
-                  No
-                </label>
-              </div>
+              
 
               {/* Next button */}
               <NextButton
