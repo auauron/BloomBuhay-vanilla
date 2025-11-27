@@ -1,7 +1,8 @@
-import path from "path";
-import HtmlWebpackPlugin from "html-webpack-plugin";
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-export default {
+module.exports = {
   entry: "./src/index.tsx",
   output: {
     path: path.resolve("dist"),
@@ -43,15 +44,14 @@ export default {
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),
-    [
     new webpack.DefinePlugin({
-      "process.env.REACT_BACKEND_URL": JSON.stringify(process.env.REACT_BACKEND_URL),
+      "process.env.REACT_BACKEND_URL": JSON.stringify(process.env.REACT_BACKEND_URL || 'http://localhost:10000'),
     }),
-  ],
   ],
   devServer: {
     port: 5173,
     historyApiFallback: true,
   },
-  mode: "development",
+  mode: process.env.NODE_ENV || 'development',
+  devtool: process.env.NODE_ENV === 'production' ? 'source-map' : 'eval-source-map',
 };
