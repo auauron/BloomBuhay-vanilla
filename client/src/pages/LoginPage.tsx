@@ -47,7 +47,7 @@ export default function LoginPage() {
       <div className="max-w-3xl w-full">
         <div className="text-center mb-6">
           <div className="flex items-center justify-center -mb-12 -ml-2 mr-20">
-            <img src="../assets/logo_pink.png" alt="Logo" className="sm:h-40 h-28 mr-2" />
+            <img src="/assets/logo_pink.png" alt="Logo" className="sm:h-40 h-28 mr-2" />
             <h1 className="font-poppins text-6xl sm:text-7xl font-bold text-bloomPink -ml-6">
               <span className="block leading-none">Bloom</span>
               <span className="block -mt-4">Buhay</span>
