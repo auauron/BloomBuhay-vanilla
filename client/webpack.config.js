@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: "./src/index.tsx",
@@ -53,6 +54,20 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "./public/index.html",
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, 'public/assets'),
+          to: path.resolve(__dirname, 'dist/assets'),
+          noErrorOnMissing: true,
+        },
+        {
+          from: path.resolve(__dirname, 'public/favicon.ico'),
+          to: path.resolve(__dirname, 'dist/favicon.ico'),
+          noErrorOnMissing: true,
+        },
+      ],
     }),
     new Dotenv({
       path: `./.env${process.env.NODE_ENV ? '.' + process.env.NODE_ENV : ''}`,
