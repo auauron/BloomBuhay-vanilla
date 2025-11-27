@@ -25,13 +25,8 @@ export function militaryTime (hour: number, min: number, clock: string): BloomTi
   }
 }
 
-export function translateBloomdate (date: BloomDate | undefined | null): string {
-  if (!date) return 'No date';
-  const day = date.day ?? '?';
-  const dateNum = date.date ?? '?';
-  const month = date.month !== undefined ? date.month + 1 : '?'; // Adding 1 since months are 0-indexed
-  const year = date.year ?? '?';
-  return `${day}/${dateNum}/${month}/${year}`;
+export function translateBloomdate ( date: BloomDate ): string {
+  return `${date.day}/${date.date}/${date.month}/${date.year}`
 };
 
 export function translateBloomtime ( time: BloomTime ): string {
