@@ -4,8 +4,9 @@ import { ChevronDownIcon } from "lucide-react";
 import InputField from "../ui/inputField";
 import SetupHeader from "../ui/SetupHeader";
 import NextButton from "../ui/NextButton";
+import { API_BASE_URL } from "../../config";
 
-const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
+const API_BASE = API_BASE_URL;
 
 interface ChildbirthProps {
   onComplete?: (data: Record<string, any>) => void;

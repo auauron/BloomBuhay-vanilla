@@ -5,6 +5,7 @@ import InputField from "../ui/inputField";
 import SetupHeader from "../ui/SetupHeader";
 import NextButton from "../ui/NextButton";
 import { useRef, useEffect } from "react";
+import { API_BASE_URL } from "../../config";
 
 // payload shape sent to parent
 export type PregnancyPayload = {
@@ -32,7 +33,6 @@ export default function Pregnancy({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedGender, setSelectedGender] = useState("");
   const [weekError, setWeekError] = useState("");
-  const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -118,7 +118,7 @@ export default function Pregnancy({
       const token = localStorage.getItem("token");
 
       if (token) {
-        const res = await fetch(`${API_BASE}/api/mother-profiles`, {
+        const res = await fetch(`${API_BASE_URL}/api/mother-profiles`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

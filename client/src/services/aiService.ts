@@ -16,8 +16,8 @@ export interface AIResponse {
 }
 
 class AIService {
-  // Direct connection to your server on port 3000
-  private baseURL = `${API_BASE_URL}/api/ai` || "http://localhost:3000/api/ai";
+  // API base URL from config
+  private baseURL = `${API_BASE_URL}/api/ai`;
   async askBloomGuide(request: AIRequest): Promise<AIResponse> {
     try {
       console.log('Sending AI request to:', `${this.baseURL}/bloomguide/ask`);

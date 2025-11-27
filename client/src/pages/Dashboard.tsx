@@ -9,8 +9,9 @@ import { useNavigate } from "react-router-dom";
 import messages from "../components/motivations/messages.json";
 import DashboardToDoList from "../components/dashboard/DashboardToDoList";
 import DashboardTipsSection from "../components/dashboard/DashboardTipsSection";
+import { API_BASE_URL } from "../config";
 
-const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
+const API_BASE = API_BASE_URL;
 
 export default function Dashboard() {
   const navigate = useNavigate();
