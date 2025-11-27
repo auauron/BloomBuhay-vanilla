@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Calculator, Scale, Heart, Activity, Droplets, Moon, Sun } from "lucide-react";
+import { X, Calculator, Scale, Heart, Activity, Droplets, Moon, Sun, BarChart3, Thermometer, ScanHeart, Scan} from "lucide-react";
 
 interface AddMetricModalProps {
   onClose: () => void;
@@ -26,7 +26,7 @@ const metricOptions = [
   { 
     value: "bmi", 
     label: "BMI", 
-    icon: <Activity className="w-5 h-5" />, 
+    icon: <BarChart3 className="w-5 h-5" />, 
     units: [""],
     color: "from-[#F5ABA1] to-[#F3E198]",
     category: "health"
@@ -35,7 +35,7 @@ const metricOptions = [
     value: "water_intake", 
     label: "Water Intake", 
     icon: <Droplets className="w-5 h-5" />, 
-    units: ["L"],
+    units: ["L", "ml", "cups", "oz"],
     color: "from-bloomPink to-blue-500",
     category: "nutrition"
   },
@@ -58,7 +58,7 @@ const metricOptions = [
   { 
     value: "heart_rate", 
     label: "Heart Rate", 
-    icon: <Activity className="w-5 h-5" />, 
+    icon: <ScanHeart className="w-5 h-5" />, 
     units: ["bpm"],
     color: "from-red-500 to-pink-400",
     category: "vitals"
@@ -66,7 +66,7 @@ const metricOptions = [
   { 
     value: "temperature", 
     label: "Temperature", 
-    icon: <Activity className="w-5 h-5" />, 
+    icon: <Thermometer className="w-5 h-5" />, 
     units: ["°C", "°F"],
     color: "from-orange-400 to-yellow-400",
     category: "vitals"
@@ -74,9 +74,9 @@ const metricOptions = [
   { 
     value: "custom", 
     label: "Custom Metric", 
-    icon: <Activity className="w-5 h-5" />, 
+    icon: <Scan className="w-5 h-5" />, 
     units: ["custom"],
-    color: "from-gray-400 to-gray-500",
+    color: "from-bloomPink to-bloomYellow",
     category: "custom"
   }
 ];
@@ -140,12 +140,14 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
         if (unit === "cups") waterInLiters = numValue * 0.24; // Approximate conversion
         if (unit === "oz") waterInLiters = numValue * 0.0296; // Approximate conversion
         
+        if (waterInLiters >= 4) return { status: "Warning: may cause water poisoning", trend: "warning"}
         if (waterInLiters >= 2.5) return { status: "Excellent", trend: "up" };
         if (waterInLiters >= 2.0) return { status: "Good", trend: "stable" };
         if (waterInLiters >= 1.5) return { status: "Fair", trend: "down" };
         return { status: "Low", trend: "down" };
         
       case "Sleep Hours":
+        if (numValue > 8) return { status: "Warning: oversleeping", trend: "warning" };
         if (numValue >= 8) return { status: "Excellent", trend: "up" };
         if (numValue >= 7) return { status: "Good", trend: "stable" };
         if (numValue >= 6) return { status: "Fair", trend: "down" };
@@ -179,7 +181,7 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
     if (selectedMetric && value) {
       let finalValue = value;
       let finalUnit = unit;
-      let trendData = { status: "New", trend: "stable" as "up" | "down" | "stable" | string};
+      let trendData = { status: "New", trend: "stable" as "up" | "down" | "stable" | string | 'warning'};
 
       // Handle custom unit input
       if (selectedMetric === "custom" && useCustomUnit && customUnit) {
@@ -220,15 +222,15 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
 
   const getMetricIcon = (metricType: string) => {
     switch (metricType) {
-      case "weight": return "⚖️";
-      case "blood_pressure": return "❤️";
-      case "bmi": return "📊";
-      case "water_intake": return "💧";
-      case "sleep_hours": return "😴";
-      case "steps": return "👣";
-      case "heart_rate": return "💓";
-      case "temperature": return "🌡️";
-      default: return "📝";
+      case "weight": return <Scale className="w-6 h-6" />;
+      case "blood_pressure": return <Heart className="w-6 h-6" />;
+      case "bmi": return <BarChart3 className="w-6 h-6" />;
+      case "water_intake": return <Droplets className="w-6 h-6" />;
+      case "sleep_hours": return <Moon className="w-6 h-6" />;
+      case "steps": return <Sun className="w-6 h-6" />;
+      case "heart_rate": return <ScanHeart className="w-6 h-6" />;
+      case "temperature": return <Thermometer className="w-6 h-6" />;
+      default: return <Activity className="w-6 h-6" />;
     }
   };
 
@@ -262,7 +264,7 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
     if (selectedMetric === "bmi") return false;
     
     // For custom metric, show custom unit options
-    if (selectedMetric === "custom") return true;
+    if (selectedMetric === "custom") return false;
     
     // Show dropdown only if there are multiple unit options
     return selectedMetricData.units.length > 1;
@@ -403,7 +405,7 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
                   </label>
                   <div className="flex gap-3">
                     <input
-                      type={selectedMetric === "bmi" ? "number" : "text"}
+                      type={selectedMetric === "bmi" ? "number" : "number"}
                       value={selectedMetric === "bmi" && showBMICalculator ? calculateBMI() || "" : value}
                       onChange={(e) => setValue(e.target.value)}
                       disabled={selectedMetric === "bmi" && showBMICalculator}
@@ -512,7 +514,7 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
                 )}
                 {selectedMetric === "water_intake" && (
                   <p className="text-sm text-gray-500">
-                    Recommended: 2-3 liters per day during pregnancy
+                    Recommended: 2-3 liters (7-8 cups) per day during pregnancy
                   </p>
                 )}
                 {selectedMetric === "sleep_hours" && (

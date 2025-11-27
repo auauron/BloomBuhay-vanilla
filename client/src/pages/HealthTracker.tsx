@@ -14,10 +14,17 @@ import {
   Scale,
   BarChart3,
   Droplets,
-  ScanHeart
+  ScanHeart,
+  CircleAlert,
+  Moon,
+  Sun,
+  Thermometer,
+  Scan
 } from "lucide-react";
 import '../index.css';
 import { healthtrackerService, HealthMetric } from "../services/healthTrackerService";
+import { i } from "framer-motion/dist/types.d-BJcRxCew";
+import { Activity } from 'lucide-react';
 
 export default function HealthTracker() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -40,17 +47,24 @@ export default function HealthTracker() {
     const title = (metric.title || "").toLowerCase();
     const cat = (metric.category || "").toLowerCase();
 
-    if (title.includes("weight") || cat === "vitals") return <Scale className="w-6 h-6" />;
-    if (title.includes("blood") || title.includes("pressure")) return <Heart className="w-6 h-6" />;
+    if (title.startsWith("temperature")) return <Thermometer className="w-6 h-6" />;
+    if (title.startsWith("weight")) return <Scale className="w-6 h-6" />;
+    if (title.startsWith("blood") || title.includes("pressure")) return <Heart className="w-6 h-6" />;
     if (title.includes("bmi")) return <BarChart3 className="w-6 h-6" />;
     if (title.includes("water") || title.includes("intake")) return <Droplets className="w-6 h-6" />;
-    return <ScanHeart className="w-6 h-6" />;
+    if (title.includes("sleep")) return <Moon className="w-6 h-6" />;
+    if (title.includes("steps")) return <Sun className="w-6 h-6" />;
+    if (title.startsWith("heart") &&  title.includes("rate"))    return <ScanHeart className="w-6 h-6" />;
+    if (title.includes("heart")) return <Heart className="w-6 h-6" />;
+    return <Scan className="w-6 h-6" />;
   };
 
   const getTrendIcon = (trend?: string) => {
     switch (trend) {
       case "up": return <TrendingUp className="w-4 h-4" />;
       case "down": return <TrendingDown className="w-4 h-4" />;
+      case "stable": return <Minus className="w-4 h-4" />;
+      case "warning": return <CircleAlert className="w-4 h-4 text-red-500" />;
       default: return <Minus className="w-4 h-4" />;
     }
   };

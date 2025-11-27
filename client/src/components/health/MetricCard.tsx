@@ -151,7 +151,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ metric, onRemove, onUpdate, tre
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <input
-                  type="text"
+                  type="number"
                   value={editedValue}
                   onChange={(e) => setEditedValue(e.target.value)}
                   className="flex-1 px-3 w-4 py-2 border border-pink-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent"
