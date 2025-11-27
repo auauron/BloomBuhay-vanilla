@@ -35,7 +35,7 @@ const metricOptions = [
     value: "water_intake", 
     label: "Water Intake", 
     icon: <Droplets className="w-5 h-5" />, 
-    units: ["L", "ml", "cups", "oz"],
+    units: ["L"],
     color: "from-bloomPink to-blue-500",
     category: "nutrition"
   },
@@ -81,6 +81,8 @@ const metricOptions = [
   }
 ];
 
+const commonUnits = ["", "units", "count", "percentage", "score", "rating", "times", "minutes", "hours", "days"];
+
 const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
   const [selectedMetric, setSelectedMetric] = useState("");
   const [value, setValue] = useState("");
@@ -89,6 +91,8 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
   const [weight, setWeight] = useState("");
   const [height, setHeight] = useState("");
   const [heightUnit, setHeightUnit] = useState("cm");
+  const [customUnit, setCustomUnit] = useState("");
+  const [useCustomUnit, setUseCustomUnit] = useState(false);
 
   const selectedMetricData = metricOptions.find(metric => metric.value === selectedMetric);
 
@@ -174,7 +178,13 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
   const handleAdd = () => {
     if (selectedMetric && value) {
       let finalValue = value;
+      let finalUnit = unit;
       let trendData = { status: "New", trend: "stable" as "up" | "down" | "stable" | string};
+
+      // Handle custom unit input
+      if (selectedMetric === "custom" && useCustomUnit && customUnit) {
+        finalUnit = customUnit;
+      }
 
       // Handle BMI calculation
       if (selectedMetric === "bmi" && showBMICalculator) {
@@ -188,14 +198,14 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
         trendData = calculateTrend(
           selectedMetricData?.label || "Custom", 
           finalValue, 
-          unit || selectedMetricData?.units[0] || ""
+          finalUnit
         );
       }
 
       const metricData = {
         title: selectedMetricData?.label || "Custom",
         value: finalValue,
-        unit: unit || selectedMetricData?.units[0] || "",
+        unit: finalUnit,
         change: trendData.status,
         trend: trendData.trend,
         icon: getMetricIcon(selectedMetric),
@@ -225,8 +235,42 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
   const handleMetricSelect = (metricValue: string) => {
     setSelectedMetric(metricValue);
     setValue("");
-    setUnit(metricOptions.find(m => m.value === metricValue)?.units[0] || "");
     setShowBMICalculator(metricValue === "bmi");
+    
+    const metric = metricOptions.find(m => m.value === metricValue);
+    if (metric) {
+      // For metrics with only one unit option, set it automatically
+      if (metric.units.length === 1) {
+        setUnit(metric.units[0]);
+      } else if (metric.units.length > 1) {
+        setUnit(metric.units[0]);
+      } else {
+        setUnit("");
+      }
+    }
+    
+    // Reset custom unit state
+    setUseCustomUnit(false);
+    setCustomUnit("");
+  };
+
+  // Check if we should show unit input
+  const shouldShowUnitInput = () => {
+    if (!selectedMetricData) return false;
+    
+    // Never show unit for BMI (it's unitless)
+    if (selectedMetric === "bmi") return false;
+    
+    // For custom metric, show custom unit options
+    if (selectedMetric === "custom") return true;
+    
+    // Show dropdown only if there are multiple unit options
+    return selectedMetricData.units.length > 1;
+  };
+
+  // Check if we should show custom unit input
+  const shouldShowCustomUnitInput = () => {
+    return selectedMetric === "custom" && useCustomUnit;
   };
 
   // Calculate and display trend preview
@@ -374,22 +418,70 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
                       step={selectedMetric === "bmi" ? "0.1" : "1"}
                     />
                     
-                    {/* Unit Selection - Always show dropdown if there are units */}
-                    {selectedMetricData && selectedMetricData.units.length > 0 && (
+                    {/* Unit Selection - Only show when needed */}
+                    {shouldShowUnitInput() && (
                       <select
                         value={unit}
                         onChange={(e) => setUnit(e.target.value)}
                         className="px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-bloomPink focus:border-transparent min-w-32"
                       >
-                        {selectedMetricData.units.map((unitOption) => (
+                        {selectedMetricData?.units.map((unitOption) => (
                           <option key={unitOption} value={unitOption}>
-                            {unitOption || "No unit"}
+                            {unitOption || "No Unit"}
                           </option>
                         ))}
                       </select>
                     )}
                   </div>
                 </div>
+
+                {/* Custom Metric Unit Options */}
+                {selectedMetric === "custom" && (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          checked={!useCustomUnit}
+                          onChange={() => setUseCustomUnit(false)}
+                          className="text-bloomPink focus:ring-bloomPink"
+                        />
+                        <span className="text-sm text-gray-700">Use common units</span>
+                      </label>
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          checked={useCustomUnit}
+                          onChange={() => setUseCustomUnit(true)}
+                          className="text-bloomPink focus:ring-bloomPink"
+                        />
+                        <span className="text-sm text-gray-700">Enter custom unit</span>
+                      </label>
+                    </div>
+
+                    {!useCustomUnit ? (
+                      <select
+                        value={unit}
+                        onChange={(e) => setUnit(e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-bloomPink focus:border-transparent"
+                      >
+                        {commonUnits.map((unitOption) => (
+                          <option key={unitOption} value={unitOption}>
+                            {unitOption || "Select unit"}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        value={customUnit}
+                        onChange={(e) => setCustomUnit(e.target.value)}
+                        placeholder="Enter custom unit (e.g., points, mg/dL, etc.)"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-bloomPink focus:border-transparent"
+                      />
+                    )}
+                  </div>
+                )}
 
                 {/* Trend Preview */}
                 {trendPreview && (

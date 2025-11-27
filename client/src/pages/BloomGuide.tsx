@@ -31,7 +31,7 @@ const GradientSearchBar = ({
           : "bg-gradient-to-r from-bloomPink to-bloomYellow"
       }`}
     >
-      <div className="bg-bloomWhite rounded-full relative w-full">
+      <div className="bg-white rounded-full relative w-full">
         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-bloomPink text-lg">
           <Search />
         </span>

@@ -8,7 +8,7 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick }: HeaderProps) {
   return (
-    <nav className="bg-[#F875AA] text-white flex items-center justify-between px-6 py-3 shadow-md">
+    <nav className="sticky top-0 z-50 w-full bg-[#F875AA] text-white flex items-center justify-between px-6 py-3 shadow-md">
       <div className="flex items-center space-x--1">
         <button
           className="mr-3 hover:bg-white/10 rounded-lg transition-colors w-10 h-10 flex items-center justify-center"
