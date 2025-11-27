@@ -43,6 +43,11 @@ export default {
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),
+    [
+    new webpack.DefinePlugin({
+      "process.env.REACT_BACKEND_URL": JSON.stringify(process.env.REACT_BACKEND_URL),
+    }),
+  ],
   ],
   devServer: {
     port: 5173,
