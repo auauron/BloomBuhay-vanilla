@@ -272,8 +272,8 @@ export default function UserProfile() {
       <Header onMenuClick={toggleSidebar} />
       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
 
-      <div className="grid grid-cols-2 gap-0">
-        <div className="container mx-auto p-8 items-center justify-center">
+      <div className="flex w-full max-w-6xl mx-auto pt-4">
+        <div className="w-1/2 px-4">
           <div className="flex flex-col gap-3 max-w-lg mx-auto">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-3xl font-bold text-bloomBlack">
@@ -362,7 +362,7 @@ export default function UserProfile() {
         </div>
 
         {/* Baby profile column */}
-        <div className="container mx-auto p-8 items-center justify-center">
+        <div className="w-1/2 px-4">
           <div className="flex flex-col gap-3 max-w-lg mx-auto">
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-3xl font-bold text-bloomBlack">
