@@ -6,70 +6,64 @@ interface Contraction {
   id?: number;
   startTime: Date;
   endTime?: Date;
-  duration?: number; // seconds
-  frequency?: number; // minutes since previous contraction
+  duration?: number;
+  frequency?: number;
   tempId?: string;
-  metricId?: number;
 }
 
 const parseContraction = (c: any): Contraction => {
-  // Handle various date formats from backend
-  const parseDate = (dateValue: any): Date => {
-    if (!dateValue) return new Date();
-    if (dateValue instanceof Date) return dateValue;
-    
-    // Try parsing as string/number
-    const parsed = new Date(dateValue);
-    if (!isNaN(parsed.getTime())) return parsed;
-    
-    // Fallback to current time if parsing fails
-    console.warn('Failed to parse date:', dateValue);
-    return new Date();
+  const toDate = (d: any) => {
+    if (!d) return undefined;
+    const parsed = new Date(d);
+    return isNaN(parsed.getTime()) ? undefined : parsed;
   };
+
+  const startTime = toDate(c.startTime) ?? new Date();
+  const endTime = toDate(c.endTime);
+  
+  // Parse duration, ensuring it's a number
+  let duration = c.duration;
+  if (typeof duration === 'string') {
+    duration = parseInt(duration, 10);
+  }
+  if (isNaN(duration) || duration === undefined) {
+    duration = undefined;
+  }
+
+  // Parse frequency, ensuring it's a number
+  let frequency = c.frequency;
+  if (typeof frequency === 'string') {
+    frequency = parseInt(frequency, 10);
+  }
+  if (isNaN(frequency) || frequency === undefined) {
+    frequency = undefined;
+  }
 
   return {
-    ...c,
-    startTime: parseDate(c.startTime),
-    endTime: c.endTime ? parseDate(c.endTime) : undefined,
-    tempId: c.id ? undefined : c.tempId ?? Math.random().toString(36).substring(2, 9),
+    id: c.id,
+    startTime,
+    endTime,
+    duration,
+    frequency,
+    tempId: c.tempId,
   };
 };
 
-const formatDate = (date: Date | string | undefined) => {
-  if (!date) return "Unknown time";
-  
-  try {
-    const d = date instanceof Date ? date : new Date(date);
-    if (isNaN(d.getTime())) return "Unknown time";
-    
-    return d.toLocaleString(undefined, {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  } catch (err) {
-    console.error('Date formatting error:', err, date);
-    return "Unknown time";
-  }
+const formatDate = (d: Date | undefined) => {
+  if (!d) return "Unknown time";
+  return d.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 };
-// format seconds to MM:SS
-const formatTime = (seconds: any) => {
-  if (seconds === null || seconds === undefined) return "00:00";
 
-  let s: number;
-  try {
-    s = typeof seconds === "number" ? seconds : Number(seconds);
-    if (isNaN(s) || s < 0) return "00:00";
-  } catch (err) {
-    console.warn("Failed to parse seconds:", seconds, err);
-    return "00:00";
-  }
-
-  const mins = Math.floor(s / 60);
-  const secs = Math.floor(s % 60);
-
-  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+const formatTime = (sec: number | undefined) => {
+  if (sec === undefined || sec < 0) return "00:00";
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 };
 
 const ContractionTimer: React.FC = () => {
@@ -79,36 +73,26 @@ const ContractionTimer: React.FC = () => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Load contractions from backend
+  // Load from backend
   useEffect(() => {
-    let mounted = true;
     (async () => {
-      try {
-        const res = await bbtoolsService.getContractions();
-        if (!mounted) return;
-        if (res.success && res.data) {
-          const parsed = res.data.map(parseContraction);
-          parsed.sort((a: { startTime: { getTime: () => number; }; }, b: { startTime: { getTime: () => number; }; }) => b.startTime.getTime() - a.startTime.getTime());
-          setContractions(parsed);
-        }
-      } catch (err) {
-        console.warn("Failed to load contractions from backend", err);
+      const res = await bbtoolsService.getContractions();
+      if (res.success && Array.isArray(res.data)) {
+        const parsed = res.data.map(parseContraction);
+        parsed.sort((a, b) => b.startTime.getTime() - a.startTime.getTime());
+        setContractions(parsed);
       }
     })();
-    return () => {
-      mounted = false;
-    };
   }, []);
 
   // Timer tick
   useEffect(() => {
     if (isTiming) {
       intervalRef.current = setInterval(() => {
-        setElapsedTime((prev) => prev + 1);
+        setElapsedTime((e) => e + 1);
       }, 1000);
-    } else if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
+    } else {
+      if (intervalRef.current) clearInterval(intervalRef.current);
     }
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -116,68 +100,74 @@ const ContractionTimer: React.FC = () => {
   }, [isTiming]);
 
   const startContraction = () => {
-    const startTime = new Date();
-    setCurrentStart(startTime);
+    const now = new Date();
+    setCurrentStart(now);
     setElapsedTime(0);
     setIsTiming(true);
   };
 
-  const endContraction = async () => {
-    if (!currentStart) return;
+const endContraction = async () => {
+  if (!currentStart) return;
 
-    const endTime = new Date();
-    const duration = Math.round((endTime.getTime() - currentStart.getTime()) / 1000);
+  const endTime = new Date();
+  const duration = Math.round((endTime.getTime() - currentStart.getTime()) / 1000);
 
-    const last = contractions[0];
-    const frequency =
-      last && last.endTime
-        ? Math.round((currentStart.getTime() - last.endTime.getTime()) / 60000)
-        : 0;
+  const prev = contractions[0];
+  const frequency =
+    prev?.endTime ? Math.round((currentStart.getTime() - prev.endTime.getTime()) / 60000) : 0;
 
-    const optimistic: Contraction = {
-      startTime: currentStart,
-      endTime,
-      duration,
+  const tempId = crypto.randomUUID();
+
+  // Create the contraction object with the correctly calculated duration
+  const optimistic: Contraction = {
+    tempId,
+    startTime: new Date(currentStart),
+    endTime: new Date(endTime),
+    duration: duration,
+    frequency,
+  };
+
+  // Add the contraction immediately to the list
+  setContractions((prev) => [optimistic, ...prev]);
+
+  // Stop timing and clear state
+  setIsTiming(false);
+  setCurrentStart(null);
+  setElapsedTime(0);
+
+  try {
+    const payload = {
+      startTime: optimistic.startTime.toISOString(),
+      endTime: endTime.toISOString(),
+      duration: duration,
       frequency,
-      tempId: currentStart.toISOString(),
     };
 
-    setContractions((prev) => [optimistic, ...prev]);
-
-    setIsTiming(false);
-    setCurrentStart(null);
-    setElapsedTime(0);
-
-    try {
-      const payload = {
-        startTime: optimistic.startTime.toISOString(),
-        endTime: optimistic.endTime!.toISOString(),
-        duration: optimistic.duration!,
-        frequency: optimistic.frequency ?? 0,
-      };
-
-      const res = await bbtoolsService.createContraction(payload);
-
-      if (res.success && res.data) {
-        const saved = parseContraction(res.data);
-        setContractions((prev) =>
-          prev.map((c) => (c.tempId === optimistic.tempId ? saved : c))
-        );
-      } else {
-        console.warn("Create contraction failed:", res.error ?? res.message);
+    const res = await bbtoolsService.createContraction(payload);
+    if (res.success && res.data) {
+      const saved = parseContraction(res.data);
+      
+      // Make sure the saved contraction has the duration
+      if (saved.duration === undefined || saved.duration === 0) {
+        saved.duration = duration;
       }
-    } catch (err) {
-      console.warn("Failed to save contraction to backend", err);
+
+      setContractions((prev) =>
+        prev.map((c) => (c.tempId === tempId ? saved : c))
+      );
     }
-  };
+  } catch (e) {
+    console.warn("Failed to save contraction", e);
+  }
+};
 
   const deleteContraction = async (c: Contraction) => {
     setContractions((prev) => prev.filter((x) => x !== c));
     if (c.id) {
       try {
         await bbtoolsService.deleteContraction(c.id);
-      } catch (err) {
-        console.warn("Failed to delete contraction on backend", err);
+      } catch (e) {
+        console.warn("Failed to delete contraction on backend", e);
       }
     }
   };
@@ -188,22 +178,17 @@ const ContractionTimer: React.FC = () => {
     setElapsedTime(0);
   };
 
-  const getLaborStatus = () => {
+  const laborStatus = (() => {
     if (contractions.length < 3) return "early";
-    const recent = contractions.slice(0, 3);
-    const avgFreq = recent.reduce((s, c) => s + (c.frequency || 0), 0) / recent.length;
-    const avgDur = recent.reduce((s, c) => s + (c.duration || 0), 0) / recent.length;
+    const last3 = contractions.slice(0, 3);
+    const avgFreq = last3.reduce((s, c) => s + (c.frequency || 0), 0) / 3;
+    const avgDur = last3.reduce((s, c) => s + (c.duration || 0), 0) / 3;
 
     if (avgFreq <= 5 && avgDur >= 45) return "active";
     if (avgFreq <= 3 && avgDur >= 60) return "transition";
     return "early";
-  };
+  })();
 
-  const laborStatus = getLaborStatus();
-
-  // ---------------------------------------------------------------
-  // EVERYTHING BELOW IS YOUR EXACT UI — UNTOUCHED
-  // ---------------------------------------------------------------
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center gap-3 mb-6">
@@ -214,7 +199,7 @@ const ContractionTimer: React.FC = () => {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
-        {/* Timer & Labor Status */}
+        {/* Timer */}
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-pink-200 p-6 text-center">
             <div className="text-5xl font-bold text-bloomPink mb-4 font-mono">
@@ -226,7 +211,7 @@ const ContractionTimer: React.FC = () => {
               {!isTiming ? (
                 <button
                   onClick={startContraction}
-                  className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-8 py-4 rounded-2xl font-semibold transition-all duration-300 flex items-center gap-2 text-lg hover:shadow-lg hover:scale-105"
+                  className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-8 py-4 rounded-2xl font-semibold flex items-center gap-2 text-lg hover:scale-105"
                 >
                   <Play className="w-5 h-5" /> Start Contraction
                 </button>
@@ -234,14 +219,14 @@ const ContractionTimer: React.FC = () => {
                 <>
                   <button
                     onClick={endContraction}
-                    className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-8 py-4 rounded-2xl font-semibold transition-all duration-300 flex items-center gap-2 text-lg hover:shadow-lg hover:scale-105"
+                    className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-8 py-4 rounded-2xl font-semibold flex items-center gap-2 text-lg hover:scale-105"
                   >
                     <Square className="w-5 h-5" /> End Contraction
                   </button>
 
                   <button
                     onClick={resetTimer}
-                    className="bg-gray-500 text-white px-6 py-4 rounded-2xl font-semibold hover:bg-gray-600 transition-all duration-300 flex items-center gap-2"
+                    className="bg-gray-500 text-white px-6 py-4 rounded-2xl font-semibold flex items-center gap-2"
                   >
                     <RotateCcw className="w-5 h-5" />
                   </button>
@@ -250,6 +235,7 @@ const ContractionTimer: React.FC = () => {
             </div>
           </div>
 
+          {/* Labor status */}
           <div
             className={`rounded-2xl p-6 border ${
               laborStatus === "early"
@@ -279,10 +265,10 @@ const ContractionTimer: React.FC = () => {
             </div>
             <p className="text-sm">
               {laborStatus === "early"
-                ? "Contractions are irregular, 5-30 minutes apart"
+                ? "Contractions are irregular, 5–30 minutes apart."
                 : laborStatus === "active"
-                ? "Contractions are 3-5 minutes apart, lasting 45-60 seconds"
-                : "Contractions are 2-3 minutes apart, lasting 60-90 seconds"}
+                ? "Contractions are 3–5 minutes apart, lasting 45–60 seconds."
+                : "Contractions are 2–3 minutes apart, lasting 60–90 seconds."}
             </p>
           </div>
         </div>
@@ -295,7 +281,9 @@ const ContractionTimer: React.FC = () => {
             </h4>
 
             {contractions.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">No contractions recorded yet</p>
+              <p className="text-gray-500 text-center py-8">
+                No contractions recorded yet.
+              </p>
             ) : (
               <div className="space-y-3">
                 {contractions.slice(0, 10).map((c, idx) => (
@@ -305,7 +293,7 @@ const ContractionTimer: React.FC = () => {
                   >
                     <div>
                       <div className="font-semibold text-gray-800">
-                        {formatTime(c.duration || 0)}
+                        {formatTime(c.duration)}
                       </div>
                       <div className="text-sm text-gray-500">
                         {formatDate(c.startTime)}
@@ -315,9 +303,7 @@ const ContractionTimer: React.FC = () => {
                     <div className="flex items-center gap-3">
                       {c.frequency !== undefined && (
                         <div className="text-right">
-                          <div className="font-semibold text-bloomPink">
-                            {c.frequency} min
-                          </div>
+                          <div className="font-semibold text-bloomPink">{c.frequency} min</div>
                           <div className="text-sm text-gray-500">since last</div>
                         </div>
                       )}
@@ -336,12 +322,14 @@ const ContractionTimer: React.FC = () => {
           </div>
 
           <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200">
-            <h4 className="font-semibold text-blue-800 mb-3">When to Go to Hospital</h4>
+            <h4 className="font-semibold text-blue-800 mb-3">
+              When to Go to Hospital
+            </h4>
             <ul className="text-sm text-blue-700 space-y-2">
-              <li>• Contractions 5-1-1 pattern: 5 min apart, 1 min long, 1 hour</li>
-              <li>• Water breaks or leaking fluid</li>
+              <li>• 5-1-1 rule: 5 min apart, 1 min long, for 1 hour</li>
+              <li>• Water breaking</li>
               <li>• Decreased fetal movement</li>
-              <li>• Bleeding heavier than a period</li>
+              <li>• Heavy bleeding</li>
               <li>• Severe abdominal pain</li>
             </ul>
           </div>

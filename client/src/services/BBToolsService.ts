@@ -1062,4 +1062,66 @@ export const bbtoolsService = {
       return { success: false, error: "Failed to create kick session" };
     }
   },
+
+    /* Pregnancy – Contraction Timer */
+  async getContractions(): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/tools/contractions`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Get contractions error:", error);
+      return { success: false, error: "Failed to fetch contractions" };
+    }
+  },
+
+  async createContraction(data: Contraction): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/tools/contractions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Create contraction error:", error);
+      return { success: false, error: "Failed to create contraction" };
+    }
+  },
+
+  async deleteContraction(id: number | string): Promise<GenericResponse> {
+    try {
+      const token = authService.getToken();
+      if (!token) return { success: false, error: "Not authenticated" };
+
+      const res = await fetch(`${API_URL}/tools/contractions/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return await res.json();
+    } catch (error) {
+      console.error("Delete contraction error:", error);
+      return { success: false, error: "Failed to delete contraction" };
+    }
+  },
 };
