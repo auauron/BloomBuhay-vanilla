@@ -1,6 +1,6 @@
 import { SignupRequest, LoginRequest, AuthResponse } from "../types/auth";
 
-const API_URL = process.env.REACT_BACKEND_URL || "http://localhost:3000/api/auth";
+const API_URL = `${process.env.REACT_APP_API_URL || 'http://localhost:10000/api'}/auth`;
 
 export const authService = {
   async signup(data: SignupRequest): Promise<AuthResponse> {

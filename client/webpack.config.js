@@ -7,10 +7,19 @@ module.exports = {
   output: {
     path: path.resolve("dist"),
     filename: "bundle.js",
+    publicPath: "/",
     clean: true,
   },
   module: {
     rules: [
+      // File loader for images
+      {
+        test: /\.(png|jpe?g|gif|ico)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'static/media/[name].[hash][ext]',
+        },
+      },
       // TS/TSX loader
       {
         test: /\.[jt]sx?$/,
