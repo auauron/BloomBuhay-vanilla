@@ -12,6 +12,9 @@ const PostpartumTools: React.FC<PostpartumToolsProps> = ({
   feedings = [], 
   sleeps = [], 
   growths = [], 
+  diapers = [],
+  vaccinations = [],
+  doctorVisits = [],
   onRefreshData 
 }) => {
   const [activeTool, setActiveTool] = useState("feeding");
@@ -33,13 +36,13 @@ const PostpartumTools: React.FC<PostpartumToolsProps> = ({
       id: "diaper", 
       label: "Diaper Tracker", 
       icon: <Baby className="w-5 h-5" />, 
-      component: <DiaperTracker /> 
+      component: <DiaperTracker diapers={diapers} onRefresh={onRefreshData} /> 
     },
     { 
       id: "vaccination", 
       label: "Vaccination Tracker", 
       icon: <Syringe className="w-5 h-5" />, 
-      component: <VaccinationTracker /> 
+      component: <VaccinationTracker vaccinations={vaccinations} onRefresh={onRefreshData} /> 
     },
     { 
       id: "growth", 
@@ -51,7 +54,7 @@ const PostpartumTools: React.FC<PostpartumToolsProps> = ({
       id: "pediatric", 
       label: "Doctor Visits", 
       icon: <Stethoscope className="w-5 h-5" />, 
-      component: <PediatricVisitNotes /> 
+      component: <PediatricVisitNotes doctorVisits={doctorVisits} onRefresh={onRefreshData} /> 
     },
   ];
 

@@ -14,7 +14,7 @@ import BBToolsRoutes from "./routes/BBToolsRoutes";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Enhanced CORS configuration
+// CORS configuration
 app.use(
   cors({
     origin: ["http://localhost:5173", "http://127.0.0.1:5173"],

@@ -85,9 +85,10 @@ export default function LoginPage() {
               label="Password"
               type="password"
               value={password}
-              onChange={setPassword}
+              onChange={(val) => setPassword(val.slice(0, 25))}
               placeholder="Enter your password"
               error={getFieldError("password")}
+              maxLength={25}
             />
             <button
               type="submit"

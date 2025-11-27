@@ -1,4 +1,3 @@
-// src/components/DueDateCalculator.tsx
 import React, { useState, useEffect } from "react";
 import { Calendar, Calculator, Baby, Clock } from "lucide-react";
 import { authService } from "../../../services/authService";

@@ -148,7 +148,7 @@ export default function Pregnancy({
     if (weeksPregnantNum !== null)
       localStorage.setItem("babyWeeksPregnant", String(weeksPregnantNum));
     if (inputValue) localStorage.setItem("babyName", inputValue);
-    localStorage.setItem("babyGender", babyGenderNormalized);
+    localStorage.setItem("babyGender", babyGenderNormalized ?? "");
 
     // notify parent (if any navigation logic uses onComplete)
     onComplete?.(payload);
@@ -187,6 +187,7 @@ export default function Pregnancy({
                       label=""
                       type="number"
                       min="0"
+                      max="40"
                       value={value}
                       onChange={(val) => {
                         const num = Number(val);
@@ -196,12 +197,15 @@ export default function Pregnancy({
                           setWeekError("");
                         } else if (isNaN(num) || num < 0) {
                           setWeekError("Please enter a valid number");
+                        } else if (num > 40) {
+                          setWeekError("Pregnancy typically lasts up to 40 weeks");
+                          setValue("40");
                         } else {
                           setValue(val);
                           setWeekError("");
                         }
                       }}
-                      placeholder="Enter the number of weeks"
+                      placeholder="Enter the number of weeks (max 40)"
                     />
                     {weekError && (
                       <p className="text-red-500 text-sm mt-1">{weekError}</p>

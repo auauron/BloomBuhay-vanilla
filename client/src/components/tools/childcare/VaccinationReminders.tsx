@@ -1,73 +1,43 @@
 import React, { useState, useEffect } from "react";
-import { Bell, CheckCircle, Clock, AlertCircle, Plus, Trash2, Syringe} from "lucide-react";
-
-interface Vaccination {
-  id: string;
-  name: string;
-  dueDate: string;
-  completed: boolean;
-  completedDate?: string;
-  notes: string;
-}
+import { Bell, CheckCircle, Clock, AlertCircle, Plus, Trash2, Syringe } from "lucide-react";
+import { bbtoolsService, ChildcareVaccination, CreateChildcareVaccinationRequest } from "../../../services/BBToolsService";
 
 const VaccinationReminders: React.FC = () => {
-  const [vaccinations, setVaccinations] = useState<Vaccination[]>(() => {
-    // Default vaccination schedule for first year
-    const defaultVaccinations: Vaccination[] = [
-      {
-        id: "1",
-        name: "Hepatitis B (1st dose)",
-        dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Tomorrow
-        completed: false,
-        notes: "Usually given at birth"
-      },
-      {
-        id: "2",
-        name: "DTaP (1st dose)",
-        dueDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 2 months
-        completed: false,
-        notes: "Diphtheria, Tetanus, Pertussis"
-      },
-      {
-        id: "3",
-        name: "Hib (1st dose)",
-        dueDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 2 months
-        completed: false,
-        notes: "Haemophilus influenzae type b"
-      },
-      {
-        id: "4",
-        name: "IPV (1st dose)",
-        dueDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 2 months
-        completed: false,
-        notes: "Polio"
-      },
-      {
-        id: "5",
-        name: "PCV13 (1st dose)",
-        dueDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 2 months
-        completed: false,
-        notes: "Pneumococcal conjugate"
-      },
-      {
-        id: "6",
-        name: "RV (1st dose)",
-        dueDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 2 months
-        completed: false,
-        notes: "Rotavirus"
-      }
-    ];
-    return defaultVaccinations;
+  const [vaccinations, setVaccinations] = useState<ChildcareVaccination[]>(() => {
+    // Start with empty array - no default vaccinations
+    return [];
   });
 
   const [isAdding, setIsAdding] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [newVaccination, setNewVaccination] = useState({
     name: "",
     dueDate: "",
     notes: ""
   });
 
-  const getStatus = (vaccination: Vaccination) => {
+  // Load vaccinations from backend
+  useEffect(() => {
+    loadVaccinations();
+  }, []);
+
+  const loadVaccinations = async () => {
+    setLoading(true);
+    try {
+      const response = await bbtoolsService.getChildcareVaccinations();
+      if (response.success && response.data) {
+        setVaccinations(response.data as ChildcareVaccination[]);
+      } else {
+        console.error("Failed to load vaccinations:", response.error);
+      }
+    } catch (error) {
+      console.error("Error loading vaccinations:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatus = (vaccination: ChildcareVaccination) => {
     if (vaccination.completed) return "completed";
     const dueDate = new Date(vaccination.dueDate);
     const today = new Date();
@@ -124,36 +94,91 @@ const VaccinationReminders: React.FC = () => {
     }
   };
 
-  const toggleCompletion = (id: string) => {
-    setVaccinations(vaccinations.map(vaccination => 
-      vaccination.id === id 
-        ? { 
-            ...vaccination, 
-            completed: !vaccination.completed,
-            completedDate: !vaccination.completed ? new Date().toISOString().split('T')[0] : undefined
-          }
-        : vaccination
-    ));
+  const toggleCompletion = async (id: string) => {
+    setLoading(true);
+    try {
+      const vaccination = vaccinations.find(v => v.id === id);
+      if (!vaccination) return;
+
+      const isNowCompleted = !vaccination.completed;
+      const completedDate = isNowCompleted ? new Date().toISOString().split('T')[0] : undefined;
+
+      const updatedData = {
+        name: vaccination.name,
+        dueDate: vaccination.dueDate,
+        completed: isNowCompleted,
+        completedDate: completedDate,
+        notes: vaccination.notes
+      };
+
+      const response = await bbtoolsService.updateChildcareVaccination(id, updatedData); 
+      if (response.success && response.data) {
+        setVaccinations(vaccinations.map(v => 
+          v.id === id ? { 
+            ...v, 
+            completed: isNowCompleted,
+            completedDate: completedDate
+          } : v
+        ));
+      } else {
+        console.error("Failed to update vaccination:", response.error);
+        alert("Failed to update vaccination. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error updating vaccination:", error);
+      alert("Error updating vaccination. Please check console.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const addVaccination = () => {
+  const addVaccination = async () => {
     if (!newVaccination.name.trim() || !newVaccination.dueDate) return;
 
-    const vaccination: Vaccination = {
-      id: Date.now().toString(),
-      name: newVaccination.name,
-      dueDate: newVaccination.dueDate,
-      completed: false,
-      notes: newVaccination.notes
-    };
-
-    setVaccinations([...vaccinations, vaccination]);
-    setNewVaccination({ name: "", dueDate: "", notes: "" });
-    setIsAdding(false);
+    setLoading(true);
+    try {
+      const response = await bbtoolsService.addChildcareVaccination({
+        name: newVaccination.name,
+        dueDate: newVaccination.dueDate,
+        completed: false,
+        completedDate: undefined,
+        notes: newVaccination.notes
+      } as CreateChildcareVaccinationRequest);
+      
+      if (response.success && response.data) {
+        setVaccinations([...vaccinations, response.data]);
+        setNewVaccination({ name: "", dueDate: "", notes: "" });
+        setIsAdding(false);
+      } else {
+        console.error("Failed to add vaccination:", response.error);
+        alert("Failed to add vaccination. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error adding vaccination:", error);
+      alert("Error adding vaccination. Please check console.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const deleteVaccination = (id: string) => {
-    setVaccinations(vaccinations.filter(v => v.id !== id));
+  const deleteVaccination = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this vaccination?")) return;
+
+    setLoading(true);
+    try {
+      const response = await bbtoolsService.deleteChildcareVaccination(id);
+      if (response.success) {
+        setVaccinations(vaccinations.filter(v => v.id !== id));
+      } else {
+        console.error("Failed to delete vaccination:", response.error);
+        alert("Failed to delete vaccination. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error deleting vaccination:", error);
+      alert("Error deleting vaccination. Please check console.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const upcomingVaccinations = vaccinations.filter(v => !v.completed);
@@ -162,18 +187,18 @@ const VaccinationReminders: React.FC = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-xl">
-          <Syringe className="w-6 h-6 text-white" />
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-xl">
+            <Syringe className="w-6 h-6 text-white" />
+          </div>
+          <h3 className="text-2xl font-bold text-bloomBlack">Vaccination Reminders</h3>
         </div>
-        <h3 className="text-2xl font-bold text-bloomBlack">Vaccination Reminders</h3>
-      </div>
 
         {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}
-            className="flex items-center gap-2 bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-lg hover:shadow-lg transition hover:scale-105"
+            disabled={loading}
+            className="flex items-center gap-2 bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-4 py-2 rounded-lg hover:shadow-lg transition hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Plus className="w-4 h-4" />
             Add Vaccination
@@ -193,6 +218,7 @@ const VaccinationReminders: React.FC = () => {
                 onChange={(e) => setNewVaccination({ ...newVaccination, name: e.target.value })}
                 placeholder="e.g., MMR, Chickenpox, Flu shot"
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                disabled={loading}
               />
             </div>
             <div>
@@ -202,6 +228,7 @@ const VaccinationReminders: React.FC = () => {
                 value={newVaccination.dueDate}
                 onChange={(e) => setNewVaccination({ ...newVaccination, dueDate: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                disabled={loading}
               />
             </div>
             <div>
@@ -212,23 +239,25 @@ const VaccinationReminders: React.FC = () => {
                 placeholder="Additional information..."
                 rows={2}
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                disabled={loading}
               />
             </div>
             <div className="flex gap-2">
               <button
                 onClick={addVaccination}
-                disabled={!newVaccination.name.trim() || !newVaccination.dueDate}
+                disabled={!newVaccination.name.trim() || !newVaccination.dueDate || loading}
                 className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                Add Vaccination
+                {loading ? "Adding..." : "Add Vaccination"}
               </button>
               <button
                 onClick={() => {
                   setIsAdding(false);
                   setNewVaccination({ name: "", dueDate: "", notes: "" });
                 }}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                disabled={loading}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Cancel
               </button>
@@ -240,10 +269,15 @@ const VaccinationReminders: React.FC = () => {
       {/* Upcoming Vaccinations */}
       <div className="mb-8">
         <h4 className="text-lg font-semibold text-bloomBlack mb-4">Upcoming Vaccinations</h4>
-        {upcomingVaccinations.length === 0 ? (
-          <div className="text-center py-6 bg-gray-50 rounded-xl border border-gray-200">
-            <CheckCircle className="w-12 h-12 mx-auto mb-3 text-green-400" />
-            <p className="text-gray-600">All vaccinations are completed! 🎉</p>
+        {loading && upcomingVaccinations.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-bloomPink mx-auto mb-3"></div>
+            <p>Loading vaccinations...</p>
+          </div>
+        ) : upcomingVaccinations.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <Bell className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+            <p>No vaccination entries yet. Add your first entry to get started!</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -278,14 +312,16 @@ const VaccinationReminders: React.FC = () => {
                       </span>
                       <button
                         onClick={() => toggleCompletion(vaccination.id)}
-                        className="p-1 text-green-600 hover:bg-green-50 rounded transition-colors"
+                        disabled={loading}
+                        className="p-1 text-green-600 hover:bg-green-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Mark as completed"
                       >
                         <CheckCircle className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => deleteVaccination(vaccination.id)}
-                        className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                        disabled={loading}
+                        className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -327,14 +363,16 @@ const VaccinationReminders: React.FC = () => {
                     </span>
                     <button
                       onClick={() => toggleCompletion(vaccination.id)}
-                      className="p-1 text-gray-600 hover:bg-gray-50 rounded transition-colors"
+                      disabled={loading}
+                      className="p-1 text-gray-600 hover:bg-gray-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       title="Mark as incomplete"
                     >
                       <Clock className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => deleteVaccination(vaccination.id)}
-                      className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                      disabled={loading}
+                      className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
