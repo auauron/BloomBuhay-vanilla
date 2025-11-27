@@ -67,6 +67,16 @@ module.exports = {
           to: path.resolve(__dirname, 'dist/favicon.ico'),
           noErrorOnMissing: true,
         },
+        {
+          from: path.resolve(__dirname, 'static.json'),
+          to: path.resolve(__dirname, 'dist'),
+          noErrorOnMissing: true,
+        },
+        {
+          from: path.resolve(__dirname, '_redirects'),
+          to: path.resolve(__dirname, 'dist'),
+          noErrorOnMissing: true,
+        },
       ],
     }),
     new Dotenv({
