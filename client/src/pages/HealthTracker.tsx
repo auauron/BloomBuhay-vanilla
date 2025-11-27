@@ -22,7 +22,7 @@ import {
   Scan
 } from "lucide-react";
 import '../index.css';
-import { healthtrackerService, HealthMetric } from "../services/healthTrackerService";
+import { healthtrackerService, HealthMetric } from "../../services/healthTrackerService";
 import { i } from "framer-motion/dist/types.d-BJcRxCew";
 import { Activity } from 'lucide-react';
 
