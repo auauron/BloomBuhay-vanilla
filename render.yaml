@@ -16,6 +16,19 @@ services:
           property: connectionString
     plan: free
 
+  - type: web
+    name: bloom-buhay-web
+    env: node
+    rootDirectory: client
+    buildCommand: npm install && npm run build
+    staticPublishPath: "./dist"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REACT_BACKEND_URL
+        value: https://bloom-buhay-api.onrender.com  # Update this to your actual API URL after deployment
+    plan: free
+
 databases:
   - name: bloom-buhay-db
     databaseName: bloom_buhay
