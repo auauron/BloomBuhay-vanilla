@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { PlusCircle, Trash2, CheckCircle2, CheckCircle } from 'lucide-react';
+import { PlusCircle, Trash2 } from "lucide-react";
 import { plannerService } from "../../services/plannerService";
 import AddTaskModal from "./modal/AddTask";
+import { Task, ToDoListState } from "../../types/plan";
+import { getFullDate, getNow, translateBloomdate } from "./PlannerFuntions";
 
-type Task = {
-  id: number;
-  title: string;
-  completed: boolean;
-  createdAt: string;
-  date: string;
-};
-
-export default function ToDoList() {
+export default function ToDoList({ selectedDate, isSelecting, onSelectDate }: ToDoListState) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false)
+
+  const now = translateBloomdate(getNow())
 
   // Fetch tasks on component mount
   useEffect(() => {
@@ -28,18 +24,11 @@ export default function ToDoList() {
     try {
       setLoading(true);
       setError(null);
+
       const response = await plannerService.getTasks();
       
       if (response.success && response.data) {
-        // Transform API data to component format
-        const transformedTasks = response.data.map((task) => ({
-          id: task.id,
-          title: task.title,
-          completed: task.isCompleted,
-          createdAt: new Date(task.createdAt).toLocaleString(),
-          date: task.date,
-        }));
-        setTasks(transformedTasks);
+        setTasks(response.data)
       } else {
         setError(response.error || "Failed to fetch tasks");
       }
@@ -51,7 +40,15 @@ export default function ToDoList() {
     }
   }
 
-  // Add new task
+  // Filter Tasks by Selected Date
+  const filteredTasks = selectedDate
+  ? tasks.filter(t =>
+      t.startDate.date === selectedDate.date &&
+      t.startDate.month === selectedDate.month &&
+      t.startDate.year === selectedDate.year
+    )
+  : tasks;
+
   async function handleAddTask() {
     if (!newTaskTitle.trim()) return;
 
@@ -59,18 +56,16 @@ export default function ToDoList() {
       const response = await plannerService.createTask({
         title: newTaskTitle.trim(),
         description: "",
-        date: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+        startDate: selectedDate ?? getNow(),
+        endDate: selectedDate ?? getNow(),
+        days: [],
+        interval: 0,
+        time: null,
+        dateCreated: getNow()
       });
 
       if (response.success && response.data) {
-        const newTask: Task = {
-          id: response.data.id,
-          title: response.data.title,
-          completed: response.data.isCompleted,
-          createdAt: new Date(response.data.createdAt).toLocaleString(),
-          date: response.data.date,
-        };
-        setTasks((prev) => [newTask, ...prev]);
+        setTasks((prev) => [response.data!, ...prev]);
         setNewTaskTitle("");
       } else {
         setError(response.error || "Failed to create task");
@@ -99,18 +94,26 @@ export default function ToDoList() {
 
   // Toggle checkbox
   async function handleToggleTask(id: number) {
-    const task = tasks.find((t) => t.id === id);
+    const task = tasks.find(t => t.id === id);
     if (!task) return;
 
     try {
       const response = await plannerService.updateTask(id, {
-        isCompleted: !task.completed,
+        isCompleted: !task.isCompleted,
+        title: task.title,
+        description: task.description,
+        startDate: task.startDate,
+        endDate: task.endDate,
+        days: task.days,
+        interval: task.interval,
+        time: task.time,
+        updatedAt: getNow()
       });
 
       if (response.success) {
         setTasks((prev) =>
-          prev.map((t) =>
-            t.id === id ? { ...t, completed: !t.completed } : t
+          prev.map(t =>
+            t.id === id ? { ...t, completed: !t.isCompleted } : t
           )
         );
       } else {
@@ -144,11 +147,11 @@ export default function ToDoList() {
 
           <div className="h-[500px] flex flex-col gap-3">
           {/* Error Message */}
-          {error && (
-            <div className="p-3 bg-red-100 text-red-700 rounded-xl text-sm">
-              {error}
-            </div>
-          )}
+            {error && (
+              <div className="p-3 bg-red-100 text-red-700 rounded-xl text-sm">
+                {error}
+              </div>
+            )}
 
           {/* Task List Container */}
           <div className="flex flex-col justify-start items-center bg-white rounded-xl p-4 text-[#474747] h-full overflow-y-auto shadow-inner">
@@ -165,22 +168,15 @@ export default function ToDoList() {
                   className="flex items-center w-full justify-between bg-gradient-to-r from-pink-50 to-pink-100 p-3 rounded-xl mb-3 shadow-sm hover:shadow-md transition"
                 >
                   <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => handleToggleTask(task.id)}
-                      className="flex-shrink-0 transition-all duration-200 hover:scale-110"
-                      aria-label={task.completed ? "Mark as incomplete" : "Mark as complete"}
-                    >
-                      {task.completed ? (
-                        <CheckCircle2 className="w-5 h-5 text-bloomPink fill-current" />
-                      ) : (
-                        <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-                        </svg>
-                      )}
-                    </button>
+                    <input
+                      type="checkbox"
+                      checked={task.isCompleted}
+                      onChange={() => handleToggleTask(task.id)}
+                      className="w-5 h-5 accent-bloomPink cursor-pointer"
+                    />
                     <span
                       className={`text-lg ${
-                        task.completed
+                        task.isCompleted
                           ? "line-through text-gray-400"
                           : "text-gray-800"
                       }`}
@@ -190,7 +186,7 @@ export default function ToDoList() {
                   </div>
 
                   <div className="flex items-center gap-3 text-sm text-gray-500">
-                    <span>{task.createdAt}</span>
+                    <span>{translateBloomdate(task.startDate)}</span>
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
@@ -209,7 +205,7 @@ export default function ToDoList() {
           {newTaskTitle.length >= 0 && (
             <input
               type="text"
-              placeholder="Type new task..."
+              placeholder={`Type new task on ${(selectedDate === null) ? `${getNow().month + 1}/${getNow().day}/${getNow().year}` : `${selectedDate.month + 1}/${selectedDate.date}/${selectedDate.year}`}`}
               value={newTaskTitle}
               onChange={(e) => setNewTaskTitle(e.target.value)}
               className="w-full p-3 rounded-xl bg-white/80 focus:bg-white outline-none text-gray-700"
@@ -220,7 +216,16 @@ export default function ToDoList() {
         </div>
         </motion.div>
     ) : (
-      <AddTaskModal onClose = {() => setIsAdding(!isAdding)} />
+      <AddTaskModal
+      onClose = {() => setIsAdding(!isAdding)}
+      onAdd={(task) => {
+        setTasks(tasks.concat(task))
+        setIsAdding(!isAdding)
+      }}
+      selectDate={selectedDate}
+      isSelecting={isSelecting}
+      onSelectDate={() => onSelectDate(!isSelecting)}
+      />
     )
   );
 }
