@@ -43,7 +43,6 @@ export default function ToDoList({ selectedDate, isSelecting, onSelectDate }: To
   // Filter Tasks by Selected Date
   const filteredTasks = selectedDate
   ? tasks.filter(t =>
-      t?.startDate &&
       t.startDate.date === selectedDate.date &&
       t.startDate.month === selectedDate.month &&
       t.startDate.year === selectedDate.year
