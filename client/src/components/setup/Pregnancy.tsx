@@ -23,8 +23,6 @@ interface PregnancyProps {
 
 export default function Pregnancy({
   onComplete,
-  fullName,
-  email,
 }: PregnancyProps) {
   const [selectedOption, setSelectedOption] = useState("");
   const [value, setValue] = useState("");
@@ -57,18 +55,6 @@ export default function Pregnancy({
   const handleGenderSelect = (gender: string) => {
     setSelectedGender(gender);
     setIsOpen(false);
-  };
-
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
-
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(e.target.value);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
   };
 
   const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
