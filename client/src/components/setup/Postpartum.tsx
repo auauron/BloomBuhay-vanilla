@@ -25,14 +25,6 @@ export default function Postpartum({
   const [selectedOption, setSelectedOption] = useState("");
   const [weekError, setWeekError] = useState("");
 
-  const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedOption(e.target.value);
-  };
-
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
-
   const handleGenderSelect = (gender: string) => {
     setSelectedGender(gender);
     setIsOpen(false);
