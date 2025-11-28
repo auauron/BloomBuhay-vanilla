@@ -1,15 +1,27 @@
-import path from "path";
-import HtmlWebpackPlugin from "html-webpack-plugin";
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-export default {
+module.exports = {
   entry: "./src/index.tsx",
   output: {
     path: path.resolve("dist"),
     filename: "bundle.js",
+    publicPath: "/",
     clean: true,
   },
   module: {
     rules: [
+      // File loader for images
+      {
+        test: /\.(png|jpe?g|gif|ico)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'static/media/[name].[hash][ext]',
+        },
+      },
       // TS/TSX loader
       {
         test: /\.[jt]sx?$/,
@@ -43,10 +55,49 @@ export default {
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, 'public/assets'),
+          to: path.resolve(__dirname, 'dist/assets'),
+          noErrorOnMissing: true,
+        },
+        {
+          from: path.resolve(__dirname, 'public/favicon.ico'),
+          to: path.resolve(__dirname, 'dist/favicon.ico'),
+          noErrorOnMissing: true,
+        },
+        {
+          from: path.resolve(__dirname, 'static.json'),
+          to: path.resolve(__dirname, 'dist'),
+          noErrorOnMissing: true,
+        },
+        {
+          from: path.resolve(__dirname, '_redirects'),
+          to: path.resolve(__dirname, 'dist'),
+          noErrorOnMissing: true,
+        },
+      ],
+    }),
+    new Dotenv({
+      path: `./.env${process.env.NODE_ENV ? '.' + process.env.NODE_ENV : ''}`,
+      systemvars: true,
+      defaults: true
+    }),
+    new webpack.DefinePlugin({
+      'process.env.REACT_BACKEND_URL': JSON.stringify(
+        process.env.REACT_BACKEND_URL || 
+        (process.env.NODE_ENV === 'production' 
+          ? 'https://bloombuhay-vanilla-backend.onrender.com' 
+          : 'http://localhost:3000')
+      ),
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+    }),
   ],
   devServer: {
     port: 5173,
     historyApiFallback: true,
   },
-  mode: "development",
+  mode: process.env.NODE_ENV || 'development',
+  devtool: process.env.NODE_ENV === 'production' ? 'source-map' : 'eval-source-map',
 };

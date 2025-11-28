@@ -8,6 +8,7 @@ import Setup from "./Setup";
 import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { authService } from "../services/authService";
 import { keyToLabel } from "../utils/stages";
+import { API_BASE_URL } from "../config";
 
 export default function MainSetup() {
   const [selectedStage, setSelectedStage] = useState<string | null>(null);
@@ -94,7 +95,7 @@ export default function MainSetup() {
 
     if (token) {
       try {
-        const resp = await fetch("http://localhost:3000/api/mother-profiles", {
+        const resp = await fetch(`${API_BASE_URL}/api/mother-profiles`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

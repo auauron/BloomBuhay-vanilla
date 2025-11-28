@@ -14,8 +14,7 @@ import {
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import "../../index.css";
-import { healthtrackerService } from "../../services/healthTrackerService";
-
+import { healthtrackerService } from "../../services/healthtrackerService";
 type Intensity = "Low" | "Medium" | "High";
 
 interface SymptomLocal {

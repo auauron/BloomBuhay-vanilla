@@ -9,8 +9,9 @@ import { useNavigate } from "react-router-dom";
 import messages from "../components/motivations/messages.json";
 import DashboardToDoList from "../components/dashboard/DashboardToDoList";
 import DashboardTipsSection from "../components/dashboard/DashboardTipsSection";
+import { API_BASE_URL } from "../config";
 
-const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
+const API_BASE = API_BASE_URL;
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -37,76 +38,76 @@ export default function Dashboard() {
     {
       maxWeek: 4,
       name: "Poppy Seed",
-      image: "assets/dashboardFruit/Poppy_seed.png",
+      image: "/assets/dashboardFruit/Poppy_seed.png",
     },
     {
       maxWeek: 5,
       name: "Sesame Seed",
-      image: "assets/dashboardFruit/Sesame.png",
+      image: "/assets/dashboardFruit/Sesame.png",
     },
     {
       maxWeek: 6,
       name: "Lentil Seed",
-      image: "assets/dashboardFruit/Lentil.png",
+      image: "/assets/dashboardFruit/Lentil.png",
     },
     {
       maxWeek: 7,
       name: "Blueberry",
-      image: "assets/dashboardFruit/Blueberry.png",
+      image: "/assets/dashboardFruit/Blueberry.png",
     },
     {
       maxWeek: 8,
       name: "Raspberry",
-      image: "assets/dashboardFruit/Poppy_seed.png",
+      image: "/assets/dashboardFruit/Poppy_seed.png",
     },
-    { maxWeek: 9, name: "Grape", image: "assets/dashboardFruit/Grape.png" },
-    { maxWeek: 10, name: "Date", image: "assets/dashboardFruit/Dates.png" },
-    { maxWeek: 11, name: "Lime", image: "assets/dashboardFruit/Lime.png" },
-    { maxWeek: 12, name: "Plum", image: "assets/dashboardFruit/Plum.png" },
-    { maxWeek: 13, name: "Kiwi", image: "assets/dashboardFruit/Kiwi.png" },
-    { maxWeek: 14, name: "Peach", image: "assets/dashboardFruit/Peach.png" },
-    { maxWeek: 15, name: "Pear", image: "assets/dashboardFruit/Pear.png" },
+    { maxWeek: 9, name: "Grape", image: "/assets/dashboardFruit/Grape.png" },
+    { maxWeek: 10, name: "Date", image: "/assets/dashboardFruit/Dates.png" },
+    { maxWeek: 11, name: "Lime", image: "/assets/dashboardFruit/Lime.png" },
+    { maxWeek: 12, name: "Plum", image: "/assets/dashboardFruit/Plum.png" },
+    { maxWeek: 13, name: "Kiwi", image: "/assets/dashboardFruit/Kiwi.png" },
+    { maxWeek: 14, name: "Peach", image: "/assets/dashboardFruit/Peach.png" },
+    { maxWeek: 15, name: "Pear", image: "/assets/dashboardFruit/Pear.png" },
     {
       maxWeek: 16,
       name: "Avocado",
-      image: "assets/dashboardFruit/Avocado.png",
+      image: "/assets/dashboardFruit/Avocado.png",
     },
     {
       maxWeek: 17,
       name: "Naval Orange",
-      image: "assets/dashboardFruit/Naval_orange.png",
+      image: "/assets/dashboardFruit/Naval_orange.png",
     },
     {
       maxWeek: 18,
       name: "Pomegranate",
-      image: "assets/dashboardFruit/Pomegranate.png",
+      image: "/assets/dashboardFruit/Pomegranate.png",
     },
     {
       maxWeek: 19,
       name: "Grapefruit",
-      image: "assets/dashboardFruit/Grapefruit.png",
+      image: "/assets/dashboardFruit/Grapefruit.png",
     },
-    { maxWeek: 20, name: "Mango", image: "assets/dashboardFruit/Mango.png" },
+    { maxWeek: 20, name: "Mango", image: "/assets/dashboardFruit/Mango.png" },
     {
       maxWeek: 21,
       name: "Rockmelon",
-      image: "assets/dashboardFruit/Rockmelon.png",
+      image: "/assets/dashboardFruit/Rockmelon.png",
     },
     {
       maxWeek: 24,
       name: "Eggplant",
-      image: "assets/dashboardFruit/Eggplant.png",
+      image: "/assets/dashboardFruit/Eggplant.png",
     },
-    { maxWeek: 28, name: "Papaya", image: "assets/dashboardFruit/Papaya.png" },
+    { maxWeek: 28, name: "Papaya", image: "/assets/dashboardFruit/Papaya.png" },
     {
       maxWeek: 36,
       name: "Honeydew",
-      image: "assets/dashboardFruit/Honeydew.png",
+      image: "/assets/dashboardFruit/Honeydew.png",
     },
     {
       maxWeek: 40,
       name: "Watermelon",
-      image: "assets/dashboardFruit/Watermelon.png",
+      image: "/assets/dashboardFruit/Watermelon.png",
     },
   ];
 
@@ -339,7 +340,7 @@ export default function Dashboard() {
             </p>
             <div className="flex justify-center my-4">
               <img
-                src="assets/pregnant.png"
+                src="/assets/pregnant.png"
                 alt="Pregnant"
                 className="h-70 w-80 md:h-100 md:w-100 object-contain"
               />
@@ -373,7 +374,7 @@ export default function Dashboard() {
             </p>
             <div className="flex justify-center my-4">
               <img
-                src="assets/postpartum.png"
+                src="/assets/postpartum.png"
                 alt="Postpartum recovery"
                 className="h-80 w-80 md:h-100 md:w-100 object-contain"
               />
@@ -398,7 +399,7 @@ export default function Dashboard() {
             </p>
             <div className="flex justify-center my-4">
               <img
-                src="assets/earlychildcaredashboard.png" // Update with your image path
+                src="/assets/earlychildcaredashboard.png"
                 alt="Baby development tracking"
                 className="h-100 w-100 md:h-100 md:w-100 object-contain"
               />

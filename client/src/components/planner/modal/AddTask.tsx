@@ -1,105 +1,92 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, number } from "framer-motion";
 import { X, ChevronRight, ChevronUp, ChevronDown, Target } from "lucide-react";
-import { Task, BloomDate, AddTaskModalProps, BloomTime } from "../../../types/plan";
-import { getFullDate, getNow, getTime, militaryTime, taskID, translateBloomdate } from "../PlannerFuntions";
+import { plannerService } from "../../../services/plannerService";
+import { Task, BloomDate, BloomTime } from "../../../types/plan";
 
-export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, onSelectDate } : AddTaskModalProps) {
+interface AddTaskModalProps {
+  onClose: () => void;
+  onTaskAdded?: () => Promise<void>;
+}
+import { getFullDate, getNow, getTime, taskID, translateBloomdate } from "../PlannerFuntions";
 
-  const now: BloomDate = getNow();
-  const nowTime: BloomTime = getTime();
+export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps) {
+
+  const now: BloomDate = getNow()
+  const nowTime: BloomTime = getTime()
+  const today: string = getFullDate(getNow())
   
-
-
-  const [selectingDate, toggleSelectingDate] = useState<string | null>(null);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [isSingleDate, setSingleDate] = useState(true);
-  const [isWholeDay, setWholeDay] = useState(true);
-  const [dateStart, setDateStart] = useState(now);
-  const [dateEnd, setDateEnd] = useState(now);
-  const [days, setDays] = useState<number[]>([]);
-  const [interval, setInterval] = useState(0);
-  const [timeHr, setTimeHr] = useState(6);
-  const [timeMin, setTimeMin] = useState(0);
-  const [clock, setClock] = useState("AM");
-  const [time, setTime] = useState<BloomTime | null>(null);
-
-  useEffect(() => {
-    if (isSelecting && selectingDate === "StartDate") setDateStart((selectDate) ? selectDate : now);
-    else if (isSelecting && selectingDate === "EndDate") setDateEnd((selectDate) ? selectDate : now);
-
-  }, [isSelecting, selectDate])
-    
   const [form, setForm] = useState<Task>({
-    id: taskID(now, nowTime),
-    title: title,
-    description: description,
+    id: taskID( now, nowTime),
+    task: "Task",
+    description: null,
     isCompleted: false,
-    startDate: dateStart,
-    endDate: dateEnd,
-    days: days,
-    interval: interval,
-    time: militaryTime(timeHr, timeMin, clock),
-    updatedAt: translateBloomdate(now)
+    startDate: now
   });
 
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+  const [editing, setIsEditing] = useState(false)
+  const [isSingleDate, setSingleDate] = useState(true);
+  const [isWholeDay, setWholeDay] = useState(true);
+  const [dateStart, setDateStart] = useState(today)
+  const [dateEnd, setDateEnd] = useState(today)
+  const [weekly, setWeekly] = useState<string[]>([])
+  const [interval, setInterval] = useState(0)
+  const [timeHr, setTimeHr] = useState(6)
+  const [timeMin, setTimeMin] = useState(0)
+  const [clock, setClock] = useState("AM")
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [isSelectingDate, setIsSelectingDate] = useState(false)
+  const [selectedDay, setSelectedDay] = useState(now)
+
   const handleSingleDay = () => {
-    setSingleDate(!isSingleDate);
-    setDateEnd(dateStart);
-    setInterval(0);
-    if (!days) setDays([0,1,2,3,4,5,6]); else setDays([]);
+    setSingleDate(!isSingleDate)
   }
 
   const handleWholeDay = () => {
-    setWholeDay(!isWholeDay);
-    if (time === null) setTime({ hour: timeHr, min: timeMin, sec: 0 } as BloomTime); else null;
+    setWholeDay(!isWholeDay)
   }
 
   const handleClose = () => {
     onClose();
   }
 
-  const handleCancel = () => {
-    setForm({
-    id: taskID(now, nowTime),
-    title: title,
-    description: description,
-    isCompleted: false,
-    startDate: dateStart,
-    endDate: dateEnd,
-    days: days,
-    interval: interval,
-    time: null,
-    updatedAt: translateBloomdate(now)
-    })
-    onClose();
-  }
+  // const handleCancel = () => {
+  //   onCancel();
+  // }
 
-  const handleAdd = () => {
-    onAdd(form)
-  }
-
-  const handleSelectStartDate = () => {
-    if (!isSelecting) onSelectDate();
-
-    if (selectingDate !== "StartDate") {
-      toggleSelectingDate("StartDate")
-    } else {
-      toggleSelectingDate(null)
+  const handleAdd = async () => {
+    try {
+      // Convert the date from dd/mm/yyyy to yyyy-mm-dd format for the server
+      const [day, month, year] = dateStart.split('/').map(Number);
+      const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      
+      const response = await plannerService.createTask({
+        title: title || 'New Task',
+        description: description || '',
+        date: isoDate
+      });
+      
+      if (response.success) {
+        if (onTaskAdded) {
+          await onTaskAdded();
+        }
+        onClose();
+      } else {
+        console.error('Failed to add task:', response.error);
+      }
+    } catch (error) {
+      console.error('Error adding task:', error);
     }
-
   }
 
-  const handleSelectEndDate = () => {
-    if (!isSelecting) onSelectDate();
+  const handelStartDate = () => {
+    
+  }
 
-    if (selectingDate !== "EndDate") {
-      toggleSelectingDate("EndDate")
-    } else {
-      toggleSelectingDate(null)
-    }
-
+  const handleTimeMin = (val: number) => {
   }
 
   const handleChangeClock = () => {
@@ -108,110 +95,74 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
     : setClock("AM")
   }
 
-  console.log(isSelecting)
-
   return (
     <AnimatePresence>
       <motion.div
-      key="add-task-card"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
+        key="add-task-card"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
       >
-        <div className="bg-gradient-to-r from-bloomPink via-[#F5ABA1] to-bloomYellow text-white p-4 rounded-[20px] shadow-lg relative items-center">
+        <div className="bg-white p-6 rounded-3xl shadow-xl relative overflow-hidden">
+          {/* Decorative elements */}
           {/* Header */}
-          <h3 className="text-2xl text-white font-bold flex items-center justify-center gap-4 p-2 mb-2">
-            <span className="flex-1 text-center">Add Task</span>
+          <div className="relative z-10">
+            <h3 className="text-3xl font-semibold text-bloomPink mb-2 text-center">
+              Add New Task
+            </h3>
+            <p className="text-sm text-bloomPink/80 text-center mb-6">One task at a time, mama!</p>
 
-            {/* Add Button */}
+            {/* Close Button */}
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.1, rotate: 90 }}
+              whileTap={{ scale: 0.9 }}
               onClick={handleClose}
+              className="absolute top-0 right-0 p-2 text-bloomPink hover:text-bloomBlack transition-colors"
+              aria-label="Close"
             >
-              <X className="w-8 h-8 text-white" />
+              <X className="w-6 h-6" />
             </motion.button>
-          </h3>
+          </div>
 
-          <div className=" flex flex-col items-center content-center justify-between bg-white rounded-xl p-4 text-[#474747] h-[500px] overflow-y-auto">
+          <div className="flex flex-col items-center content-center justify-between bg-white rounded-xl p-3 text-bloomBlack h-[450px] overflow-y-auto">
             <div className="w-full">
-              {/* Title input */}
-              <motion.div
-              className="flex gap-2 mb-2 items-center"
-              >
-                <input
-                  id="title"
-                  type="text"
-                  placeholder="Title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full border border-bloomBlack/50 outline-none text-bloomBlack placeholder-bloomBlack/50 text-[12px] font-bold bg-White shadow-md rounded-full px-2 focus:placeholder-bloomPink/50 focus:border-bloomPink focus:text-bloomPink focus:bg-bloomYellow/25"
-                />
-                <div className="p-3 bg-bloomPink rounded-full"></div>
-              </motion.div>
-
-              {/* Description input */}
-              <textarea
-                key="description"
-                placeholder="Description..."
-                rows={3}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full mb-2 resize-none overflow-hidden border border-bloomBlack/50 outline-none text-bloomBlack placeholder-bloomBlack/50 text-[12px] font-bold bg-White shadow-md rounded-[12px] p-2 focus:placeholder-bloomPink/50 focus:border-bloomPink focus:text-bloomPink focus:bg-bloomYellow/25"
-              />
-              <motion.div transition={{ duration: 0.3, ease: "easeOut"}}>
-                <AnimatePresence>
-                  <div className="relative flex justify-center items-center mb-2">
-                    {(!isSingleDate ?
-                      <motion.div
-                      key="single1"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="flex items-center justify-center gap-2"
-                      >
-                        <button 
-                        className={`py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105
-                          ${(selectingDate === "StartDate") ? `bg-gradient-to-r from-bloomPink to-bloomYellow text-white` : `shadow border-bloomBlack/0 scale-105`}
-                          `}
-                        onClick={handleSelectStartDate}
-                        >
-                          {getFullDate(dateStart)}
-                        </button>
-                        <ChevronRight className="text-bloomPink" />
-                        <button className={`py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105
-                          ${(selectingDate === "EndDate") ? `bg-gradient-to-r from-bloomPink to-bloomYellow text-white` : `shadow border-bloomBlack/0 scale-105`}
-                        `}
-                        onClick={handleSelectEndDate}
-                        >
-                          {getFullDate(dateEnd)}
-                        </button>
-                      </motion.div>
-                      : 
-                      <motion.div
-                      key="single2"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="flex items-center justify-center"
-                      >
-                        <button
-                        className={`py-1 px-2 text-[12px] font-bold text-bloomBlack rounded-full border border-bloomBlack/50 hover:bg-gradient-to-r hover:from-bloomPink hover:to-bloomYellow hover:text-white transition-all duration-300 cursor-pointer select-none hover:shadow hover:border-bloomBlack/0 hover:scale-105
-                        ${(selectingDate === "StartDate") ? `bg-gradient-to-r from-bloomPink to-bloomYellow text-white` : `shadow border-bloomBlack/0 scale-105`}
-                        `}
-                        onClick={handleSelectStartDate}
-                        >
-                            {getFullDate(dateStart)}
-                        </button>
-                      </motion.div>
-                    )}
+              <div className="space-y-4 relative z-10 mb-4">
+                {/* Task Title */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-bloomBlack/80">Task Name</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-white/80 border border-gray-200 text-bloomBlack placeholder-bloomPink/40 focus:outline-none focus:ring-2 focus:ring-bloomPink/20 focus:border-transparent transition-all duration-200 shadow-sm text-sm"
+                      placeholder="What do you need to do?"
+                    />
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <svg className="h-5 w-5 text-bloomPink/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </div>
                   </div>
-                </AnimatePresence>
-                
-                
+                </div>
+
+                {/* Task Description */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-bloomBlack/80">Notes (Optional)</label>
+                  <div className="relative">
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-white/80 border border-gray-200 text-bloomBlack placeholder-bloomPink/40 focus:outline-none focus:ring-2 focus:ring-bloomPink/20 focus:border-transparent transition-all duration-200 shadow-sm min-h-[80px] text-sm"
+                      placeholder="Any special notes or details?"
+                    />
+                    <div className="absolute bottom-3 right-3 text-bloomPink/40">
+                      
+                    </div>
+                  </div>
+                </div>
+
                 {/* Single Date toggle */}
                 <motion.div
                 layout
@@ -250,27 +201,23 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
                     >
                       {/* Day selection */}
                       <div className="flex items-center gap-2 mb-2">
-                        <input
-                        type="radio"
-                        name="daySelection"
-                        className="appearance-none w-3 h-3 border border-bloomBlack/50 rounded-full checked:bg-bloomPink checked:border-bloomPink checked:shadow transition-all duration-300 cursor-pointer"
-                        />
+                        <input type="radio" name="daySelection" className="appearance-none w-3 h-3 border border-bloomBlack/50 rounded-full checked:bg-bloomPink checked:border-bloomPink checked:shadow transition-all duration-300 cursor-pointer" />
                         <span className="font-bold text-bloomBlack">Everyday</span>
                       </div>
 
-                      <div className="flex justify-evenly w-full gap-2 mb-2 cursor-pointer">
+                      <div className="flex justify-evenly w-full gap-2 mb-2">
                         {["Su", "M", "Tu", "W", "Th", "F", "Sa"].map((day, i) => (
                           <div
                             key={i}
                             className={`w-[32px] h-[32px] flex items-center justify-center rounded-full text-sm font-bold ${
-                              days.includes(i)
+                              weekly.includes(day)
                                 ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow scale-105"
                                 : "border border-bloomPink text-bloomPink hover:bg-bloomYellow/50 hover:scale-105"
                             }`}
                             onClick={() => {
-                              (!days.includes(i))
-                              ? setDays(days.concat(i))
-                              : setDays(days.filter((x) => x !== i))
+                              (!weekly.includes(day))
+                              ? setWeekly(weekly.concat(day))
+                              : setWeekly(weekly.filter((x) => x !== day))
                             }}
                           >
                             {day}
@@ -387,24 +334,41 @@ export default function AddTaskModal({ onClose, onAdd, selectDate, isSelecting, 
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </motion.div>
+
+                {/* Date & Time Picker */}
+                <div className="space-y-3">
+                  <label className="block text-sm font-medium text-bloomBlack/80">Schedule</label>
+                  <div className="flex items-center space-x-3">
+                    <div className="relative flex-1">
+                      <button
+                        onClick={handelStartDate}
+                        className="w-full py-1.5 rounded-lg bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-medium hover:opacity-90 transition-all duration-200 shadow hover:shadow-md text-sm"
+                      >
+                        {dateStart}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="w-full">
               {/* Buttons */}
               <div className="flex justify-between gap-4">
-                <motion.button
-                className="w-32 py-2 rounded-full border border-bloomPink text-bloomPink font-bold hover:bg-pink-50 transition"
-                onClick={handleCancel}
-                >
+                <button className="w-28 py-1.5 rounded-full border border-bloomPink text-bloomPink font-bold hover:bg-pink-50 transition text-sm">
                   Cancel
-                </motion.button>
-                <motion.button
-                className="w-32 py-2 rounded-full bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-bold shadow hover:opacity-90 transition"
-                onClick={handleAdd}
+                </button>
+                <button 
+                  onClick={handleAdd}
+                  disabled={isSubmitting}
+                  className={`bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-5 py-1.5 rounded-full font-medium transition-opacity text-sm ${
+                    isSubmitting 
+                      ? 'opacity-70 cursor-not-allowed' 
+                      : 'hover:opacity-90 cursor-pointer'
+                  }`}
                 >
-                  Add
-                </motion.button>
+                  {isSubmitting ? 'Adding...' : 'Add'}
+                </button>
               </div>
             </div>
           </div>

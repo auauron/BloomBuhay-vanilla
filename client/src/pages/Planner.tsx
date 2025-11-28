@@ -6,23 +6,13 @@ import CalendarView from "../components/planner/Calendar";
 import ToDoList from "../components/planner/ToDoList";
 import { motion } from "framer-motion";
 import { Calendar } from "lucide-react";
-import { getNow, translateBloomdate, translateDateStringToBloomDate } from "../components/planner/PlannerFuntions";
-import { BloomDate } from "../types/plan";
 
 export default function Planner() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const now: BloomDate = getNow()
-  const today: string = translateBloomdate(now)
-  const [selectedDay, setSelectedDay] = useState<string | null>(today);
-  const [month, setMonth] = useState(now.month);
-  const [year, setYear] = useState(now.year);
-  const [showPicker, setShowPicker] = useState(false);
-  const [isSelecting, setIsSelecting] = useState(false);
-
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => setIsSidebarOpen(false);
-  console.log(selectedDay)
+
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <div className="flex flex-col h-screen font-poppins bg-bloomWhite">
@@ -48,25 +38,12 @@ export default function Planner() {
           <div className="grid grid-cols-1 md:grid-cols-[59%_39%] gap-[2%] max-w-7xl mx-auto w-full">
             {/* Calendar Section */}
             <div className="rounded-[22px] shadow-md bg-bloomPink p-[2px]">
-              <CalendarView
-              selectedDay={selectedDay}
-              setSelectedDay={setSelectedDay}
-              month={month}
-              setMonth={setMonth}
-              year={year}
-              setYear={setYear}
-              showPicker={showPicker}
-              setShowPicker={setShowPicker}
-              />
+              <CalendarView />
             </div>
 
             {/* To-Do List Section */}
             <div className="rounded-[22px] shadow-md bg-bloomPink p-[2px]">
-              <ToDoList
-              selectedDate={translateDateStringToBloomDate((selectedDay === null) ? today : selectedDay)}
-              isSelecting={isSelecting}
-              onSelectDate={setIsSelecting}
-              />
+              <ToDoList />
             </div>
           </div>
         </div>

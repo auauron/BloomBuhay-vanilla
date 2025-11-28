@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "client": "npm --prefix client run dev",
-    "server": "npm --prefix server run dev"
+    "server": "npm --prefix server run dev",
+    "build": "cd client && npm install && npm run build && cd ../server && npm install && npm run build",
+    "start": "node server/dist/index.js",
+    "heroku-postbuild": "npm run build"
   },
   "repository": {
     "type": "git",

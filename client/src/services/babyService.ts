@@ -1,6 +1,7 @@
 import { authService } from "./authService";
+import { API_BASE_URL } from "../config";
 
-const API_URL = "http://localhost:3000";
+const API_URL = `${API_BASE_URL}/api/mother-profiles`;
 
 interface BabyDetails {
   motherhoodStage: string;
@@ -18,7 +19,7 @@ export const babyService = {
       const token = authService.getToken();
       if (!token) return { success: false, error: "Not authenticated" };
 
-      const response = await fetch(`${API_URL}/api/mother-profiles/me`, {
+      const response = await fetch(`${API_URL}/me`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -44,7 +45,7 @@ export const babyService = {
       return { success: false, error: "Network error" };
     }
   },
-  
+
   async updateBabyDetails(baby: {
     motherhoodStage: string;
     babyName: string;
@@ -54,7 +55,7 @@ export const babyService = {
       const token = authService.getToken();
       if (!token) return { success: false, error: "No auth token" };
 
-      const response = await fetch(`${API_URL}/api/mother-profiles`, {
+      const response = await fetch(`${API_URL}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

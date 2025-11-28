@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: bloom-buhay-api
+    env: node
+    rootDirectory: server
+    buildCommand: npm i && npm run build && npm prune --production
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bloom-buhay-db
+          property: connectionString
+    plan: free
+
+  - type: static
+    name: bloom-buhay-web
+    rootDirectory: client
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REACT_BACKEND_URL
+        value: https://bloombuhay-vanilla-backend.onrender.com
+    plan: free
+
+databases:
+  - name: bloom-buhay-db
+    databaseName: bloom_buhay
+    user: bloom_buhay_user
+    plan: free

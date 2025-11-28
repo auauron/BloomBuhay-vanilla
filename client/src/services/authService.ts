@@ -1,15 +1,24 @@
 import { SignupRequest, LoginRequest, AuthResponse } from "../types/auth";
+import { API_BASE_URL } from "../config";
 
-const API_URL = "http://localhost:3000/api/auth";
+// Use the environment variable for the backend URL
+const API_URL = `${API_BASE_URL}/api/auth`;
+
+// Common fetch options for API requests
+const fetchOptions = (method: string, data?: any): RequestInit => ({
+  method,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+  credentials: 'include', // Important for cookies/sessions
+  ...(data && { body: JSON.stringify(data) }),
+});
 
 export const authService = {
   async signup(data: SignupRequest): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${API_URL}/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(`${API_URL}/signup`, fetchOptions('POST', data));
 
       const result = await response.json();
 
@@ -21,8 +30,8 @@ export const authService = {
             Promise.resolve(localStorage.setItem("token", result.token)),
             result.refreshToken
               ? Promise.resolve(
-                  localStorage.setItem("refreshToken", result.refreshToken)
-                )
+                localStorage.setItem("refreshToken", result.refreshToken)
+              )
               : Promise.resolve(),
             Promise.resolve(
               localStorage.setItem("user", JSON.stringify(result.user))
@@ -43,11 +52,7 @@ export const authService = {
 
   async login(data: LoginRequest): Promise<AuthResponse> {
     try {
-      const response = await fetch(`${API_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(`${API_URL}/login`, fetchOptions('POST', data));
 
       const result = await response.json();
 

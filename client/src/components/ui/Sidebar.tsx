@@ -14,6 +14,7 @@ import {
   ScanHeart
 } from "lucide-react";
 import { authService } from "../../services/authService";
+import { API_BASE_URL } from "../../config";
 
 
 interface SidebarProps {
@@ -33,7 +34,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const API_BASE = (window as any).__API_URL__ || "http://localhost:3000";
+  const API_BASE = API_BASE_URL;
 
   // Helper: map canonical enum -> UI label
   const enumToUi = (val: string | null | undefined): string | null => {

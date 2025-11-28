@@ -18,43 +18,31 @@ export interface DateJumperProps {
 }
 
 export interface CalendarState {
-  selectedDay: string | null;
-  setSelectedDay: React.Dispatch<React.SetStateAction<string | null>>;
-  month: number;
-  setMonth: React.Dispatch<React.SetStateAction<number>>;
-  year: number;
-  setYear: React.Dispatch<React.SetStateAction<number>>;
-  showPicker: boolean;
-  setShowPicker: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export interface ToDoListState {
   selectedDate: BloomDate | null;
-  isSelecting: boolean;
-  onSelectDate: React.Dispatch<React.SetStateAction<boolean>>;
-
+  selectedMonth: number;
+  selectedYear: number;
+  viewMode: "month" | "year";
 }
 
 export interface Task {
-  id: number;
-  title: string;
-  description: string;
+  id: string
+  task: string | null;
+  description: string | null;
   isCompleted: boolean;
   startDate: BloomDate;
-  endDate: BloomDate | null;
-  days: number[];
-  interval: number;
-  time: BloomTime | null;
-  dateCreated?: string | null;
-  updatedAt: string;
+  endDate?: BloomDate;
+  days?: number[];
+  interval?: number;
+  time?: BloomTime;
 };
 
 export interface AddTaskModalProps {
   onClose: () => void;
+  onCancel: () => void;
   onAdd: (task: Task) => void;
-  selectDate: BloomDate | null;
-  isSelecting: boolean;
-  onSelectDate: () => void;
+  startDate: BloomDate;
+  endDate?: BloomDate;
+  isEditing?: boolean;
 }
 
 
@@ -65,10 +53,10 @@ export type TodoMode =
   | "addTask"
   | "editTask";
 
-export interface TodoListProcess {
+export interface TodoListState {
   mode: TodoMode;
   selectedTaskId?: string;
-  selectedDate?: string;
+  selectedDate?: BloomDate;
   tasks: Task[];
 }
 
