@@ -600,7 +600,7 @@ export default function Dashboard() {
     const spaceIdx = trimmed.indexOf(" ");
     const first = spaceIdx >= 0 ? trimmed.slice(0, spaceIdx) : trimmed;
     const cap = first.charAt(0).toUpperCase() + first.slice(1);
-    return spaceIdx >= 0 ? `${cap}...` : cap;
+    return spaceIdx >= 0 ? `${cap}` : cap;
   };
 
   return (
