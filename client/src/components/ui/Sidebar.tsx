@@ -165,6 +165,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   // Readable label for UI
   const stageLabel = enumToUi(canonicalStageKey);
 
+  // Truncated display name (max 12 chars + ...)
+  const displayName = user?.fullName
+    ? (user.fullName.length > 12 ? user.fullName.slice(0, 12) + '...' : user.fullName)
+    : (loading ? 'Loading...' : 'User');
+
   const handleNavigation = (path: string) => {
     onClose();
     setTimeout(() => {
@@ -251,7 +256,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
 
             <div>
-              <p className="font-semibold">{user?.fullName || "Loading..."}</p>
+              <p className="font-semibold">{displayName}</p>
               <p className="text-sm text-white/80">View and Edit Profile</p>
             </div>
           </Link>

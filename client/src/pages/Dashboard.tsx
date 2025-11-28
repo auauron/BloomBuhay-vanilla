@@ -594,6 +594,15 @@ export default function Dashboard() {
     );
   };
 
+  const formatFirstWord = (name: string | null): string => {
+    if (!name) return "Mama";
+    const trimmed = name.trim();
+    const spaceIdx = trimmed.indexOf(" ");
+    const first = spaceIdx >= 0 ? trimmed.slice(0, spaceIdx) : trimmed;
+    const cap = first.charAt(0).toUpperCase() + first.slice(1);
+    return spaceIdx >= 0 ? `${cap}...` : cap;
+  };
+
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <div className="h-screen bg-bloomWhite flex flex-col font-poppins relative">
@@ -607,14 +616,14 @@ export default function Dashboard() {
               {isLoading
                 ? "Mama!"
                 : userName
-                ? `Mama ${userName.charAt(0).toUpperCase() + userName.slice(1)}!`
+                ? `Mama ${formatFirstWord(userName)}!`
                 : "Mama!"}
             </h2>
 
             {stageLabel && (
               <div className="mt-2 md:mt-3">
                 <span className="text-lg md:text-xl font-rubik font-normal text-bloomBlack">
-                  Bloom stage: {" "}
+                  Bloom stage:{" "}
                   <span className="text-bloomPink"> {stageLabel} </span>
                 </span>
               </div>
