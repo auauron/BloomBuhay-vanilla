@@ -38,7 +38,7 @@ const corsOptions = {
   },
   credentials: true, // allow cookies/auth headers
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content -Type", "Authorization", "X-Requested-With"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   exposedHeaders: ["Content-Range", "X-Total-Count"],
 };
 
@@ -81,3 +81,4 @@ app.listen(PORT, () => {
 
   }
 });
+        
