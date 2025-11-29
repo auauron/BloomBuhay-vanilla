@@ -14,6 +14,40 @@ import BBToolsRoutes from "./routes/BBToolsRoutes";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ---------- CORS Setup ----------
+
+// Frontend origins
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "https://bloombuhay-client.onrender.com",
+  ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : []),
+];
+
+// CORS options
+const corsOptions = {
+  origin: (origin: string | undefined, callback: any) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`Blocked CORS request from origin: ${origin}`);
+      callback(new Error("Not allowed by CORS"), false);
+    }
+  },
+  credentials: true, // allow cookies/auth headers
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content -Type", "Authorization", "X-Requested-With"],
+  exposedHeaders: ["Content-Range", "X-Total-Count"],
+};
+
+if (process.env.NODE_ENV === "development") {
+  console.log("Running in development mode: allowing all origins for convenience");
+  app.use(cors({ origin: true, credentials: true }));
+} else {
+  app.use(cors(corsOptions));
+}
 
 // ---------- Middleware ----------
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
@@ -43,4 +77,7 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+  if (process.env.NODE_ENV !== "development") {
+    console.log("CORS enabled for frontend domains:", allowedOrigins);
+  }
 });
