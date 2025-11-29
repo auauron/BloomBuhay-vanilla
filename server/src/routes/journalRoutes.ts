@@ -1,5 +1,5 @@
 import { Router, Response } from "express";
-import  { authenticateToken, AuthRequest } from '../middleware/auth';
+import { authenticateToken, AuthRequest } from '../middleware/auth';
 import { PrismaClient } from "@prisma/client";
 
 
@@ -7,7 +7,7 @@ const router = Router();
 const db = new PrismaClient();
 
 db.$connect()
-    .then(() => console.log('Database connected successfully'))
+    .then(() => { })
     .catch(err => console.error('Database connection failed:', err));
 // CRUD 
 
@@ -18,8 +18,8 @@ router.get(
     authenticateToken,
     async (req: AuthRequest, res: Response): Promise<void> => {
         try {
-            const userId = req.userId  
-            
+            const userId = req.userId
+
             if (!userId) {
                 res.status(401).json({ success: false, error: "Unauthorized" });
                 return;
@@ -27,14 +27,14 @@ router.get(
 
             const notes = await db.journalEntry.findMany({
                 where: { motherId: userId },
-                orderBy: { createdAt: "desc"}
+                orderBy: { createdAt: "desc" }
             })
 
-            res.status(200).json({ success: true, data: notes})
+            res.status(200).json({ success: true, data: notes })
 
         } catch (error) {
             console.error("Get notes error:", error);
-            res.status(500).json({ success: false, error:"Failed to fetch notes"});
+            res.status(500).json({ success: false, error: "Failed to fetch notes" });
         }
     }
 )
@@ -49,17 +49,17 @@ router.post(
             const { title, content, photoUrl, tags, mood } = req.body;
 
             if (!userId) {
-                res.status(401).json({success: false, error: "Unauthorized"})
+                res.status(401).json({ success: false, error: "Unauthorized" })
                 return;
             }
 
             if (!title || !title.trim()) {
-                res.status(400).json({ success: false, error: "Title is required"});
+                res.status(400).json({ success: false, error: "Title is required" });
                 return;
             }
 
             if (!content || !content.trim()) {
-                res.status(400).json({ success: false, error: "Content is required"})
+                res.status(400).json({ success: false, error: "Content is required" })
                 return;
             }
 
@@ -73,7 +73,7 @@ router.post(
                     mood: mood || null,
                 }
             });
-            res.status(201).json({success:true,data: note});
+            res.status(201).json({ success: true, data: note });
         } catch (error) {
             // Improve error logging
             console.error("Get notes error details:", {
@@ -81,9 +81,9 @@ router.post(
                 userId: req.userId,
                 stack: error instanceof Error ? error.stack : undefined
             });
-            
-            res.status(500).json({ 
-                success: false, 
+
+            res.status(500).json({
+                success: false,
                 error: "Failed to fetch notes",
                 details: process.env.NODE_ENV === 'development' ? error : undefined
             });
@@ -103,37 +103,37 @@ router.patch(
             const { title, content, photoUrl, tags, mood } = req.body;
 
             if (!userId) {
-                res.status(401).json({success: false, error:"Unauthorized"});
+                res.status(401).json({ success: false, error: "Unauthorized" });
                 return;
             }
 
-        if (isNaN(noteId)) {
-            res.status(400).json({ success: false, error: "Invalid note ID"});
-            return;
-        }
+            if (isNaN(noteId)) {
+                res.status(400).json({ success: false, error: "Invalid note ID" });
+                return;
+            }
 
-        const existingNote = await db.journalEntry.findFirst({where: { id: noteId, motherId: userId }})
-        
-        if (!existingNote) {
-            res.status(404).json({success: false, error:"Note not found" });
-            return;
-        }
+            const existingNote = await db.journalEntry.findFirst({ where: { id: noteId, motherId: userId } })
 
-        const note = await db.journalEntry.update({
-            where: { id: noteId },
-            data: { 
-                title: title?.trim || existingNote.title,
-                content: content?.trim || existingNote.content,
-                photoUrl: photoUrl !== undefined ? photoUrl : existingNote.photoUrl,
-                tags:  tags !== undefined ? tags : existingNote.tags,
-                mood: mood !== undefined ? mood : existingNote.mood, 
-            },
-        })
+            if (!existingNote) {
+                res.status(404).json({ success: false, error: "Note not found" });
+                return;
+            }
 
-        res.status(200).json({success: true, data: note });
-        } catch(err) {
+            const note = await db.journalEntry.update({
+                where: { id: noteId },
+                data: {
+                    title: title?.trim || existingNote.title,
+                    content: content?.trim || existingNote.content,
+                    photoUrl: photoUrl !== undefined ? photoUrl : existingNote.photoUrl,
+                    tags: tags !== undefined ? tags : existingNote.tags,
+                    mood: mood !== undefined ? mood : existingNote.mood,
+                },
+            })
+
+            res.status(200).json({ success: true, data: note });
+        } catch (err) {
             console.error("Update note error:", err);
-            res.status(500).json({success: false, error:"Update note failed"})
+            res.status(500).json({ success: false, error: "Update note failed" })
         }
     }
 );
@@ -148,29 +148,29 @@ router.delete(
             const noteId = parseInt(req.params.id);
 
             if (!userId) {
-                res.status(401).json({success: false, errro: "Unauthorized"})
+                res.status(401).json({ success: false, errro: "Unauthorized" })
                 return;
             }
 
             if (isNaN(noteId)) {
-                res.status(400).json({success: false, error: "Invalid note"})
+                res.status(400).json({ success: false, error: "Invalid note" })
                 return;
             }
 
-            const existingNote = await db.journalEntry.findFirst({ where: { id: noteId, motherId: userId}});
+            const existingNote = await db.journalEntry.findFirst({ where: { id: noteId, motherId: userId } });
 
             if (!existingNote) {
-                res.status(404).json({success: false, error: "Note not found"});
+                res.status(404).json({ success: false, error: "Note not found" });
                 return;
             }
 
-            await db.journalEntry.delete({where: {id: noteId }});
+            await db.journalEntry.delete({ where: { id: noteId } });
 
-            res.status(200).json({success: true, message: "Note deleted successfuly"});
+            res.status(200).json({ success: true, message: "Note deleted successfuly" });
 
         } catch (e) {
             console.error("Delete note error:", e);
-            res.status(500).json({ succes: false, error:"Delete note failed"})
+            res.status(500).json({ succes: false, error: "Delete note failed" })
         }
     }
 );
@@ -185,23 +185,23 @@ router.get(
     authenticateToken,
     async (req: AuthRequest, res: Response): Promise<void> => {
         try {
-             const userId = req.userId;
+            const userId = req.userId;
 
-             if (!userId) {
-                res.status(401).json({success: false, error: "Unauthorized"})
+            if (!userId) {
+                res.status(401).json({ success: false, error: "Unauthorized" })
                 return;
-             }
+            }
 
-             const albums = await db.album.findMany({
+            const albums = await db.album.findMany({
                 where: { motherId: userId },
                 include: { photos: true },
                 orderBy: { createdAt: "desc" }
-             });
+            });
 
-             res.status(200).json({success: true, data: albums})
+            res.status(200).json({ success: true, data: albums })
         } catch (e) {
             console.error("Get albums error:", e);
-            res.status(500).json({success: false, error:"Failed to fetch albums"})
+            res.status(500).json({ success: false, error: "Failed to fetch albums" })
         }
     }
 )
@@ -214,13 +214,13 @@ router.post(
         try {
             const userId = req.userId;
             const { title, coverPhoto, description } = req.body;
-            
+
             if (!userId) {
-                res.status(401).json({success: false, error: "Unauthorized"});
+                res.status(401).json({ success: false, error: "Unauthorized" });
                 return;
             }
-            if (!title || !title.trim()){
-                res.status(400).json({success: false, error:"Title is required"})
+            if (!title || !title.trim()) {
+                res.status(400).json({ success: false, error: "Title is required" })
                 return;
             }
 
@@ -231,13 +231,13 @@ router.post(
                     coverPhoto: coverPhoto || null,
                     description: description?.trim() || null,
                 },
-                include: { photos: true},
+                include: { photos: true },
             });
 
-            res.status(201).json({success: true, data: album});
+            res.status(201).json({ success: true, data: album });
         } catch (e) {
             console.error("Create album error:", e);
-            res.status(500).json({success: false, error: "Failed to create album"});
+            res.status(500).json({ success: false, error: "Failed to create album" });
         }
     }
 )
@@ -250,19 +250,19 @@ router.patch(
         try {
             const userId = req.userId;
             const albumId = parseInt(req.params.id);
-            const {title, coverPhoto, description} = req.body;
+            const { title, coverPhoto, description } = req.body;
 
             if (!userId) {
-                res.status(401).json({success: false, error: "Unauthorized"})
+                res.status(401).json({ success: false, error: "Unauthorized" })
                 return;
             }
 
             const existingAlbum = await db.album.findFirst({
-                where: { id: albumId, motherId: userId},
+                where: { id: albumId, motherId: userId },
             })
 
-            if (!existingAlbum){
-                res.status(404).json({success: false, error: "Album not"});
+            if (!existingAlbum) {
+                res.status(404).json({ success: false, error: "Album not" });
                 return;
             }
 
@@ -276,10 +276,10 @@ router.patch(
                 include: { photos: true },
             });
 
-            res.status(200).json({success: true, data: album});
+            res.status(200).json({ success: true, data: album });
         } catch (error) {
             console.error("Update album error", error);
-            res.status(500).json({ success: false, error: "Failed to update album"});
+            res.status(500).json({ success: false, error: "Failed to update album" });
         }
     }
 );
@@ -293,12 +293,12 @@ router.delete(
             const albumId = parseInt(req.params.id);
 
             if (!userId) {
-                res.status(401).json({success: false, error: "Unauthorized"});
+                res.status(401).json({ success: false, error: "Unauthorized" });
                 return;
             }
 
-            if (isNaN(albumId)){
-                res.status(400).json({ success: false, error: "Invalid album"});
+            if (isNaN(albumId)) {
+                res.status(400).json({ success: false, error: "Invalid album" });
                 return;
             }
 
@@ -307,15 +307,15 @@ router.delete(
             })
 
             if (!existingAlbum) {
-                res.status(404).json({success: false, error: "Album not found"});
+                res.status(404).json({ success: false, error: "Album not found" });
                 return;
             }
-            await db.album.delete({ where: { id: albumId }})
-            
-            res.status(200).json({ success: true, message: "Album deleted"});
+            await db.album.delete({ where: { id: albumId } })
+
+            res.status(200).json({ success: true, message: "Album deleted" });
         } catch (error) {
             console.error("Delete album error:", error);
-            res.status(500).json({ success: false, error: "Failed to delete "})
+            res.status(500).json({ success: false, error: "Failed to delete " })
         }
     }
 );
@@ -329,14 +329,14 @@ router.post(
             const userId = req.userId;
             const albumId = parseInt(req.params.albumId);
             const { photos } = req.body;
-            
+
             if (!userId) {
-                res.status(401).json({ success: false, error: "Unauthorized"})
+                res.status(401).json({ success: false, error: "Unauthorized" })
                 return;
             }
 
             if (isNaN(albumId)) {
-                res.status(400).json({ success: false, error: "Invalid album"});
+                res.status(400).json({ success: false, error: "Invalid album" });
                 return;
             }
 
@@ -345,12 +345,12 @@ router.post(
             })
 
             if (!existingAlbum) {
-                res.status(404).json({ success: false, error: "Album not found"});
+                res.status(404).json({ success: false, error: "Album not found" });
                 return;
             }
 
             if (!photos || !Array.isArray(photos) || photos.length == 0) {
-                res.status(400).json({ success: false, errror: "Photo array is required"})
+                res.status(400).json({ success: false, errror: "Photo array is required" })
                 return;
             }
 
@@ -370,10 +370,10 @@ router.post(
                 include: { photos: true },
             })
 
-            res.status(201).json({success: true, data: updatedAlbum});
+            res.status(201).json({ success: true, data: updatedAlbum });
         } catch (error) {
             console.error("Add photos error:", error);
-            res.status(500).json({success: false, error: "Failed to add photos"});
+            res.status(500).json({ success: false, error: "Failed to add photos" });
         }
     }
 );
@@ -388,12 +388,12 @@ router.patch(
             const { name, notes } = req.body;
 
             if (!userId) {
-                res.status(401).json({ success: false, error: "Unauthorized "});
+                res.status(401).json({ success: false, error: "Unauthorized " });
                 return;
             }
 
             if (isNaN(photoId)) {
-                res.status(400).json({ success: false, error: "Invalid photo ID"});
+                res.status(400).json({ success: false, error: "Invalid photo ID" });
                 return;
             }
 
@@ -404,7 +404,7 @@ router.patch(
             })
 
             if (!existingPhoto || existingPhoto.album.motherId !== userId) {
-                res.status(404).json({ success: false, error: "Photo not found"})
+                res.status(404).json({ success: false, error: "Photo not found" })
                 return;
             }
 
@@ -412,7 +412,7 @@ router.patch(
                 where: { id: photoId },
                 data: {
                     name: name !== undefined ? name : existingPhoto.name,
-                    notes: notes !== undefined ? notes: existingPhoto.notes
+                    notes: notes !== undefined ? notes : existingPhoto.notes
                 },
             });
 
@@ -433,25 +433,25 @@ router.delete(
             const photoId = parseInt(req.params.id);
 
             if (!userId) {
-                res.status(401).json({ success: false, error: "Unauthorized "})
+                res.status(401).json({ success: false, error: "Unauthorized " })
                 return;
             }
 
             if (isNaN(photoId)) {
-                res.status(400).json({ success: false, error: "Invalid photo ID"});
+                res.status(400).json({ success: false, error: "Invalid photo ID" });
                 return;
             }
 
-            const existingPhoto = await db.photo.findFirst({ where: { id: photoId }, include: {album: true} });
+            const existingPhoto = await db.photo.findFirst({ where: { id: photoId }, include: { album: true } });
 
             if (!existingPhoto || existingPhoto.album.motherId !== userId) {
-                res.status(404).json({ success: false, error: "Photo not found"})
+                res.status(404).json({ success: false, error: "Photo not found" })
                 return;
             }
 
-            await db.photo.delete({ where: { id: photoId }});
+            await db.photo.delete({ where: { id: photoId } });
 
-            res.status(200).json({ success: true, message: "Photo deleted succesfully"});
+            res.status(200).json({ success: true, message: "Photo deleted succesfully" });
         } catch (error) {
             console.error("Delete photo error:", error);
             res.status(500).json({ success: false, error: "Failed to delete" })

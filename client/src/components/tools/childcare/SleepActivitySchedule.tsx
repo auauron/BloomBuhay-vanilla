@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Trash2, Edit3, Check, Moon, Sun, Activity, Bed, Utensils, Clock} from "lucide-react";
+import { Plus, Trash2, Edit3, Check, Moon, Sun, Activity, Bed, Utensils, Clock } from "lucide-react";
 import { bbtoolsService, ScheduleEntry, CreateScheduleRequest } from "../../../services/BBToolsService";
 
 const SleepActivitySchedule: React.FC = () => {
@@ -69,7 +69,7 @@ const SleepActivitySchedule: React.FC = () => {
     const diff = endDate.getTime() - startDate.getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     }
@@ -81,12 +81,12 @@ const SleepActivitySchedule: React.FC = () => {
 
     setLoading(true);
     try {
-      console.log("Sending schedule data:", formData); // DEBUG
-      
+
+
       const response = await bbtoolsService.addSchedule(formData as CreateScheduleRequest);
-      
-      console.log("API Response:", response); // DEBUG
-      
+
+
+
       if (response.success && response.data) {
         setEntries([response.data, ...entries].sort((a, b) => {
           if (a.date === b.date) {
@@ -131,7 +131,7 @@ const SleepActivitySchedule: React.FC = () => {
     try {
       const response = await bbtoolsService.updateSchedule(editingId, formData);
       if (response.success && response.data) {
-        setEntries(entries.map(entry => 
+        setEntries(entries.map(entry =>
           entry.id === editingId ? { ...entry, ...response.data } : entry
         ));
         resetForm();
@@ -189,7 +189,7 @@ const SleepActivitySchedule: React.FC = () => {
   const getStats = () => {
     const today = new Date().toISOString().split('T')[0];
     const todayEntries = entries.filter(entry => entry.date === today);
-    
+
     const totalSleep = todayEntries
       .filter(entry => entry.type === "sleep")
       .reduce((total, entry) => {
@@ -219,7 +219,7 @@ const SleepActivitySchedule: React.FC = () => {
           </div>
           <h3 className="text-2xl font-bold text-bloomBlack">Sleep & Activity Schedule</h3>
         </div>
-        
+
         {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}

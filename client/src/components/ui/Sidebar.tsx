@@ -30,7 +30,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const [bloomStage, setBloomStage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  
+
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -74,16 +74,16 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           if (userRes.ok) {
             const userJson = await userRes.json();
-            console.log("User API response:", userJson); // Debug log
-            
+
+
             // Handle different possible response structures
             const userData = userJson.user || userJson;
-            
+
             const name = userData.fullName || userData.name || "User";
             const profilePic = userData.profilePic || userData.profilePicture || userData.avatar;
-            
+
             if (mounted) {
-              setUser({ 
+              setUser({
                 fullName: name.charAt(0).toUpperCase() + name.slice(1).toLowerCase(),
                 profilePic: profilePic
               });
@@ -126,8 +126,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             console.error("Failed to fetch mother profile:", profRes.status, text);
           } else {
             const profile = await profRes.json();
-            console.log("Mother profile API response:", profile); // Debug log
-            
+
+
             // profile.stage is enum 'pregnant'|'postpartum'|'childcare' (canonical)
             if (mounted) {
               const stage = profile.stage || profile.motherhoodStage || null;
@@ -158,10 +158,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   // Fallback to optimistic cache if DB hasn't provided anything
   const cachedStage = localStorage.getItem("lastStage"); // cached canonical key
-  
+
   // Final stage selection order (canonical key): db -> cached -> null
   const canonicalStageKey = bloomStage ?? (cachedStage || null);
-  
+
   // Readable label for UI
   const stageLabel = enumToUi(canonicalStageKey);
 
@@ -206,17 +206,15 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     <>
       {/* Overlay */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-600 ease-in-out ${
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity duration-600 ease-in-out ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
         onClick={onClose}
       />
 
       {/* Sidebar */}
       <div
-        className={`fixed left-0 top-0 h-full w-64 lg:w-60 bg-white shadow-xl z-50 overflow-y-auto transition-transform duration-500 ease-out ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed left-0 top-0 h-full w-64 lg:w-60 bg-white shadow-xl z-50 overflow-y-auto transition-transform duration-500 ease-out ${isOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
 
         {/* Header */}

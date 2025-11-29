@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Clock, Droplets, Utensils, Trash2, Edit3, Save, X } from "lucide-react";
-import { 
-  bbtoolsService, 
-  FeedingLogProps, 
-  FeedingSessionForm, 
+import {
+  bbtoolsService,
+  FeedingLogProps,
+  FeedingSessionForm,
   CreateFeedingRequest,
   FeedingLog as FeedingLogType,
-  LocalFeedingSession 
+  LocalFeedingSession
 } from "../../../services/BBToolsService";
 
 const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => {
@@ -32,12 +32,12 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
     let duration = 0;
     let side: string | undefined;
     let cleanNotes = feeding.notes || '';
-    
+
     // Extract duration using string methods
     const durationPrefix = "(Duration: ";
     const durationSuffix = " minutes)";
     const durationStartIndex = cleanNotes.indexOf(durationPrefix);
-    
+
     if (durationStartIndex !== -1) {
       const durationEndIndex = cleanNotes.indexOf(durationSuffix, durationStartIndex);
       if (durationEndIndex !== -1) {
@@ -46,43 +46,43 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
           durationEndIndex
         );
         duration = parseInt(durationText) || 0;
-        
+
         // Remove duration from notes
         const beforeDuration = cleanNotes.substring(0, durationStartIndex).trim();
         const afterDuration = cleanNotes.substring(durationEndIndex + durationSuffix.length).trim();
         cleanNotes = [beforeDuration, afterDuration].filter(Boolean).join(' ').trim();
       }
     }
-    
+
     // Extract side information for breastfeeding
     if (feeding.method === 'breast') {
       const sidePrefix = "Side: ";
       const sideStartIndex = cleanNotes.indexOf(sidePrefix);
-      
+
       if (sideStartIndex !== -1) {
         // Find where the side information ends (comma or end of string)
         const afterSide = cleanNotes.substring(sideStartIndex + sidePrefix.length);
         const commaIndex = afterSide.indexOf(',');
-        const sideValue = commaIndex !== -1 
+        const sideValue = commaIndex !== -1
           ? afterSide.substring(0, commaIndex).trim()
           : afterSide.trim();
-        
+
         side = sideValue.toLowerCase();
-        
+
         // Remove side information from notes
         const beforeSide = cleanNotes.substring(0, sideStartIndex).trim();
-        let afterSideInfo = commaIndex !== -1 
+        let afterSideInfo = commaIndex !== -1
           ? afterSide.substring(commaIndex + 1).trim()
           : '';
-        
+
         cleanNotes = [beforeSide, afterSideInfo].filter(Boolean).join(' ').trim();
       }
     }
-    
-    const endTime = duration > 0 
+
+    const endTime = duration > 0
       ? new Date(date.getTime() + duration * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       : 'Unknown';
-      
+
     return {
       id: feeding.id.toString(),
       type: (feeding.method as 'breast' | 'formula' | 'solid') || 'breast',
@@ -102,7 +102,7 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
   const addSession = async () => {
     if (!formData.type) return;
     const duration = formData.duration || 0;
-    
+
     // Build notes with side information for breastfeeding
     let notes = formData.notes;
     if (formData.type === 'breast' && formData.side) {
@@ -111,14 +111,14 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
     if (duration > 0) {
       notes = `${notes}${notes ? ' ' : ''}(Duration: ${duration} minutes)`;
     }
-    
+
     const feedingData: CreateFeedingRequest = {
       amount: formData.amount,
       method: formData.type,
       notes: notes,
       occurredAt: new Date().toISOString()
     };
-    console.log('Adding feeding:', feedingData);
+
     const result = await bbtoolsService.addFeeding(feedingData);
     if (result.success && onRefresh) {
       onRefresh();
@@ -131,7 +131,7 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
   const updateSession = async () => {
     if (!editingId) return;
     const duration = formData.duration || 0;
-    
+
     // Build notes with side information for breastfeeding
     let notes = formData.notes;
     if (formData.type === 'breast' && formData.side) {
@@ -140,7 +140,7 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
     if (duration > 0) {
       notes = `${notes}${notes ? ' ' : ''}(Duration: ${duration} minutes)`;
     }
-    
+
     const feedingData: CreateFeedingRequest = {
       amount: formData.amount,
       method: formData.type,
@@ -263,7 +263,7 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
                   </label>
                   <select
                     value={formData.type}
-                    onChange={(e) => setFormData({...formData, type: e.target.value as any})}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value as any })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="breast">Breastfeeding</option>
@@ -279,7 +279,7 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
                     </label>
                     <select
                       value={formData.side}
-                      onChange={(e) => setFormData({...formData, side: e.target.value as any})}
+                      onChange={(e) => setFormData({ ...formData, side: e.target.value as any })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
                       <option value="left">Left</option>
@@ -297,7 +297,7 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
                     <input
                       type="number"
                       value={formData.amount || ''}
-                      onChange={(e) => setFormData({...formData, amount: e.target.value ? parseInt(e.target.value) : undefined})}
+                      onChange={(e) => setFormData({ ...formData, amount: e.target.value ? parseInt(e.target.value) : undefined })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="0"
                     />
@@ -311,7 +311,7 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
                   <input
                     type="number"
                     value={formData.duration || ''}
-                    onChange={(e) => setFormData({...formData, duration: e.target.value ? parseInt(e.target.value) : undefined})}
+                    onChange={(e) => setFormData({ ...formData, duration: e.target.value ? parseInt(e.target.value) : undefined })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="15"
                     min="1"
@@ -324,7 +324,7 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
                   </label>
                   <textarea
                     value={formData.notes}
-                    onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                     rows={2}
                     placeholder="Any observations..."
@@ -358,11 +358,10 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
                 {sessions.map((session) => (
                   <div key={session.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
                     <div className="flex items-center gap-4">
-                      <div className={`p-2 rounded-lg ${
-                        session.type === 'breast' ? 'bg-pink-100 text-pink-600' :
-                        session.type === 'formula' ? 'bg-blue-100 text-blue-600' :
-                        'bg-green-100 text-green-600'
-                      }`}>
+                      <div className={`p-2 rounded-lg ${session.type === 'breast' ? 'bg-pink-100 text-pink-600' :
+                          session.type === 'formula' ? 'bg-blue-100 text-blue-600' :
+                            'bg-green-100 text-green-600'
+                        }`}>
                         {session.type === 'breast' && <Droplets className="w-4 h-4" />}
                         {session.type === 'formula' && <Utensils className="w-4 h-4" />}
                         {session.type === 'solid' && <Utensils className="w-4 h-4" />}

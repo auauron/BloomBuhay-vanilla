@@ -20,11 +20,7 @@ export default function SetupSummary() {
   } = data;
 
   // Debug: Log the received data
-  console.log("SetupSummary received data:", {
-    fullName,
-    email,
-    allData: data,
-  });
+
 
   const handleStart = () => {
     navigate("/dashboard");

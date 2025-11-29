@@ -25,11 +25,7 @@ export default function MainSetup() {
   const email = stateData.email || user?.email || "";
 
   useEffect(() => {
-    console.log("MainSetup received state:", {
-      fullName,
-      email,
-      fullState: location.state,
-    });
+
   }, [fullName, email, location.state]);
 
   // Sync state from URL params
@@ -112,15 +108,10 @@ export default function MainSetup() {
 
         serverBody = await resp.json().catch(() => null);
 
-        console.log(
-          "POST /api/mother-profiles status:",
-          resp.status,
-          "ok:",
-          resp.ok
-        );
+
 
         // try to read JSON body (defensive)
-        console.log("POST /api/mother-profiles body:", serverBody);
+
 
         // if server returned a canonical stage, prefer and persist it
         if (serverBody?.stage) {
@@ -132,7 +123,7 @@ export default function MainSetup() {
                 String(serverBody.weeksPregnant)
               );
             }
-          } catch (e) {}
+          } catch (e) { }
         }
 
         if (!resp.ok) {
@@ -167,8 +158,8 @@ export default function MainSetup() {
           stageData?.babyGender === "male"
             ? "Boy"
             : stageData?.babyGender === "female"
-            ? "Girl"
-            : "Unknown",
+              ? "Girl"
+              : "Unknown",
         babyAgeMonths: stageData?.babyAgeMonths,
       },
     });

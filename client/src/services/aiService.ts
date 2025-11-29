@@ -20,9 +20,9 @@ class AIService {
   private baseURL = `${API_BASE_URL}/api/ai`;
   async askBloomGuide(request: AIRequest): Promise<AIResponse> {
     try {
-      console.log('Sending AI request to:', `${this.baseURL}/bloomguide/ask`);
-      console.log('Question:', request.question);
-      
+
+
+
       const response = await fetch(`${this.baseURL}/bloomguide/ask`, {
         method: 'POST',
         headers: {
@@ -31,14 +31,14 @@ class AIService {
         body: JSON.stringify(request),
       });
 
-      console.log('📡 Response status:', response.status);
-      
+
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data: AIResponse = await response.json();
-      console.log('✅ AI Response received:', data);
+
       return data;
     } catch (error) {
       console.error('❌ AI Service Error:', error);
@@ -49,7 +49,7 @@ class AIService {
   async checkHealth(): Promise<boolean> {
     try {
       const response = await fetch(`${this.baseURL}/bloomguide/health`);
-      console.log('🏥 AI Health check:', response.status);
+
       return response.ok;
     } catch (error) {
       console.error('❌ AI Health check failed:', error);

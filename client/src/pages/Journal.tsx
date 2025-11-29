@@ -11,21 +11,21 @@ import { motion } from "framer-motion";
 import { journalService } from "../services/journalService";
 
 // Memoized Search Bar Component to prevent unnecessary re-renders
-const GradientSearchBar = React.memo(({ 
-  searchQuery, 
+const GradientSearchBar = React.memo(({
+  searchQuery,
   setSearchQuery,
   hasNoResults,
-  activeTab 
-}: { 
-  searchQuery: string; 
+  activeTab
+}: {
+  searchQuery: string;
   setSearchQuery: (query: string) => void;
   hasNoResults: boolean;
   activeTab: "albums" | "notes";
 }) => {
   const [focused, setFocused] = useState(false);
 
-  const placeholderText = activeTab === "albums" 
-    ? "Search albums, photos, notes..." 
+  const placeholderText = activeTab === "albums"
+    ? "Search albums, photos, notes..."
     : "Search notes, titles, tags...";
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,11 +39,10 @@ const GradientSearchBar = React.memo(({
   return (
     <div className="w-full max-w-2xl mx-auto mb-8 px-4">
       <div
-        className={`w-full rounded-full p-[2px] transition-all duration-300 ${
-          focused
+        className={`w-full rounded-full p-[2px] transition-all duration-300 ${focused
             ? "bg-bloomWhite shadow-[0_0_12px_rgba(248,117,170,0.4)]"
             : "bg-gradient-to-r from-bloomPink to-bloomYellow"
-        }`}
+          }`}
       >
         <div className="bg-white rounded-full relative w-full">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-bloomPink text-lg">
@@ -84,7 +83,7 @@ export default function Journal() {
   const [showAddAlbum, setShowAddAlbum] = useState(false);
   const [showAddNote, setShowAddNote] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   // Use useCallback for state setters to maintain reference stability
   const setSearchQueryMemoized = useCallback((query: string) => {
     setSearchQuery(query);
@@ -140,10 +139,10 @@ export default function Journal() {
     if (!searchQuery.trim()) return albums;
 
     const query = searchQuery.toLowerCase();
-    return albums.filter(album => 
+    return albums.filter(album =>
       album.title.toLowerCase().includes(query) ||
       album.description.toLowerCase().includes(query) ||
-      album.photos.some(photo => 
+      album.photos.some(photo =>
         (photo.name || "").toLowerCase().includes(query) ||
         (photo.notes || "").toLowerCase().includes(query)
       )
@@ -154,7 +153,7 @@ export default function Journal() {
     if (!searchQuery.trim()) return notes;
 
     const query = searchQuery.toLowerCase();
-    return notes.filter(note => 
+    return notes.filter(note =>
       note.title.toLowerCase().includes(query) ||
       note.content.toLowerCase().includes(query) ||
       (note.tags && note.tags.some(tag => tag.toLowerCase().includes(query))) ||
@@ -162,14 +161,14 @@ export default function Journal() {
     );
   }, [notes, searchQuery]);
 
-  const hasNoResults = searchQuery.trim() !== "" && 
+  const hasNoResults = searchQuery.trim() !== "" &&
     ((activeTab === "albums" && filteredAlbums.length === 0) ||
-     (activeTab === "notes" && filteredNotes.length === 0));
+      (activeTab === "notes" && filteredNotes.length === 0));
 
   // Memoized event handlers
   const addAlbum = useCallback(async (albumData: any) => {
     let coverPhoto = albumData.coverPhoto;
-    
+
     if (albumData.coverPhoto instanceof File) {
       coverPhoto = await fileToBase64(albumData.coverPhoto);
     }
@@ -187,7 +186,7 @@ export default function Journal() {
 
   const addNote = useCallback(async (noteData: any) => {
     let photo = noteData.photo;
-    
+
     if (noteData.photo instanceof File) {
       photo = await fileToBase64(noteData.photo);
     }
@@ -215,7 +214,7 @@ export default function Journal() {
     });
 
     if (response.success && response.data) {
-      setNotes(prev => prev.map(note => 
+      setNotes(prev => prev.map(note =>
         note.id === updatedNote.id ? response.data! : note
       ));
     }
@@ -236,26 +235,26 @@ export default function Journal() {
     });
 
     if (response.success && response.data) {
-      setAlbums(prev => prev.map(album => 
+      setAlbums(prev => prev.map(album =>
         album.id === updatedAlbum.id ? response.data! : album
       ));
     }
   }, []);
 
   const deleteAlbum = useCallback(async (id: string) => {
-    console.log('Deleting album with id:', id);
-    
+
+
     if (window.confirm('Are you sure you want to delete this album?')) {
       setAlbums(prev => {
         const newAlbums = prev.filter(album => album.id !== id);
-        console.log('Removed from local state. Remaining albums:', newAlbums.map(a => a.id));
+
         return newAlbums;
       });
 
       try {
         const response = await journalService.deleteAlbum(id);
-        console.log('Server delete response:', response);
-        
+
+
         if (!response.success) {
           console.warn('Server deletion failed, but album removed from local state:', response.error);
         }
@@ -277,7 +276,7 @@ export default function Journal() {
     const response = await journalService.addPhotosToAlbum(albumId, photosData);
 
     if (response.success && response.data) {
-      setAlbums(prev => prev.map(album => 
+      setAlbums(prev => prev.map(album =>
         album.id === albumId ? response.data! : album
       ));
     }
@@ -290,14 +289,14 @@ export default function Journal() {
     });
 
     if (response.success) {
-      setAlbums(prev => prev.map(album => 
-        album.id === albumId 
+      setAlbums(prev => prev.map(album =>
+        album.id === albumId
           ? {
-              ...album,
-              photos: album.photos.map(photo =>
-                photo.id === updatedPhoto.id ? updatedPhoto : photo
-              ),
-            }
+            ...album,
+            photos: album.photos.map(photo =>
+              photo.id === updatedPhoto.id ? updatedPhoto : photo
+            ),
+          }
           : album
       ));
     }
@@ -305,14 +304,14 @@ export default function Journal() {
 
   const deletePhotoFromAlbum = useCallback(async (albumId: string, photoId: string) => {
     const response = await journalService.deletePhoto(photoId);
-    
+
     if (response.success) {
-      setAlbums(prev => prev.map(album => 
-        album.id === albumId 
+      setAlbums(prev => prev.map(album =>
+        album.id === albumId
           ? {
-              ...album,
-              photos: album.photos.filter(photo => photo.id !== photoId),
-            }
+            ...album,
+            photos: album.photos.filter(photo => photo.id !== photoId),
+          }
           : album
       ));
     }
@@ -339,113 +338,111 @@ export default function Journal() {
           </div>
         ) : (
           // Main Content
-        <div className="flex-1 overflow-y-auto min-h-0">
-          {/* Page Header */}
-          <div className="text-center py-8 px-4">
-            <div className="inline-flex items-center gap-3 mb-4">
-              <div className="p-3 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-2xl shadow-lg">
-                <BookImage className="w-8 h-8 text-white" />
+          <div className="flex-1 overflow-y-auto min-h-0">
+            {/* Page Header */}
+            <div className="text-center py-8 px-4">
+              <div className="inline-flex items-center gap-3 mb-4">
+                <div className="p-3 bg-gradient-to-r from-bloomPink to-bloomYellow rounded-2xl shadow-lg">
+                  <BookImage className="w-8 h-8 text-white" />
+                </div>
+                <h1 className="text-4xl font-bold bg-clip-text text-bloomPink">
+                  Memory Journal
+                </h1>
               </div>
-              <h1 className="text-4xl font-bold bg-clip-text text-bloomPink">
-                Memory Journal
-              </h1>
+              <p className="text-bloomBlack font-rubik text-lg font-light max-w-2xl mx-auto">
+                Preserve your precious moments, thoughts, and milestones with your little one
+              </p>
             </div>
-            <p className="text-bloomBlack font-rubik text-lg font-light max-w-2xl mx-auto">
-              Preserve your precious moments, thoughts, and milestones with your little one
-            </p>
-          </div>
 
-          {/* Search Bar */}
-          <GradientSearchBar 
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQueryMemoized}
-            hasNoResults={hasNoResults}
-            activeTab={activeTab}
-          />
+            {/* Search Bar */}
+            <GradientSearchBar
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQueryMemoized}
+              hasNoResults={hasNoResults}
+              activeTab={activeTab}
+            />
 
-          {/* Tab Navigation */}
-          <div className="flex justify-center mb-8 px-4">
-            <div className="bg-white rounded-2xl shadow-lg border border-pink-100 p-2">
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setActiveTabMemoized("albums")}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 ${
-                    activeTab === "albums"
-                      ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow-lg"
-                      : "text-gray-600 hover:bg-gray-50"
-                  }`}
-                >
-                  <Camera className="w-5 h-5" />
-                  <span className="font-medium">Photo Albums</span>
-                </button>
-                <button
-                  onClick={() => setActiveTabMemoized("notes")}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 ${
-                    activeTab === "notes"
-                      ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow-lg"
-                      : "text-gray-600 hover:bg-gray-50"
-                  }`}
-                >
-                  <NotebookPen className="w-5 h-5" />
-                  <span className="font-medium">Notes</span>
-                </button>
+            {/* Tab Navigation */}
+            <div className="flex justify-center mb-8 px-4">
+              <div className="bg-white rounded-2xl shadow-lg border border-pink-100 p-2">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setActiveTabMemoized("albums")}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 ${activeTab === "albums"
+                        ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow-lg"
+                        : "text-gray-600 hover:bg-gray-50"
+                      }`}
+                  >
+                    <Camera className="w-5 h-5" />
+                    <span className="font-medium">Photo Albums</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTabMemoized("notes")}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 ${activeTab === "notes"
+                        ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow-lg"
+                        : "text-gray-600 hover:bg-gray-50"
+                      }`}
+                  >
+                    <NotebookPen className="w-5 h-5" />
+                    <span className="font-medium">Notes</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Add New Button */}
-          <div className="flex justify-center mb-8 px-4">
-            {activeTab === "albums" ? (
-              <button
-                onClick={handleShowAddAlbum}
-                className="group bg-bloomPink/90 text-white px-8 py-4 rounded-2xl font-semibold hover:bg-gradient-to-r from-bloomPink to-bloomYellow hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center gap-3 shadow-lg"
-              >
-                <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-                <span>Create New Album</span>
-              </button>
-            ) : (
-              <button
-                onClick={handleShowAddNote}
-                className="group bg-bloomPink/90 text-white px-8 py-4 rounded-2xl font-semibold hover:bg-gradient-to-r from-bloomPink to-bloomYellow hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center gap-3 shadow-lg"
-              >
-                <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
-                <span>Write New Note</span>
-              </button>
-            )}
-          </div>
+            {/* Add New Button */}
+            <div className="flex justify-center mb-8 px-4">
+              {activeTab === "albums" ? (
+                <button
+                  onClick={handleShowAddAlbum}
+                  className="group bg-bloomPink/90 text-white px-8 py-4 rounded-2xl font-semibold hover:bg-gradient-to-r from-bloomPink to-bloomYellow hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center gap-3 shadow-lg"
+                >
+                  <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                  <span>Create New Album</span>
+                </button>
+              ) : (
+                <button
+                  onClick={handleShowAddNote}
+                  className="group bg-bloomPink/90 text-white px-8 py-4 rounded-2xl font-semibold hover:bg-gradient-to-r from-bloomPink to-bloomYellow hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center gap-3 shadow-lg"
+                >
+                  <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+                  <span>Write New Note</span>
+                </button>
+              )}
+            </div>
 
-          {/* Content Area */}
-          <div className="px-4 pb-12 max-w-7xl mx-auto">
-            {activeTab === "albums" ? (
-              <PhotoAlbums 
-                albums={filteredAlbums}
-                onUpdateAlbum={updateAlbum}
-                onDeleteAlbum={deleteAlbum}
-                onAddPhotos={addPhotosToAlbum}
-                onUpdatePhoto={updatePhotoInAlbum}
-                onDeletePhoto={deletePhotoFromAlbum}
-              />
-            ) : (
-              <NotesList 
-                notes={filteredNotes}
-                onUpdateNote={updateNote}
-                onDeleteNote={deleteNote}
-              />
-            )}
+            {/* Content Area */}
+            <div className="px-4 pb-12 max-w-7xl mx-auto">
+              {activeTab === "albums" ? (
+                <PhotoAlbums
+                  albums={filteredAlbums}
+                  onUpdateAlbum={updateAlbum}
+                  onDeleteAlbum={deleteAlbum}
+                  onAddPhotos={addPhotosToAlbum}
+                  onUpdatePhoto={updatePhotoInAlbum}
+                  onDeletePhoto={deletePhotoFromAlbum}
+                />
+              ) : (
+                <NotesList
+                  notes={filteredNotes}
+                  onUpdateNote={updateNote}
+                  onDeleteNote={deleteNote}
+                />
+              )}
+            </div>
           </div>
-        </div>
         )}
 
-          {/* Modals */}
+        {/* Modals */}
         {showAddAlbum && (
-          <AddAlbumModal 
+          <AddAlbumModal
             onClose={handleCloseAddAlbum}
             onAdd={addAlbum}
           />
         )}
 
         {showAddNote && (
-          <AddNoteModal 
+          <AddNoteModal
             onClose={handleCloseAddNote}
             onAdd={addNote}
           />

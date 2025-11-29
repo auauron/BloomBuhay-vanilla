@@ -78,7 +78,7 @@ export default function Pregnancy({
       Unknown: "unknown",
       "Prefer not to say": "prefer-not-to-say",
     };
-    const babyGenderNormalized = selectedGender ? 
+    const babyGenderNormalized = selectedGender ?
       (genderMap[selectedGender] ?? null) : null;
 
     // convert weeksPregnant value to number if present
@@ -97,7 +97,7 @@ export default function Pregnancy({
       babyGender: babyGenderNormalized,
     };
 
-    console.log("Payload sent to backend:", payload);
+
 
     try {
       // save to backend
@@ -117,7 +117,7 @@ export default function Pregnancy({
           const msg = await res.text();
           console.error("Failed to save pregnancy data:", msg);
         } else {
-          console.log("Pregnancy data saved successfully");
+
         }
       }
 
@@ -271,9 +271,8 @@ export default function Pregnancy({
                       </span>
                       <ChevronDownIcon
                         size={20}
-                        className={`text-[#9a9a9a] transition-transform ${
-                          isOpen ? "rotate-180" : ""
-                        }`}
+                        className={`text-[#9a9a9a] transition-transform ${isOpen ? "rotate-180" : ""
+                          }`}
                       />
                     </button>
 
@@ -284,11 +283,10 @@ export default function Pregnancy({
                           <div
                             key={gender}
                             onClick={() => handleGenderSelect(gender)}
-                            className={`p-4 hover:bg-bloomWhite transition-colors ${
-                              selectedGender === gender
+                            className={`p-4 hover:bg-bloomWhite transition-colors ${selectedGender === gender
                                 ? "bg-bloomWhite text-bloomPink"
                                 : "text-bloomBlack"
-                            } cursor-pointer`}
+                              } cursor-pointer`}
                           >
                             {gender}
                           </div>

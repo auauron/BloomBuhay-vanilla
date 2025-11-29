@@ -43,7 +43,7 @@ const corsOptions = {
 };
 
 if (process.env.NODE_ENV === "development") {
-  console.log("Running in development mode: allowing all origins for convenience");
+
   app.use(cors({ origin: true, credentials: true }));
 } else {
   app.use(cors(corsOptions));
@@ -75,9 +75,9 @@ app.get("/", (req, res) => {
 
 // ---------- Start Server ----------
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+
+
   if (process.env.NODE_ENV !== "development") {
-    console.log("CORS enabled for frontend domains:", allowedOrigins);
+
   }
 });
