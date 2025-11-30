@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Edit3, Trash2, Image, Calendar, Clock, Eye } from "lucide-react";
 import EditAlbumModal from "./EditAlbumModal";
 import AlbumDetail from "./AlbumDetail";
@@ -23,6 +23,17 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
   const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
   const [viewingAlbum, setViewingAlbum] = useState<Album | null>(null);
   const [showUploadSuccess, setShowUploadSuccess] = useState(false); // bag o
+
+  // use effect para sa fade notif after upload
+    useEffect(() => {
+    if (showUploadSuccess) {
+      const timer = setTimeout(() => {
+        setShowUploadSuccess(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showUploadSuccess]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
