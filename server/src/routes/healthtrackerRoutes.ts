@@ -1,4 +1,3 @@
-// healthtrackerroutes.ts
 import { Router, Response } from "express";
 import { authenticateToken, AuthRequest } from "../middleware/auth";
 import { PrismaClient, HealthMetric, HealthMood, HealthSymptom } from "@prisma/client";
@@ -115,6 +114,75 @@ router.post("/metrics", authenticateToken, async (req: AuthRequest, res: Respons
     res.status(500).json({ success: false, error: "Failed to create metric" });
   }
 });
+
+/**
+ * Update a health metric
+ * PATCH /api/healthtracker/metrics/:id
+ */
+router.patch("/metrics/:id", authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const motherId = req.userId!;
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      res.status(400).json({ success: false, error: "Invalid metric id" });
+      return;
+    }
+
+    const existing = await db.healthMetric.findUnique({ where: { id } });
+    if (!existing || existing.motherId !== motherId) {
+      res.status(404).json({ success: false, error: "Metric not found" });
+      return;
+    }
+
+    const { title, value, unit, change, trend, color, category } = req.body;
+    const updates: any = {};
+    if (title !== undefined) updates.title = title;
+    if (value !== undefined) updates.value = value;
+    if (unit !== undefined) updates.unit = unit;
+    if (change !== undefined) updates.change = change;
+    if (trend !== undefined) updates.trend = trend;
+    if (color !== undefined) updates.color = color;
+    if (category !== undefined) updates.category = category;
+
+    const updated = await db.healthMetric.update({
+      where: { id },
+      data: updates,
+    });
+
+    res.status(200).json({ success: true, data: updated });
+  } catch (err) {
+    console.error("Update metric error:", err);
+    res.status(500).json({ success: false, error: "Failed to update metric" });
+  }
+});
+
+/**
+ * Delete a health metric
+ * DELETE /api/healthtracker/metrics/:id
+ */
+router.delete("/metrics/:id", authenticateToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const motherId = req.userId!;
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      res.status(400).json({ success: false, error: "Invalid metric id" });
+      return;
+    }
+
+    const existing = await db.healthMetric.findUnique({ where: { id } });
+    if (!existing || existing.motherId !== motherId) {
+      res.status(404).json({ success: false, error: "Metric not found" });
+      return;
+    }
+
+    await db.healthMetric.delete({ where: { id } });
+    res.status(200).json({ success: true, data: { id } });
+  } catch (err) {
+    console.error("Delete metric error:", err);
+    res.status(500).json({ success: false, error: "Failed to delete metric" });
+  }
+});
+
 
 /**
  * Create a new mood
