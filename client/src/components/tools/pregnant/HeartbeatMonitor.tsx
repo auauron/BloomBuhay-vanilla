@@ -102,7 +102,7 @@ const HeartbeatMonitor: React.FC = () => {
     const now = Date.now();
     
     setTapTimes(prev => {
-      const updated = [...prev, now].slice(-5); // Keep last 5 taps
+      const updated = [...prev, now]; // 
       
       if (updated.length >= 2) {
         const intervals = [];
