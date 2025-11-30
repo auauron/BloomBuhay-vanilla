@@ -169,20 +169,20 @@ export const journalService = {
         return { success: false, error: "Not authenticated" };
       }
 
-      const response = await fetch(`${API_URL}/notes/${noteId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: noteData.title,
-          content: noteData.content,
-          photoUrl: noteData.photo,
-          tags: noteData.tags,
-          mood: noteData.mood,
-        }),
-      });
+            const response = await fetch(`${API_URL}/notes/${noteId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    title: noteData.title,
+                    content: noteData.content,
+                    photoUrl: noteData.photo || null, 
+                    tags: noteData.tags || [], 
+                    mood: noteData.mood || null, 
+                }),
+            });
 
       const result = await response.json();
       if (result.success && result.data) {

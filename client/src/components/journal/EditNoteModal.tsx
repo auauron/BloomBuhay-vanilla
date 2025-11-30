@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, Loader } from "lucide-react";
 import { Note } from "./types";
 
 interface EditNoteModalProps {
   note: Note;
   onClose: () => void;
-  onUpdate: (note: Note) => void;
+  onUpdate: (note: Note) => Promise<boolean>;
 }
 
 const EditNoteModal: React.FC<EditNoteModalProps> = ({ note, onClose, onUpdate }) => {
@@ -15,8 +15,8 @@ const EditNoteModal: React.FC<EditNoteModalProps> = ({ note, onClose, onUpdate }
     tags: [],
     mood: "happy",
   });
-
   const [currentTag, setCurrentTag] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const moods = [
     { value: "happy", label: "😊 Happy", color: "bg-green-100 text-green-800" },
@@ -53,28 +53,41 @@ const EditNoteModal: React.FC<EditNoteModalProps> = ({ note, onClose, onUpdate }
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title.trim() || !formData.content.trim()) return;
+    if (!formData.title.trim() || !formData.content.trim() || isLoading) return;
 
-    onUpdate({
-      ...note,
-      ...formData
-    });
-    onClose();
+    setIsLoading(true);
+    try {
+      const success = await onUpdate({
+        ...note,
+        ...formData
+      });
+      if (success) {
+        onClose();
+      }
+    } catch (error) {
+      console.error("Failed to update note:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-800">Edit Note</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <h2 className="text-xl font-semibold text-gray-800">
+            {isLoading ? "Updating Note..." : "Edit Note"}
+          </h2>
+          {!isLoading && (
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
@@ -86,8 +99,9 @@ const EditNoteModal: React.FC<EditNoteModalProps> = ({ note, onClose, onUpdate }
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent"
+              className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -101,11 +115,12 @@ const EditNoteModal: React.FC<EditNoteModalProps> = ({ note, onClose, onUpdate }
                   key={mood.value}
                   type="button"
                   onClick={() => setFormData({ ...formData, mood: mood.value })}
+                  disabled={isLoading}
                   className={`p-2 rounded-lg text-sm font-medium transition-all ${
                     formData.mood === mood.value
                       ? `${mood.color} ring-2 ring-bloomPink`
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   {mood.label}
                 </button>
@@ -121,8 +136,9 @@ const EditNoteModal: React.FC<EditNoteModalProps> = ({ note, onClose, onUpdate }
               value={formData.content}
               onChange={(e) => setFormData({ ...formData, content: e.target.value })}
               rows={6}
-              className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent resize-none"
+              className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent resize-none disabled:opacity-50 disabled:cursor-not-allowed"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -137,12 +153,14 @@ const EditNoteModal: React.FC<EditNoteModalProps> = ({ note, onClose, onUpdate }
                 onChange={(e) => setCurrentTag(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                 placeholder="Add a tag and press Enter"
-                className="flex-1 p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent"
+                className="flex-1 p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={addTag}
-                className="px-4 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors"
+                disabled={isLoading}
+                className="px-4 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Add
               </button>
@@ -157,7 +175,8 @@ const EditNoteModal: React.FC<EditNoteModalProps> = ({ note, onClose, onUpdate }
                   <button
                     type="button"
                     onClick={() => removeTag(tag)}
-                    className="hover:text-pink-900"
+                    disabled={isLoading}
+                    className="hover:text-pink-900 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     ×
                   </button>
@@ -169,18 +188,27 @@ const EditNoteModal: React.FC<EditNoteModalProps> = ({ note, onClose, onUpdate }
           <div className="flex gap-3 pt-4">
             <button
               type="submit"
-              disabled={!formData.title.trim() || !formData.content.trim()}
-              className="flex-1 bg-gradient-to-r from-bloomPink to-bloomYellow text-white py-3 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              disabled={!formData.title.trim() || !formData.content.trim() || isLoading}
+              className="flex-1 bg-gradient-to-r from-bloomPink to-bloomYellow text-white py-3 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
             >
-              Update Note
+              {isLoading ? (
+                <>
+                  <Loader className="w-4 h-4 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                "Update Note"
+              )}
             </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
-            >
-              Cancel
-            </button>
+            {!isLoading && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+            )}
           </div>
         </form>
       </div>

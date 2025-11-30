@@ -1,14 +1,15 @@
-import React, { useState } from "react";
-import { Edit3, Trash2, Image, Calendar, Clock, Eye } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Edit3, Trash2, Image, Calendar, Clock, Eye, Loader } from "lucide-react";
 import EditAlbumModal from "./EditAlbumModal";
 import AlbumDetail from "./AlbumDetail";
 import { Album } from "./types";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 interface PhotoAlbumsProps {
   albums: Album[];
   onUpdateAlbum: (album: Album) => void;
   onDeleteAlbum: (id: string) => void;
-  onAddPhotos: (albumId: string, photos: File[]) => void;
+  onAddPhotos: (albumId: string, photos: File[]) => Promise<boolean>;
   onUpdatePhoto: (albumId: string, photo: any) => void;
   onDeletePhoto: (albumId: string, photoId: string) => void;
 }
@@ -21,8 +22,28 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
   onUpdatePhoto,
   onDeletePhoto
 }) => {
+  const [editingAlbumId, setEditingAlbumId] = useState<string | null>(null);
   const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
   const [viewingAlbum, setViewingAlbum] = useState<Album | null>(null);
+  const [showUploadSuccess, setShowUploadSuccess] = useState(false);
+
+  // forda delete album modal
+  const [deleteAlbumModal, setDeleteAlbumModal] = useState<{
+    isOpen: boolean;
+    albumId: string;
+    albumTitle: string;
+  }>({ isOpen: false, albumId: "", albumTitle: "" });
+
+  // use effect para sa fade notif after upload
+  useEffect(() => {
+    if (showUploadSuccess) {
+      const timer = setTimeout(() => {
+        setShowUploadSuccess(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showUploadSuccess]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -32,9 +53,22 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
     });
   };
 
-  // Function to get the current album from albums state
   const getCurrentAlbum = (albumId: string) => {
     return albums.find(album => album.id === albumId) || null;
+  };
+
+  // onUpdateAlbum to make it compatible with EditAlbumModal
+  const handleUpdateAlbum = async (album: Album): Promise<boolean> => {
+    setEditingAlbumId(album.id); 
+    try {
+      await onUpdateAlbum(album);
+      return true;
+    } catch (error) {
+      console.error("Failed to update album:", error);
+      return false;
+    } finally {
+      setEditingAlbumId(null); 
+    }
   };
 
   if (albums.length === 0) {
@@ -91,16 +125,23 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
                       e.stopPropagation();
                       setEditingAlbum(getCurrentAlbum(album.id));
                     }}
-                    className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                    disabled={editingAlbumId === album.id}
+                    className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <Edit3 className="w-4 h-4" />
+                    {editingAlbumId === album.id ? (
+                      <Loader className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Edit3 className="w-4 h-4" />
+                    )}
                   </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (window.confirm(`Are you sure you want to delete "${album.title}"? This action cannot be undone.`)) {
-                        onDeleteAlbum(album.id);
-                      }
+                      setDeleteAlbumModal({
+                        isOpen: true,
+                        albumId: album.id,
+                        albumTitle: album.title
+                      });
                     }}
                     className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
                   >
@@ -145,21 +186,56 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
         <EditAlbumModal
           album={editingAlbum}
           onClose={() => setEditingAlbum(null)}
-          onUpdate={onUpdateAlbum}
+          onUpdate={handleUpdateAlbum} // Use the wrapped function
         />
       )}
 
       {/* Album Detail Modal */}
       {viewingAlbum && (
         <AlbumDetail
+          key={viewingAlbum.id + viewingAlbum.photos.length}
           album={viewingAlbum}
           onClose={() => setViewingAlbum(null)}
           onAddPhotos={onAddPhotos}
           onUpdatePhoto={onUpdatePhoto}
           onDeletePhoto={onDeletePhoto}
           onUpdateAlbum={onUpdateAlbum}
+          onUploadComplete={() => setShowUploadSuccess(true)}
         />
       )}
+
+      {/* Success Message Popup */}
+      {showUploadSuccess && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+            <span>Photos uploaded successfully!</span>
+          </div>
+          <button 
+            onClick={() => setShowUploadSuccess(false)}
+            className="absolute top-1 right-1 text-white hover:text-gray-200"
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      )}
+      
+      {/* Add the delete confirmation modal right here */}
+      <DeleteConfirmationModal
+        isOpen={deleteAlbumModal.isOpen}
+        onClose={() => setDeleteAlbumModal({ isOpen: false, albumId: "", albumTitle: "" })}
+        onConfirm={() => {
+          onDeleteAlbum(deleteAlbumModal.albumId);
+          setDeleteAlbumModal({ isOpen: false, albumId: "", albumTitle: "" });
+        }}
+        title="Delete Album"
+        message={`Are you sure you want to delete "${deleteAlbumModal.albumTitle}"? This will also delete all photos in this album. This action cannot be undone.`}
+        itemType="album"
+      />
     </div>
   );
 };
