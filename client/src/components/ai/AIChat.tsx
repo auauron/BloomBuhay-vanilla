@@ -25,43 +25,60 @@ export default function AIChat() {
     scrollToBottom();
   }, [messages]);
 
+  const isMotherhoodRelated = (q: string): boolean => {
+    const text = q.toLowerCase().trim();
+    if (!text) return false;
+
+    const hasLetter = (() => {
+      for (let i = 0; i < text.length; i++) {
+        const c = text.charCodeAt(i);
+        if (c >= 97 && c <= 122) return true; // a-z
+      }
+      return false;
+    })();
+
+    if (!hasLetter) return false;
+
+    const pregnancy = [
+      'pregnant','pregnancy','trimester','prenatal','morning sickness','due date','fetus','ultrasound','contraction','labor','gestation','kick count','prenatal vitamin','folic acid','braxton hicks','obgyn','midwife','antenatal','postpartum','c-section','delivery','birth','swelling','nausea','vomiting','nutrition','prenatal care','fetal','heartbeat','bump'
+    ];
+    const motherhood = [
+      'mother','mom','mama','parenting','newborn','infant','baby','childcare','diaper','sleep training','colic','soothing','bonding','milestones','tips','health','wellness','self care','self-care','breastfeeding','nursing','lactation'
+    ];
+
+    const containsAny = (arr: string[]) => arr.some(k => text.indexOf(k) !== -1);
+    return containsAny(pregnancy) || containsAny(motherhood);
+  };
+
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      content: input.trim(),
-      isUser: true,
-      timestamp: new Date(),
-    };
-
+    const question = input.trim();
+    const userMessage: Message = { id: Date.now().toString(), content: question, isUser: true, timestamp: new Date() };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
-    setIsLoading(true);
 
-    try {
-      // Try to get AI response
-      const response = await aiService.askBloomGuide({
-        question: input.trim(),
-        context: 'general'
-      });
-      
-      const aiMessage: Message = {
+    if (!isMotherhoodRelated(question)) {
+      const refusal: Message = {
         id: (Date.now() + 1).toString(),
-        content: response.response,
+        content: 'I only answer questions about pregnancy, postpartum, and motherhood. Please ask about symptoms, prenatal care, trimesters, labor, recovery, breastfeeding, parenting tips, etc.',
         isUser: false,
         timestamp: new Date(),
       };
+      setMessages(prev => [...prev, refusal]);
+      return;
+    }
 
+    setIsLoading(true);
+    try {
+      const response = await aiService.askBloomGuide({
+        question,
+        context: 'pregnancy'
+      });
+      const aiMessage: Message = { id: (Date.now() + 2).toString(), content: response.response, isUser: false, timestamp: new Date() };
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
-      // If AI service fails, show unavailable message
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: 'AI features are currently unavailable. Please try again later.',
-        isUser: false,
-        timestamp: new Date(),
-      };
+      const errorMessage: Message = { id: (Date.now() + 2).toString(), content: 'AI features are currently unavailable. Please try again later.', isUser: false, timestamp: new Date() };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
