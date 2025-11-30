@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { X, Upload, Edit3, Trash2, Calendar, Clock, Plus, Loader } from "lucide-react";
 import { Album, Photo } from "./types";
 import PhotoDetailModal from "./PhotoDetailModal";
@@ -25,6 +25,22 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showEditSuccess, setShowEditSuccess] = useState(false);
+  const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
+
+  useEffect(() => {
+    if (showEditSuccess) {
+      const timer = setTimeout(() => setShowEditSuccess(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showEditSuccess]);
+
+  useEffect(() => {
+    if (showDeleteSuccess) {
+      const timer = setTimeout(() => setShowDeleteSuccess(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showDeleteSuccess]);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -34,15 +50,10 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({
         const success = await onAddPhotos(album.id, files);
         
         if (success) {
-          // Reset file input
           if (fileInputRef.current) {
             fileInputRef.current.value = '';
           }
-          
-          // Close the album detail and show success
           onClose();
-          
-          // Optional: Call upload complete callback for success message
           if (onUploadComplete) {
             onUploadComplete();
           }
@@ -195,7 +206,37 @@ const AlbumDetail: React.FC<AlbumDetailProps> = ({
           onClose={() => setSelectedPhoto(null)}
           onUpdate={handleUpdatePhoto}
           onDelete={handleDeletePhoto}
+          onEditComplete={() => {
+            setShowEditSuccess(true);
+            onClose(); 
+          }}
+          onDeleteComplete={() => {
+            setShowDeleteSuccess(true);
+            onClose(); 
+          }}
         />
+      )}
+
+      {showEditSuccess && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+            <span>Changes saved successfully!</span>
+          </div>
+        </div>
+      )}
+
+      {showDeleteSuccess && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+            <span>Photo deleted successfully!</span>
+          </div>
+        </div>
       )}
     </div>
   );

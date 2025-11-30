@@ -9,6 +9,8 @@ interface PhotoDetailModalProps {
   onClose: () => void;
   onUpdate: (albumId: string, photo: Photo) => void;
   onDelete: (albumId: string, photoId: string) => void;
+  onEditComplete?: () => void;
+  onDeleteComplete?: () => void;
 }
 
 const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
@@ -16,7 +18,9 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
   albumId,
   onClose,
   onUpdate,
-  onDelete
+  onDelete,
+  onEditComplete,
+  onDeleteComplete
 }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false); 
   const [isEditing, setIsEditing] = useState(false);
@@ -37,6 +41,9 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
       });
       setIsEditing(false);
       onClose();
+      if (onEditComplete) {
+        onEditComplete();
+      }
     } finally {
       setIsSaving(false);
     }
@@ -188,6 +195,9 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
           try {
             await onDelete(albumId, photo.id);
             onClose();
+            if (onDeleteComplete) {
+              onDeleteComplete();
+            }
           } finally {
             setIsDeleting(false);
           }
