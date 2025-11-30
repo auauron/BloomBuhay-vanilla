@@ -121,8 +121,8 @@ router.patch(
       const note = await db.journalEntry.update({
         where: { id: noteId },
         data: {
-          title: title?.trim || existingNote.title,
-          content: content?.trim || existingNote.content,
+          title: title?.trim() || existingNote.title,
+          content: content?.trim() || existingNote.content,
           photoUrl: photoUrl !== undefined ? photoUrl : existingNote.photoUrl,
           tags: tags !== undefined ? tags : existingNote.tags,
           mood: mood !== undefined ? mood : existingNote.mood,
