@@ -14,7 +14,6 @@ import BBToolsRoutes from "./routes/BBToolsRoutes";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ---------- CORS Setup ----------
 
 // Frontend origins
 const allowedOrigins = [
@@ -36,7 +35,7 @@ const corsOptions = {
       callback(new Error("Not allowed by CORS"), false);
     }
   },
-  credentials: true, // allow cookies/auth headers
+  credentials: true, 
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
   exposedHeaders: ["Content-Range", "X-Total-Count"],
@@ -49,11 +48,11 @@ if (process.env.NODE_ENV === "development") {
   app.use(cors(corsOptions));
 }
 
-// ---------- Middleware ----------
+// middleware
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(express.json({ limit: "10mb" }));
 
-// ---------- Routes ----------
+// routes
 app
   .use("/api/auth", authRoutes)
   .use("/api/users", userRoutes)
@@ -73,12 +72,12 @@ app.get("/", (req, res) => {
   });
 });
 
-// ---------- Start Server ----------
+// start server
 app.listen(PORT, () => {
-
-
-  if (process.env.NODE_ENV !== "development") {
-
+  if (process.env.NODE_ENV === "production") {
+    console.log("server running on https://bloombuhay-api.onrender.com")
+  } else {
+    console.log(`server running on http://localhost:${PORT}`)
   }
 });
         
