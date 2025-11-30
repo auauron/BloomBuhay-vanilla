@@ -61,7 +61,7 @@ const PostpartumTools: React.FC<PostpartumToolsProps> = ({
   return (
     <div>
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-bloomPink/90 mb-2">Postpartum & Newborn Tools</h2>
+        <h2 className="text-3xl font-bold text-bloomPink/90 mb-2">Postpartum & Childcare Tools</h2>
         <p className="text-bloomBlack font-rubik font-light mb-0">Guiding you and your baby through life's tender beginnings.</p>
       </div>
 
