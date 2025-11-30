@@ -3,10 +3,12 @@ import { Plus, Droplets, Trash2, Edit3, Save, X, Baby } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPoop } from "@fortawesome/free-solid-svg-icons";
 import { bbtoolsService, CreateDiaperRequest, DiaperLog } from "../../../services/BBToolsService";
+import DateTimePicker from "../../ui/DateTimePicker";
 
 interface DiaperChange {
   id: string;
   type: 'wet' | 'dirty' | 'both';
+  date: string;
   time: string;
   notes: string;
   color?: 'yellow' | 'green' | 'brown' | 'black';
@@ -19,7 +21,8 @@ const DiaperTracker: React.FC<{ diapers?: DiaperLog[]; onRefresh?: () => void }>
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     type: 'wet' as 'wet' | 'dirty' | 'both',
-    time: '',
+    date: new Date().toISOString().split('T')[0],
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
     notes: '',
     color: 'yellow' as 'yellow' | 'green' | 'brown' | 'black',
     consistency: 'seedy' as 'seedy' | 'pasty' | 'watery'
@@ -27,27 +30,32 @@ const DiaperTracker: React.FC<{ diapers?: DiaperLog[]; onRefresh?: () => void }>
 
   // Map server logs to local view
   useEffect(() => {
-    const mapped = (diapers || []).map((d) => ({
-      id: String(d.id),
-      type: (d.diaperType || 'wet') as 'wet' | 'dirty' | 'both',
-      time: d.occurredAt ? new Date(d.occurredAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '',
-      notes: d.notes || '',
-      color: d.color,
-      consistency: d.consistency,
-    }));
+    const mapped = (diapers || []).map((d) => {
+      const timestamp = d.occurredAt || new Date().toISOString();
+      const date = new Date(timestamp);
+      
+      return {
+        id: String(d.id),
+        type: (d.diaperType || 'wet') as 'wet' | 'dirty' | 'both',
+        date: date.toISOString().split('T')[0],
+        time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+        notes: d.notes || '',
+        color: d.color,
+        consistency: d.consistency,
+      };
+    });
     setChanges(mapped);
   }, [diapers]);
 
   const addChange = async () => {
-    if (!formData.time) return;
-    // Build occurredAt today + time
-    const [hh, mm] = formData.time.split(":");
-    const occurredAt = new Date();
-    occurredAt.setHours(parseInt(hh), parseInt(mm), 0, 0);
+    if (!formData.date || !formData.time) return;
+
+    // Combine date and time into ISO string
+    const occurredAt = new Date(`${formData.date}T${formData.time}`).toISOString();
 
     const payload: CreateDiaperRequest = {
       diaperType: formData.type,
-      occurredAt: occurredAt.toISOString(),
+      occurredAt: occurredAt,
       color: formData.type !== 'wet' ? formData.color : undefined,
       consistency: formData.type !== 'wet' ? (formData.consistency as any) : undefined,
       notes: formData.notes,
@@ -58,6 +66,7 @@ const DiaperTracker: React.FC<{ diapers?: DiaperLog[]; onRefresh?: () => void }>
     const optimistic: DiaperChange = {
       id: tempId,
       type: formData.type,
+      date: formData.date,
       time: formData.time,
       notes: formData.notes,
       color: payload.color,
@@ -77,15 +86,14 @@ const DiaperTracker: React.FC<{ diapers?: DiaperLog[]; onRefresh?: () => void }>
   };
 
   const updateChange = async () => {
-    if (!editingId || !formData.time) return;
+    if (!editingId || !formData.date || !formData.time) return;
 
-    const [hh, mm] = formData.time.split(":");
-    const occurredAt = new Date();
-    occurredAt.setHours(parseInt(hh), parseInt(mm), 0, 0);
+    // Combine date and time into ISO string
+    const occurredAt = new Date(`${formData.date}T${formData.time}`).toISOString();
 
     const payload: Partial<CreateDiaperRequest> = {
       diaperType: formData.type,
-      occurredAt: occurredAt.toISOString(),
+      occurredAt: occurredAt,
       color: formData.type !== 'wet' ? formData.color : undefined,
       consistency: formData.type !== 'wet' ? (formData.consistency as any) : undefined,
       notes: formData.notes,
@@ -93,7 +101,15 @@ const DiaperTracker: React.FC<{ diapers?: DiaperLog[]; onRefresh?: () => void }>
 
     // optimistic
     const prevSnapshot = changes;
-    setChanges((prev) => prev.map((c) => c.id === editingId ? { ...c, type: formData.type, time: formData.time, notes: formData.notes, color: payload.color, consistency: payload.consistency as any } : c));
+    setChanges((prev) => prev.map((c) => c.id === editingId ? { 
+      ...c, 
+      type: formData.type, 
+      date: formData.date, 
+      time: formData.time, 
+      notes: formData.notes, 
+      color: payload.color, 
+      consistency: payload.consistency as any 
+    } : c));
 
     const res = await bbtoolsService.updateDiaper(editingId, payload);
     if (!res.success) {
@@ -121,6 +137,7 @@ const DiaperTracker: React.FC<{ diapers?: DiaperLog[]; onRefresh?: () => void }>
   const editChange = (change: DiaperChange) => {
     setFormData({
       type: change.type,
+      date: change.date,
       time: change.time,
       notes: change.notes,
       color: change.color || 'yellow',
@@ -131,14 +148,21 @@ const DiaperTracker: React.FC<{ diapers?: DiaperLog[]; onRefresh?: () => void }>
   };
 
   const resetForm = () => {
-    setFormData({ type: 'wet', time: '', notes: '', color: 'yellow', consistency: 'seedy' });
+    setFormData({ 
+      type: 'wet', 
+      date: new Date().toISOString().split('T')[0], 
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }), 
+      notes: '', 
+      color: 'yellow', 
+      consistency: 'seedy' 
+    });
     setShowForm(false);
     setEditingId(null);
   };
 
-  const getTodayChanges = () => changes; // backend already returns recent list
-  const getWetCount = () => changes.filter((c) => c.type === 'wet' || c.type === 'both').length;
-  const getDirtyCount = () => changes.filter((c) => c.type === 'dirty' || c.type === 'both').length;
+  const getTodayChanges = () => changes.filter(change => change.date === new Date().toISOString().split('T')[0]);
+  const getWetCount = () => getTodayChanges().filter((c) => c.type === 'wet' || c.type === 'both').length;
+  const getDirtyCount = () => getTodayChanges().filter((c) => c.type === 'dirty' || c.type === 'both').length;
 
   const getDiaperIcon = (type: string) => {
     switch (type) {
@@ -218,6 +242,16 @@ const DiaperTracker: React.FC<{ diapers?: DiaperLog[]; onRefresh?: () => void }>
               </button>
             ) : (
               <div className="space-y-4">
+                {/* DateTime Picker */}
+                <DateTimePicker
+                  date={formData.date}
+                  time={formData.time}
+                  onDateChange={(date) => setFormData({...formData, date})}
+                  onTimeChange={(time) => setFormData({...formData, time})}
+                  dateLabel="Change Date"
+                  timeLabel="Change Time"
+                />
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Diaper Type</label>
                   <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value as any})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent">
@@ -225,11 +259,6 @@ const DiaperTracker: React.FC<{ diapers?: DiaperLog[]; onRefresh?: () => void }>
                     <option value="dirty">Dirty Only</option>
                     <option value="both">Wet & Dirty</option>
                   </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Time</label>
-                  <input type="time" value={formData.time} onChange={(e) => setFormData({...formData, time: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent" />
                 </div>
 
                 {formData.type !== 'wet' && (
@@ -293,7 +322,7 @@ const DiaperTracker: React.FC<{ diapers?: DiaperLog[]; onRefresh?: () => void }>
                           {change.type} Diaper
                         </div>
                         <div className="flex items-center gap-4 text-sm text-gray-600">
-                          <span>{change.time}</span>
+                          <span>{new Date(change.date).toLocaleDateString()} at {change.time}</span>
                           {change.color && (
                             <span className="capitalize">Color: {change.color}</span>
                           )}
