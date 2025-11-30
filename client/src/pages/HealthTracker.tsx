@@ -120,17 +120,16 @@ export default function HealthTracker() {
   };
 
   const removeMetric = async (id: number) => {
-    setHealthMetrics(prev => prev.filter(metric => metric.id !== id));
-    // try {
-    //   const res = await healthtrackerService.deleteMetric(String(id)); // convert for API
-    //   if (res.success) {
-    //     setHealthMetrics(prev => prev.filter(metric => metric.id !== id));
-    //   } else {
-    //     console.error("delete metric failed", res.error);
-    //   }
-    // } catch (err) {
-    //   console.error("delete metric exception", err);
-    // }
+    try {
+      const res = await healthtrackerService.deleteMetric(String(id)); // convert for API
+      if (res.success) {
+        setHealthMetrics(prev => prev.filter(metric => metric.id !== id));
+      } else {
+        console.error("delete metric failed", res.error);
+      }
+    } catch (err) {
+      console.error("delete metric exception", err);
+    }
   };
 
   const updateMetric = async (updatedMetric: HealthMetric) => {
