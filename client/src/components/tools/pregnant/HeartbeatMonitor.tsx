@@ -9,6 +9,7 @@ interface HeartbeatSession {
   bpm: number;
   duration: number;
   notes: string;
+  category: string;
 }
 
 const HeartbeatMonitor: React.FC = () => {
@@ -39,17 +40,28 @@ const HeartbeatMonitor: React.FC = () => {
       const heartbeatLogs =
         res.data.metrics?.filter((m: any) => m.title === "heartbeatMonitor") || [];
 
-      const formatted = heartbeatLogs.map((log: any) => ({
-        id: log.id,
-        date: new Date(log.createdAt).toLocaleDateString(),
-        time: new Date(log.createdAt).toLocaleTimeString(),
-        bpm: log.value ? Number(log.value) : 0,
-        duration: log.notes ? Number(log.notes.split(" | ")[0]) : 0,
-        notes: log.notes ? log.notes.split(" | ")[1] : "",
-      }));
+      const formatted = heartbeatLogs.map((log: any) => {
+        const sessionBpm = log.value ? Number(log.value) : 0;
+        return {
+          id: log.id,
+          date: new Date(log.createdAt).toLocaleDateString(),
+          time: new Date(log.createdAt).toLocaleTimeString(),
+          bpm: sessionBpm,
+          duration: log.notes ? Number(log.notes.split(" | ")[0]) : 0,
+          notes: log.notes ? log.notes.split(" | ")[1] : "",
+          category: getBpmCategory(sessionBpm)
+        };
+      });
 
       setSessionHistory(formatted);
     }
+  };
+
+  const getBpmCategory = (currentBpm: number): string => {
+    if (currentBpm === 0) return "No Data";
+    if (currentBpm < 110) return "Low";
+    if (currentBpm > 160) return "High";
+    return "Normal";
   };
 
   const startMonitoring = () => {
@@ -63,12 +75,14 @@ const HeartbeatMonitor: React.FC = () => {
     setIsMonitoring(false);
 
     if (duration > 0) {
+      const category = getBpmCategory(bpm);
       const session: HeartbeatSession = {
         date: new Date().toLocaleDateString(),
         time: new Date().toLocaleTimeString(),
         bpm: Math.round(bpm),
         duration,
-        notes
+        notes,
+        category
       };
 
       setSessionHistory(prev => [session, ...prev.slice(0, 4)]);
@@ -86,34 +100,36 @@ const HeartbeatMonitor: React.FC = () => {
 
   const handleTap = () => {
     const now = Date.now();
-
+    
     setTapTimes(prev => {
-      const updated = [...prev, now].slice(-5); // keep last 5 taps
-
+      const updated = [...prev, now]; // 
+      
       if (updated.length >= 2) {
         const intervals = [];
         for (let i = 1; i < updated.length; i++) {
-          intervals.push((updated[i] - updated[i - 1]) / 1000); // seconds
+          intervals.push((updated[i] - updated[i - 1]) / 1000); // Convert to seconds
         }
-
+        
         const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
         const calculatedBpm = 60 / avgInterval;
-
+        
         setBpm(calculatedBpm);
       }
-
+      
       return updated;
     });
   };
 
-  const getBpmStatus = (currentBpm: number) => {
-    if (currentBpm === 0) return "none";
-    if (currentBpm < 110) return "low";
-    if (currentBpm > 160) return "high";
-    return "normal";
-  };
+  const bpmCategory = getBpmCategory(bpm);
 
-  const bpmStatus = getBpmStatus(bpm);
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case "Normal": return "text-green-600";
+      case "Low": return "text-yellow-600";
+      case "High": return "text-red-600";
+      default: return "text-gray-600";
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -126,54 +142,28 @@ const HeartbeatMonitor: React.FC = () => {
         </h3>
       </div>
 
-      <div className="bg-blue-50 p-4 rounded-xl mb-6 text-sm text-blue-700 border border-blue-200">
-        <p className="font-semibold">Instructions:</p>
-        <ul className="list-disc ml-5 mt-1 space-y-1">
-          <li>Press <strong>Start Monitor</strong> when you're ready.</li>
-          <li>Each time you hear a heartbeat, tap the <strong>Tap Heartbeat</strong> button.</li>
-          <li>The BPM will update based on your taps.</li>
-          <li>About <strong>10–12 taps</strong> is enough to get an accurate reading.</li>
-          <li>Try to tap steadily and in rhythm with the heartbeat you hear.</li>
-        </ul>
-
-        <div className="mt-3 pt-3 border-t border-blue-200">
-          <p className="font-semibold">Normal Heart Rate Guide:</p>
-          <ul className="list-disc ml-5 mt-1 space-y-1">
-            <li><strong>110–160 BPM</strong> – typical fetal heart rate</li>
-            <li><strong>Below 110 BPM</strong> – lower than usual</li>
-            <li><strong>Above 160 BPM</strong> – higher than usual</li>
-          </ul>
-
-    <p className="mt-2 text-xs text-blue-600">
-      ⚠️ This tool is for awareness only and not a medical device. If your readings stay low or high,
-      or if you have concerns, please consult your healthcare provider.
-    </p>
-  </div>
-</div>
-
-
       <div className="grid lg:grid-cols-2 gap-8">
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-pink-200 p-6 text-center">
             <div className="flex items-center justify-center gap-4 mb-6">
               <div
                 className={`p-4 rounded-full ${
-                  bpmStatus === "normal"
+                  bpmCategory === "Normal"
                     ? "bg-green-100"
-                    : bpmStatus === "low"
+                    : bpmCategory === "Low"
                     ? "bg-yellow-100"
-                    : bpmStatus === "high"
+                    : bpmCategory === "High"
                     ? "bg-red-100"
                     : "bg-gray-200"
                 }`}
               >
                 <Heart
                   className={`w-8 h-8 ${
-                    bpmStatus === "normal"
+                    bpmCategory === "Normal"
                       ? "text-green-600 animate-pulse"
-                      : bpmStatus === "low"
+                      : bpmCategory === "Low"
                       ? "text-yellow-600"
-                      : bpmStatus === "high"
+                      : bpmCategory === "High"
                       ? "text-red-600"
                       : "text-gray-500"
                   }`}
@@ -185,12 +175,18 @@ const HeartbeatMonitor: React.FC = () => {
                   {bpm > 0 ? Math.round(bpm) : "--"}
                 </div>
                 <div className="text-lg text-gray-600">BPM</div>
+                {bpm > 0 && (
+                  <div className={`text-sm font-semibold ${getCategoryColor(bpmCategory)}`}>
+                    {bpmCategory}
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="flex items-center justify-center gap-4 text-sm text-gray-600 mb-6">
               <Clock className="w-4 h-4" />
               <span>{duration} seconds</span>
+              <span className="text-xs text-gray-500">{tapTimes.length} taps</span>
             </div>
 
             <div className="flex flex-col items-center gap-3">
@@ -236,6 +232,18 @@ const HeartbeatMonitor: React.FC = () => {
         </div>
 
         <div className="space-y-6">
+          <div className="bg-blue-50 rounded-2xl p-6 border border-blue-200">
+            <h4 className="font-semibold text-blue-800 mb-3">BPM Categories</h4>
+            <ul className="text-sm text-blue-700 space-y-2">
+              <li><span className="font-semibold text-green-600">Normal:</span> 110–160 BPM</li>
+              <li><span className="font-semibold text-yellow-600">Low:</span> Below 110 BPM</li>
+              <li><span className="font-semibold text-red-600">High:</span> Above 160 BPM</li>
+            </ul>
+            <p className="mt-3 text-xs text-blue-600">
+              ⚠️ This tool is for awareness only. Consult your healthcare provider for medical advice.
+            </p>
+          </div>
+
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
             <h4 className="font-semibold text-gray-800 mb-4">Recent Sessions</h4>
 
@@ -249,7 +257,9 @@ const HeartbeatMonitor: React.FC = () => {
                       <span className="font-semibold text-gray-800">
                         {session.bpm} BPM
                       </span>
-                      <span className="text-sm text-gray-500">{session.duration}s</span>
+                      <span className={`text-sm font-semibold ${getCategoryColor(session.category)}`}>
+                        {session.category}
+                      </span>
                     </div>
 
                     <div className="flex justify-between items-center text-sm text-gray-600">
@@ -272,18 +282,3 @@ const HeartbeatMonitor: React.FC = () => {
 };
 
 export default HeartbeatMonitor;
-
-
-// So we will use this logic:
-
-// User taps the big “Tap Heartbeat” button
-
-// Store timestamps in an array
-
-// Always keep the last 5 taps
-
-// Calculate intervals between taps
-
-// Compute average interval
-
-// BPM = 60 / avgIntervalInSeconds

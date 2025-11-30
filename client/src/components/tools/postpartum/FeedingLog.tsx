@@ -8,32 +8,41 @@ import {
   FeedingLog as FeedingLogType,
   LocalFeedingSession
 } from "../../../services/BBToolsService";
+import DateTimePicker from "../../ui/DateTimePicker";
+
+interface ExtendedFeedingSession extends LocalFeedingSession {
+  date: string;
+  time: string;
+  side?: 'left' | 'right' | 'both';
+}
 
 const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<FeedingSessionForm>({
+  const [formData, setFormData] = useState<FeedingSessionForm & { date: string; time: string }>({
     type: 'breast',
     side: 'left',
     amount: undefined,
     duration: undefined,
-    notes: ''
+    notes: '',
+    date: new Date().toISOString().split('T')[0],
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
   });
-  const [localSessions, setLocalSessions] = useState<LocalFeedingSession[]>([]);
+  const [localSessions, setLocalSessions] = useState<ExtendedFeedingSession[]>([]);
 
   useEffect(() => {
     setLocalSessions(feedings.map(convertToLocalSession));
   }, [feedings]);
 
-  // Convert database FeedingLog to local display format
-  const convertToLocalSession = (feeding: FeedingLogType): LocalFeedingSession => {
+  const convertToLocalSession = (feeding: FeedingLogType): ExtendedFeedingSession => {
     const timestamp = feeding.occurredAt || feeding.createdAt || new Date().toISOString();
     const date = new Date(timestamp);
+    
     let duration = 0;
-    let side: string | undefined;
+    let side: 'left' | 'right' | 'both' | undefined;
     let cleanNotes = feeding.notes || '';
 
-    // Extract duration using string methods
+    // Extract duration
     const durationPrefix = "(Duration: ";
     const durationSuffix = " minutes)";
     const durationStartIndex = cleanNotes.indexOf(durationPrefix);
@@ -60,16 +69,17 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
       const sideStartIndex = cleanNotes.indexOf(sidePrefix);
 
       if (sideStartIndex !== -1) {
-        // Find where the side information ends (comma or end of string)
         const afterSide = cleanNotes.substring(sideStartIndex + sidePrefix.length);
         const commaIndex = afterSide.indexOf(',');
         const sideValue = commaIndex !== -1
           ? afterSide.substring(0, commaIndex).trim()
           : afterSide.trim();
 
-        side = sideValue.toLowerCase();
+        // Validate and cast side value
+        if (sideValue.toLowerCase() === 'left' || sideValue.toLowerCase() === 'right' || sideValue.toLowerCase() === 'both') {
+          side = sideValue.toLowerCase() as 'left' | 'right' | 'both';
+        }
 
-        // Remove side information from notes
         const beforeSide = cleanNotes.substring(0, sideStartIndex).trim();
         let afterSideInfo = commaIndex !== -1
           ? afterSide.substring(commaIndex + 1).trim()
@@ -92,15 +102,19 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
       duration,
       notes: cleanNotes,
       rawTimestamp: timestamp,
-      side // Add the extracted side
+      side: side,
+      date: date.toISOString().split('T')[0],
+      time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
     };
   };
 
-  // Replace sessions usage with localSessions for optimistic updates
-  const sessions: LocalFeedingSession[] = localSessions;
+  const sessions: ExtendedFeedingSession[] = localSessions;
 
   const addSession = async () => {
-    if (!formData.type) return;
+    if (!formData.type || !formData.date || !formData.time) return;
+
+    // Combine date and time into ISO string
+    const occurredAt = new Date(`${formData.date}T${formData.time}`).toISOString();
     const duration = formData.duration || 0;
 
     // Build notes with side information for breastfeeding
@@ -116,7 +130,7 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
       amount: formData.amount,
       method: formData.type,
       notes: notes,
-      occurredAt: new Date().toISOString()
+      occurredAt: occurredAt
     };
 
     const result = await bbtoolsService.addFeeding(feedingData);
@@ -129,7 +143,10 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
   };
 
   const updateSession = async () => {
-    if (!editingId) return;
+    if (!editingId || !formData.date || !formData.time) return;
+
+    // Combine date and time into ISO string
+    const occurredAt = new Date(`${formData.date}T${formData.time}`).toISOString();
     const duration = formData.duration || 0;
 
     // Build notes with side information for breastfeeding
@@ -145,7 +162,9 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
       amount: formData.amount,
       method: formData.type,
       notes: notes,
+      occurredAt: occurredAt
     };
+
     const result = await bbtoolsService.updateFeeding(editingId, feedingData);
     if (result.success && onRefresh) {
       onRefresh();
@@ -157,7 +176,6 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
   const deleteSession = async (id: string) => {
     const result = await bbtoolsService.deleteFeeding(id);
     if (result.success) {
-      // Optimistically remove
       setLocalSessions(prev => prev.filter(s => s.id !== id));
       if (onRefresh) onRefresh();
     } else {
@@ -165,12 +183,15 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
     }
   };
 
-  const editSession = (session: LocalFeedingSession) => {
+  const editSession = (session: ExtendedFeedingSession) => {
     setFormData({
       type: session.type,
       amount: session.amount,
       duration: session.duration > 0 ? session.duration : undefined,
-      notes: session.notes
+      notes: session.notes,
+      side: session.side || 'left',
+      date: session.date,
+      time: session.time
     });
     setEditingId(session.id);
     setShowForm(true);
@@ -181,8 +202,10 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
       type: 'breast',
       side: 'left',
       amount: undefined,
-      duration: undefined, // No default duration
-      notes: ''
+      duration: undefined,
+      notes: '',
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
     });
     setShowForm(false);
     setEditingId(null);
@@ -257,6 +280,16 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
               </button>
             ) : (
               <div className="space-y-4">
+                {/* DateTime Picker */}
+                <DateTimePicker
+                  date={formData.date}
+                  time={formData.time}
+                  onDateChange={(date) => setFormData({...formData, date})}
+                  onTimeChange={(time) => setFormData({...formData, time})}
+                  dateLabel="Feeding Date"
+                  timeLabel="Feeding Time"
+                />
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Feeding Type
@@ -296,6 +329,9 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
                     </label>
                     <input
                       type="number"
+                      min="0"
+                      step="1"
+                      onKeyDown={(e) => (e.key === "e" || e.key === "." || e.key === "-") && e.preventDefault()}
                       value={formData.amount || ''}
                       onChange={(e) => setFormData({ ...formData, amount: e.target.value ? parseInt(e.target.value) : undefined })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -371,10 +407,7 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
                           {session.type} {session.side && `(${session.side})`}
                         </div>
                         <div className="flex items-center gap-3 text-sm text-gray-600 flex-wrap">
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {session.startTime} - {session.endTime}
-                          </span>
+                          <span>{new Date(session.date).toLocaleDateString()} at {session.startTime}</span>
                           {session.duration > 0 && (
                             <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
                               {session.duration} min
