@@ -3,18 +3,19 @@ import { motion, AnimatePresence, number } from "framer-motion";
 import { X, ChevronRight, ChevronUp, ChevronDown, Target } from "lucide-react";
 import { plannerService } from "../../../services/plannerService";
 import { Task, BloomDate, BloomTime } from "../../../types/plan";
+import { getFullDate, getNow, getTime, taskID, translateBloomdate, isoToDisplay } from "../PlannerFuntions";
 
 interface AddTaskModalProps {
   onClose: () => void;
   onTaskAdded?: () => Promise<void>;
+  selectedDate?: string | null;
 }
-import { getFullDate, getNow, getTime, taskID, translateBloomdate } from "../PlannerFuntions";
 
-export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps) {
+export default function AddTaskModal({ onClose, onTaskAdded, selectedDate }: AddTaskModalProps) {
 
   const now: BloomDate = getNow()
   const nowTime: BloomTime = getTime()
-  const today: string = getFullDate(getNow())
+  const todayDisplay: string = selectedDate ? isoToDisplay(selectedDate) : getFullDate(getNow());
   
   const [form, setForm] = useState<Task>({
     id: taskID( now, nowTime),
@@ -29,8 +30,8 @@ export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps
   const [editing, setIsEditing] = useState(false)
   const [isSingleDate, setSingleDate] = useState(true);
   const [isWholeDay, setWholeDay] = useState(true);
-  const [dateStart, setDateStart] = useState(today)
-  const [dateEnd, setDateEnd] = useState(today)
+  const [dateStart, setDateStart] = useState(todayDisplay)
+  const [dateEnd, setDateEnd] = useState(todayDisplay)
   const [weekly, setWeekly] = useState<string[]>([])
   const [interval, setInterval] = useState(0)
   const [timeHr, setTimeHr] = useState(6)
@@ -53,15 +54,11 @@ export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps
     onClose();
   }
 
-  // const handleCancel = () => {
-  //   onCancel();
-  // }
-
   const handleAdd = async () => {
     try {
-      // Convert the date from dd/mm/yyyy to yyyy-mm-dd format for the server
+      // dateStart is "DD/MM/YYYY"
       const [day, month, year] = dateStart.split('/').map(Number);
-      const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const isoDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       
       const response = await plannerService.createTask({
         title: title || 'New Task',
@@ -377,5 +374,3 @@ export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps
     </AnimatePresence>
   );
 }
-
-

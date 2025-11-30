@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { PlusCircle, Trash2, CheckCircle2, CheckCircle } from 'lucide-react';
+import { PlusCircle, Trash2, CheckCircle2 } from 'lucide-react';
 import { plannerService } from "../../services/plannerService";
 import AddTaskModal from "./modal/AddTask";
 
@@ -12,26 +12,26 @@ type Task = {
   date: string;
 };
 
-export default function ToDoList() {
+export default function ToDoList({ selectedDate }: { selectedDate?: string | null }) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isAdding, setIsAdding] = useState(false)
+  const [isAdding, setIsAdding] = useState(false);
 
-  // Fetch tasks on component mount
+  // ⬇️ UPDATED: Fetch tasks every time selectedDate changes
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [selectedDate]);
 
   async function fetchTasks() {
     try {
       setLoading(true);
       setError(null);
+
       const response = await plannerService.getTasks();
-      
+
       if (response.success && response.data) {
-        // Transform API data to component format
         const transformedTasks = response.data.map((task) => ({
           id: task.id,
           title: task.title,
@@ -39,7 +39,12 @@ export default function ToDoList() {
           createdAt: new Date(task.createdAt).toLocaleString(),
           date: task.date,
         }));
-        setTasks(transformedTasks);
+
+        const filtered = selectedDate
+          ? transformedTasks.filter((t) => t.date === selectedDate)
+          : transformedTasks;
+
+        setTasks(filtered);
       } else {
         setError(response.error || "Failed to fetch tasks");
       }
@@ -51,26 +56,20 @@ export default function ToDoList() {
     }
   }
 
-  // Add new task
   async function handleAddTask() {
     if (!newTaskTitle.trim()) return;
 
     try {
+      const dateToUse = selectedDate ?? new Date().toISOString().split("T")[0];
+
       const response = await plannerService.createTask({
         title: newTaskTitle.trim(),
         description: "",
-        date: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+        date: dateToUse,
       });
 
       if (response.success && response.data) {
-        const newTask: Task = {
-          id: response.data.id,
-          title: response.data.title,
-          completed: response.data.isCompleted,
-          createdAt: new Date(response.data.createdAt).toLocaleString(),
-          date: response.data.date,
-        };
-        setTasks((prev) => [newTask, ...prev]);
+        await fetchTasks();
         setNewTaskTitle("");
       } else {
         setError(response.error || "Failed to create task");
@@ -81,11 +80,10 @@ export default function ToDoList() {
     }
   }
 
-  // Delete task
   async function handleDeleteTask(id: number) {
     try {
       const response = await plannerService.deleteTask(id);
-      
+
       if (response.success) {
         setTasks((prev) => prev.filter((task) => task.id !== id));
       } else {
@@ -97,7 +95,6 @@ export default function ToDoList() {
     }
   }
 
-  // Toggle checkbox
   async function handleToggleTask(id: number) {
     const task = tasks.find((t) => t.id === id);
     if (!task) return;
@@ -122,35 +119,29 @@ export default function ToDoList() {
     }
   }
 
-  return (
-    !isAdding 
-      ? (
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white p-4 h-[588px] rounded-[20px] shadow-lg">
+  return !isAdding ? (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      <div className="bg-gradient-to-r from-bloomPink to-bloomYellow text-white p-4 h-[588px] rounded-[20px] shadow-lg">
+        {/* Header */}
+        <h3 className="text-2xl mb-2 text-white font-bold flex items-center justify-center gap-4 p-2">
+          <span className="flex-1 text-center">To Do List</span>
 
-          {/* Header */}
-          <h3 className="text-2xl mb-2 text-white font-bold flex items-center justify-center gap-4 p-2">
-            <span className="flex-1 text-center">To Do List</span>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsAdding(!isAdding)}
+          >
+            <PlusCircle className="w-8 h-8 text-white" />
+          </motion.button>
+        </h3>
 
-            {/* Add Button */}
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsAdding(!isAdding)}
-            >
-              <PlusCircle className="w-8 h-8 text-white" />
-            </motion.button>
-          </h3>
-
-          <div className="h-[500px] flex flex-col gap-3">
-          {/* Error Message */}
+        <div className="h-[500px] flex flex-col gap-3">
           {error && (
             <div className="p-3 bg-red-100 text-red-700 rounded-xl text-sm">
               {error}
             </div>
           )}
 
-          {/* Task List Container */}
           <div className="flex flex-col justify-start items-center bg-white rounded-xl p-4 text-[#474747] h-full overflow-y-auto shadow-inner">
             {loading ? (
               <p className="text-center text-gray-400 italic">Loading tasks...</p>
@@ -168,13 +159,23 @@ export default function ToDoList() {
                     <button
                       onClick={() => handleToggleTask(task.id)}
                       className="flex-shrink-0 transition-all duration-200 hover:scale-110"
-                      aria-label={task.completed ? "Mark as incomplete" : "Mark as complete"}
                     >
                       {task.completed ? (
                         <CheckCircle2 className="w-5 h-5 text-bloomPink fill-current" />
                       ) : (
-                        <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+                        <svg
+                          className="w-5 h-5 text-gray-400"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="9"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          />
                         </svg>
                       )}
                     </button>
@@ -205,27 +206,22 @@ export default function ToDoList() {
             )}
           </div>
 
-          {/* Hidden input for creating tasks (appears when typing) */}
-          {newTaskTitle.length >= 0 && (
-            <input
-              type="text"
-              placeholder="Type new task..."
-              value={newTaskTitle}
-              onChange={(e) => setNewTaskTitle(e.target.value)}
-              className="w-full p-3 rounded-xl bg-white/80 focus:bg-white outline-none text-gray-700"
-              onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
-            />
-          )}
-          </div>
+          <input
+            type="text"
+            placeholder="Type new task..."
+            value={newTaskTitle}
+            onChange={(e) => setNewTaskTitle(e.target.value)}
+            className="w-full p-3 rounded-xl bg-white/80 focus:bg-white outline-none text-gray-700"
+            onKeyDown={(e) => e.key === "Enter" && handleAddTask()}
+          />
         </div>
-        </motion.div>
-    ) : (
-      isAdding && (
-        <AddTaskModal 
-          onClose={() => setIsAdding(false)}
-          onTaskAdded={fetchTasks}
-        />
-      )
-    )
+      </div>
+    </motion.div>
+  ) : (
+    <AddTaskModal
+    onClose={() => setIsAdding(false)} 
+    onTaskAdded={fetchTasks}
+    selectedDate={selectedDate}
+    />
   );
 }
