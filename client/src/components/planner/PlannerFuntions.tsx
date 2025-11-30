@@ -56,3 +56,27 @@ export function getDayOfWeek ( day: number, year: number, month: number ) {
   const h = (day + Math.floor((13 * (month + 1)) / 5) + K + Math.floor(K / 4) + Math.floor(J / 4) + 5 * J) % 7;
   return (h + 5) % 7;
 };
+
+export function bloomToISO(date: BloomDate): string {
+  // month in BloomDate is 0-11; ISO needs 01-12
+  const month = date.month + 1;
+  return `${date.year}-${String(month).padStart(2, "0")}-${String(date.date).padStart(2, "0")}`;
+}
+
+export function isoToBloom(iso: string): BloomDate {
+  // iso expected "YYYY-MM-DD"
+  const [year, month, day] = iso.split("-").map(Number);
+  const d = new Date(year, month - 1, day);
+  return {
+    day: d.getDay(),
+    date: day,
+    month: month - 1,
+    year,
+  };
+}
+
+//Convert ISO "YYYY-MM-DD" -> display "DD/MM/YYYY" (same pattern other components expect)
+export function isoToDisplay(iso: string): string {
+  const b = isoToBloom(iso);
+  return `${String(b.date).padStart(2, "0")}/${String(b.month + 1).padStart(2, "0")}/${b.year}`;
+}

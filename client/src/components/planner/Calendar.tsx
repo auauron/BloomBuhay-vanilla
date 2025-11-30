@@ -1,21 +1,51 @@
-import React, { useState, useMemo } from "react";
+// src/components/planner/Calendar.tsx
+import React, { useState, useMemo, useEffect } from "react";
 import { ChevronsLeft, ChevronsRight, Calendar } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import DateJumper from "./modal/DateJumper";
 import { BloomDate } from "../../types/plan";
-import { createCalendar, translateBloomdate, isLeapYear, getDayOfWeek, getNow } from "./PlannerFuntions";
+import {
+  createCalendar,
+  translateBloomdate,
+  getNow,
+  bloomToISO,
+  isoToBloom,
+} from "./PlannerFuntions";
 
-export default function CalendarView() {
-  const now: BloomDate = getNow()
-  const [selectedDay, setSelectedDay] = useState<string | null>(translateBloomdate(now));
+type CalendarViewProps = {
+  selectedDate: string | null;
+  onSelectDate: (date: string | null) => void;
+};
+
+export default function CalendarView({ selectedDate, onSelectDate }: CalendarViewProps) {
+  const now: BloomDate = getNow();
+  // Initialize selectedDay from prop (or default to today display if null)
+  const initialSelectedDay = selectedDate ? translateBloomdate(isoToBloom(selectedDate)) : translateBloomdate(now);
+  const [selectedDay, setSelectedDay] = useState<string | null>(initialSelectedDay);
   const [month, setMonth] = useState(now.month);
   const [year, setYear] = useState(now.year);
   const [showPicker, setShowPicker] = useState(false);
 
+  // Keep internal selectedDay synced when parent selectedDate changes
+  useEffect(() => {
+    if (selectedDate) {
+      setSelectedDay(translateBloomdate(isoToBloom(selectedDate)));
+    } else {
+      setSelectedDay(null);
+    }
+  }, [selectedDate]);
+
   const daysOfWeek = ["S", "M", "T", "W", "T", "F", "S"];
 
-  const handleSelect = (id: string) => {
-    setSelectedDay((prev) => (prev === id ? null : id));
+  // When a calendar day is clicked, update local selection AND notify parent with ISO date
+  const handleSelect = (id: string, bloomDate: BloomDate) => {
+    if (selectedDay === id) {
+      setSelectedDay(null);
+      onSelectDate && onSelectDate(null);
+    } else {
+      setSelectedDay(id);
+      onSelectDate && onSelectDate(bloomToISO(bloomDate));
+    }
   };
 
   const calendar = useMemo(() => createCalendar(month, year), [month, year]);
@@ -65,13 +95,13 @@ export default function CalendarView() {
 
         {/* Calendar */}
         <AnimatePresence>
-          <motion.div 
-          className="bg-white h-[500px] rounded-xl p-4 text-[#474747]"
-          key="calendar"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.2 }}
+          <motion.div
+            className="bg-white h-[500px] rounded-xl p-4 text-[#474747]"
+            key="calendar"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
           >
             <div className="grid grid-cols-7 gap-3">
               {daysOfWeek.map((d) => (
@@ -97,7 +127,7 @@ export default function CalendarView() {
                         setMonth(date.month);
                         setYear(date.year);
                       }
-                      handleSelect(id);
+                      handleSelect(id, date);
                     }}
                     className={[
                       "py-4 text-center rounded-2xl transition-all duration-300 cursor-pointer select-none",
@@ -117,6 +147,7 @@ export default function CalendarView() {
             </div>
           </motion.div>
         </AnimatePresence>
+
         <DateJumper
           isOpen={showPicker}
           onCancel={() => setShowPicker(false)}
