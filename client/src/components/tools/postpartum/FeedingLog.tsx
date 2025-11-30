@@ -329,6 +329,9 @@ const FeedingLog: React.FC<FeedingLogProps> = ({ feedings = [], onRefresh }) => 
                     </label>
                     <input
                       type="number"
+                      min="0"
+                      step="1"
+                      onKeyDown={(e) => (e.key === "e" || e.key === "." || e.key === "-") && e.preventDefault()}
                       value={formData.amount || ''}
                       onChange={(e) => setFormData({ ...formData, amount: e.target.value ? parseInt(e.target.value) : undefined })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
