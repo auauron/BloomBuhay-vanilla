@@ -392,7 +392,6 @@ const PediatricVisitNotes: React.FC<{ doctorVisits?: DoctorVisitLog[]; onRefresh
 
                       <div className="space-y-4">
                         <div>
-                          <h5 className="font-semibold text-gray-700 mb-2">Measurements</h5>
                           <div className="grid grid-cols-3 gap-2 text-sm">
                           </div>
                         </div>
