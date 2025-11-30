@@ -3,6 +3,7 @@ import { Edit3, Trash2, Image, Calendar, Clock, Eye } from "lucide-react";
 import EditAlbumModal from "./EditAlbumModal";
 import AlbumDetail from "./AlbumDetail";
 import { Album } from "./types";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 interface PhotoAlbumsProps {
   albums: Album[];
@@ -23,6 +24,14 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
   const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
   const [viewingAlbum, setViewingAlbum] = useState<Album | null>(null);
   const [showUploadSuccess, setShowUploadSuccess] = useState(false); // bag o
+
+  // forda delete album modal
+  const [deleteAlbumModal, setDeleteAlbumModal] = useState<{
+    isOpen: boolean;
+    albumId: string;
+    albumTitle: string;
+  }>({ isOpen: false, albumId: "", albumTitle: "" });
+
 
   // use effect para sa fade notif after upload
     useEffect(() => {
@@ -109,9 +118,11 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (window.confirm(`Are you sure you want to delete "${album.title}"? This action cannot be undone.`)) {
-                        onDeleteAlbum(album.id);
-                      }
+                      setDeleteAlbumModal({
+                        isOpen: true,
+                        albumId: album.id,
+                        albumTitle: album.title
+                      });
                     }}
                     className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
                   >
@@ -193,6 +204,18 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
           </button>
         </div>
       )}
+      {/* Add the delete confirmation modal right here */}
+      <DeleteConfirmationModal
+        isOpen={deleteAlbumModal.isOpen}
+        onClose={() => setDeleteAlbumModal({ isOpen: false, albumId: "", albumTitle: "" })}
+        onConfirm={() => {
+          onDeleteAlbum(deleteAlbumModal.albumId);
+          setDeleteAlbumModal({ isOpen: false, albumId: "", albumTitle: "" });
+        }}
+        title="Delete Album"
+        message={`Are you sure you want to delete "${deleteAlbumModal.albumTitle}"? This will also delete all photos in this album. This action cannot be undone.`}
+        itemType="album"
+      />
     </div>
   );
 };
