@@ -181,7 +181,9 @@ export default function Journal() {
 
     if (response.success && response.data) {
       setAlbums(prev => [response.data!, ...prev]);
+      return true; // Return success
     }
+    return false; // Return failure
   }, [fileToBase64]);
 
   const addNote = useCallback(async (noteData: any) => {
@@ -437,7 +439,7 @@ export default function Journal() {
         {showAddAlbum && (
           <AddAlbumModal
             onClose={handleCloseAddAlbum}
-            onAdd={addAlbum}
+            onAdd={addAlbum} 
           />
         )}
 
