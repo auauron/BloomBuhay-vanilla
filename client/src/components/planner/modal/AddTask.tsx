@@ -3,18 +3,19 @@ import { motion, AnimatePresence, number } from "framer-motion";
 import { X, ChevronRight, ChevronUp, ChevronDown, Target } from "lucide-react";
 import { plannerService } from "../../../services/plannerService";
 import { Task, BloomDate, BloomTime } from "../../../types/plan";
+import { getFullDate, getNow, getTime, taskID, translateBloomdate, isoToDisplay } from "../PlannerFuntions";
 
 interface AddTaskModalProps {
   onClose: () => void;
   onTaskAdded?: () => Promise<void>;
+  selectedDate?: string | null;
 }
-import { getFullDate, getNow, getTime, taskID, translateBloomdate } from "../PlannerFuntions";
 
-export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps) {
+export default function AddTaskModal({ onClose, onTaskAdded, selectedDate }: AddTaskModalProps) {
 
   const now: BloomDate = getNow()
   const nowTime: BloomTime = getTime()
-  const today: string = getFullDate(getNow())
+  const todayDisplay: string = selectedDate ? isoToDisplay(selectedDate) : getFullDate(getNow());
   
   const [form, setForm] = useState<Task>({
     id: taskID( now, nowTime),
@@ -29,8 +30,8 @@ export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps
   const [editing, setIsEditing] = useState(false)
   const [isSingleDate, setSingleDate] = useState(true);
   const [isWholeDay, setWholeDay] = useState(true);
-  const [dateStart, setDateStart] = useState(today)
-  const [dateEnd, setDateEnd] = useState(today)
+  const [dateStart, setDateStart] = useState(todayDisplay)
+  const [dateEnd, setDateEnd] = useState(todayDisplay)
   const [weekly, setWeekly] = useState<string[]>([])
   const [interval, setInterval] = useState(0)
   const [timeHr, setTimeHr] = useState(6)
@@ -53,34 +54,61 @@ export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps
     onClose();
   }
 
-  // const handleCancel = () => {
-  //   onCancel();
-  // }
-
   const handleAdd = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     try {
-      // Convert the date from dd/mm/yyyy to yyyy-mm-dd format for the server
       const [day, month, year] = dateStart.split('/').map(Number);
-      const isoDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      
-      const response = await plannerService.createTask({
-        title: title || 'New Task',
-        description: description || '',
-        date: isoDate
-      });
-      
-      if (response.success) {
-        if (onTaskAdded) {
-          await onTaskAdded();
+      const isoDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+      let isoDateTime: string;
+
+      if (!isWholeDay) {
+        // Use the selected time from the time picker
+        let hour = timeHr;
+        
+        // Handle special cases for 12 AM and 12 PM
+        if (clock === "AM" && hour === 12) {
+          hour = 0; // 12 AM becomes 00
+        } else if (clock === "PM" && hour !== 12) {
+          hour += 12; // 1 PM becomes 13, 2 PM becomes 14, etc.
         }
+        // 12 PM remains 12, 1-11 AM remain as-is
+        
+        const hh = String(hour).padStart(2, "0");
+        const mm = String(timeMin).padStart(2, "0");
+        isoDateTime = `${isoDate}T${hh}:${mm}:00`;
+      } else {
+        // If whole day task, use current time (time task was created)
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const ss = String(now.getSeconds()).padStart(2, "0");
+        isoDateTime = `${isoDate}T${hh}:${mm}:${ss}`;
+      }
+
+      console.log("Sending datetime to backend:", isoDateTime);
+
+      const response = await plannerService.createTask({
+        title: title.trim() || "New Task",
+        description: description.trim(),
+        date: isoDateTime
+      });
+
+      if (response.success) {
+        console.log("Task created successfully:", response.data);
+        await onTaskAdded?.();
         onClose();
       } else {
-        console.error('Failed to add task:', response.error);
+        console.error(response.error);
       }
     } catch (error) {
-      console.error('Error adding task:', error);
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handelStartDate = () => {
     
@@ -285,52 +313,46 @@ export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps
                     transition={{ duration: 0.3 }}
                     >
                       <div className="flex justify-center items-center gap-1 mb-2">
-                        <div className="flex flex-col justify-center items-center w-[80px]">
-                          <input 
-                            type="number"
-                            className="w-full outline-none text-3xl text-center text-bloomBlack placeholder-bloomBlack font-bold bg-White rounded-[6px] focus:border-bloomPink focus:shadow"
-                            placeholder={String(timeHr).padStart(2, "0")}
-                            value={String(timeHr).padStart(2, "0")}
-                            onChange={(e) => {
-                              let hrInput = Number(e.target.value);
-                              if (hrInput < 1) {
-                                hrInput = 1
-                              } else if (hrInput > 12) {
-                                hrInput = 12
-                              }
-                              setTimeHr(hrInput)
-                            }}
-                          />
-                        </div>
-                        <div className="text-center text-3xl font-bold text-bloomBlack">
-                          :
-                        </div>
-                        <div className="flex flex-col justify-center items-center w-[80px]">
-                          <input 
-                            type="number"
-                            className="w-full outline-none text-3xl text-center text-bloomBlack placeholder-bloomBlack font-bold bg-White rounded-[6px] focus:border-bloomPink focus:shadow"
-                            placeholder={String(timeMin).padStart(2, "0")}
-                            value={String(timeMin).padStart(2, "0")}
-                            onChange={(e) => {
-                              let minInput = Number(e.target.value);
-                              if (minInput < 0) {
-                                minInput = 0
-                              } else if (minInput > 59) {
-                                minInput = 59
-                              }
-                              setTimeMin(minInput)
-                            }}
-                          />
-                        </div>
-                        <div className="flex flex-col justify-center items-center w-[50px]">
-                          <div 
-                          className="w-[50px] text-center text-3xl font-bold text-bloomBlack placeholder-bloomBlack"
+                      <div className="flex flex-col justify-center items-center w-[80px]">
+                        <input 
+                          type="number"
+                          className="w-full outline-none text-3xl text-center text-bloomBlack placeholder-bloomBlack font-bold bg-white border border-gray-200 rounded-lg focus:border-bloomPink focus:shadow py-1"
+                          value={timeHr}
+                          onChange={(e) => {
+                            let hrInput = Number(e.target.value);
+                            if (hrInput < 1) hrInput = 1;
+                            if (hrInput > 12) hrInput = 12;
+                            setTimeHr(hrInput);
+                          }}
+                          min={1}
+                          max={12}
+                        />
+                      </div>
+                      <div className="text-center text-3xl font-bold text-bloomBlack">:</div>
+                      <div className="flex flex-col justify-center items-center w-[80px]">
+                        <input 
+                          type="number"
+                          className="w-full outline-none text-3xl text-center text-bloomBlack placeholder-bloomBlack font-bold bg-white border border-gray-200 rounded-lg focus:border-bloomPink focus:shadow py-1"
+                          value={timeMin}
+                          onChange={(e) => {
+                            let minInput = Number(e.target.value);
+                            if (minInput < 0) minInput = 0;
+                            if (minInput > 59) minInput = 59;
+                            setTimeMin(minInput);
+                          }}
+                          min={0}
+                          max={59}
+                        />
+                      </div>
+                      <div className="flex flex-col justify-center items-center w-[50px]">
+                        <div 
+                          className="w-[50px] text-center text-2xl font-bold text-bloomBlack bg-white border border-gray-200 rounded-lg py-1 cursor-pointer hover:bg-gray-50 transition-colors"
                           onClick={handleChangeClock}
-                          >
-                            {clock}
-                          </div>
+                        >
+                          {clock}
                         </div>
                       </div>
+                    </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -338,15 +360,67 @@ export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps
                 {/* Date & Time Picker */}
                 <div className="space-y-3">
                   <label className="block text-sm font-medium text-bloomBlack/80">Schedule</label>
+
+                  {/* Date Picker (new) */}
                   <div className="flex items-center space-x-3">
                     <div className="relative flex-1">
-                      <button
-                        onClick={handelStartDate}
-                        className="w-full py-1.5 rounded-lg bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-medium hover:opacity-90 transition-all duration-200 shadow hover:shadow-md text-sm"
-                      >
-                        {dateStart}
-                      </button>
+                      <input
+                        type="date"
+                        value={
+                          (() => {
+                            const [day, month, year] = dateStart.split("/");
+                            return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+                          })()
+                        }
+                        onChange={(e) => {
+                          const iso = e.target.value;            // YYYY-MM-DD
+                          const [year, month, day] = iso.split("-");
+                          setDateStart(`${day}/${month}/${year}`); // convert back to DD/MM/YYYY
+                        }}
+                        className="w-full py-1.5 px-3 rounded-lg bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-medium hover:opacity-90 transition-all duration-200 shadow hover:shadow-md text-sm cursor-pointer"
+                      />
                     </div>
+                  </div>
+
+                  {/* Time input */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                    <input
+                      type="time"
+                      value={(() => {
+                        // Convert current 12-hour time to 24-hour format for the input
+                        let hour = timeHr;
+                        if (clock === "PM" && hour !== 12) hour += 12;
+                        if (clock === "AM" && hour === 12) hour = 0;
+                        return `${String(hour).padStart(2, "0")}:${String(timeMin).padStart(2, "0")}`;
+                      })()}
+                      onChange={(e) => {
+                        const [hr, min] = e.target.value.split(":").map(Number);
+                        
+                        // Convert 24-hour to 12-hour format
+                        let displayHr = hr;
+                        let newClock = "AM";
+                        
+                        if (hr === 0) {
+                          displayHr = 12;
+                          newClock = "AM";
+                        } else if (hr === 12) {
+                          displayHr = 12;
+                          newClock = "PM";
+                        } else if (hr > 12) {
+                          displayHr = hr - 12;
+                          newClock = "PM";
+                        } else {
+                          displayHr = hr;
+                          newClock = "AM";
+                        }
+                        
+                        setTimeHr(displayHr);
+                        setTimeMin(min);
+                        setClock(newClock);
+                      }}
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bloomPink focus:border-transparent"
+                    />
                   </div>
                 </div>
               </div>
@@ -377,5 +451,3 @@ export default function AddTaskModal({ onClose, onTaskAdded }: AddTaskModalProps
     </AnimatePresence>
   );
 }
-
-

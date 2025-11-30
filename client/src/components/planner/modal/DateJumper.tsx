@@ -52,7 +52,7 @@ export default function DateJumper({ isOpen, onCancel, onSave }: DateJumperProps
               Jump to Date {nameMonth} {selectedYear}
             </h2>
 
-            <h3 className="text-xl flex w-[200px] font-bold text-bloomPink flex items-center justify-center mb-4 gap-4 p-2">
+            <h3 className="text-xl w-[200px] font-bold text-bloomPink flex items-center justify-center mb-4 gap-4 p-2">
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
@@ -89,7 +89,7 @@ export default function DateJumper({ isOpen, onCancel, onSave }: DateJumperProps
                     onClick={() => setSelectedMonth(i)}
                     className={`rounded-full h-[80px] w-[80px] font-medium transition-all duration-300 
                     ${selectedMonth === i
-                        ? "shadow-md bg-gradient-to-r from-bloomPink to-bloomYellow hover:border-2 hover:border-bloomPink hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-bloomPink to-bloomYellow"
+                        ? "shadow-md bg-gradient-to-r hover:border-2 hover:border-bloomPink hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-bloomPink to-bloomYellow"
                         : "hover:border-2 hover:border-bloomPink text-transparent bg-clip-text bg-gradient-to-r from-bloomPink to-bloomYellow"
                       }`}
                   >
