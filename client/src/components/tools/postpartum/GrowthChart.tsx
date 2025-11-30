@@ -239,11 +239,12 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ growths = [], onRefresh }) =>
                   </label>
                   <input
                     type="number"
+                    min="0"
+                    onKeyDown={(e) => (e.key === "e" || e.key === "." || e.key === "-") && e.preventDefault()}
                     value={formData.age ?? ''}
                     onChange={(e) => setFormData({...formData, age: e.target.value === '' ? undefined : parseInt(e.target.value)})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="0"
-                    min="0"
                     max="36"
                   />
                 </div>
@@ -254,6 +255,8 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ growths = [], onRefresh }) =>
                   </label>
                   <input
                     type="number"
+                    min="0"
+                    onKeyDown={(e) => (e.key === "e" || e.key === "." || e.key === "-") && e.preventDefault()}
                     step="0.1"
                     value={formData.weight}
                     onChange={(e) => setFormData({...formData, weight: parseFloat(e.target.value) || 0})}
@@ -269,6 +272,8 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ growths = [], onRefresh }) =>
                   <input
                     type="number"
                     value={formData.height}
+                    min="0"
+                    onKeyDown={(e) => (e.key === "e" || e.key === "." || e.key === "-") && e.preventDefault()}
                     onChange={(e) => setFormData({...formData, height: parseFloat(e.target.value) || 0})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="50"
@@ -282,6 +287,8 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ growths = [], onRefresh }) =>
                   <input
                     type="number"
                     step="0.1"
+                    min="0"
+                    onKeyDown={(e) => (e.key === "e" || e.key === "." || e.key === "-") && e.preventDefault()}
                     value={formData.headCircumference || ''}
                     onChange={(e) => setFormData({...formData, headCircumference: e.target.value ? parseFloat(e.target.value) : undefined})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
