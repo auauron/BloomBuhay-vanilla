@@ -219,6 +219,8 @@ const BMICalculator: React.FC = () => {
                   <input
                     type="number"
                     value={weight}
+                    min="0"
+                    onKeyDown={(e) => e.key === "e" || e.key === "." || e.key === "-" && e.preventDefault()}
                     onChange={(e) => setWeight(e.target.value)}
                     className="flex-1 px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-bloomPink focus:border-transparent"
                     placeholder="Enter weight"
@@ -244,6 +246,8 @@ const BMICalculator: React.FC = () => {
                   <input
                     type="number"
                     value={height}
+                    min="0"
+                    onKeyDown={(e) => e.key === "e" || e.key === "." || e.key === "-" && e.preventDefault()}
                     onChange={(e) => setHeight(e.target.value)}
                     className="flex-1 px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-bloomPink focus:border-transparent"
                     placeholder={heightUnit === "ft" ? "e.g., 5.6 for 5'6\"" : "Enter height"}
