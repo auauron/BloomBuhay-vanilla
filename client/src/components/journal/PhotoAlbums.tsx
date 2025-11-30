@@ -8,11 +8,10 @@ interface PhotoAlbumsProps {
   albums: Album[];
   onUpdateAlbum: (album: Album) => void;
   onDeleteAlbum: (id: string) => void;
-  onAddPhotos: (albumId: string, photos: File[]) => void;
+  onAddPhotos: (albumId: string, photos: File[]) => Promise<boolean>; // change to async
   onUpdatePhoto: (albumId: string, photo: any) => void;
   onDeletePhoto: (albumId: string, photoId: string) => void;
 }
-
 const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
   albums,
   onUpdateAlbum,
@@ -23,6 +22,7 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
 }) => {
   const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
   const [viewingAlbum, setViewingAlbum] = useState<Album | null>(null);
+  const [showUploadSuccess, setShowUploadSuccess] = useState(false); // bag o
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -152,16 +152,39 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
       {/* Album Detail Modal */}
       {viewingAlbum && (
         <AlbumDetail
+          key={viewingAlbum.id + viewingAlbum.photos.length}
           album={viewingAlbum}
           onClose={() => setViewingAlbum(null)}
           onAddPhotos={onAddPhotos}
           onUpdatePhoto={onUpdatePhoto}
           onDeletePhoto={onDeletePhoto}
           onUpdateAlbum={onUpdateAlbum}
+          onUploadComplete={() => setShowUploadSuccess(true)}
         />
+      )}
+
+      {/* Success Message Popup */}
+      {showUploadSuccess && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+            <span>Photos uploaded successfully!</span>
+          </div>
+          <button 
+            onClick={() => setShowUploadSuccess(false)}
+            className="absolute top-1 right-1 text-white hover:text-gray-200"
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
       )}
     </div>
   );
 };
+
 
 export default PhotoAlbums;

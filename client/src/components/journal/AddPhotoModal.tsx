@@ -3,7 +3,7 @@ import { X, Upload, Camera, Loader } from "lucide-react";
 
 interface AddPhotoModalProps {
   onClose: () => void;
-  onAdd: (photos: Array<{ file: File; name: string; notes: string }>) => void;
+  onAdd: (photos: Array<{ file: File; name: string; notes: string }>) => Promise<boolean>; // change to async
 }
 
 const AddPhotoModal: React.FC<AddPhotoModalProps> = ({ onClose, onAdd }) => {
@@ -13,6 +13,7 @@ const AddPhotoModal: React.FC<AddPhotoModalProps> = ({ onClose, onAdd }) => {
     notes: string;
     preview: string;
   }>>([]);
+  const [isLoading, setIsLoading] = useState(false); // add loading state
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {

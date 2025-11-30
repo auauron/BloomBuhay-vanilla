@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { X, Camera, Upload, Loader } from "lucide-react"; // Add Loader icon
+import { X, Camera, Upload, Loader } from "lucide-react"; // add Loader icon
 import { Album } from "./types";
 
 interface AddAlbumModalProps {
@@ -36,12 +36,12 @@ const AddAlbumModal: React.FC<AddAlbumModalProps> = ({ onClose, onAdd }) => {
       });
       
       if (success) {
-        onClose(); // Only close on success
+        onClose(); 
       }
-      // If failed, the modal stays open and user can try again
+      // kung failed, modal stays open and user can try again
     } catch (error) {
       console.error("Failed to create album:", error);
-      // Modal stays open on error
+      // Modal open on error
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +54,7 @@ const AddAlbumModal: React.FC<AddAlbumModalProps> = ({ onClose, onAdd }) => {
           <h2 className="text-xl font-semibold text-gray-800">
             {isLoading ? "Creating Album..." : "Create New Album"}
           </h2>
-          {!isLoading && ( // Only show close button when not loading
+          {!isLoading && ( // shows close button when not loading
             <button
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -77,7 +77,7 @@ const AddAlbumModal: React.FC<AddAlbumModalProps> = ({ onClose, onAdd }) => {
               placeholder="e.g., Baby's First Month"
               className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
               required
-              disabled={isLoading} // Disable during loading
+              disabled={isLoading} 
             />
           </div>
 
@@ -90,7 +90,7 @@ const AddAlbumModal: React.FC<AddAlbumModalProps> = ({ onClose, onAdd }) => {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 className="flex items-center justify-center gap-2 p-6 border-2 border-dashed border-gray-300 rounded-xl hover:border-bloomPink hover:bg-pink-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:hover:bg-transparent"
-                disabled={isLoading} // Disable during loading
+                disabled={isLoading} 
               >
                 <Upload className="w-6 h-6 text-gray-400" />
                 <span className="text-gray-600">
@@ -103,7 +103,7 @@ const AddAlbumModal: React.FC<AddAlbumModalProps> = ({ onClose, onAdd }) => {
                 accept="image/*"
                 onChange={handleFileSelect}
                 className="hidden"
-                disabled={isLoading} // Disable during loading
+                disabled={isLoading} 
               />
               {coverPhoto && (
                 <div className="w-full h-32 bg-gray-200 rounded-xl overflow-hidden">
@@ -130,7 +130,7 @@ const AddAlbumModal: React.FC<AddAlbumModalProps> = ({ onClose, onAdd }) => {
               placeholder="Describe this album..."
               rows={3}
               className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isLoading} // Disable during loading
+              disabled={isLoading} 
             />
           </div>
 
@@ -149,7 +149,7 @@ const AddAlbumModal: React.FC<AddAlbumModalProps> = ({ onClose, onAdd }) => {
                 "Create Album"
               )}
             </button>
-            {!isLoading && ( // Only show cancel button when not loading
+            {!isLoading && (
               <button
                 type="button"
                 onClick={onClose}
