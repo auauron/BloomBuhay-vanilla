@@ -61,7 +61,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
 
   const weeksOrLmpFilled =
     (selectedOption === "option1" && value !== "" && !weekError) ||
-    (selectedOption === "option2" && selectedDate !== "")
+    (selectedOption === "option2" && selectedDate !== "");
 
   const handleNext = async () => {
     // Remove the gender requirement - it's now optional
@@ -138,15 +138,15 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
   };
 
   return (
-    <div className="flex flex-col scrollbar-thin overflow-y-auto scrollbar-thumb-white/50 scrollbar-track hover:scrollbar-thumb-white/50">
-      <div className="flex flex-row gap-48 pt-4">
-        {/*left column: pregnancy details*/}
-        <div className="flex flex-col gap-6 pl-4 w-[1000px]">
+    <div className="flex min-h-screen justify-center relative w-full scrollbar-thin overflow-y-auto scrollbar-thumb-white/50 scrollbar-track hover:scrollbar-thumb-white/50">
+      <div className="flex flex-col w-auto py-6">
+        {/* pregnancy details*/}
+        <div className="flex flex-col gap-6 ">
           <h2 className="text-bloomPink text-xl font-bold text-left">
             How many weeks pregnant are you?
           </h2>
           {/* option 1 */}
-          <div className="flex flex-row gap-12 pl-4">
+          <div className="flex flex-row gap-12 ml-4">
             <label className="flex items-start gap-3">
               <input
                 type="radio"
@@ -195,7 +195,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
             </label>
 
             {/* option 2 */}
-            <label className="flex items-start gap-3">
+            <label className="flex items-start gap-3 ">
               <input
                 type="radio"
                 name="radioGroup"
@@ -222,18 +222,17 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
             </label>
           </div>
         </div>
-      </div>
 
-      {/* baby details */}
-      <div className="flex flex-col mt-4 pl-4">
-        <h2 className="text-bloomPink text-xl font-bold text-left">
-          Baby's Information
-        </h2>
+        {/* baby details */}
+        <div className="flex flex-col gap-6 mt-8">
+          <h2 className="text-bloomPink text-xl font-bold text-left">
+            Baby's Information
+          </h2>
 
-        {/* input fields */}
-        <div className="mt-5 pl-4">
-          <label className="gap-3">
-            <h2 className="font-semibold text-bloomBlack text-left">
+          {/* input fields */}
+
+          <label className="flex flex-col ml-4">
+            <h2 className="font-semibold text-bloomBlack text-left ml-4">
               Baby's Name (Optional)
             </h2>
             <div className="ml-6 mt-3 mb-1 w-[300px]">
@@ -249,52 +248,24 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
             </div>
           </label>
 
-          <label>
-            <h2 className="mt-4 font-semibold text-bloomBlack text-left">
+          <label className="flex flex-col ml-4 ">
+            <h2 className="font-semibold text-bloomBlack text-left ml-4">
               Baby's Gender (Optional)
             </h2>
           </label>
 
-          <div className="relative mb-4 w-[300px] ml-6" ref={dropdownRef}>
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center justify-between p-4 mt-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors text-left w-full"
-              type="button"
-            >
-              <span
-                className={
-                  selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"
-                }
-              >
-                {selectedGender || "What's your baby's gender?"}
-              </span>
-              <ChevronDownIcon
-                size={20}
-                className={`text-[#9a9a9a] transition-transform ${
-                  isOpen ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-
-            {/* Dropdown menu */}
-            {isOpen && (
-              <div className="absolute top-full left-0 mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-10 w-full">
-                {babyGenders.map((gender) => (
-                  <div
-                    key={gender}
-                    onClick={() => handleGenderSelect(gender)}
-                    className={`p-4 hover:bg-bloomWhite transition-colors ${
-                      selectedGender === gender
-                        ? "bg-bloomWhite text-bloomPink"
-                        : "text-bloomBlack"
-                    } cursor-pointer`}
-                  >
-                    {gender}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <select
+            value={selectedGender}
+            onChange={(e) => setSelectedGender(e.target.value)}
+            className=" ml-10 p-4 border border-gray-300 rounded-lg bg-white hover:border-[#F875AA] text-bloomBlack w-[300px]"
+          >
+            <option value="">What's your baby's gender?</option>
+            {babyGenders.map((gender) => (
+              <option key={gender} value={gender}>
+                {gender}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
       <div className="ml-4 fixed bottom-4 right-12 z-50">
