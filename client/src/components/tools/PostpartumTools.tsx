@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import FeedingLog from "../tools/postpartum/FeedingLog";
-import SleepTracker from "../tools/postpartum/SleepTracker";
-import DiaperTracker from "../tools/postpartum/DiaperTracker";
-import VaccinationTracker from "../tools/postpartum/VaccinationTracker";
-import GrowthChart from "../tools/postpartum/GrowthChart";
-import PediatricVisitNotes from "../tools/postpartum/PediatricVisitNotes";
+import FeedingLog from "./postpartum/FeedingLog";
+import SleepTracker from "./postpartum/SleepTracker";
+import DiaperTracker from "./postpartum/DiaperTracker";
+import VaccinationTracker from "./postpartum/VaccinationTracker";
+import GrowthChart from "./postpartum/GrowthChart";
+import PediatricVisitNotes from "./postpartum/PediatricVisitNotes";
 import { Utensils, Moon, Baby, Syringe, ChartBar, Stethoscope } from "lucide-react";
 import { PostpartumToolsProps } from "../../services/BBToolsService";
 
