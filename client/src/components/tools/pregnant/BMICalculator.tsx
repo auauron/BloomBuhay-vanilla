@@ -368,7 +368,7 @@ const BMICalculator: React.FC = () => {
             </div>
 
             {savedMetrics.length === 0 && !loading && (
-              <p className="text-sm text-gray-500">No saved BMI entries yet. Your results will be auto-saved when you calculate (if you're logged in).</p>
+              <p className="text-sm text-gray-500">No saved BMI entries yet. Your results will be auto-saved when you calculate.</p>
             )}
 
             <ul className="space-y-3">
