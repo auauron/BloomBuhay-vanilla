@@ -178,9 +178,9 @@ export const journalService = {
                 body: JSON.stringify({
                     title: noteData.title,
                     content: noteData.content,
-                    photoUrl: noteData.photo,
-                    tags: noteData.tags,
-                    mood: noteData.mood,
+                    photoUrl: noteData.photo || null, // Change this line
+                    tags: noteData.tags || [], // Change this line
+                    mood: noteData.mood || null, // Change this line
                 }),
             });
 

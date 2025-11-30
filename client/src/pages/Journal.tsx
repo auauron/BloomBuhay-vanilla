@@ -203,7 +203,9 @@ import { journalService } from "../services/journalService";
 
       if (response.success && response.data) {
         setNotes(prev => [response.data!, ...prev]);
+        return true; // return success
       }
+      return false; // return false on failure
     }, [fileToBase64]);
 
     const updateNote = useCallback(async (updatedNote: Note) => {
@@ -219,7 +221,9 @@ import { journalService } from "../services/journalService";
         setNotes(prev => prev.map(note =>
           note.id === updatedNote.id ? response.data! : note
         ));
+        return true;
       }
+      return false;
     }, []);
 
     const deleteNote = useCallback(async (id: string) => {
@@ -240,7 +244,9 @@ import { journalService } from "../services/journalService";
         setAlbums(prev => prev.map(album =>
           album.id === updatedAlbum.id ? response.data! : album
         ));
+        return true;
       }
+      return false;
     }, []);
 
     const deleteAlbum = useCallback(async (id: string) => {

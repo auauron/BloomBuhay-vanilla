@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { X, Camera, Upload, Image } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { X, Camera, Upload, Image, Loader } from "lucide-react";
 import { Album } from "./types";
 
 interface EditAlbumModalProps {
   album: Album;
   onClose: () => void;
-  onUpdate: (album: Album) => void;
+  onUpdate: (album: Album) => Promise<boolean>; // Change to async
 }
 
 const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onUpdate }) => {
@@ -14,6 +14,8 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onUpdat
     description: ""
   });
   const [coverPhoto, setCoverPhoto] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false); // Add loading state
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setFormData({
@@ -23,16 +25,25 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onUpdat
     setCoverPhoto(album.coverPhoto);
   }, [album]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => { // Change to async
     e.preventDefault();
-    if (!formData.title.trim()) return;
+    if (!formData.title.trim() || isLoading) return;
 
-    onUpdate({
-      ...album,
-      ...formData,
-      coverPhoto: coverPhoto 
-    });
-    onClose();
+    setIsLoading(true);
+    try {
+      const success = await onUpdate({ // Add await
+        ...album,
+        ...formData,
+        coverPhoto: coverPhoto 
+      });
+      if (success) {
+        onClose();
+      }
+    } catch (error) {
+      console.error("Failed to update album:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCoverPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,13 +81,17 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onUpdat
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-bloomPink">Edit Album</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <h2 className="text-xl font-semibold text-bloomPink">
+            {isLoading ? "Updating Album..." : "Edit Album"}
+          </h2>
+          {!isLoading && (
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -89,9 +104,10 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onUpdat
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent"
+              className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
               placeholder="Enter album title"
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -116,7 +132,9 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onUpdat
             )}
 
             {/* Upload Area */}
-            <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-bloomPink transition-colors bg-gray-50 hover:bg-gray-100">
+            <label className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-xl transition-colors bg-gray-50 hover:bg-gray-100 ${
+              !isLoading ? 'cursor-pointer hover:border-bloomPink' : 'opacity-50 cursor-not-allowed'
+            }`}>
               <div className="flex flex-col items-center justify-center">
                 {!isUsingDefaultCover ? (
                   <Image className="w-10 h-10 text-bloomPink mb-2" />
@@ -136,6 +154,8 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onUpdat
                 className="hidden" 
                 accept="image/png,image/jpeg,image/jpg,image/webp"
                 onChange={handleCoverPhotoUpload}
+                disabled={isLoading}
+                ref={fileInputRef}
               />
             </label>
 
@@ -144,7 +164,8 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onUpdat
               <button
                 type="button"
                 onClick={removeCoverPhoto}
-                className="w-full mt-3 flex items-center justify-center gap-2 py-2 text-red-600 border border-red-200 rounded-xl hover:bg-red-50 transition-colors"
+                disabled={isLoading}
+                className="w-full mt-3 flex items-center justify-center gap-2 py-2 text-red-600 border border-red-200 rounded-xl hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <X className="w-4 h-4" />
                 Remove Cover Photo
@@ -172,8 +193,9 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onUpdat
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={3}
-              className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent"
+              className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
               placeholder="Add a description for your album..."
+              disabled={isLoading}
             />
           </div>
 
@@ -181,18 +203,27 @@ const EditAlbumModal: React.FC<EditAlbumModalProps> = ({ album, onClose, onUpdat
           <div className="flex gap-3 pt-4">
             <button
               type="submit"
-              disabled={!formData.title.trim()}
-              className="flex-1 bg-gradient-to-r from-bloomPink to-bloomYellow text-white py-3 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              disabled={!formData.title.trim() || isLoading}
+              className="flex-1 bg-gradient-to-r from-bloomPink to-bloomYellow text-white py-3 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
             >
-              Update Album
+              {isLoading ? (
+                <>
+                  <Loader className="w-4 h-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Update Album"
+              )}
             </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
-            >
-              Cancel
-            </button>
+            {!isLoading && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+            )}
           </div>
         </form>
       </div>

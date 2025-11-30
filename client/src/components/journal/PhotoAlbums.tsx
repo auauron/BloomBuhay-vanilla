@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Edit3, Trash2, Image, Calendar, Clock, Eye } from "lucide-react";
+import { Edit3, Trash2, Image, Calendar, Clock, Eye, Loader } from "lucide-react";
 import EditAlbumModal from "./EditAlbumModal";
 import AlbumDetail from "./AlbumDetail";
 import { Album } from "./types";
@@ -9,10 +9,11 @@ interface PhotoAlbumsProps {
   albums: Album[];
   onUpdateAlbum: (album: Album) => void;
   onDeleteAlbum: (id: string) => void;
-  onAddPhotos: (albumId: string, photos: File[]) => Promise<boolean>; // change to async
+  onAddPhotos: (albumId: string, photos: File[]) => Promise<boolean>;
   onUpdatePhoto: (albumId: string, photo: any) => void;
   onDeletePhoto: (albumId: string, photoId: string) => void;
 }
+
 const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
   albums,
   onUpdateAlbum,
@@ -21,9 +22,10 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
   onUpdatePhoto,
   onDeletePhoto
 }) => {
+  const [editingAlbumId, setEditingAlbumId] = useState<string | null>(null);
   const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
   const [viewingAlbum, setViewingAlbum] = useState<Album | null>(null);
-  const [showUploadSuccess, setShowUploadSuccess] = useState(false); // bag o
+  const [showUploadSuccess, setShowUploadSuccess] = useState(false);
 
   // forda delete album modal
   const [deleteAlbumModal, setDeleteAlbumModal] = useState<{
@@ -32,9 +34,8 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
     albumTitle: string;
   }>({ isOpen: false, albumId: "", albumTitle: "" });
 
-
   // use effect para sa fade notif after upload
-    useEffect(() => {
+  useEffect(() => {
     if (showUploadSuccess) {
       const timer = setTimeout(() => {
         setShowUploadSuccess(false);
@@ -52,9 +53,22 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
     });
   };
 
-  // Function to get the current album from albums state
   const getCurrentAlbum = (albumId: string) => {
     return albums.find(album => album.id === albumId) || null;
+  };
+
+  // onUpdateAlbum to make it compatible with EditAlbumModal
+  const handleUpdateAlbum = async (album: Album): Promise<boolean> => {
+    setEditingAlbumId(album.id); 
+    try {
+      await onUpdateAlbum(album);
+      return true;
+    } catch (error) {
+      console.error("Failed to update album:", error);
+      return false;
+    } finally {
+      setEditingAlbumId(null); 
+    }
   };
 
   if (albums.length === 0) {
@@ -111,9 +125,14 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
                       e.stopPropagation();
                       setEditingAlbum(getCurrentAlbum(album.id));
                     }}
-                    className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                    disabled={editingAlbumId === album.id}
+                    className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <Edit3 className="w-4 h-4" />
+                    {editingAlbumId === album.id ? (
+                      <Loader className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Edit3 className="w-4 h-4" />
+                    )}
                   </button>
                   <button
                     onClick={(e) => {
@@ -167,7 +186,7 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
         <EditAlbumModal
           album={editingAlbum}
           onClose={() => setEditingAlbum(null)}
-          onUpdate={onUpdateAlbum}
+          onUpdate={handleUpdateAlbum} // Use the wrapped function
         />
       )}
 
@@ -204,6 +223,7 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
           </button>
         </div>
       )}
+      
       {/* Add the delete confirmation modal right here */}
       <DeleteConfirmationModal
         isOpen={deleteAlbumModal.isOpen}
@@ -219,6 +239,5 @@ const PhotoAlbums: React.FC<PhotoAlbumsProps> = ({
     </div>
   );
 };
-
 
 export default PhotoAlbums;

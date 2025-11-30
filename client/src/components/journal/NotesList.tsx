@@ -1,27 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Edit3, Trash2, Calendar, Clock, Tag } from "lucide-react";
 import EditNoteModal from "./EditNoteModal";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { Note } from "./types";
-
-
-// interface Note {
-//   id: string;
-//   title: string;
-//   content: string;
-//   createdAt: string;
-//   lastUpdated: string;
-//   tags: string[];
-//   mood: string;
-// }
 
 interface NotesListProps {
   notes: Note[];
-  onUpdateNote: (note: Note) => void;
+  onUpdateNote: (note: Note) => Promise<boolean>;
   onDeleteNote: (id: string) => void;
 }
 
 const NotesList: React.FC<NotesListProps> = ({ notes, onUpdateNote, onDeleteNote }) => {
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [deleteNoteModal, setDeleteNoteModal] = useState<{
+    isOpen: boolean;
+    noteId: string;
+    noteTitle: string;
+  }>({ isOpen: false, noteId: "", noteTitle: "" });
+  const [showEditSuccess, setShowEditSuccess] = useState(false);
+
+  useEffect(() => {
+    if (showEditSuccess) {
+      const timer = setTimeout(() => setShowEditSuccess(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showEditSuccess]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -76,7 +79,11 @@ const NotesList: React.FC<NotesListProps> = ({ notes, onUpdateNote, onDeleteNote
                   <Edit3 className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => onDeleteNote(note.id)}
+                  onClick={() => setDeleteNoteModal({
+                    isOpen: true,
+                    noteId: note.id,
+                    noteTitle: note.title
+                  })}
                   className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -84,14 +91,12 @@ const NotesList: React.FC<NotesListProps> = ({ notes, onUpdateNote, onDeleteNote
               </div>
             </div>
 
-            {/* Mood */}
             <div className="mb-3">
               <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getMoodColor(note.mood)}`}>
                 {note.mood}
               </span>
             </div>
 
-            {/* Content */}
             <div className="text-gray-600 mb-4 whitespace-pre-line leading-relaxed">
               {note.content}
             </div>
@@ -106,7 +111,6 @@ const NotesList: React.FC<NotesListProps> = ({ notes, onUpdateNote, onDeleteNote
             </div>
             )}
 
-            {/* Tags */}
             {note.tags.length > 0 && (
               <div className="flex flex-wrap gap-1 mb-4">
                 {note.tags.map((tag, index) => (
@@ -118,7 +122,6 @@ const NotesList: React.FC<NotesListProps> = ({ notes, onUpdateNote, onDeleteNote
               </div>
             )}
 
-            {/* Dates */}
             <div className="space-y-1 text-xs text-gray-500 border-t border-gray-100 pt-3">
               <div className="flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
@@ -135,14 +138,43 @@ const NotesList: React.FC<NotesListProps> = ({ notes, onUpdateNote, onDeleteNote
         ))}
       </div>
 
-      {/* Edit Note Modal */}
       {editingNote && (
         <EditNoteModal
           note={editingNote}
           onClose={() => setEditingNote(null)}
-          onUpdate={onUpdateNote}
+          onUpdate={async (note) => {
+            const success = await onUpdateNote(note);
+            if (success) {
+              setEditingNote(null);
+              setShowEditSuccess(true);
+            }
+            return success;
+          }}
         />
       )}
+
+      {showEditSuccess && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+            <span>Changes saved successfully!</span>
+          </div>
+        </div>
+      )}
+
+      <DeleteConfirmationModal
+        isOpen={deleteNoteModal.isOpen}
+        onClose={() => setDeleteNoteModal({ isOpen: false, noteId: "", noteTitle: "" })}
+        onConfirm={() => {
+          onDeleteNote(deleteNoteModal.noteId);
+          setDeleteNoteModal({ isOpen: false, noteId: "", noteTitle: "" });
+        }}
+        title="Delete Note"
+        message={`Are you sure you want to delete "${deleteNoteModal.noteTitle}"? This action cannot be undone.`}
+        itemType="note"
+      />
     </div>
   );
 };
