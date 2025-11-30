@@ -248,7 +248,7 @@ export default function MainSetup() {
 
       {/* Main content */}
       <div className="flex-1 flex items-center justify-center px-6 mt-16">
-        <div className="p-8 w-full max-w-2xl">
+        <div className="p-8 w-full">
           <div className="text-center mb-2">
             <h1 className="text-3xl font-bold font-poppins text-bloomPink mb-1">
               You're blooming beautifully, mama!
