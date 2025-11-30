@@ -111,6 +111,59 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
     return bmi.toFixed(1);
   };
 
+  // Special handler for blood pressure input
+  const handleBloodPressureInput = (inputValue: string) => {
+    // Allow only numbers and slash
+    const cleaned = inputValue.replace(/[^\d/]/g, '');
+    
+    // Limit to one slash
+    const slashCount = (cleaned.match(/\//g) || []).length;
+    if (slashCount > 1) {
+      return;
+    }
+    
+    // Split into parts if slash exists
+    if (cleaned.includes('/')) {
+      const [systolic, diastolic] = cleaned.split('/');
+      
+      // Validate systolic (first number) - max 3 digits
+      let validSystolic = systolic;
+      if (systolic.length > 3) {
+        validSystolic = systolic.slice(0, 3);
+      }
+      
+      // Validate diastolic (second number) - max 3 digits
+      let validDiastolic = diastolic;
+      if (diastolic && diastolic.length > 3) {
+        validDiastolic = diastolic.slice(0, 3);
+      }
+      
+      setValue(validDiastolic ? `${validSystolic}/${validDiastolic}` : `${validSystolic}/`);
+    } else {
+      // No slash yet, limit to 3 digits for systolic
+      if (cleaned.length <= 3) {
+        setValue(cleaned);
+      }
+    }
+  };
+
+  // Generic number input handler for other metrics
+  const handleNumberInput = (inputValue: string) => {
+    // Allow only numbers and decimal point
+    const cleaned = inputValue.replace(/[^\d.]/g, '');
+    
+    // Limit to one decimal point
+    const decimalCount = (cleaned.match(/\./g) || []).length;
+    if (decimalCount > 1) {
+      return;
+    }
+    
+    // Prevent negative values by ensuring it's a valid positive number
+    if (cleaned === '' || parseFloat(cleaned) >= 0) {
+      setValue(cleaned);
+    }
+  };
+
   const calculateTrend = (title: string, value: string, unit: string) => {
     const numValue = parseFloat(value);
     
@@ -123,6 +176,7 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
         
       case "Blood Pressure":
         const [systolic, diastolic] = value.split('/').map(Number);
+        if (!systolic || !diastolic) return { status: "Invalid", trend: "stable" };
         if (systolic < 90 || diastolic < 60) return { status: "Low", trend: "down" };
         if (systolic < 120 && diastolic < 80) return { status: "Normal", trend: "stable" };
         if (systolic >= 120 && systolic < 130 && diastolic < 80) return { status: "Elevated", trend: "up" };
@@ -131,6 +185,11 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
         
       case "Weight":
         // For pregnancy, weight gain is expected
+        if (numValue < 0) return { status: "Weight Loss", trend: "down" };
+        if (numValue < 50) return { status: "Underweight", trend: "down" };
+        if (numValue >= 50 && numValue < 70) return { status: "Healthy", trend: "stable" };
+        if (numValue >= 70 && numValue < 90) return { status: "Overweight", trend: "up" };
+        if (numValue >= 90) return { status: "Obese", trend: "up" };
         return numValue > 0 ? { status: "Tracking", trend: "stable" } : { status: "New", trend: "stable" };
         
       case "Water Intake":
@@ -279,6 +338,9 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
   const trendPreview = selectedMetric && value ? 
     calculateTrend(selectedMetricData?.label || "Custom", value, unit) : null;
 
+  // Validate if blood pressure input is complete
+  const isBloodPressureValid = selectedMetric === "blood_pressure" && value.includes('/') && value.split('/')[1] !== '';
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full mx-auto max-h-[90vh] overflow-y-auto">
@@ -344,6 +406,11 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
                         placeholder="e.g., 62"
                         min="0"
                         step="0.1"
+                        onKeyDown={(e) => {
+                          if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     </div>
                     <div>
@@ -359,6 +426,11 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
                           placeholder="e.g., 165"
                           min="0"
                           step="0.1"
+                          onKeyDown={(e) => {
+                            if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                              e.preventDefault();
+                            }
+                          }}
                         />
                         <select
                           value={heightUnit}
@@ -404,21 +476,39 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
                     {selectedMetric === "bmi" && !showBMICalculator ? "BMI Value" : "Value"}
                   </label>
                   <div className="flex gap-3">
-                    <input
-                      type={selectedMetric === "bmi" ? "number" : "number"}
-                      value={selectedMetric === "bmi" && showBMICalculator ? calculateBMI() || "" : value}
-                      onChange={(e) => setValue(e.target.value)}
-                      disabled={selectedMetric === "bmi" && showBMICalculator}
-                      className="flex-1 px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-bloomPink focus:border-transparent disabled:bg-gray-100"
-                      placeholder={
-                        selectedMetric === "bmi" ? "e.g., 23.4" :
-                        selectedMetric === "blood_pressure" ? "e.g., 120/80" :
-                        selectedMetric === "weight" ? "e.g., 62" :
-                        "Enter value"
-                      }
-                      min="0"
-                      step={selectedMetric === "bmi" ? "0.1" : "1"}
-                    />
+                    {selectedMetric === "blood_pressure" ? (
+                      // Special blood pressure input - NO onKeyDown restriction for slash
+                      <input
+                        type="text"
+                        value={value}
+                        onChange={(e) => handleBloodPressureInput(e.target.value)}
+                        className="flex-1 px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-bloomPink focus:border-transparent"
+                        placeholder="e.g., 120/80"
+                        pattern="\d+/\d+"
+                        inputMode="numeric"
+                      />
+                    ) : (
+                      // Regular number input for other metrics
+                      <input
+                        type="number"
+                        value={selectedMetric === "bmi" && showBMICalculator ? calculateBMI() || "" : value}
+                        onChange={(e) => handleNumberInput(e.target.value)}
+                        disabled={selectedMetric === "bmi" && showBMICalculator}
+                        className="flex-1 px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-bloomPink focus:border-transparent disabled:bg-gray-100"
+                        placeholder={
+                          selectedMetric === "bmi" ? "e.g., 23.4" :
+                          selectedMetric === "weight" ? "e.g., 62" :
+                          "Enter value"
+                        }
+                        min="0"
+                        step={selectedMetric === "bmi" ? "0.1" : "1"}
+                        onKeyDown={(e) => {
+                          if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                            e.preventDefault();
+                          }
+                        }}
+                      />
+                    )}
                     
                     {/* Unit Selection - Only show when needed */}
                     {shouldShowUnitInput() && (
@@ -503,9 +593,16 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
 
                 {/* Additional Instructions */}
                 {selectedMetric === "blood_pressure" && (
-                  <p className="text-sm text-gray-500">
-                    Enter your blood pressure as systolic/diastolic (e.g., 120/80)
-                  </p>
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-500">
+                      Enter your blood pressure as systolic/diastolic (e.g., 120/80)
+                    </p>
+                    {value && !isBloodPressureValid && (
+                      <p className="text-sm text-orange-500">
+                        Please enter both systolic and diastolic values (e.g., 120/80)
+                      </p>
+                    )}
+                  </div>
                 )}
                 {selectedMetric === "bmi" && !showBMICalculator && (
                   <p className="text-sm text-gray-500">
@@ -537,7 +634,7 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
           </button>
           <button
             onClick={handleAdd}
-            disabled={!selectedMetric || !value}
+            disabled={!selectedMetric || !value || (selectedMetric === "blood_pressure" && !isBloodPressureValid)}
             className="flex-1 bg-gradient-to-r from-bloomPink to-bloomYellow text-white px-6 py-3 rounded-2xl hover:shadow-lg transform hover:scale-105 transition-all duration-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
           >
             Add Metric
