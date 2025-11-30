@@ -8,8 +8,8 @@ type Task = {
   id: number;
   title: string;
   completed: boolean;
-  createdAt: string;
   date: string;
+  scheduledAt: string;
 };
 
 export default function ToDoList({ selectedDate }: { selectedDate?: string | null }) {
@@ -19,7 +19,6 @@ export default function ToDoList({ selectedDate }: { selectedDate?: string | nul
   const [error, setError] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
-  // ⬇️ UPDATED: Fetch tasks every time selectedDate changes
   useEffect(() => {
     fetchTasks();
   }, [selectedDate]);
@@ -32,16 +31,38 @@ export default function ToDoList({ selectedDate }: { selectedDate?: string | nul
       const response = await plannerService.getTasks();
 
       if (response.success && response.data) {
-        const transformedTasks = response.data.map((task) => ({
-          id: task.id,
-          title: task.title,
-          completed: task.isCompleted,
-          createdAt: new Date(task.createdAt).toLocaleString(),
-          date: task.date,
-        }));
+        const transformedTasks = response.data.map((task) => {
+          // Parse the date string from the backend
+          const taskDate = new Date(task.date);
+          
+          // Format date part
+          const formattedDate = taskDate.toLocaleDateString([], { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+          });
+          
+          // Format time part - this will now show the actual stored time
+          const formattedTime = taskDate.toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: true  // Explicitly set 12-hour format
+          });
+
+          return {
+            id: task.id,
+            title: task.title,
+            completed: task.isCompleted,
+            scheduledAt: `${formattedDate} ${formattedTime}`, // Combined display
+            date: task.date,
+          };
+        });
 
         const filtered = selectedDate
-          ? transformedTasks.filter((t) => t.date === selectedDate)
+          ? transformedTasks.filter((t) => {
+              const onlyDate = t.date.split("T")[0];  
+              return onlyDate === selectedDate;
+            })
           : transformedTasks;
 
         setTasks(filtered);
@@ -60,7 +81,18 @@ export default function ToDoList({ selectedDate }: { selectedDate?: string | nul
     if (!newTaskTitle.trim()) return;
 
     try {
-      const dateToUse = selectedDate ?? new Date().toISOString().split("T")[0];
+      let dateToUse: string;
+
+      if (selectedDate) {
+        // selected a date and add current time
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        dateToUse = `${selectedDate}T${hh}:${mm}:00`;
+      } else {
+        // no selected date → use current ISO timestamp
+        dateToUse = new Date().toISOString();
+      }
 
       const response = await plannerService.createTask({
         title: newTaskTitle.trim(),
@@ -191,7 +223,7 @@ export default function ToDoList({ selectedDate }: { selectedDate?: string | nul
                   </div>
 
                   <div className="flex items-center gap-3 text-sm text-gray-500">
-                    <span>{task.createdAt}</span>
+                    <span>{task.scheduledAt}</span>
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
