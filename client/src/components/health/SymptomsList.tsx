@@ -73,6 +73,7 @@ export const SymptomFormFields: React.FC<SymptomFormFieldsProps> = React.memo(fu
           <input
             type="date"
             value={formState.date}
+            max={new Date().toISOString().split('T')[0]} 
             onChange={(e) => setFormState((s) => ({ ...s, date: e.target.value }))}
             className="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:ring-2 focus:ring-bloomPink focus:border-bloomPink"
           />
