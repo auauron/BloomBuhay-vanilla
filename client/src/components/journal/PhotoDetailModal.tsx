@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X, Edit3, Trash2, Calendar, Clock, Save } from "lucide-react";
 import { Photo } from "./types";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 interface PhotoDetailModalProps {
   photo: Photo;
@@ -17,6 +18,7 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
   onUpdate,
   onDelete
 }) => {
+  const [showDeleteModal, setShowDeleteModal] = useState(false); 
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -34,7 +36,6 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
         notes: formData.notes
       });
       setIsEditing(false);
-      // Close the modal after successful save
       onClose();
     } finally {
       setIsSaving(false);
@@ -42,16 +43,9 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
   };
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this photo?')) {
-      setIsDeleting(true);
-      try {
-        await onDelete(albumId, photo.id);
-        onClose();
-      } finally {
-        setIsDeleting(false);
-      }
-    }
+    setShowDeleteModal(true);
   };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -70,126 +64,139 @@ const PhotoDetailModal: React.FC<PhotoDetailModalProps> = ({
   const isLoading = isSaving || isDeleting;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-60">
-      <div className="bg-white rounded-2xl shadow-xl max-w-4xl w-full overflow-y-auto">
-        {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-200">
-          <div className="flex items-center gap-3">
-            {isEditing ? (
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Photo name"
-                disabled={isLoading}
-                className="text-xl font-semibold border-b border-gray-300 focus:border-bloomPink focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-              />
-            ) : (
-              <h2 className="text-xl font-semibold text-gray-800">
-                {photo.name || 'Unnamed Photo'}
-              </h2>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            {isEditing ? (
-              <button
-                onClick={handleSave}
-                disabled={isLoading}
-                className="flex items-center gap-2 bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Save className="w-4 h-4" />
-                {isSaving ? 'Saving...' : 'Save'}
-              </button>
-            ) : (
-              <button
-                onClick={() => setIsEditing(true)}
-                disabled={isLoading}
-                className="flex items-center gap-2 bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Edit3 className="w-4 h-4" />
-                Edit
-              </button>
-            )}
-            <button
-              onClick={handleDelete}
-              disabled={isLoading}
-              className="flex items-center gap-2 bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Trash2 className="w-4 h-4" />
-              {isDeleting ? 'Deleting...' : 'Delete'}
-            </button>
-            <button
-              onClick={onClose}
-              disabled={isLoading}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
-          {/* Photo */}
-          <div className="flex justify-center">
-            <img
-              src={typeof photo.file === 'string' ? photo.file : URL.createObjectURL(photo.file)}
-              alt={photo.name || 'Photo'}
-              className="max-w-full max-h-96 object-contain rounded-xl shadow-lg"
-            />
-          </div>
-            
-          {/* Details */}
-          <div className="space-y-6">
-            {/* Dates */}
-            <div className="space-y-3">
-              <h3 className="font-semibold text-gray-800">Photo Information</h3>
-              <div className="space-y-2 text-sm text-gray-600">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  <span>Created: {formatDate(photo.createdAt)}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  <span>Uploaded: {formatDate(photo.uploadedAt)} at {formatTime(photo.uploadedAt)}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Notes */}
-            <div>
-              <h3 className="font-semibold text-gray-800 mb-3">Notes</h3>
+    <>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-60">
+        <div className="bg-white rounded-2xl shadow-xl max-w-4xl w-full overflow-y-auto">
+          <div className="flex justify-between items-center p-6 border-b border-gray-200">
+            <div className="flex items-center gap-3">
               {isEditing ? (
-                <textarea
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  placeholder="Add notes about this photo..."
-                  rows={4}
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Photo name"
                   disabled={isLoading}
-                  className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="text-xl font-semibold border-b border-gray-300 focus:border-bloomPink focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                 />
               ) : (
-                <p className="text-gray-600 whitespace-pre-line">
-                  {photo.notes || 'No notes added yet.'}
-                </p>
+                <h2 className="text-xl font-semibold text-gray-800">
+                  {photo.name || 'Unnamed Photo'}
+                </h2>
               )}
             </div>
+            <div className="flex items-center gap-2">
+              {isEditing ? (
+                <button
+                  onClick={handleSave}
+                  disabled={isLoading}
+                  className="flex items-center gap-2 bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Save className="w-4 h-4" />
+                  {isSaving ? 'Saving...' : 'Save'}
+                </button>
+              ) : (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  disabled={isLoading}
+                  className="flex items-center gap-2 bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  Edit
+                </button>
+              )}
+              <button
+                onClick={handleDelete}
+                disabled={isLoading}
+                className="flex items-center gap-2 bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete
+              </button>
+              <button
+                onClick={onClose}
+                disabled={isLoading}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
 
-            {/* Loading Overlay */}
-            {isLoading && (
-              <div className="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center rounded-2xl max-h-auto!">
-                <div className="text-center">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-bloomPink mx-auto mb-2"></div>
-                  <p className="text-gray-600 text-sm">
-                    {isSaving && "Saving changes..."}
-                    {isDeleting && "Deleting photo..."}
-                  </p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
+            <div className="flex justify-center">
+              <img
+                src={typeof photo.file === 'string' ? photo.file : URL.createObjectURL(photo.file)}
+                alt={photo.name || 'Photo'}
+                className="max-w-full max-h-96 object-contain rounded-xl shadow-lg"
+              />
+            </div>
+              
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <h3 className="font-semibold text-gray-800">Photo Information</h3>
+                <div className="space-y-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    <span>Created: {formatDate(photo.createdAt)}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4" />
+                    <span>Uploaded: {formatDate(photo.uploadedAt)} at {formatTime(photo.uploadedAt)}</span>
+                  </div>
                 </div>
               </div>
-            )}
+
+              <div>
+                <h3 className="font-semibold text-gray-800 mb-3">Notes</h3>
+                {isEditing ? (
+                  <textarea
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    placeholder="Add notes about this photo..."
+                    rows={4}
+                    disabled={isLoading}
+                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-bloomPink focus:border-transparent resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                ) : (
+                  <p className="text-gray-600 whitespace-pre-line">
+                    {photo.notes || 'No notes added yet.'}
+                  </p>
+                )}
+              </div>
+
+              {isLoading && (
+                <div className="absolute inset-0 bg-white bg-opacity-70 flex items-center justify-center rounded-2xl max-h-auto!">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-bloomPink mx-auto mb-2"></div>
+                    <p className="text-gray-600 text-sm">
+                      {isSaving && "Saving changes..."}
+                      {isDeleting && "Deleting photo..."}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={async () => {
+          setIsDeleting(true);
+          try {
+            await onDelete(albumId, photo.id);
+            onClose();
+          } finally {
+            setIsDeleting(false);
+          }
+        }}
+        title="Delete Photo"
+        message={`Are you sure you want to delete "${photo.name || 'this photo'}"? This action cannot be undone.`}
+        itemType="photo"
+      />
+    </>
   );
 };
 
