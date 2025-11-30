@@ -151,9 +151,7 @@
                         ))}
                       </div>
                     )}
-                  </div>
-
-                  <div className="ml-4 ">
+                  </div><div className="ml-4 ">
                     <NextButton
                       onComplete={handleNext}
                       // Remove gender requirement from isReady condition
@@ -161,6 +159,8 @@
                     />
                   </div>
                 </div>
+
+                  
               </div>
             </div>
           </div>

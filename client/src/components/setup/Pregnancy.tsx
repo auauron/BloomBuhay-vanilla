@@ -60,10 +60,8 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
   };
 
   const weeksOrLmpFilled =
-    (selectedOption === "option1" && value !== "") ||
-    (selectedOption === "option2" && selectedDate !== "") ||
-    value !== "" ||
-    selectedDate !== "";
+    (selectedOption === "option1" && value !== "" && !weekError) ||
+    (selectedOption === "option2" && selectedDate !== "")
 
   const handleNext = async () => {
     // Remove the gender requirement - it's now optional
@@ -140,103 +138,105 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
   };
 
   return (
-    <div className="flex flex-col">
-      <div className="flex flex-row gap-48 mt-4">
+    <div className="flex flex-col scrollbar-thin overflow-y-auto scrollbar-thumb-white/50 scrollbar-track hover:scrollbar-thumb-white/50">
+      <div className="flex flex-row gap-48 pt-4">
         {/*left column: pregnancy details*/}
-        <div className="flex flex-col gap-6 pl-4 w-[500px]">
-          <h2 className="text-bloomBlack text-lg font-semibold text-left">
+        <div className="flex flex-col gap-6 pl-4 w-[1000px]">
+          <h2 className="text-bloomPink text-xl font-bold text-left">
             How many weeks pregnant are you?
           </h2>
           {/* option 1 */}
-          <label className="flex items-start gap-3">
-            <input
-              type="radio"
-              name="radioGroup"
-              value="option1"
-              checked={selectedOption === "option1"}
-              onChange={handleOptionChange}
-              className="w-3 h-3 mt-1 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full 
+          <div className="flex flex-row gap-12 pl-4">
+            <label className="flex items-start gap-3">
+              <input
+                type="radio"
+                name="radioGroup"
+                value="option1"
+                checked={selectedOption === "option1"}
+                onChange={handleOptionChange}
+                className="w-3 h-3 mt-1 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full 
             checked:bg-bloomPink checked:border-bloomPink appearance-none focus:outline-none border-2"
-            />
-            <div className="flex flex-col">
-              <h2 className="text-bloomBlack font-semibold text-left">
-                I know!
-              </h2>
-              <div className="w-[270px] mt-2">
-                <InputField
-                  label=""
-                  type="number"
-                  min="0"
-                  max="40"
-                  value={value}
-                  onChange={(val) => {
-                    const num = Number(val);
-                    if (val === "") {
-                      setValue("");
-                      setWeekError("");
-                    } else if (isNaN(num) || num < 0) {
-                      setWeekError("Please enter a valid number");
-                    } else if (num > 40) {
-                      setWeekError("Pregnancy typically lasts up to 40 weeks");
-                      setValue("40");
-                    } else {
-                      setValue(val);
-                      setWeekError("");
-                    }
-                  }}
-                  placeholder="Enter the number of weeks (max 40)"
-                />
-                {weekError && (
-                  <p className="text-red-500 text-sm mt-1">{weekError}</p>
-                )}
+              />
+              <div className="flex flex-col">
+                <h2 className="text-bloomBlack font-semibold text-left">
+                  I know!
+                </h2>
+                <div className="w-[270px] mt-2">
+                  <InputField
+                    label=""
+                    type="number"
+                    min="0"
+                    max="40"
+                    value={value}
+                    onChange={(val) => {
+                      const num = Number(val);
+                      if (val === "") {
+                        setValue("");
+                        setWeekError("");
+                      } else if (isNaN(num) || num < 0) {
+                        setWeekError("Please enter a valid number");
+                      } else if (num > 40) {
+                        setWeekError(
+                          "Pregnancy typically lasts up to 40 weeks"
+                        );
+                        setValue("40");
+                      } else {
+                        setValue(val);
+                        setWeekError("");
+                      }
+                    }}
+                    placeholder="Enter the number of weeks (max 40)"
+                  />
+                  {weekError && (
+                    <p className="text-red-500 text-sm mt-1">{weekError}</p>
+                  )}
+                </div>
               </div>
-            </div>
-          </label>
-
-          {/* option 2 */}
-          <label className="flex items-start gap-3">
-            <input
-              type="radio"
-              name="radioGroup"
-              value="option2"
-              checked={selectedOption === "option2"}
-              onChange={handleOptionChange}
-              className="w-3 h-3 mt-1 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full 
-            checked:bg-bloomPink checked:border-bloomPink appearance-none focus:outline-none border-2"
-            />
-            <div className="flex flex-col">
-              <h2 className="text-bloomBlack font-semibold text-left">
-                I don't know.
-              </h2>
-              <p className="text-bloomBlack mt-1 text-left">
-                Don’t worry. We can estimate it for you! When was your last
-                menstrual period?
-              </p>
-              <div className="w-60 mt-2">
-                <InputField
-                  label=""
-                  type="date"
-                  value={selectedDate}
-                  onChange={setSelectedDate}
-                  placeholder="Select the date"
-                />
-              </div>
-            </div>
-          </label>
-        </div>
-
-        {/* right column: baby details */}
-        <div className="flex flex-col gap-6 w-[300px]">
-          <h2 className="text-bloomBlack text-lg font-semibold text-left">
-            Baby's Information
-          </h2>
-
-          {/* Baby Name */}
-          <div className="flex flex-col pl-4">
-            <label className="font-semibold text-bloomBlack mb-2 text-left">
-              Baby's Name (Optional)
             </label>
-            <div className="w-[270px]">
+
+            {/* option 2 */}
+            <label className="flex items-start gap-3">
+              <input
+                type="radio"
+                name="radioGroup"
+                value="option2"
+                checked={selectedOption === "option2"}
+                onChange={handleOptionChange}
+                className="w-3 h-3 mt-1 focus:ring-bloomPink focus:ring-2 focus:ring-opacity-50 rounded-full 
+            checked:bg-bloomPink checked:border-bloomPink appearance-none focus:outline-none border-2"
+              />
+              <div className="flex flex-col">
+                <h2 className="text-bloomBlack font-semibold text-left">
+                  I don't know. (Enter your last menstrual period)
+                </h2>
+                <div className="w-60 mt-2">
+                  <InputField
+                    label=""
+                    type="date"
+                    value={selectedDate}
+                    onChange={setSelectedDate}
+                    placeholder="Select the date"
+                  />
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* baby details */}
+      <div className="flex flex-col mt-4 pl-4">
+        <h2 className="text-bloomPink text-xl font-bold text-left">
+          Baby's Information
+        </h2>
+
+        {/* input fields */}
+        <div className="mt-5 pl-4">
+          <label className="gap-3">
+            <h2 className="font-semibold text-bloomBlack text-left">
+              Baby's Name (Optional)
+            </h2>
+            <div className="ml-6 mt-3 mb-1 w-[300px]">
               <InputField
                 label=""
                 type="text"
@@ -247,16 +247,18 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
                 placeholder="Enter your baby's name"
               />
             </div>
-          </div>
+          </label>
 
-          {/* Baby Gender */}
-          <div className="flex flex-col relative w-[300px] pl-4" ref={dropdownRef}>
-            <label className="font-semibold text-bloomBlack mb-2 text-left ">
+          <label>
+            <h2 className="mt-4 font-semibold text-bloomBlack text-left">
               Baby's Gender (Optional)
-            </label>
+            </h2>
+          </label>
+
+          <div className="relative mb-4 w-[300px] ml-6" ref={dropdownRef}>
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center justify-between p-3 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors text-left w-full"
+              className="flex items-center justify-between p-4 mt-4 border-gray-300 border rounded-lg bg-white hover:border-[#F875AA] transition-colors text-left w-full"
               type="button"
             >
               <span
@@ -274,13 +276,14 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
               />
             </button>
 
+            {/* Dropdown menu */}
             {isOpen && (
               <div className="absolute top-full left-0 mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-10 w-full">
                 {babyGenders.map((gender) => (
                   <div
                     key={gender}
                     onClick={() => handleGenderSelect(gender)}
-                    className={`p-3 hover:bg-bloomWhite transition-colors ${
+                    className={`p-4 hover:bg-bloomWhite transition-colors ${
                       selectedGender === gender
                         ? "bg-bloomWhite text-bloomPink"
                         : "text-bloomBlack"
@@ -293,6 +296,13 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
             )}
           </div>
         </div>
+      </div>
+      <div className="ml-4 fixed bottom-4 right-12 z-50">
+        <NextButton
+          onComplete={handleNext}
+          // Remove gender requirement from isReady condition
+          isReady={weeksOrLmpFilled}
+        />
       </div>
     </div>
   );
