@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Plus, Syringe, Calendar, CheckCircle, Clock, AlertTriangle, Trash2, Edit3, Save, X } from "lucide-react";
 import { bbtoolsService, CreateVaccinationLogRequest, VaccinationLog } from "../../../services/BBToolsService";
+import DateTimePicker from "../../ui/DateTimePicker";
 
 interface VaccineLocal {
   id: string;
   name: string;
   scheduledDate: string;
+  scheduledTime: string;
   administeredDate?: string;
+  administeredTime?: string;
   status: 'scheduled' | 'completed' | 'overdue';
   notes: string;
   dose: string;
@@ -19,22 +22,32 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
   const [formData, setFormData] = useState({
     name: '',
     scheduledDate: '',
+    scheduledTime: '',
     administeredDate: '',
+    administeredTime: '',
     status: 'scheduled' as 'scheduled' | 'completed' | 'overdue',
     notes: '',
     dose: ''
   });
 
   useEffect(() => {
-    const mapped = (vaccinations || []).map((v) => ({
-      id: String(v.id),
-      name: v.vaccineName || '',
-      scheduledDate: v.date || '',
-      administeredDate: v.administeredDate || undefined,
-      status: (v.status || 'scheduled') as any,
-      notes: v.notes || '',
-      dose: v.dose || '',
-    }));
+    const mapped = (vaccinations || []).map((v) => {
+      // Parse scheduled date/time from the date field
+      const scheduledDate = v.date ? new Date(v.date) : new Date();
+      const administeredDate = v.administeredDate ? new Date(v.administeredDate) : undefined;
+      
+      return {
+        id: String(v.id),
+        name: v.vaccineName || '',
+        scheduledDate: scheduledDate.toISOString().split('T')[0],
+        scheduledTime: scheduledDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+        administeredDate: administeredDate ? administeredDate.toISOString().split('T')[0] : undefined,
+        administeredTime: administeredDate ? administeredDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : undefined,
+        status: (v.status || 'scheduled') as any,
+        notes: v.notes || '',
+        dose: v.dose || '',
+      };
+    });
     setVaccines(mapped);
   }, [vaccinations]);
 
@@ -50,20 +63,42 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
   ];
 
   const addVaccine = async () => {
-    if (!formData.name || !formData.scheduledDate) return;
+    if (!formData.name || !formData.scheduledDate || !formData.scheduledTime) return;
+
+    // Combine scheduled date and time
+    const scheduledDateTime = new Date(`${formData.scheduledDate}T${formData.scheduledTime}`).toISOString();
+    
+    // Combine administered date and time if completed
+    let administeredDateTime = undefined;
+    if (formData.status === 'completed' && formData.administeredDate && formData.administeredTime) {
+      administeredDateTime = new Date(`${formData.administeredDate}T${formData.administeredTime}`).toISOString();
+    } else if (formData.status === 'completed' && !formData.administeredDate) {
+      // Default to current time if no administered date provided
+      administeredDateTime = new Date().toISOString();
+    }
 
     const payload: CreateVaccinationLogRequest = {
       vaccineName: formData.name,
       dose: formData.dose,
-      date: formData.scheduledDate,
-      administeredDate: formData.status === 'completed' ? (formData.administeredDate || new Date().toISOString().split('T')[0]) : undefined,
+      date: scheduledDateTime,
+      administeredDate: administeredDateTime,
       status: formData.status,
       notes: formData.notes,
     };
 
     // optimistic
     const tempId = Date.now().toString();
-    const optimistic: VaccineLocal = { id: tempId, name: formData.name, scheduledDate: formData.scheduledDate, administeredDate: payload.administeredDate, status: formData.status, notes: formData.notes, dose: formData.dose };
+    const optimistic: VaccineLocal = { 
+      id: tempId, 
+      name: formData.name, 
+      scheduledDate: formData.scheduledDate, 
+      scheduledTime: formData.scheduledTime,
+      administeredDate: formData.administeredDate,
+      administeredTime: formData.administeredTime,
+      status: formData.status, 
+      notes: formData.notes, 
+      dose: formData.dose 
+    };
     setVaccines((prev) => [optimistic, ...prev]);
 
     const res = await bbtoolsService.addVaccination(payload);
@@ -77,18 +112,42 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
   };
 
   const updateVaccine = async () => {
-    if (!editingId || !formData.name || !formData.scheduledDate) return;
+    if (!editingId || !formData.name || !formData.scheduledDate || !formData.scheduledTime) return;
+    
+    // Combine scheduled date and time
+    const scheduledDateTime = new Date(`${formData.scheduledDate}T${formData.scheduledTime}`).toISOString();
+    
+    // Combine administered date and time if completed
+    let administeredDateTime = undefined;
+    if (formData.status === 'completed' && formData.administeredDate && formData.administeredTime) {
+      administeredDateTime = new Date(`${formData.administeredDate}T${formData.administeredTime}`).toISOString();
+    } else if (formData.status === 'completed' && !formData.administeredDate) {
+      // Default to current time if no administered date provided
+      administeredDateTime = new Date().toISOString();
+    }
+
     const payload: Partial<CreateVaccinationLogRequest> = {
       vaccineName: formData.name,
       dose: formData.dose,
-      date: formData.scheduledDate,
-      administeredDate: formData.status === 'completed' ? (formData.administeredDate || new Date().toISOString().split('T')[0]) : undefined,
+      date: scheduledDateTime,
+      administeredDate: administeredDateTime,
       status: formData.status,
       notes: formData.notes,
     };
 
     const snapshot = vaccines;
-    setVaccines((prev) => prev.map((v) => v.id === editingId ? { ...v, name: formData.name, scheduledDate: formData.scheduledDate, administeredDate: payload.administeredDate, status: formData.status, notes: formData.notes, dose: formData.dose } : v));
+    setVaccines((prev) => prev.map((v) => v.id === editingId ? { 
+      ...v, 
+      name: formData.name, 
+      scheduledDate: formData.scheduledDate, 
+      scheduledTime: formData.scheduledTime,
+      administeredDate: formData.administeredDate,
+      administeredTime: formData.administeredTime,
+      status: formData.status, 
+      notes: formData.notes, 
+      dose: formData.dose 
+    } : v));
+    
     const res = await bbtoolsService.updateVaccination(editingId, payload);
     if (!res.success) {
       setVaccines(snapshot);
@@ -113,19 +172,44 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
   };
 
   const editVaccine = (vaccine: VaccineLocal) => {
-    setFormData({ name: vaccine.name, scheduledDate: vaccine.scheduledDate, administeredDate: vaccine.administeredDate || '', status: vaccine.status, notes: vaccine.notes, dose: vaccine.dose });
+    setFormData({ 
+      name: vaccine.name, 
+      scheduledDate: vaccine.scheduledDate, 
+      scheduledTime: vaccine.scheduledTime,
+      administeredDate: vaccine.administeredDate || '', 
+      administeredTime: vaccine.administeredTime || '',
+      status: vaccine.status, 
+      notes: vaccine.notes, 
+      dose: vaccine.dose 
+    });
     setEditingId(vaccine.id);
     setShowForm(true);
   };
 
   const markAsCompleted = (id: string) => {
+    const now = new Date();
     setVaccines(prev => prev.map(v => 
-      v.id === id ? { ...v, status: 'completed', administeredDate: new Date().toISOString().split('T')[0] } : v
+      v.id === id ? { 
+        ...v, 
+        status: 'completed', 
+        administeredDate: now.toISOString().split('T')[0],
+        administeredTime: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+      } : v
     ));
   };
 
   const resetForm = () => {
-    setFormData({ name: '', scheduledDate: '', administeredDate: '', status: 'scheduled', notes: '', dose: '' });
+    const now = new Date();
+    setFormData({ 
+      name: '', 
+      scheduledDate: now.toISOString().split('T')[0], 
+      scheduledTime: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+      administeredDate: '', 
+      administeredTime: '',
+      status: 'scheduled', 
+      notes: '', 
+      dose: '' 
+    });
     setShowForm(false);
     setEditingId(null);
   };
@@ -160,6 +244,17 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
       case 'overdue': return <AlertTriangle className="w-4 h-4" />;
       default: return <Clock className="w-4 h-4" />;
     }
+  };
+
+  const formatDateTime = (date: string, time: string) => {
+    const dateObj = new Date(`${date}T${time}`);
+    return dateObj.toLocaleString([], {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   const upcomingVaccines = vaccines.filter(v => v.status === 'scheduled');
@@ -237,10 +332,15 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Scheduled Date</label>
-                  <input type="date" value={formData.scheduledDate} onChange={(e) => setFormData({...formData, scheduledDate: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent" />
-                </div>
+                {/* Scheduled DateTime Picker */}
+                <DateTimePicker
+                  date={formData.scheduledDate}
+                  time={formData.scheduledTime}
+                  onDateChange={(date) => setFormData({...formData, scheduledDate: date})}
+                  onTimeChange={(time) => setFormData({...formData, scheduledTime: time})}
+                  dateLabel="Scheduled Date"
+                  timeLabel="Scheduled Time"
+                />
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
@@ -252,10 +352,16 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
                 </div>
 
                 {formData.status === 'completed' && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Administered Date</label>
-                    <input type="date" value={formData.administeredDate} onChange={(e) => setFormData({...formData, administeredDate: e.target.value})} className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent" />
-                  </div>
+                  <>
+                    <DateTimePicker
+                      date={formData.administeredDate}
+                      time={formData.administeredTime}
+                      onDateChange={(date) => setFormData({...formData, administeredDate: date})}
+                      onTimeChange={(time) => setFormData({...formData, administeredTime: time})}
+                      dateLabel="Administered Date"
+                      timeLabel="Administered Time"
+                    />
+                  </>
                 )}
 
                 <div>
@@ -294,7 +400,9 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
                         <div className="font-semibold text-gray-800 flex items-center gap-2">
                           {vaccine.name}
                         </div>
-                        <div className="text-sm text-gray-600">Dose: {vaccine.dose} • Scheduled: {new Date(vaccine.scheduledDate).toLocaleDateString()}</div>
+                        <div className="text-sm text-gray-600">
+                          Dose: {vaccine.dose} • Scheduled: {formatDateTime(vaccine.scheduledDate, vaccine.scheduledTime)}
+                        </div>
                         {vaccine.notes && <p className="text-sm text-gray-700 mt-1">{vaccine.notes}</p>}
                       </div>
                     </div>
@@ -333,7 +441,9 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
                           {vaccine.name}
                           <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700">Overdue</span>
                         </div>
-                        <div className="text-sm text-gray-600">Dose: {vaccine.dose} • Scheduled: {new Date(vaccine.scheduledDate).toLocaleDateString()}</div>
+                        <div className="text-sm text-gray-600">
+                          Dose: {vaccine.dose} • Scheduled: {formatDateTime(vaccine.scheduledDate, vaccine.scheduledTime)}
+                        </div>
                         {vaccine.notes && <p className="text-sm text-gray-700 mt-1">{vaccine.notes}</p>}
                       </div>
                     </div>
@@ -369,7 +479,13 @@ const VaccinationTracker: React.FC<{ vaccinations?: VaccinationLog[]; onRefresh?
                       </div>
                       <div>
                         <div className="font-semibold text-gray-800">{vaccine.name}</div>
-                        <div className="text-sm text-gray-600">Dose: {vaccine.dose} • Completed: {new Date(vaccine.administeredDate!).toLocaleDateString()}</div>
+                        <div className="text-sm text-gray-600">
+                          Dose: {vaccine.dose} • 
+                          {vaccine.administeredDate && vaccine.administeredTime 
+                            ? ` Completed: ${formatDateTime(vaccine.administeredDate, vaccine.administeredTime)}`
+                            : ` Scheduled: ${formatDateTime(vaccine.scheduledDate, vaccine.scheduledTime)}`
+                          }
+                        </div>
                         {vaccine.notes && <p className="text-sm text-gray-700 mt-1">{vaccine.notes}</p>}
                       </div>
                     </div>
