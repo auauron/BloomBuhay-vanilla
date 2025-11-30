@@ -131,6 +131,11 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
         
       case "Weight":
         // For pregnancy, weight gain is expected
+        if (numValue < 0) return { status: "Weight Loss", trend: "down" };
+        if (numValue < 50) return { status: "Underweight", trend: "down" };
+        if (numValue >= 50 && numValue < 70) return { status: "Healthy", trend: "stable" };
+        if (numValue >= 70 && numValue < 90) return { status: "Overweight", trend: "up" };
+        if (numValue >= 90) return { status: "Obese", trend: "up" };
         return numValue > 0 ? { status: "Tracking", trend: "stable" } : { status: "New", trend: "stable" };
         
       case "Water Intake":
@@ -344,6 +349,11 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
                         placeholder="e.g., 62"
                         min="0"
                         step="0.1"
+                        onKeyDown={(e) => {
+                            if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                              e.preventDefault();
+                            }
+                          }}
                       />
                     </div>
                     <div>
@@ -359,6 +369,11 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
                           placeholder="e.g., 165"
                           min="0"
                           step="0.1"
+                          onKeyDown={(e) => {
+                                    if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                                      e.preventDefault();
+                                    }
+                                  }}
                         />
                         <select
                           value={heightUnit}
@@ -406,8 +421,19 @@ const AddMetricModal: React.FC<AddMetricModalProps> = ({ onClose, onAdd }) => {
                   <div className="flex gap-3">
                     <input
                       type={selectedMetric === "bmi" ? "number" : "number"}
+                      onChange={(e) => {
+                          const val = e.target.value;
+                              // Prevent negative values
+                              if (parseFloat(val) >= 0 || val === "") {
+                                setValue(val);
+                              }
+                            }}
+                      onKeyDown={(e) => {
+                              if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                                e.preventDefault();
+                              }
+                            }}
                       value={selectedMetric === "bmi" && showBMICalculator ? calculateBMI() || "" : value}
-                      onChange={(e) => setValue(e.target.value)}
                       disabled={selectedMetric === "bmi" && showBMICalculator}
                       className="flex-1 px-4 py-3 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-bloomPink focus:border-transparent disabled:bg-gray-100"
                       placeholder={
