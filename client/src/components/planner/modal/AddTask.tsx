@@ -46,9 +46,20 @@ export default function AddTaskModal({
   const [dateEnd, setDateEnd] = useState(todayDisplay);
   const [weekly, setWeekly] = useState<string[]>([]);
   const [interval, setInterval] = useState(0);
-  const [timeHr, setTimeHr] = useState(6);
-  const [timeMin, setTimeMin] = useState(0);
-  const [clock, setClock] = useState("AM");
+
+  // Initialize with current time
+  const currentTime = new Date();
+  const currentHour = currentTime.getHours();
+  const currentMinute = currentTime.getMinutes();
+
+  // Convert to 12-hour format
+  const initial12Hour =
+    currentHour === 0 ? 12 : currentHour > 12 ? currentHour - 12 : currentHour;
+  const initialClock = currentHour >= 12 ? "PM" : "AM";
+
+  const [timeHr, setTimeHr] = useState(initial12Hour);
+  const [timeMin, setTimeMin] = useState(currentMinute);
+  const [clock, setClock] = useState(initialClock);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isSelectingDate, setIsSelectingDate] = useState(false);
@@ -76,11 +87,9 @@ export default function AddTaskModal({
 
     try {
       const [day, month, year] = dateStart.split("/").map(Number);
-      const isoDate = `${year}-${String(month).padStart(2, "0")}-${String(
-        day
-      ).padStart(2, "0")}`;
 
-      let isoDateTime: string;
+      // Create a proper Date object in local timezone
+      let localDate: Date;
 
       if (!isWholeDay) {
         // Use the selected time from the time picker
@@ -94,19 +103,25 @@ export default function AddTaskModal({
         }
         // 12 PM remains 12, 1-11 AM remain as-is
 
-        const hh = String(hour).padStart(2, "0");
-        const mm = String(timeMin).padStart(2, "0");
-        isoDateTime = `${isoDate}T${hh}:${mm}:00`;
+        localDate = new Date(year, month - 1, day, hour, timeMin, 0);
       } else {
         // If whole day task, use current time (time task was created)
         const now = new Date();
-        const hh = String(now.getHours()).padStart(2, "0");
-        const mm = String(now.getMinutes()).padStart(2, "0");
-        const ss = String(now.getSeconds()).padStart(2, "0");
-        isoDateTime = `${isoDate}T${hh}:${mm}:${ss}`;
+        localDate = new Date(
+          year,
+          month - 1,
+          day,
+          now.getHours(),
+          now.getMinutes(),
+          now.getSeconds()
+        );
       }
 
+      // Convert to ISO string which includes timezone
+      const isoDateTime = localDate.toISOString();
+
       console.log("Sending datetime to backend:", isoDateTime);
+      console.log("Current local time:", new Date().toLocaleString());
 
       const response = await plannerService.createTask({
         title: title.trim() || "New Task",

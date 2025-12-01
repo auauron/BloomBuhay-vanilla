@@ -68,7 +68,7 @@ model PlannerTask {
   userId      Int
   title       String
   description String
-  date        DateTime @db.Date
+  date        DateTime @db.Timestamptz(6)
   isCompleted Boolean  @default(false)
   createdAt   DateTime @default(now()) @db.Timestamptz(6)
 
