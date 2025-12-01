@@ -120,9 +120,6 @@ export default function AddTaskModal({
       // Convert to ISO string which includes timezone
       const isoDateTime = localDate.toISOString();
 
-      console.log("Sending datetime to backend:", isoDateTime);
-      console.log("Current local time:", new Date().toLocaleString());
-
       const response = await plannerService.createTask({
         title: title.trim() || "New Task",
         description: description.trim(),
@@ -130,7 +127,6 @@ export default function AddTaskModal({
       });
 
       if (response.success) {
-        console.log("Task created successfully:", response.data);
         await onTaskAdded?.();
         onClose();
       } else {
