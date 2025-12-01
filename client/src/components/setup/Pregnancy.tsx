@@ -1,8 +1,5 @@
-// src/components/Pregnancy.tsx
 import React, { useState } from "react";
-import { ChevronDownIcon } from "lucide-react";
 import InputField from "../ui/inputField";
-import SetupHeader from "../ui/SetupHeader";
 import NextButton from "../ui/NextButton";
 import { useRef, useEffect } from "react";
 import { API_BASE_URL } from "../../config";
@@ -50,10 +47,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
   // Updated baby genders to include "Prefer not to say"
   const babyGenders = ["Girl", "Boy", "Unknown", "Prefer not to say"];
 
-  const handleGenderSelect = (gender: string) => {
-    setSelectedGender(gender);
-    setIsOpen(false);
-  };
+
 
   const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(e.target.value);

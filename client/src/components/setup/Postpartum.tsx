@@ -15,8 +15,6 @@ interface PostpartumProps {
 
 export default function Postpartum({
   onComplete,
-  fullName,
-  email,
 }: PostpartumProps) {
   const [value, setValue] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
@@ -25,16 +23,8 @@ export default function Postpartum({
   const [selectedOption, setSelectedOption] = useState("");
   const [weekError, setWeekError] = useState("");
 
-  const handleGenderSelect = (gender: string) => {
-    setSelectedGender(gender);
-    setIsOpen(false);
-  };
 
   const babyGenders = ["Girl", "Boy"];
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-  };
 
   const handleNext = async () => {
     // basic validation — require a selected gender (keeps current behavior)

@@ -1,4 +1,3 @@
-// src/components/Childbirth.tsx
 import React, { useState } from "react";
 import InputField from "../ui/inputField";
 import NextButton from "../ui/NextButton";
@@ -14,8 +13,6 @@ interface ChildbirthProps {
 
 export default function Childbirth({
   onComplete,
-  fullName,
-  email,
 }: ChildbirthProps) {
   const [value, setValue] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
