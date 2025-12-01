@@ -389,29 +389,37 @@ const SymptomsList: React.FC = () => {
                   item.resolved ? "bg-gray-900/10 border border-white/20" : "bg-white border border-white/30 hover:bg-white/25 hover:border-white/40"
                 } shadow-sm`}
               >
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-1">
-                    <span className={`font-semibold text-lg ${item.resolved ? "text-white/60 line-through" : "text-gray-600"}`}>
-                      {item.symptom}
-                    </span>
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        item.intensity === "High"
-                          ? "bg-red-400/90 text-white"
-                          : item.intensity === "Medium"
-                          ? "bg-yellow-400/90 text-white"
-                          : "bg-green-400/90 text-white"
-                      }`}
-                    >
-                      {item.intensity}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1 text-sm text-gray-600">
-                    <Clock size={14} />
-                    <span>{item.time}</span>
-                  </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-1">
+                  <span className={`font-semibold text-lg ${item.resolved ? "text-white/60 line-through" : "text-gray-600"}`}>
+                    {item.symptom}
+                  </span>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      item.intensity === "High"
+                        ? "bg-red-400/90 text-white"
+                        : item.intensity === "Medium"
+                        ? "bg-yellow-400/90 text-white"
+                        : "bg-green-400/90 text-white"
+                    }`}
+                  >
+                    {item.intensity}
+                  </span>
                 </div>
 
+                {/* Time */}
+                <div className="flex items-center gap-1 text-sm text-gray-600 mb-2">
+                  <Clock size={14} />
+                  <span>{item.time}</span>
+                </div>
+
+                {/* ⭐ Notes (same style as mood tracker notes) */}
+                {item.notes && item.notes.trim() !== "" && (
+                  <div className="mt-2 bg-white/40 text-gray-700 text-sm p-3 rounded-xl border border-white/20 backdrop-blur-sm">
+                    {item.notes}
+                  </div>
+                )}
+              </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => openEditModal(idx)} className="p-2 rounded-xl transition-colors duration-200 text-bloomBlack hover:text-bloomPink" title="Edit symptom">
                     <Edit3 size={16} />
