@@ -1,8 +1,6 @@
 // src/components/Childbirth.tsx
 import React, { useState } from "react";
-import { ChevronDownIcon } from "lucide-react";
 import InputField from "../ui/inputField";
-import SetupHeader from "../ui/SetupHeader";
 import NextButton from "../ui/NextButton";
 import { API_BASE_URL } from "../../config";
 
