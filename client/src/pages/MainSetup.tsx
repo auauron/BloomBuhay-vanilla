@@ -227,7 +227,7 @@ export default function MainSetup() {
   }
 
   return (
-    <div className="bg-bloomWhite min-h-screen flex flex-col overflow-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="bg-bloomWhite min-h-screen flex flex-col ">
       {/* Header */}
       <header className="fixed top-0 left-0 flex flex-row items-center shadow-none bg-bloomWhite w-full py-4 px-6">
         <div className="flex items-center space-x-4">
@@ -247,8 +247,8 @@ export default function MainSetup() {
       </header>
 
       {/* Main content */}
-      <div className="flex-1 flex items-center justify-center px-6 mt-16">
-        <div className="p-8 w-full max-w-2xl">
+      <div className="flex-1 flex items-center justify-center px-6 mt-10 scrollbar-thin overflow-y-auto scrollbar-thumb-white/50 scrollbar-track hover:scrollbar-thumb-white/50">
+        <div className="p-8 w-full ">
           <div className="text-center mb-2">
             <h1 className="text-3xl font-bold font-poppins text-bloomPink mb-1">
               You're blooming beautifully, mama!
