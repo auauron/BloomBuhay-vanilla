@@ -29,14 +29,12 @@ model User {
   profilePic     String?
   MotherProfiles MotherProfiles[]
   PlannerTask    PlannerTask[]
-  HealthLog      HealthLog[]
   HealthMetrics  HealthMetric[]
   HealthMoods    HealthMood[]
   HealthSymptoms HealthSymptom[]
   ToolsLog       ToolsLog[]
   JournalEntry   JournalEntry[]
   refreshTokens  RefreshToken[]
-  BabyMetric     BabyMetric[]
   Albums         Album[]
 
   @@map("user")
@@ -72,25 +70,6 @@ model PlannerTask {
   @@index([userId], name: "idx_planner_task_user_id")
   @@index([date], name: "idx_planner_task_date")
   @@map("planner_task")
-}
-
-model HealthLog {
-  id            Int      @id @default(autoincrement())
-  mother        User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
-  motherId      Int
-  date          DateTime @db.Date
-  weight        Float?
-  bloodPressure String?
-  heartRate     Int?
-  mood          String?
-  sleepHours    Float?
-  waterIntake   Float?
-  symptoms      String?
-  notes         String?
-  createdAt     DateTime @default(now()) @db.Timestamptz(6)
-
-  @@index([motherId, date], name: "idx_health_logs_mother_date")
-  @@map("health_logs")
 }
 
 model ToolsLog {
@@ -178,21 +157,6 @@ model HealthSymptom {
 
   @@index([motherId], name: "idx_health_symptoms_mother_id")
   @@map("health_symptoms")
-}
-
-model BabyMetric {
-  id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
-  title     String
-  value     String
-  unit      String?
-  notes     String?
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-
-  @@index([userId], name: "idx_baby_metrics_user_id")
-  @@map("baby_metrics")
 }
 
 model Album {
