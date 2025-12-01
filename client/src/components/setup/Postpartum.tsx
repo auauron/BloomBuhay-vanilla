@@ -84,124 +84,89 @@ export default function Postpartum({
   };
 
   return (
-    <div className="bg-bloomWhite min-h-screen flex flex-col">
-      <SetupHeader />
-      <div className="flex-1">
-        <div
-          style={{ maxWidth: "800px" }}
-          className="flex justify-center px-6 mt-2"
-        >
-          <div
-            style={{ maxWidth: "700px", maxHeight: "450px" }}
-            className="dropdown-container bg-white w-full m-auto rounded-2xl max-h-[80vh] scrollbar-thin overflow-y-auto scrollbar-thumb-white/50 scrollbar-track hover:scrollbar-thumb-white/50 shadow-lg p-8 pb-4 mb-6"
-          >
-            <div className="text-left ">
-              <h2 className="text-bloomBlack font-semibold">
-                How many weeks has it been since you gave birth?
-              </h2>
-              <div className="ml-4 w-60 m-4">
-                <InputField
-                  label=""
-                  type="number"
-                  min="0"
-                  value={value}
-                  onChange={(val) => {
-                    const num = Number(val);
+    <div className="flex min-h-screen justify-center relative w-full scrollbar-thin overflow-y-auto scrollbar-thumb-white/50 scrollbar-track hover:scrollbar-thumb-white/50">
+      <div className="flex flex-col w-[110vh] py-6 bg-white rounded-2xl shadow-md h-[70vh] p-4 pl-6 mt-4">
+        <div className="flex flex-col gap-6 ">
+          <h2 className="text-bloomPink text-xl font-bold text-left">
+            How many weeks has it been since you gave birth?
+          </h2>
 
-                    if (val === "") {
-                      setValue("");
-                      setWeekError("");
-                    } else if (isNaN(num) || num < 0) {
-                      setWeekError("Please enter a valid number");
-                    } else {
-                      setValue(val);
-                      setWeekError("");
-                    }
-                  }}
-                  placeholder="Enter the number of weeks"
-                />
-                {weekError && (
-                  <p className="text-red-500 text-sm mt-1">{weekError}</p>
-                )}
-              </div>
-            </div>
+          <div className="ml-10 w-60">
+            <InputField
+              label=""
+              type="number"
+              min="0"
+              value={value}
+              onChange={(val) => {
+                const num = Number(val);
 
-            {/* baby's details */}
-            <hr className="border-gray-200 my-4" />
-            <div className="baby-details flex flex-col items-start">
-              <label className="block">
-                <h2 className="font-semibold text-bloomBlack text-left">
-                  Baby's Name
-                </h2>
-                <div className="mt-3 ml-4 w-64">
-                  <InputField
-                    label=""
-                    type="text"
-                    value={inputValue}
-                    onChange={(val) =>
-                      setInputValue(val.replace(/[^a-zA-Z\s]/g, ""))
-                    }
-                    placeholder="Enter your baby's name"
-                  />
-                </div>
-              </label>
-              <label className="block">
-                <h2 className="mt-4 font-semibold text-bloomBlack text-left">
-                  Baby's Gender
-                </h2>
-              </label>
-              <div className="relative mb-4 ml-4 text-left">
-                <button
-                  onClick={() => setIsOpen(!isOpen)}
-                  className="flex items-center justify-between p-4 mt-4 border border-gray-300 rounded-lg bg-white hover:border-[#F875AA] transition-colors cursor-pointer text-left w-full"
-                  type="button"
-                >
-                  <span
-                    className={
-                      selectedGender ? "text-bloomBlack" : "text-[#9a9a9a]"
-                    }
-                  >
-                    {selectedGender || "What's your baby's gender?"}
-                  </span>
-                  <ChevronDownIcon
-                    size={20}
-                    className={`text-[#9a9a9a] transition-transform ${
-                      isOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-
-                {/* Dropdown menu */}
-                {isOpen && (
-                  <div className="absolute left-0 top-full mt-1 bg-white border border-[#9a9a9a] rounded-lg shadow-lg z-20 w-full">
-                    {babyGenders.map((gender) => (
-                      <div
-                        key={gender}
-                        onClick={() => handleGenderSelect(gender)}
-                        className={`p-4 hover:bg-bloomWhite transition-colors cursor-pointer ${
-                          selectedGender === gender
-                            ? "text-bloomPink"
-                            : "text-bloomBlack"
-                        }`}
-                      >
-                        {gender}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* radio btn track recovery and milestones */}
-              
-
-              {/* Next button */}
-              <NextButton
-                onComplete={handleNext}
-                isReady={Boolean(inputValue && value && selectedGender)}
-              />
-            </div>
+                if (val === "") {
+                  setValue("");
+                  setWeekError("");
+                } else if (isNaN(num) || num < 0) {
+                  setWeekError("Please enter a valid number");
+                } else {
+                  setValue(val);
+                  setWeekError("");
+                }
+              }}
+              placeholder="Enter the number of weeks"
+            />
+            {weekError && (
+              <p className="text-red-500 text-sm mt-1">{weekError}</p>
+            )}
           </div>
         </div>
+
+        <div className="flex flex-col gap-6 mt-8">
+          <h2 className="text-bloomPink text-xl font-bold text-left">
+            Baby's Information
+          </h2>
+
+          {/* input fields */}
+
+          <label className="flex flex-col ml-4">
+            <h2 className="font-semibold text-bloomBlack text-left ml-4">
+              Baby's Name
+            </h2>
+            <div className="ml-6 mt-3 mb-1 w-[300px]">
+              <InputField
+                label=""
+                type="text"
+                value={inputValue}
+                onChange={(val) =>
+                  setInputValue(val.replace(/[^a-zA-Z\s]/g, ""))
+                }
+                placeholder="Enter your baby's name"
+              />
+            </div>
+          </label>
+
+          <label className="flex flex-col ml-4 ">
+            <h2 className="font-semibold text-bloomBlack text-left ml-4">
+              Baby's Gender
+            </h2>
+          </label>
+
+          <select
+            value={selectedGender}
+            onChange={(e) => setSelectedGender(e.target.value)}
+            className=" ml-10 p-4 border border-gray-300 rounded-lg bg-white hover:border-[#F875AA] text-bloomBlack w-[300px]"
+          >
+            <option value="">What's your baby's gender?</option>
+            {babyGenders.map((gender) => (
+              <option key={gender} value={gender}>
+                {gender}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div className="ml-4 fixed bottom-4 right-12 z-50">
+        <NextButton
+          onComplete={handleNext}
+          isReady={Boolean(inputValue && value && selectedGender)}
+        />
       </div>
     </div>
   );
