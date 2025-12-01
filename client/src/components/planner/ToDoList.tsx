@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { PlusCircle, Trash2, CheckCircle2 } from 'lucide-react';
+import { PlusCircle, Trash2, CheckCircle2 } from "lucide-react";
 import { plannerService } from "../../services/plannerService";
 import AddTaskModal from "./modal/AddTask";
 
@@ -12,12 +12,17 @@ type Task = {
   scheduledAt: string;
 };
 
-export default function ToDoList({ selectedDate }: { selectedDate?: string | null }) {
+export default function ToDoList({
+  selectedDate,
+}: {
+  selectedDate?: string | null;
+}) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchTasks();
@@ -34,19 +39,19 @@ export default function ToDoList({ selectedDate }: { selectedDate?: string | nul
         const transformedTasks = response.data.map((task) => {
           // Parse the date string from the backend
           const taskDate = new Date(task.date);
-          
+
           // Format date part
-          const formattedDate = taskDate.toLocaleDateString([], { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric' 
+          const formattedDate = taskDate.toLocaleDateString([], {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
           });
-          
+
           // Format time part - this will now show the actual stored time
-          const formattedTime = taskDate.toLocaleTimeString([], { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: true  // Explicitly set 12-hour format
+          const formattedTime = taskDate.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true, // Explicitly set 12-hour format
           });
 
           return {
@@ -60,7 +65,7 @@ export default function ToDoList({ selectedDate }: { selectedDate?: string | nul
 
         const filtered = selectedDate
           ? transformedTasks.filter((t) => {
-              const onlyDate = t.date.split("T")[0];  
+              const onlyDate = t.date.split("T")[0];
               return onlyDate === selectedDate;
             })
           : transformedTasks;
@@ -113,7 +118,10 @@ export default function ToDoList({ selectedDate }: { selectedDate?: string | nul
   }
 
   async function handleDeleteTask(id: number) {
+    if (deletingId) return; // Prevent multiple deletions at once
+
     try {
+      setDeletingId(id);
       const response = await plannerService.deleteTask(id);
 
       if (response.success) {
@@ -124,6 +132,8 @@ export default function ToDoList({ selectedDate }: { selectedDate?: string | nul
     } catch (err) {
       setError("Failed to delete task");
       console.error("Delete task error:", err);
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -138,9 +148,7 @@ export default function ToDoList({ selectedDate }: { selectedDate?: string | nul
 
       if (response.success) {
         setTasks((prev) =>
-          prev.map((t) =>
-            t.id === id ? { ...t, completed: !t.completed } : t
-          )
+          prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
         );
       } else {
         setError(response.error || "Failed to update task");
@@ -176,7 +184,9 @@ export default function ToDoList({ selectedDate }: { selectedDate?: string | nul
 
           <div className="flex flex-col justify-start items-center bg-white rounded-xl p-4 text-[#474747] h-full overflow-y-auto shadow-inner">
             {loading ? (
-              <p className="text-center text-gray-400 italic">Loading tasks...</p>
+              <p className="text-center text-gray-400 italic">
+                Loading tasks...
+              </p>
             ) : tasks.length === 0 ? (
               <p className="text-center text-gray-400 italic">No tasks yet.</p>
             ) : (
@@ -225,12 +235,21 @@ export default function ToDoList({ selectedDate }: { selectedDate?: string | nul
                   <div className="flex items-center gap-3 text-sm text-gray-500">
                     <span>{task.scheduledAt}</span>
                     <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: deletingId === task.id ? 1 : 1.1 }}
+                      whileTap={{ scale: deletingId === task.id ? 1 : 0.95 }}
                       onClick={() => handleDeleteTask(task.id)}
-                      className="text-red-500 hover:text-red-600"
+                      disabled={deletingId === task.id}
+                      className={`${
+                        deletingId === task.id
+                          ? "text-red-300 cursor-not-allowed"
+                          : "text-red-500 hover:text-red-600"
+                      }`}
                     >
-                      <Trash2 className="w-5 h-5" />
+                      {deletingId === task.id ? (
+                        <div className="w-5 h-5 border-2 border-red-300 border-t-red-500 rounded-full animate-spin" />
+                      ) : (
+                        <Trash2 className="w-5 h-5" />
+                      )}
                     </motion.button>
                   </div>
                 </motion.div>
@@ -251,9 +270,9 @@ export default function ToDoList({ selectedDate }: { selectedDate?: string | nul
     </motion.div>
   ) : (
     <AddTaskModal
-    onClose={() => setIsAdding(false)} 
-    onTaskAdded={fetchTasks}
-    selectedDate={selectedDate}
+      onClose={() => setIsAdding(false)}
+      onTaskAdded={fetchTasks}
+      selectedDate={selectedDate}
     />
   );
 }
