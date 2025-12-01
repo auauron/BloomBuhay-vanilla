@@ -37,9 +37,6 @@ model User {
   JournalEntry   JournalEntry[]
   refreshTokens  RefreshToken[]
   BabyMetric     BabyMetric[]
-  FeedingLog     FeedingLog[]
-  SleepLog       SleepLog[]
-  GrowthRecord   GrowthRecord[]
   Albums         Album[]
 
   @@map("user")
@@ -197,53 +194,6 @@ model BabyMetric {
   @@index([userId], name: "idx_baby_metrics_user_id")
   @@map("baby_metrics")
 }
-
-model FeedingLog {
-  id         Int      @id @default(autoincrement())
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     Int
-  amount     Float?
-  method     String? // e.g., "breast", "bottle"
-  notes      String?
-  occurredAt DateTime @default(now())
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@index([userId], name: "idx_feeding_logs_user_id")
-  @@map("feeding_logs")
-}
-
-model SleepLog {
-  id              Int       @id @default(autoincrement())
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId          Int
-  startAt         DateTime
-  endAt           DateTime?
-  durationMinutes Int?
-  notes           String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  @@index([userId], name: "idx_sleep_logs_user_id")
-  @@index([startAt], name: "idx_sleep_logs_start_at")
-  @@map("sleep_logs")
-}
-
-model GrowthRecord {
-  id                Int      @id @default(autoincrement())
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId            Int
-  weight            Float?
-  height            Float?
-  headCircumference Float?
-  notes             String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  @@index([userId], name: "idx_growth_records_user_id")
-  @@map("growth_records")
-}
-
 model Album {
   id          Int      @id @default(autoincrement())
   mother      User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
