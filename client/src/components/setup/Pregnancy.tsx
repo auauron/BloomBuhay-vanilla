@@ -139,7 +139,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
 
   return (
     <div className="flex min-h-screen justify-center relative w-full scrollbar-thin overflow-y-auto scrollbar-thumb-white/50 scrollbar-track hover:scrollbar-thumb-white/50">
-      <div className="flex flex-col w-auto py-6">
+      <div className="flex flex-col w-auto py-6 bg-white rounded-2xl shadow-md h-[75vh] p-4 pl-6 mt-4">
         {/* pregnancy details*/}
         <div className="flex flex-col gap-6 ">
           <h2 className="text-bloomPink text-xl font-bold text-left">
@@ -147,7 +147,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
           </h2>
           {/* option 1 */}
           <div className="flex flex-row gap-12 ml-4">
-            <label className="flex items-start gap-3">
+            <label className="flex items-start gap-2">
               <input
                 type="radio"
                 name="radioGroup"
@@ -195,7 +195,7 @@ export default function Pregnancy({ onComplete }: PregnancyProps) {
             </label>
 
             {/* option 2 */}
-            <label className="flex items-start gap-3 ">
+            <label className="flex items-start gap-2 ">
               <input
                 type="radio"
                 name="radioGroup"
