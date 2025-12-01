@@ -28,8 +28,8 @@ export default function AddTaskModal({ onClose, onTaskAdded, selectedDate }: Add
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [editing, setIsEditing] = useState(false)
-  const [isSingleDate, setSingleDate] = useState(true);
   const [isWholeDay, setWholeDay] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const [dateStart, setDateStart] = useState(todayDisplay)
   const [dateEnd, setDateEnd] = useState(todayDisplay)
   const [weekly, setWeekly] = useState<string[]>([])
@@ -42,10 +42,6 @@ export default function AddTaskModal({ onClose, onTaskAdded, selectedDate }: Add
   const [isSelectingDate, setIsSelectingDate] = useState(false)
   const [selectedDay, setSelectedDay] = useState(now)
 
-  const handleSingleDay = () => {
-    setSingleDate(!isSingleDate)
-  }
-
   const handleWholeDay = () => {
     setWholeDay(!isWholeDay)
   }
@@ -56,6 +52,14 @@ export default function AddTaskModal({ onClose, onTaskAdded, selectedDate }: Add
 
   const handleAdd = async () => {
     if (isSubmitting) return;
+    
+    // Validate that title is not empty
+    if (!title.trim()) {
+      setHasError(true);
+      return;
+    }
+    
+    setHasError(false);
     setIsSubmitting(true);
 
     try {
@@ -163,63 +167,32 @@ export default function AddTaskModal({ onClose, onTaskAdded, selectedDate }: Add
                     <input
                       type="text"
                       value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg bg-white/80 border border-gray-200 text-bloomBlack placeholder-bloomPink/40 focus:outline-none focus:ring-2 focus:ring-bloomPink/20 focus:border-transparent transition-all duration-200 shadow-sm text-sm"
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                        if (hasError && e.target.value.trim()) {
+                          setHasError(false);
+                        }
+                      }}
+                      className={`w-full px-3 py-2 rounded-lg bg-white/80 border text-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 shadow-sm text-sm ${
+                        hasError 
+                          ? 'border-red-500 focus:ring-red-500/20' 
+                          : 'border-gray-200 focus:ring-bloomPink/20'
+                      }`}
                       placeholder="What do you need to do?"
                     />
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <svg className="h-5 w-5 text-bloomPink/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className={`h-5 w-5 ${hasError ? 'text-red-500' : 'text-bloomPink/40'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
                     </div>
                   </div>
+                  {hasError && (
+                    <p className="text-red-500 text-xs mt-1">Please enter a task name</p>
+                  )}
                 </div>
-
-                {/* Task Description */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-bloomBlack/80">Notes (Optional)</label>
-                  <div className="relative">
-                    <textarea
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg bg-white/80 border border-gray-200 text-bloomBlack placeholder-bloomPink/40 focus:outline-none focus:ring-2 focus:ring-bloomPink/20 focus:border-transparent transition-all duration-200 shadow-sm min-h-[80px] text-sm"
-                      placeholder="Any special notes or details?"
-                    />
-                    <div className="absolute bottom-3 right-3 text-bloomPink/40">
-                      
-                    </div>
-                  </div>
-                </div>
-
-                {/* Single Date toggle */}
-                <motion.div
-                layout
-                className="flex justify-between items-center mb-2"
-                >
-                  <p className="font-bold text-bloomBlack">Single Date</p>
-                  
-                  <motion.div
-                  layout
-                  className={`w-[45px] h-[24px] p-[2px] flex flex-row items-center rounded-full relative"
-                    ${(isSingleDate)
-                    ? "justify-end"
-                    : "justify-start"
-                  }`}
-                  style={{ background: isSingleDate ? "linear-gradient(to right, #F875AA, #F3E198)" : "#474747" }}
-                  animate={{ background: isSingleDate ? "linear-gradient(to right, #F875AA, #F3E198)" : "#474747" }}
-                  transition={{ duration: 0 }}
-                  onClick={handleSingleDay}
-                  >
-                    <motion.div
-                    layout
-                    className="bg-white p-[10px] rounded-full"
-                    transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                    />
-                  </motion.div>
-                </motion.div>
 
                 <AnimatePresence>
-                  {!isSingleDate && (
+                  {false && (
                     <motion.div
                     key="day-selector"
                     initial={{ opacity: 0 }}
@@ -377,50 +350,9 @@ export default function AddTaskModal({ onClose, onTaskAdded, selectedDate }: Add
                           const [year, month, day] = iso.split("-");
                           setDateStart(`${day}/${month}/${year}`); // convert back to DD/MM/YYYY
                         }}
-                        className="w-full py-1.5 px-3 rounded-lg bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-medium hover:opacity-90 transition-all duration-200 shadow hover:shadow-md text-sm cursor-pointer"
+                        className="w-full py-1.5 px-3 rounded-lg bg-gradient-to-r from-bloomPink to-bloomYellow text-white font-medium hover:opacity-90 transition-all duration-200 shadow hover:shadow-md text-sm cursor-pointer [&::-webkit-calendar-picker-indicator]:invert"
                       />
                     </div>
-                  </div>
-
-                  {/* Time input */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
-                    <input
-                      type="time"
-                      value={(() => {
-                        // Convert current 12-hour time to 24-hour format for the input
-                        let hour = timeHr;
-                        if (clock === "PM" && hour !== 12) hour += 12;
-                        if (clock === "AM" && hour === 12) hour = 0;
-                        return `${String(hour).padStart(2, "0")}:${String(timeMin).padStart(2, "0")}`;
-                      })()}
-                      onChange={(e) => {
-                        const [hr, min] = e.target.value.split(":").map(Number);
-                        
-                        // Convert 24-hour to 12-hour format
-                        let displayHr = hr;
-                        let newClock = "AM";
-                        
-                        if (hr === 0) {
-                          displayHr = 12;
-                          newClock = "AM";
-                        } else if (hr === 12) {
-                          displayHr = 12;
-                          newClock = "PM";
-                        } else if (hr > 12) {
-                          displayHr = hr - 12;
-                          newClock = "PM";
-                        } else {
-                          displayHr = hr;
-                          newClock = "AM";
-                        }
-                        
-                        setTimeHr(displayHr);
-                        setTimeMin(min);
-                        setClock(newClock);
-                      }}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bloomPink focus:border-transparent"
-                    />
                   </div>
                 </div>
               </div>
