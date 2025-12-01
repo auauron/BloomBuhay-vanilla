@@ -1,6 +1,6 @@
 import { Router, Response } from "express";
 import { authenticateToken, AuthRequest } from "../middleware/auth";
-import { BabyMetric, FeedingLog, GrowthRecord, PrismaClient, SleepLog } from "@prisma/client";
+import { BabyMetric, PrismaClient } from "@prisma/client";
 
 const router = Router();
 const db = new PrismaClient();
@@ -42,7 +42,7 @@ router.get("/", authenticateToken, async (req: AuthRequest, res: Response): Prom
       metrics = [];
     }
 
-    let feedings: FeedingLog[] = [];
+    let feedings: any[] = [];
     try {
       const feedingLogs = await db.toolsLog.findMany({
         where: { motherId: userId, type: "feeding" },
@@ -67,7 +67,7 @@ router.get("/", authenticateToken, async (req: AuthRequest, res: Response): Prom
       feedings = [];
     }
 
-    let sleeps: SleepLog[] = [];
+    let sleeps: any[] = [];
     try {
       const sleepLogs = await db.toolsLog.findMany({
         where: { motherId: userId, type: "sleep" },
@@ -91,7 +91,7 @@ router.get("/", authenticateToken, async (req: AuthRequest, res: Response): Prom
       sleeps = [];
     }
 
-    let growths: GrowthRecord[] = [];
+    let growths: any[] = [];
     try {
       const growthLogs = await db.toolsLog.findMany({
         where: { motherId: userId, type: "growth" },
