@@ -20,20 +20,7 @@ export default function Childbirth({
   const [isOpen, setIsOpen] = useState(false);
   const [ageError, setAgeError] = useState("");
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
-
-  const handleGenderSelect = (gender: string) => {
-    setSelectedGender(gender);
-    setIsOpen(false);
-  };
-
   const babyGenders = ["Girl", "Boy"];
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-  };
 
   const handleNext = async () => {
     // basic validation: require a selected gender (matches other components)
