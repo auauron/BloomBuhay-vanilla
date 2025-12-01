@@ -68,16 +68,11 @@ export default function DashboardToDoList() {
     }
 
     const formatDate = (dateString: string) => {
-        // Handle ISO date string format (e.g., "2025-11-27T00:00:00.000Z")
         const date = new Date(dateString);
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        
-        // Get the month (0-11) and day (1-31)
-        const month = date.getMonth(); // 0-11
-        const day = date.getDate();    // 1-31
-        
-        // Return the formatted date string
-        return `${months[month-1]} ${day}`;
+        const month = date.getMonth(); 
+        const day = date.getDate();    
+        return `${months[month]} ${day}`;
     };
     return (
         <div className="bg-gradient-to-r from-bloomPink to-bloomYellow p-[16px] rounded-2xl shadow-lg h-full flex flex-col">
