@@ -89,11 +89,11 @@ export default function ToDoList({
       let dateToUse: string;
 
       if (selectedDate) {
-        // selected a date and add current time
+        // Parse selected date and add current time with proper timezone
+        const [year, month, day] = selectedDate.split('-').map(Number);
         const now = new Date();
-        const hh = String(now.getHours()).padStart(2, "0");
-        const mm = String(now.getMinutes()).padStart(2, "0");
-        dateToUse = `${selectedDate}T${hh}:${mm}:00`;
+        const localDate = new Date(year, month - 1, day, now.getHours(), now.getMinutes(), now.getSeconds());
+        dateToUse = localDate.toISOString();
       } else {
         // no selected date → use current ISO timestamp
         dateToUse = new Date().toISOString();
