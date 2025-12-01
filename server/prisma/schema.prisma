@@ -68,7 +68,7 @@ model PlannerTask {
   userId      Int
   title       String
   description String
-  date        DateTime @db.Date
+  date        DateTime @db.Timestamptz(6)
   isCompleted Boolean  @default(false)
   createdAt   DateTime @default(now()) @db.Timestamptz(6)
 
@@ -153,7 +153,7 @@ model HealthMetric {
   updatedAt DateTime @updatedAt
 
   @@index([motherId], name: "idx_health_metrics_mother_id")
-  @@map("(health_metrics)")
+  @@map("health_metrics")
 }
 
 model HealthMood {
@@ -214,15 +214,15 @@ model FeedingLog {
 }
 
 model SleepLog {
-  id                  Int       @id @default(autoincrement())
-  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId              Int
-  startAt             DateTime
-  endAt               DateTime?
-  durationMinutes     Int?
-  notes               String?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  id              Int       @id @default(autoincrement())
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          Int
+  startAt         DateTime
+  endAt           DateTime?
+  durationMinutes Int?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@index([userId], name: "idx_sleep_logs_user_id")
   @@index([startAt], name: "idx_sleep_logs_start_at")
@@ -236,10 +236,9 @@ model GrowthRecord {
   weight            Float?
   height            Float?
   headCircumference Float?
-  ageMonths         Int? 
   notes             String?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   @@index([userId], name: "idx_growth_records_user_id")
   @@map("growth_records")
