@@ -24,8 +24,8 @@ model User {
   fullName       String
   email          String           @unique
   password       String
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  createdAt      DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime         @updatedAt @db.Timestamptz(6)
   profilePic     String?
   MotherProfiles MotherProfiles[]
   PlannerTask    PlannerTask[]
@@ -51,7 +51,7 @@ model MotherProfiles {
   weeksPregnant   Int?
   weeksPostpartum Int?
   babyAgeMonths   Int?
-  createdAt       DateTime    @default(now())
+  createdAt       DateTime    @default(now()) @db.Timestamptz(6)
   stage           Stage
   babyGender      BabyGender?
 
@@ -87,7 +87,7 @@ model HealthLog {
   waterIntake   Float?
   symptoms      String?
   notes         String?
-  createdAt     DateTime @db.Date
+  createdAt     DateTime @default(now()) @db.Timestamptz(6)
 
   @@index([motherId, date], name: "idx_health_logs_mother_date")
   @@map("health_logs")
@@ -113,7 +113,7 @@ model Article {
   trimester String?
   author    String
   createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
   @@index([category], name: "idx_articles_category")
   @@map("articles")
@@ -129,7 +129,7 @@ model JournalEntry {
   tags        String[] @default([])
   mood        String?
   createdAt   DateTime @default(now()) @db.Timestamptz(6)
-  lastUpdated DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  lastUpdated DateTime @updatedAt @db.Timestamptz(6)
 
   @@index([motherId], name: "idx_journal_entries_mother_id")
   @@map("journal_entries")
@@ -146,8 +146,8 @@ model HealthMetric {
   trend     String?
   color     String?
   category  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
   @@index([motherId], name: "idx_health_metrics_mother_id")
   @@map("health_metrics")
@@ -159,7 +159,7 @@ model HealthMood {
   motherId  Int
   mood      String
   notes     String?
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
 
   @@index([motherId], name: "idx_health_moods_mother_id")
   @@map("health_moods")
@@ -173,8 +173,8 @@ model HealthSymptom {
   severity  String   @default("low")
   notes     String?
   resolved  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
   @@index([motherId], name: "idx_health_symptoms_mother_id")
   @@map("health_symptoms")
@@ -188,12 +188,13 @@ model BabyMetric {
   value     String
   unit      String?
   notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
   @@index([userId], name: "idx_baby_metrics_user_id")
   @@map("baby_metrics")
 }
+
 model Album {
   id          Int      @id @default(autoincrement())
   mother      User     @relation(fields: [motherId], references: [id], onDelete: Cascade)
@@ -202,7 +203,7 @@ model Album {
   coverPhoto  String?
   description String?
   createdAt   DateTime @default(now()) @db.Timestamptz(6)
-  lastUpdated DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  lastUpdated DateTime @updatedAt @db.Timestamptz(6)
   photos      Photo[]
 
   @@index([motherId], name: "idx_albums_mother_id")
@@ -230,7 +231,7 @@ model RefreshToken {
   userId    Int
   expiresAt DateTime
   revoked   Boolean  @default(false)
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
 
   @@index([userId], name: "idx_refresh_tokens_user_id")
   @@map("refresh_tokens")

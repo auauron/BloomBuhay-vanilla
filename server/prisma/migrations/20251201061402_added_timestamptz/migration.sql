@@ -1,0 +1,37 @@
+-- AlterTable
+ALTER TABLE "albums" ALTER COLUMN "lastUpdated" DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE "articles" ALTER COLUMN "updatedAt" DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE "baby_metrics" ALTER COLUMN "createdAt" SET DATA TYPE TIMESTAMPTZ(6),
+ALTER COLUMN "updatedAt" SET DATA TYPE TIMESTAMPTZ(6);
+
+-- AlterTable
+ALTER TABLE "health_logs" ALTER COLUMN "createdAt" SET DEFAULT CURRENT_TIMESTAMP,
+ALTER COLUMN "createdAt" SET DATA TYPE TIMESTAMPTZ(6);
+
+-- AlterTable
+ALTER TABLE "health_metrics" ALTER COLUMN "createdAt" SET DATA TYPE TIMESTAMPTZ(6),
+ALTER COLUMN "updatedAt" SET DATA TYPE TIMESTAMPTZ(6);
+
+-- AlterTable
+ALTER TABLE "health_moods" ALTER COLUMN "createdAt" SET DATA TYPE TIMESTAMPTZ(6);
+
+-- AlterTable
+ALTER TABLE "health_symptoms" ALTER COLUMN "createdAt" SET DATA TYPE TIMESTAMPTZ(6),
+ALTER COLUMN "updatedAt" SET DATA TYPE TIMESTAMPTZ(6);
+
+-- AlterTable
+ALTER TABLE "journal_entries" ALTER COLUMN "lastUpdated" DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE "mother_profiles" ALTER COLUMN "createdAt" SET DATA TYPE TIMESTAMPTZ(6);
+
+-- AlterTable
+ALTER TABLE "refresh_tokens" ALTER COLUMN "createdAt" SET DATA TYPE TIMESTAMPTZ(6);
+
+-- AlterTable
+ALTER TABLE "user" ALTER COLUMN "createdAt" SET DATA TYPE TIMESTAMPTZ(6),
+ALTER COLUMN "updatedAt" SET DATA TYPE TIMESTAMPTZ(6);
