@@ -17,11 +17,18 @@ type CalendarViewProps = {
   onSelectDate: (date: string | null) => void;
 };
 
-export default function CalendarView({ selectedDate, onSelectDate }: CalendarViewProps) {
+export default function CalendarView({
+  selectedDate,
+  onSelectDate,
+}: CalendarViewProps) {
   const now: BloomDate = getNow();
   // Initialize selectedDay from prop (or default to today display if null)
-  const initialSelectedDay = selectedDate ? translateBloomdate(isoToBloom(selectedDate)) : translateBloomdate(now);
-  const [selectedDay, setSelectedDay] = useState<string | null>(initialSelectedDay);
+  const initialSelectedDay = selectedDate
+    ? translateBloomdate(isoToBloom(selectedDate))
+    : translateBloomdate(now);
+  const [selectedDay, setSelectedDay] = useState<string | null>(
+    initialSelectedDay
+  );
   const [month, setMonth] = useState(now.month);
   const [year, setYear] = useState(now.year);
   const [showPicker, setShowPicker] = useState(false);
@@ -68,14 +75,15 @@ export default function CalendarView({ selectedDate, onSelectDate }: CalendarVie
           </motion.button>
 
           <span className="flex-1 text-center">
-            {new Date(year, month).toLocaleString("default", { month: "long" })} {year}
+            {new Date(year, month).toLocaleString("default", { month: "long" })}{" "}
+            {year}
           </span>
 
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => {
-              setShowPicker(true)
+              setShowPicker(true);
             }}
           >
             <Calendar className="w-8 h-8 text-white" />
@@ -104,9 +112,9 @@ export default function CalendarView({ selectedDate, onSelectDate }: CalendarVie
             transition={{ duration: 0.2 }}
           >
             <div className="grid grid-cols-7 gap-3">
-              {daysOfWeek.map((d) => (
+              {daysOfWeek.map((d, index) => (
                 <div
-                  key={d}
+                  key={`${d}-${index}`}
                   className="border border-bloomYellow bg-bloomPink-50 text-center rounded-xl py-4 font-semibold"
                 >
                   {d}
@@ -134,10 +142,10 @@ export default function CalendarView({ selectedDate, onSelectDate }: CalendarVie
                       isSelected
                         ? "border-bloomPink border scale-105"
                         : isToday
-                          ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow-lg hover:scale-105"
-                          : isCurrentMonth
-                            ? "hover:bg-gradient-to-r from-bloomPink/50 to-bloomYellow/50 hover:shadow-md hover:scale-105"
-                            : "text-bloomBlack opacity-60",
+                        ? "bg-gradient-to-r from-bloomPink to-bloomYellow text-white shadow-lg hover:scale-105"
+                        : isCurrentMonth
+                        ? "hover:bg-gradient-to-r from-bloomPink/50 to-bloomYellow/50 hover:shadow-md hover:scale-105"
+                        : "text-bloomBlack opacity-60",
                     ].join(" ")}
                   >
                     {date.date}
