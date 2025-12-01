@@ -14,8 +14,6 @@ interface ChildbirthProps {
 
 export default function Childbirth({
   onComplete,
-  fullName,
-  email,
 }: ChildbirthProps) {
   const [value, setValue] = useState("");
   const [selectedGender, setSelectedGender] = useState("");
