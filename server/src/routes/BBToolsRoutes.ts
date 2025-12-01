@@ -1,6 +1,6 @@
 import { Router, Response } from "express";
 import { authenticateToken, AuthRequest } from "../middleware/auth";
-import { BabyMetric, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const router = Router();
 const db = new PrismaClient();
@@ -15,31 +15,6 @@ router.get("/", authenticateToken, async (req: AuthRequest, res: Response): Prom
     if (!userId) {
       res.status(401).json({ success: false, error: "Unauthorized" });
       return;
-    }
-
-    let metrics: BabyMetric[] = [];
-    try {
-      const metricLogs = await db.toolsLog.findMany({
-        where: { motherId: userId, type: "metric" },
-        orderBy: [{ createdAt: "desc" }],
-        take: 50,
-      });
-      metrics = metricLogs.map((t) => {
-        const d: any = t.data || {};
-        return {
-          id: t.id,
-          userId,
-          title: d.title,
-          value: d.value,
-          unit: d.unit,
-          notes: d.notes,
-          createdAt: t.createdAt.toISOString(),
-          updatedAt: t.createdAt.toISOString(),
-        } as any;
-      });
-    } catch (err) {
-      console.warn("Failed to fetch metrics via ToolsLog, returning empty array", err);
-      metrics = [];
     }
 
     let feedings: any[] = [];
@@ -208,7 +183,7 @@ router.get("/", authenticateToken, async (req: AuthRequest, res: Response): Prom
 
     res.status(200).json({
       success: true,
-      data: { metrics, feedings, sleeps, growths, diapers, vaccinations, doctorVisits },
+      data: { feedings, sleeps, growths, diapers, vaccinations, doctorVisits },
     });
   } catch (error) {
     console.error("Get BB tools data error:", error instanceof Error ? error.message : String(error));
